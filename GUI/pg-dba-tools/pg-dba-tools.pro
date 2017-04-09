@@ -13,8 +13,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    dlgconnections.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    dlgconnections.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dlgconnections.ui
+
+unix:INCLUDEPATH += /usr/include/pgsql
+unix:LIBS += -lpq -lpgcommon -lpgport -lssl -lcrypto -lgssapi_krb5 -lz -lrt -lcrypt -ldl -lm

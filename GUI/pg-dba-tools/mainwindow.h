@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <libpq-fe.h>
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +18,7 @@ public:
 
 private slots:
     void on_actionExit_triggered();
+    void on_actionConnections_triggered();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -24,6 +26,9 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    PGconn *conn;
+    int     status;
+    void loadDatabases(void);
 };
 
 #endif // MAINWINDOW_H
