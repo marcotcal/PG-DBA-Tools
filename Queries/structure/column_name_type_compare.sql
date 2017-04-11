@@ -13,14 +13,14 @@ SELECT sa.nspname as schemaa,
        JOIN pg_class cb ON (cb.oid = b.attrelid)
        JOIN pg_catalog.pg_namespace sb ON (cb.relnamespace = sb.oid)
  WHERE a.attname = b.attname
-   AND ta.typname <> tb.typname
-   AND ca.relname NOT LIKE 'pg_%'
-   AND ca.relname NOT LIKE 'information%'
-   AND ca.relname NOT LIKE 'sql_%'
-   AND ca.relkind = 'r'
-   AND cb.relname NOT LIKE 'pg_%'
-   AND cb.relname NOT LIKE 'information%'
-   AND cb.relname NOT LIKE 'sql_%'
-   AND cb.relkind = 'r'
-   AND 'rollback' NOT IN (sa.nspname, sb.nspname)
-   AND 'id' NOT IN (a.attname, b.attname);
+       AND ta.typname <> tb.typname
+       AND ca.relname NOT LIKE 'pg_%'
+       AND ca.relname NOT LIKE 'information%'
+       AND ca.relname NOT LIKE 'sql_%'
+       AND ca.relkind = 'r'
+       AND cb.relname NOT LIKE 'pg_%'
+       AND cb.relname NOT LIKE 'information%'
+       AND cb.relname NOT LIKE 'sql_%'
+       AND cb.relkind = 'r'
+       AND 'rollback' NOT IN (sa.nspname, sb.nspname)
+       AND 'id' NOT IN (a.attname, b.attname);
