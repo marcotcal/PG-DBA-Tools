@@ -10,8 +10,8 @@ SELECT c.table_schema,
        c.character_maximum_length as max_len,
        c.is_nullable as null,
        col_description(t.oid, c.ordinal_position)
-  FROM information_schema.columns c
-  JOIN pg_class t ON (t.relname = c.table_name)
- WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+FROM information_schema.columns c
+     JOIN pg_class t ON (t.relname = c.table_name)
+WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
 ORDER BY c.table_schema, c.table_name, c.ordinal_position;
 
