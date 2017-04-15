@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dlgconnections.cpp
+    dlgconnections.cpp \
+    dmoconnection.cpp
 
 HEADERS  += mainwindow.h \
-    dlgconnections.h
+    dlgconnections.h \
+    dmoconnection.h
 
 FORMS    += mainwindow.ui \
     dlgconnections.ui

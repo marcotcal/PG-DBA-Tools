@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <libpq-fe.h>
+#include "dmoconnection.h"
 
 namespace Ui {
 class MainWindow;
@@ -15,6 +15,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void loadDatabases(void);
+
+    DMOConnection *getDatabase() const;
+    void setDatabase(DMOConnection *value);
 
 private slots:
     void on_actionExit_triggered();
@@ -25,10 +29,8 @@ protected:
     void showEvent(QShowEvent *event);
 
 private:
-    Ui::MainWindow *ui;
-    PGconn *conn;
-    int     status;
-    void loadDatabases(void);
+    Ui::MainWindow *ui;    
+    DMOConnection *database;
 };
 
 #endif // MAINWINDOW_H

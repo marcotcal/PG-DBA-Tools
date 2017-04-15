@@ -9,17 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    conn = NULL;
-    status = CONNECTION_BAD;
-    loadDatabases();
+    ui->setupUi(this);       
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    if (conn)
-        PQfinish(conn);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -35,62 +30,22 @@ void MainWindow::showEvent(QShowEvent *event)
     restoreGeometry(settings.value("geometry").toByteArray());
 }
 
-void MainWindow::loadDatabases()
+DMOConnection *MainWindow::getDatabase() const
 {
-    const char *keys[] = { "host", "user", "password", "dbname", NULL };
-    const char *values[] = { "host-name", "user-name", "user-pass","postgres", NULL };
-    PGresult   *res;
-    int nFields;
+    return database;
+}
 
-    conn = PQconnectdbParams(keys, values, 0);
+void MainWindow::setDatabase(DMOConnection *value)
+{
+    database = value;
+}
 
-    status = PQstatus(conn);
-
-    if (status == CONNECTION_OK) {
-
-        res = PQexec(conn,"BEGIN");
-        if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-            QMessageBox::critical(this, tr("Error"),QString(tr("BEGIN command failed: %1")).arg(PQerrorMessage(conn)));
-            PQclear(res);
-            return;
-        }
-        PQclear(res);
-        res = PQexec(conn, "DECLARE dbn CURSOR FOR select datname from pg_database");
-        if (PQresultStatus(res) != PGRES_COMMAND_OK)
-        {
-            QMessageBox::critical(this, tr("Error"),QString(tr("DECLARE CURSOR failed: %1")).arg(PQerrorMessage(conn)));
-            PQclear(res);
-            return;
-        }
-        PQclear(res);
-
-        res = PQexec(conn, "FETCH ALL in dbn");
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            QMessageBox::critical(this, tr("Error"),QString(tr("FECHALL failed: %1")).arg(PQerrorMessage(conn)));
-            PQclear(res);
-            return;
-        }
-        nFields = PQnfields(res);
-        //for (int i = 0; i < nFields; i++)
-        //    qDebug() << PQfname(res, i);
-        for (int i = 0; i < PQntuples(res); i++) {
-            for (int j = 0; j < nFields; j++)
-                ui->db_list->addItem(new QListWidgetItem(PQgetvalue(res, i, j)));
-        }
-        ui->db_list->item(0)->setSelected(true);
-
-        PQclear(res);
-
-        res = PQexec(conn, "CLOSE dbn");
-        PQclear(res);
-
-        res = PQexec(conn, "END");
-        PQclear(res);
-
-    } else {
-        QMessageBox::critical(this, tr("Error"), QString(tr("Error opening database %1")).arg( PQerrorMessage(conn)));
+void MainWindow::loadDatabases(void)
+{
+    foreach(QString str, database->getDatabases()) {
+        ui->db_list->addItem(new QListWidgetItem(str));
     }
+    ui->db_list->item(0)->setSelected(true);
 }
 
 void MainWindow::on_actionExit_triggered()
