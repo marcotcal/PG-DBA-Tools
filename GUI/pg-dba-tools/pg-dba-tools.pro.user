@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.5.1, 2017-04-15T13:09:39. -->
+<!-- Written by QtCreator 3.5.1, 2017-04-15T22:42:40. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -241,7 +241,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">pg-dba-tools</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">pg-dba-tools2</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/marcotc/git-repos/PG-DBA-Tools/GUI/pg-dba-tools/pg-dba-tools.pro</value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments">--host devel.qvaliz.pt --user marcotc --password gv29bacupari1961 -P 5432 -o &quot;-c geqo=off&quot;</value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments"></value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">pg-dba-tools.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseTerminal">false</value>
