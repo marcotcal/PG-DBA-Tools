@@ -19,9 +19,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings settings("Qvaliz", "pg-dba-tools");
-    settings.setValue("geometry", saveGeometry());
-    QWidget::closeEvent(event);
+
 }
 
 void MainWindow::showEvent(QShowEvent *event)

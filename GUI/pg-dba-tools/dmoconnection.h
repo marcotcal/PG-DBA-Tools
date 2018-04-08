@@ -2,6 +2,7 @@
 #define DMOCONNECTION_H
 
 #include <QObject>
+#include <QSettings>
 #include <libpq-fe.h>
 
 class DMOConnection : public QObject
@@ -61,6 +62,7 @@ private:
     int   status;
 
     QStringList databases;
+
 };
 
 #endif // DMOCONNECTION_H

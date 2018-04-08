@@ -1,5 +1,6 @@
 #include "dlgconnections.h"
 #include "ui_dlgconnections.h"
+#include <QtConfig>
 
 DlgConnections::DlgConnections(QWidget *parent) :
     QDialog(parent),
