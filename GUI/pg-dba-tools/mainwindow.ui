@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>835</width>
-    <height>410</height>
+    <width>910</width>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>835</width>
-     <height>26</height>
+     <width>910</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,8 +74,8 @@
   <widget class="QToolBar" name="mainToolBar">
    <property name="iconSize">
     <size>
-     <width>28</width>
-     <height>28</height>
+     <width>32</width>
+     <height>32</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -89,7 +89,6 @@
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
-   <addaction name="actionSave_As"/>
    <addaction name="separator"/>
    <addaction name="actionConnections"/>
   </widget>
@@ -127,7 +126,7 @@
   <action name="actionNew">
    <property name="icon">
     <iconset theme="filenew">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>images/32px/493-file_new.png</normaloff>images/32px/493-file_new.png</iconset>
    </property>
    <property name="text">
     <string>&amp;New</string>
@@ -136,7 +135,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset theme="fileopen">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>images/32px/492-file_open.png</normaloff>images/32px/492-file_open.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -145,7 +144,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset theme="filesave">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>images/32px/494-file_save.png</normaloff>images/32px/494-file_save.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -154,7 +153,7 @@
   <action name="actionSave_As">
    <property name="icon">
     <iconset theme="filesaveas">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>images/32px/099-floppy-disk.png</normaloff>images/32px/099-floppy-disk.png</iconset>
    </property>
    <property name="text">
     <string>Sa&amp;ve As...</string>
@@ -162,8 +161,8 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme="exit">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset>
+     <normaloff>images/32px/277-exit.png</normaloff>images/32px/277-exit.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Exit</string>
@@ -172,13 +171,17 @@
   <action name="actionConnections">
    <property name="icon">
     <iconset theme="emblem-system">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>images/32px/101-database.png</normaloff>images/32px/101-database.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Connections</string>
    </property>
   </action>
   <action name="actionConnect">
+   <property name="icon">
+    <iconset>
+     <normaloff>images/32px/184-power-cord.png</normaloff>images/32px/184-power-cord.png</iconset>
+   </property>
    <property name="text">
     <string>C&amp;onnect</string>
    </property>
@@ -199,6 +202,10 @@
    </property>
   </action>
   <action name="actionTables">
+   <property name="icon">
+    <iconset>
+     <normaloff>images/32px/370-table2.png</normaloff>images/32px/370-table2.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Tables</string>
    </property>
