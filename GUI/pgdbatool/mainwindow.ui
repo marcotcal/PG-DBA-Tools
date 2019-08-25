@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1085</width>
+    <height>584</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PostgrSQL DBA Tool</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QStackedWidget" name="main_stack"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1085</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuSQL">
+    <property name="title">
+     <string>SQL</string>
+    </property>
+    <addaction name="actionSQL_Tool"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Editor"/>
+    <addaction name="actionClose_Editor"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnect"/>
+    <addaction name="actionDisconect"/>
+    <addaction name="separator"/>
+    <addaction name="actionStart_Transaction"/>
+    <addaction name="actionRollback_Transaction"/>
+    <addaction name="actionCommit_Transaction"/>
+   </widget>
+   <widget class="QMenu" name="menuConnections">
+    <property name="title">
+     <string>Connections</string>
+    </property>
+    <addaction name="actionManageConnections"/>
+    <addaction name="actionDatabase_to_Database"/>
+    <addaction name="actionCreate_Database"/>
+    <addaction name="actionDrop_Database"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionManage_Plugins"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout_Program"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSQL"/>
+   <addaction name="menuConnections"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionExit"/>
+   <addaction name="actionManageConnections"/>
+   <addaction name="actionCreate_Database"/>
+   <addaction name="actionDrop_Database"/>
+   <addaction name="actionSQL_Tool"/>
+   <addaction name="actionConnect"/>
+   <addaction name="actionDisconect"/>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionAdd_Editor"/>
+   <addaction name="actionClose_Editor"/>
+   <addaction name="actionStart_Transaction"/>
+   <addaction name="actionRollback_Transaction"/>
+   <addaction name="actionCommit_Transaction"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Connections</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTreeWidget" name="connection_list">
+       <column>
+        <property name="text">
+         <string>Connection List</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <property name="windowTitle">
+    <string>SQL Editors</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QTreeWidget" name="editor_list">
+       <property name="editTriggers">
+        <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <column>
+        <property name="text">
+         <string>Editors List</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-exit-sign-40.png</normaloff>:/icons/images/icons/icons8-exit-sign-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-add-file-40.png</normaloff>:/icons/images/icons/icons8-add-file-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-save-40.png</normaloff>:/icons/images/icons/icons8-save-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-save-as-40.png</normaloff>:/icons/images/icons/icons8-save-as-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
+  <action name="actionSQL_Tool">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>SQL Tool</string>
+   </property>
+  </action>
+  <action name="actionManageConnections">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-database-administrator-48.png</normaloff>:/icons/images/icons/icons8-database-administrator-48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Manage Connections</string>
+   </property>
+  </action>
+  <action name="actionDatabase_to_Database">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-copy-40.png</normaloff>:/icons/images/icons/icons8-copy-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Database to Database</string>
+   </property>
+  </action>
+  <action name="actionAdd_Editor">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-edit-file-40.png</normaloff>:/icons/images/icons/icons8-edit-file-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Editor</string>
+   </property>
+  </action>
+  <action name="actionClose_Editor">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-delete-file-40.png</normaloff>:/icons/images/icons/icons8-delete-file-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close Editor</string>
+   </property>
+  </action>
+  <action name="actionCreate_Database">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-add-database-48.png</normaloff>:/icons/images/icons/icons8-add-database-48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create Database</string>
+   </property>
+  </action>
+  <action name="actionDrop_Database">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-delete-database-48.png</normaloff>:/icons/images/icons/icons8-delete-database-48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Drop Database</string>
+   </property>
+  </action>
+  <action name="actionStart_Transaction">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-tollbooth-40.png</normaloff>:/icons/images/icons/icons8-tollbooth-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Start Transaction</string>
+   </property>
+  </action>
+  <action name="actionRollback_Transaction">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-cancel-40.png</normaloff>:/icons/images/icons/icons8-cancel-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rollback Transaction</string>
+   </property>
+  </action>
+  <action name="actionCommit_Transaction">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-below-40.png</normaloff>:/icons/images/icons/icons8-below-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Commit Transaction</string>
+   </property>
+  </action>
+  <action name="actionManage_Plugins">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-module-40.png</normaloff>:/icons/images/icons/icons8-module-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Manage Plugins</string>
+   </property>
+  </action>
+  <action name="actionAbout_Program">
+   <property name="text">
+    <string>About Program...</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-connected-40.png</normaloff>:/icons/images/icons/icons8-connected-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionDisconect">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-disconnected-40.png</normaloff>:/icons/images/icons/icons8-disconnected-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Disconect</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="pgdbatool.qrc"/>
+ </resources>
+ <connections/>
+</ui>
