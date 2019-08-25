@@ -1,3 +1,22 @@
+/***************************************************************************
+                      sqltoll.h  -  description
+                      -------------------------
+    begin                : Sex Aug 23 2019
+    copyright            : (C) 2003 by Marco Túlio Castro
+    email                : marco.castro@gmai.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+/***************************************************************************
+ * Based on the lexersql
+ ***************************************************************************/
 #ifndef SQLTOOL_H
 #define SQLTOOL_H
 
