@@ -78,6 +78,13 @@ bool SqlTool::closeAllEditors() {
     return true;
 }
 
+bool SqlTool::openFileOnCurrent()
+{
+    QString file_name;
+
+    file_name = QFileDialog::getOpenFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*))");
+}
+
 void SqlTool::initializeEditor(EditorItem *editor) {
     PostgreSQLLexer *lex =new PostgreSQLLexer(this);
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);

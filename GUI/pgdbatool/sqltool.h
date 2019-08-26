@@ -62,6 +62,7 @@ public:
     void rollback();
     void commit();
     bool closeAllEditors();
+    bool openFileOnCurrent();
 private:
     Ui::SqlTool *ui;
     QList<EditorItem*> editors;

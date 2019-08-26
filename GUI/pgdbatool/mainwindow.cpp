@@ -127,7 +127,10 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql) {
+        sql->openFileOnCurrent();
+    }
 }
 
 void MainWindow::on_actionSave_triggered()
