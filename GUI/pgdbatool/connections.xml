@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE connections [
+  <!ELEMENT connections (connection*)>  
+  <!ELEMENT connection (server,maintenance_database,port?,user?)>
+  <!ATTLIST connection id CDATA "">
+  <!ATTLIST connection name CDATA "">
+  <!ELEMENT server (#PCDATA)>
+  <!ELEMENT maintenance_database (#PCDATA)>
+  <!ELEMENT port (#PCDATA)>
+  <!ELEMENT user (#PCDATA)>
+]>
+<connections>
+    <connection id="1" name="local">
+        <server>
+            127.0.0.1
+        </server>
+        <maintenance_database>
+            postgres
+        </maintenance_database>
+        <port>
+            5432
+        </port>
+        <user>
+            marcotc
+        </user>
+    </connection>
+    <connection id="2" name="Qvaliz">
+        <server>
+            apps.qvaliz.pt
+        </server>
+        <maintenance_database>
+            postgres
+        </maintenance_database>
+        <port>
+            5432
+        </port>
+        <user>
+            marcotc
+        </user>
+    </connection>
+</connections>

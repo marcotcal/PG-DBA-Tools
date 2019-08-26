@@ -25,8 +25,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connections.readConnections();
     readSettings();    
     disable_actions();
+
 }
 
 MainWindow::~MainWindow()

@@ -20,6 +20,7 @@
 #include <QMainWindow>
 #include <QTreeWidgetItem>
 #include "sqltool.h"
+#include "connectionsdata.h"
 
 namespace Ui {
 class MainWindow;
@@ -55,15 +56,14 @@ private slots:
     void on_actionCommit_Transaction_triggered();
     void on_actionManage_Plugins_triggered();
     void on_editor_list_itemActivated(QTreeWidgetItem *item, int column);
-
     void on_main_stack_currentChanged(int arg1);
-
     void on_actionConnect_triggered();
-
     void on_actionDisconect_triggered();
 
 private:
     Ui::MainWindow *ui;
+
+    ConnectionsData connections;
 
     bool maybeSave();
     void readSettings();

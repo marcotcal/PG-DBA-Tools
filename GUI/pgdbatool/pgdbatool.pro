@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pgdbatool
@@ -28,13 +28,15 @@ SOURCES += \
         mainwindow.cpp \
         sqltool.cpp \
         postgresqllexer.cpp \
-        dlgconnections.cpp
+        dlgconnections.cpp \
+    connectionsdata.cpp
 
 HEADERS += \
         mainwindow.h \
         sqltool.h \
         postgresqllexer.h \
-        dlgconnections.h
+        dlgconnections.h \
+    connectionsdata.h
 
 FORMS += \
         mainwindow.ui \
@@ -53,3 +55,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     pgdbatool.qrc
+
+DISTFILES += \
+    connections.xml
