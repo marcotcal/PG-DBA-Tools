@@ -17,7 +17,6 @@
 /***************************************************************************
  * Based on the lexersql
  ***************************************************************************/
-#ifndef MAINWINDOW_H
 #ifndef POSTGRESQLLEXER_H
 #define POSTGRESQLLEXER_H
 

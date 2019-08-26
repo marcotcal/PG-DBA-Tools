@@ -14,7 +14,6 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>

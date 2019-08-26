@@ -6,8 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webenginewidgets
-
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pgdbatool
 TEMPLATE = app
 

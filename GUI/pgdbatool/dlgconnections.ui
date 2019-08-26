@@ -29,7 +29,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="pgdbatool.qrc">
+            <iconset>
              <normaloff>:/icons/images/icons/icons8-add-database-48.png</normaloff>:/icons/images/icons/icons8-add-database-48.png</iconset>
            </property>
            <property name="iconSize">
@@ -46,7 +46,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="pgdbatool.qrc">
+            <iconset>
              <normaloff>:/icons/images/icons/icons8-delete-database-48.png</normaloff>:/icons/images/icons/icons8-delete-database-48.png</iconset>
            </property>
            <property name="iconSize">
@@ -738,8 +738,6 @@
   <tabstop>service_id</tabstop>
   <tabstop>bt_close</tabstop>
  </tabstops>
- <resources>
-  <include location="pgdbatool.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
