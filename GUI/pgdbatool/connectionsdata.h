@@ -4,25 +4,34 @@
 #include <QObject>
 #include <QtXml>
 
-class ConnectionElement
+class ConnectionElement : public QObject
 {
 public:
-    ConnectionElement(int id, QString name);
+    ConnectionElement(QObject *parent = nullptr);
     ~ConnectionElement();
     int id();
+    void setId(int id);
     QString name();
+    void setName(QString name);
+    void addParameter(QString param, QVariant value);
+    QVariant parameter(QString param);
 private:
     int connection_id;
     QString connection_name;
+    QMap<QString, QVariant> parameters;
 };
 
 class ConnectionsData
 {
 public:
     ConnectionsData();
+    ~ConnectionsData();
     bool readConnections();
+    QList<ConnectionElement *> getConnections();
 private:
     void retrievElements(QDomElement root);
+    QList<ConnectionElement *> connections;
+
 };
 
 #endif // CONNECTIONSDATA_H

@@ -11,31 +11,37 @@
 ]>
 <connections>
     <connection id="1" name="local">
-        <server>
+        <host>
             127.0.0.1
-        </server>
-        <maintenance_database>
+        </host>
+        <dbname>
             postgres
-        </maintenance_database>
+        </dbname>
         <port>
             5432
         </port>
         <user>
-            marcotc
+            username
         </user>
+        <password>
+            ********
+        </password>
     </connection>
     <connection id="2" name="Qvaliz">
-        <server>
+        <host>
             apps.qvaliz.pt
-        </server>
-        <maintenance_database>
+        </host>
+        <dbname>
             postgres
-        </maintenance_database>
+        </dbname>
         <port>
             5432
         </port>
         <user>
-            marcotc
+            username
         </user>
+        <password>
+            ********
+        </password>
     </connection>
 </connections>

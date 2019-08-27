@@ -1,11 +1,11 @@
 #include "connectionsdata.h"
 #include <QFile>
+#include <QList>
 #include <iostream>
 
-ConnectionElement::ConnectionElement(int id, QString name)
+ConnectionElement::ConnectionElement(QObject *parent) : QObject (parent)
 {
-    connection_id = id;
-    connection_name = name;
+
 }
 
 ConnectionElement::~ConnectionElement()
@@ -18,31 +18,69 @@ int ConnectionElement::id()
     return connection_id;
 }
 
+void ConnectionElement::setId(int id)
+{
+    connection_id = id;
+}
+
 QString ConnectionElement::name()
 {
     return connection_name;
 }
 
+void ConnectionElement::setName(QString name)
+{
+    connection_name = name;
+}
+
+void ConnectionElement::addParameter(QString param, QVariant value)
+{
+    parameters[param] = value;
+}
+
+QVariant ConnectionElement::parameter(QString param)
+{
+    return parameters[param];
+}
 
 ConnectionsData::ConnectionsData()
 {
 
 }
 
+ConnectionsData::~ConnectionsData()
+{
+
+}
+
 void ConnectionsData::retrievElements(QDomElement root)
 {
-    QDomNodeList nodes = root.elementsByTagName("connection");
+    int id;
+    QString name;
 
-    std::cout << nodes.count();
+    QDomNodeList nodes = root.elementsByTagName("connection");
 
     for(int i = 0; i < nodes.count(); i++)
     {
-        QDomNode elm = nodes.at(i);
-        if(elm.isElement())
-        {
-            QDomElement e = elm.toElement();
-            qDebug() << e.attribute("id");
-            QString name = e.attribute("name");
+        QDomNode ele = nodes.at(i);
+        if (ele.isElement()) {
+            QDomElement e = ele.toElement();
+            if(e.tagName() == "connection") {
+                id = e.attribute("id").toInt();
+                name = e.attribute("name");
+                ConnectionElement *ce = new ConnectionElement();
+                ce->setId(id);
+                ce->setName(name);
+                QDomNodeList cfgs = ele.childNodes();
+                for (int j = 0; j < cfgs.count(); j++) {
+                    QDomNode cfg = cfgs.at(j);
+                    if (cfg.isElement()) {
+                        QDomElement c = cfg.toElement();
+                        ce->addParameter(c.tagName(), c.text().trimmed());
+                    }
+                }
+                connections.append(ce);
+            }
         }
     }
 }
@@ -74,5 +112,10 @@ bool ConnectionsData::readConnections()
 
     retrievElements(root);
     return true;
+}
+
+QList<ConnectionElement *> ConnectionsData::getConnections()
+{
+    return connections;
 }
 

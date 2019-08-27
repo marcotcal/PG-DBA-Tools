@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connections.readConnections();
     readSettings();    
     disable_actions();
-
+    setConnectionsTree();
 }
 
 MainWindow::~MainWindow()
@@ -115,6 +115,18 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
     ui->actionStart_Transaction->setEnabled(!sql->transaction());
     ui->actionCommit_Transaction->setEnabled(sql->transaction());
     ui->actionRollback_Transaction->setEnabled(sql->transaction());
+}
+
+void MainWindow::setConnectionsTree()
+{
+    QTreeWidgetItem *item;
+    for (int i = 0; i < connections.getConnections().count(); i++) {
+        ConnectionElement *conn = connections.getConnections().at(i);
+        QStringList columns;
+        columns << conn->name();
+        item = new QTreeWidgetItem(ui->connection_list, columns);
+        item->setData(0, Qt::UserRole, QVariant(conn->id()));
+    }
 }
 
 void MainWindow::on_actionExit_triggered()

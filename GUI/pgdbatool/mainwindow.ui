@@ -140,7 +140,7 @@
       <widget class="QTreeWidget" name="connection_list">
        <column>
         <property name="text">
-         <string>Connection List</string>
+         <string>Name</string>
         </property>
        </column>
       </widget>

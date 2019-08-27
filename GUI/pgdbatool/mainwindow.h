@@ -71,6 +71,7 @@ private:
     void disable_actions();
     void enable_sql_tool_actions(SqlTool *sql);
     void enable_sql_transactions(SqlTool *sql);
+    void setConnectionsTree();
 };
 
 #endif // MAINWINDOW_H
