@@ -17,7 +17,6 @@
 #include "dlgconnections.h"
 #include "ui_dlgconnections.h"
 #include <QtConfig>
-#include <QListWidgetItem>
 
 DlgConnections::DlgConnections(ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
@@ -51,4 +50,20 @@ void DlgConnections::on_bt_add_connection_clicked()
 void DlgConnections::on_bt_delete_connection_clicked()
 {
 
+}
+
+void DlgConnections::on_connection_list_itemActivated(QListWidgetItem *item)
+{
+    connectionToEditors(ui->connection_list->row(item));
+}
+
+void DlgConnections::connectionToEditors(int conn)
+{
+    ui->connection_name->setText(connections.getConnections().at(conn)->name());
+    ui->host->setText(connections.getConnections().at(conn)->parameter("host").toString());
+    ui->port->setValue(connections.getConnections().at(conn)->parameter("port").toInt());
+    ui->user_name->setText(connections.getConnections().at(conn)->parameter("user").toString());
+    ui->password->setText(connections.getConnections().at(conn)->parameter("password").toString());
+    ui->database->setText(connections.getConnections().at(conn)->parameter("dbname").toString());
+    ui->service->setText(connections.getConnections().at(conn)->parameter("service").toString());
 }

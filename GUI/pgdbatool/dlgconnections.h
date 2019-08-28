@@ -19,6 +19,7 @@
 #include <libpq-fe.h>
 #include <QDialog>
 #include <QWidget>
+#include <QListWidgetItem>
 #include "connectionsdata.h"
 
 namespace Ui {
@@ -37,10 +38,13 @@ private slots:
     void on_bt_add_connection_clicked();
     void on_bt_delete_connection_clicked();
 
+    void on_connection_list_itemActivated(QListWidgetItem *item);
+
 private:
     Ui::DlgConnections *ui;
     PGconn *connection;
     ConnectionsData &connections;
+    void connectionToEditors(int conn);
 };
 
 #endif // DLGCONNECTIONS_H

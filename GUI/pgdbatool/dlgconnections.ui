@@ -29,7 +29,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="pgdbatool.qrc">
              <normaloff>:/icons/images/icons/icons8-add-database-48.png</normaloff>:/icons/images/icons/icons8-add-database-48.png</iconset>
            </property>
            <property name="iconSize">
@@ -46,7 +46,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="pgdbatool.qrc">
              <normaloff>:/icons/images/icons/icons8-delete-database-48.png</normaloff>:/icons/images/icons/icons8-delete-database-48.png</iconset>
            </property>
            <property name="iconSize">
@@ -234,7 +234,7 @@
               <widget class="QLineEdit" name="service"/>
              </item>
              <item row="5" column="1">
-              <widget class="QLineEdit" name="lineEdit"/>
+              <widget class="QLineEdit" name="database"/>
              </item>
             </layout>
            </widget>
@@ -703,7 +703,7 @@
   <tabstop>user_name</tabstop>
   <tabstop>password</tabstop>
   <tabstop>save_password</tabstop>
-  <tabstop>lineEdit</tabstop>
+  <tabstop>database</tabstop>
   <tabstop>service</tabstop>
   <tabstop>no_ssl</tabstop>
   <tabstop>require</tabstop>
@@ -738,6 +738,8 @@
   <tabstop>service_id</tabstop>
   <tabstop>bt_close</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="pgdbatool.qrc"/>
+ </resources>
  <connections/>
 </ui>
