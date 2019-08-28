@@ -187,7 +187,7 @@ void MainWindow::on_actionSQL_Tool_triggered()
 
 void MainWindow::on_actionManageConnections_triggered()
 {
-    DlgConnections *dlg = new DlgConnections(this);
+    DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
 }
 

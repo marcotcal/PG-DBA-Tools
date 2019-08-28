@@ -17,12 +17,20 @@
 #include "dlgconnections.h"
 #include "ui_dlgconnections.h"
 #include <QtConfig>
+#include <QListWidgetItem>
 
-DlgConnections::DlgConnections(QWidget *parent) :
+DlgConnections::DlgConnections(ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgConnections)
+    ui(new Ui::DlgConnections),
+    connections(conn)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
+    QListWidgetItem *item;
+    for (int i = 0; i < connections.getConnections().count(); i++) {
+        ConnectionElement *conn = connections.getConnections().at(i);
+        item = new QListWidgetItem(conn->name(), ui->connection_list);
+        item->setData(Qt::UserRole, QVariant(conn->id()));
+    }
 }
 
 DlgConnections::~DlgConnections()
