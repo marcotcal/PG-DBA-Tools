@@ -124,8 +124,7 @@ void MainWindow::setConnectionsTree()
         ConnectionElement *conn = connections.getConnections().at(i);
         QStringList columns;
         columns << conn->name();
-        item = new QTreeWidgetItem(ui->connection_list, columns);
-        item->setData(0, Qt::UserRole, QVariant(conn->id()));
+        item = new QTreeWidgetItem(ui->connection_list, columns);        
     }
 }
 

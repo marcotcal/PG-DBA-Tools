@@ -13,16 +13,6 @@ ConnectionElement::~ConnectionElement()
 
 }
 
-int ConnectionElement::id()
-{
-    return connection_id;
-}
-
-void ConnectionElement::setId(int id)
-{
-    connection_id = id;
-}
-
 QString ConnectionElement::name()
 {
     return connection_name;
@@ -55,7 +45,6 @@ ConnectionsData::~ConnectionsData()
 
 void ConnectionsData::retrievElements(QDomElement root)
 {
-    int id;
     QString name;
 
     QDomNodeList nodes = root.elementsByTagName("connection");
@@ -66,10 +55,8 @@ void ConnectionsData::retrievElements(QDomElement root)
         if (ele.isElement()) {
             QDomElement e = ele.toElement();
             if(e.tagName() == "connection") {
-                id = e.attribute("id").toInt();
                 name = e.attribute("name");
-                ConnectionElement *ce = new ConnectionElement();
-                ce->setId(id);
+                ConnectionElement *ce = new ConnectionElement();                
                 ce->setName(name);
                 QDomNodeList cfgs = ele.childNodes();
                 for (int j = 0; j < cfgs.count(); j++) {
@@ -117,5 +104,25 @@ bool ConnectionsData::readConnections()
 QList<ConnectionElement *> ConnectionsData::getConnections()
 {
     return connections;
+}
+
+ConnectionElement *ConnectionsData::newConnection()
+{
+    ConnectionElement *ele = new ConnectionElement();
+    ele->setName("New Connection");
+    ele->addParameter("host","localhost");
+    ele->addParameter("port",5432);
+    ele->addParameter("user","postgres");
+    ele->addParameter("password","");
+    ele->addParameter("dbname","postgres");
+
+    connections.append(ele);
+    return  ele;
+}
+
+void ConnectionsData::sortByName()
+{
+    std::sort(connections.begin(), connections.end(),
+              [](ConnectionElement *a, ConnectionElement *b) -> bool { return a->name() < b->name(); });
 }
 

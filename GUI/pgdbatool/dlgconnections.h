@@ -37,14 +37,20 @@ private slots:
     void on_bt_close_clicked();
     void on_bt_add_connection_clicked();
     void on_bt_delete_connection_clicked();
-
     void on_connection_list_itemActivated(QListWidgetItem *item);
+
+    void on_bt_sort_clicked();
+
+    void on_connection_list_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
 private:
     Ui::DlgConnections *ui;
     PGconn *connection;
     ConnectionsData &connections;
     void connectionToEditors(int conn);
+    void editorsToConnection(int conn);
+    void loadList();
+    //static bool connectionsCompare(const ConnectionElement &conn1, const ConnectionElement &conn2);
 };
 
 #endif // DLGCONNECTIONS_H
