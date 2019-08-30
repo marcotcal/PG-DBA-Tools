@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connections.readConnections();
     readSettings();    
     disable_actions();
     setConnectionsTree();
@@ -74,12 +73,14 @@ void MainWindow::readSettings()
     } else {
         restoreGeometry(geometry);
     }
+    connections.readConnections();
 }
 
 void MainWindow::writeSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("geometry", saveGeometry());
+    connections.writeConnections();
 }
 
 void MainWindow::disable_actions()

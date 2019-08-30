@@ -24,6 +24,7 @@ public:
     ConnectionsData();
     ~ConnectionsData();
     bool readConnections();
+    void writeConnections();
     QList<ConnectionElement *> getConnections();
     ConnectionElement *newConnection();
     void sortByName();

@@ -101,6 +101,41 @@ bool ConnectionsData::readConnections()
     return true;
 }
 
+void ConnectionsData::writeConnections()
+{
+    QFile file("config.xml");
+    QString DTD =
+        "<!DOCTYPE connections [\n"
+        "  <!ELEMENT connections (connection*)>\n"
+        "  <!ELEMENT connection (host,dbname,port?,user?,password?)>\n"
+        "  <!ATTLIST connection id CDATA \"\">\n"
+        "  <!ATTLIST connection name CDATA \"\">\n"
+        "  <!ELEMENT host (#PCDATA)>\n"
+        "  <!ELEMENT dbname (#PCDATA)>\n"
+        "  <!ELEMENT port (#PCDATA)>\n"
+        "  <!ELEMENT user (#PCDATA)>\n"
+        "  <!ELEMENT password (#PCDATA)>\n"
+        "]>";
+
+    file.open(QIODevice::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.writeStartDocument();
+    xmlWriter.writeDTD(DTD);
+    xmlWriter.writeStartElement("connections");
+    xmlWriter.writeStartElement("connection");
+    xmlWriter.writeAttribute("","name","New Connection 1");
+    xmlWriter.writeStartElement("host");
+    xmlWriter.writeCharacters("localhost");
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndElement();
+    xmlWriter.writeStartElement("connection");
+    xmlWriter.writeAttribute("","name","New Connection 2");
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndElement();
+    file.close();
+}
+
 QList<ConnectionElement *> ConnectionsData::getConnections()
 {
     return connections;
