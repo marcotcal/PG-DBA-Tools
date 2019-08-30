@@ -33,15 +33,18 @@ class DlgConnections : public QDialog
 public:
     explicit DlgConnections(ConnectionsData &conn, QWidget *parent = nullptr);
     ~DlgConnections();
+    enum Mode {EDIT_MODE, INSERT_MODE, BROWSE_MODE};
+    void setEditingMode(Mode state);
 private slots:
     void on_bt_close_clicked();
     void on_bt_add_connection_clicked();
     void on_bt_delete_connection_clicked();
     void on_connection_list_itemActivated(QListWidgetItem *item);
-
     void on_bt_sort_clicked();
-
     void on_connection_list_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void on_bt_edit_clicked();
+    void on_bt_save_clicked();
+    void on_bt_cancel_clicked();
 
 private:
     Ui::DlgConnections *ui;
@@ -49,8 +52,10 @@ private:
     ConnectionsData &connections;
     void connectionToEditors(int conn);
     void editorsToConnection(int conn);
-    void loadList();
-    //static bool connectionsCompare(const ConnectionElement &conn1, const ConnectionElement &conn2);
+    void initializeNew();
+    void loadList();    
+    int current_row;
+    Mode mode;
 };
 
 #endif // DLGCONNECTIONS_H
