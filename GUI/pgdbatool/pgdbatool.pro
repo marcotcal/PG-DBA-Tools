@@ -29,19 +29,22 @@ SOURCES += \
         sqltool.cpp \
         postgresqllexer.cpp \
         dlgconnections.cpp \
-    connectionsdata.cpp
+    connectionsdata.cpp \
+    dlgmenunew.cpp
 
 HEADERS += \
         mainwindow.h \
         sqltool.h \
         postgresqllexer.h \
         dlgconnections.h \
-    connectionsdata.h
+    connectionsdata.h \
+    dlgmenunew.h
 
 FORMS += \
         mainwindow.ui \
         sqltool.ui \
-        dlgconnections.ui
+        dlgconnections.ui \
+    dlgmenunew.ui
 
 LIBS += -lqscintilla2_qt5
 

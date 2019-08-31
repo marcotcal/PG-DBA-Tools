@@ -1,9 +1,7 @@
-/**/build-pgdbatool-Desktop-Debug
-/**/build-pgdbatool-Desktop-Release
-/**/pgdbatool.pro.user*
-/**/*.o
-/**/moc_*
-/**/ui_*
-/**/Makefile
-/**/pgdbatool
-
+**/build-pgdbatool-Desktop-Debug
+**/build-pgdbatool-Desktop-Release
+**/pgdbatool.pro.user*
+**/ui_*.h
+**/moc_*.cpp
+**/moc_*.h
+**/moc_*.o

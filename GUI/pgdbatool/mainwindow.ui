@@ -190,7 +190,7 @@
      <normaloff>:/icons/images/icons/icons8-add-file-40.png</normaloff>:/icons/images/icons/icons8-add-file-40.png</iconset>
    </property>
    <property name="text">
-    <string>New</string>
+    <string>New...</string>
    </property>
   </action>
   <action name="actionOpen">
