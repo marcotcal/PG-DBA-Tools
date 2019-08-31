@@ -91,7 +91,6 @@ void DlgConnections::initializeNew()
     ui->user_name->setText("postgres");
     ui->password->setText("");
     ui->service->setText("");
-    ui->save_password->setChecked(false);
 }
 
 void DlgConnections::loadList()
@@ -158,15 +157,16 @@ void DlgConnections::on_bt_edit_clicked()
 void DlgConnections::on_bt_save_clicked()
 {
     if (mode == EDIT_MODE) {
-        editorsToConnection(current_row);
+        editorsToConnection(current_row);        
     } else {
         current_row = ui->connection_list->count();
         ConnectionElement *conn = connections.newConnection();
         editorsToConnection(current_row);
         new QListWidgetItem(conn->name(), ui->connection_list);
-        ui->connection_list->setCurrentRow(current_row);
+        ui->connection_list->setCurrentRow(current_row);        
     }
 
+    ui->connection_list->item(current_row)->setText(ui->connection_name->text());
     editorsToConnection(current_row);
 
     setEditingMode(BROWSE_MODE);

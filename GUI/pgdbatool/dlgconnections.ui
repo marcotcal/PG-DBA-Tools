@@ -232,7 +232,7 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="0">
+             <item row="4" column="0">
               <widget class="QLabel" name="lb_maintenance_db">
                <property name="text">
                 <string>Maintenance Dadabase</string>
@@ -240,24 +240,17 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QCheckBox" name="save_password">
-               <property name="text">
-                <string>Save Password</string>
-               </property>
-              </widget>
+              <widget class="QLineEdit" name="database"/>
              </item>
-             <item row="6" column="0">
+             <item row="5" column="0">
               <widget class="QLabel" name="lb_service">
                <property name="text">
                 <string>Service</string>
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
-              <widget class="QLineEdit" name="service"/>
-             </item>
              <item row="5" column="1">
-              <widget class="QLineEdit" name="database"/>
+              <widget class="QLineEdit" name="service"/>
              </item>
             </layout>
            </widget>
@@ -802,7 +795,6 @@
   <tabstop>port</tabstop>
   <tabstop>user_name</tabstop>
   <tabstop>password</tabstop>
-  <tabstop>save_password</tabstop>
   <tabstop>database</tabstop>
   <tabstop>service</tabstop>
   <tabstop>no_ssl</tabstop>

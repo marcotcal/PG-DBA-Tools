@@ -103,7 +103,7 @@ bool ConnectionsData::readConnections()
 
 void ConnectionsData::writeConnections()
 {
-    QFile file("config.xml");
+    QFile file("connections.xml");
     QString DTD =
         "<!DOCTYPE connections [\n"
         "  <!ELEMENT connections (connection*)>\n"
@@ -123,15 +123,34 @@ void ConnectionsData::writeConnections()
     xmlWriter.writeStartDocument();
     xmlWriter.writeDTD(DTD);
     xmlWriter.writeStartElement("connections");
-    xmlWriter.writeStartElement("connection");
-    xmlWriter.writeAttribute("","name","New Connection 1");
-    xmlWriter.writeStartElement("host");
-    xmlWriter.writeCharacters("localhost");
-    xmlWriter.writeEndElement();
-    xmlWriter.writeEndElement();
-    xmlWriter.writeStartElement("connection");
-    xmlWriter.writeAttribute("","name","New Connection 2");
-    xmlWriter.writeEndElement();
+
+    Q_FOREACH(ConnectionElement *conn, connections) {
+        xmlWriter.writeStartElement("connection");
+        xmlWriter.writeAttribute("","name", conn->name());
+
+        xmlWriter.writeStartElement("host");
+        xmlWriter.writeCharacters(conn->parameter("host").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("dbname");
+        xmlWriter.writeCharacters(conn->parameter("dbname").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("port");
+        xmlWriter.writeCharacters(conn->parameter("port").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("user");
+        xmlWriter.writeCharacters(conn->parameter("user").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("password");
+        xmlWriter.writeCharacters(conn->parameter("password").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeEndElement();
+    }
+
     xmlWriter.writeEndElement();
     file.close();
 }
