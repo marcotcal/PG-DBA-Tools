@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>704</width>
-    <height>455</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="pgdbatool.qrc">
              <normaloff>:/icons/images/icons/icons8-add-database-48.png</normaloff>:/icons/images/icons/icons8-add-database-48.png</iconset>
            </property>
            <property name="iconSize">
@@ -46,8 +46,25 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="pgdbatool.qrc">
              <normaloff>:/icons/images/icons/icons8-delete-database-48.png</normaloff>:/icons/images/icons/icons8-delete-database-48.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="bt_sort">
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-alphabetical-sorting-40.png</normaloff>:/icons/images/icons/icons8-alphabetical-sorting-40.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -96,6 +113,9 @@
          </item>
          <item row="0" column="1">
           <widget class="QLineEdit" name="connection_name">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>300</width>
@@ -105,7 +125,10 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="2">
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="configurations">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -209,7 +232,7 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="0">
+             <item row="4" column="0">
               <widget class="QLabel" name="lb_maintenance_db">
                <property name="text">
                 <string>Maintenance Dadabase</string>
@@ -217,24 +240,17 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QCheckBox" name="save_password">
-               <property name="text">
-                <string>Save Password</string>
-               </property>
-              </widget>
+              <widget class="QLineEdit" name="database"/>
              </item>
-             <item row="6" column="0">
+             <item row="5" column="0">
               <widget class="QLabel" name="lb_service">
                <property name="text">
                 <string>Service</string>
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
-              <widget class="QLineEdit" name="service"/>
-             </item>
              <item row="5" column="1">
-              <widget class="QLineEdit" name="lineEdit"/>
+              <widget class="QLineEdit" name="service"/>
              </item>
             </layout>
            </widget>
@@ -655,6 +671,83 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QToolButton" name="bt_edit">
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-edit-file-40.png</normaloff>:/icons/images/icons/icons8-edit-file-40.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="bt_save">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-save-40.png</normaloff>:/icons/images/icons/icons8-save-40.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="bt_cancel">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-cancel-40.png</normaloff>:/icons/images/icons/icons8-cancel-40.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
       </layout>
      </item>
     </layout>
@@ -697,13 +790,12 @@
   <tabstop>bt_add_connection</tabstop>
   <tabstop>bt_delete_connection</tabstop>
   <tabstop>connection_name</tabstop>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>configurations</tabstop>
   <tabstop>host</tabstop>
   <tabstop>port</tabstop>
   <tabstop>user_name</tabstop>
   <tabstop>password</tabstop>
-  <tabstop>save_password</tabstop>
-  <tabstop>lineEdit</tabstop>
+  <tabstop>database</tabstop>
   <tabstop>service</tabstop>
   <tabstop>no_ssl</tabstop>
   <tabstop>require</tabstop>
@@ -738,6 +830,8 @@
   <tabstop>service_id</tabstop>
   <tabstop>bt_close</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="pgdbatool.qrc"/>
+ </resources>
  <connections/>
 </ui>

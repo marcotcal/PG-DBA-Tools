@@ -19,6 +19,8 @@
 #include <libpq-fe.h>
 #include <QDialog>
 #include <QWidget>
+#include <QListWidgetItem>
+#include "connectionsdata.h"
 
 namespace Ui {
 class DlgConnections;
@@ -29,17 +31,31 @@ class DlgConnections : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgConnections(QWidget *parent = 0);
+    explicit DlgConnections(ConnectionsData &conn, QWidget *parent = nullptr);
     ~DlgConnections();
-
+    enum Mode {EDIT_MODE, INSERT_MODE, BROWSE_MODE};
+    void setEditingMode(Mode state);
 private slots:
     void on_bt_close_clicked();
     void on_bt_add_connection_clicked();
     void on_bt_delete_connection_clicked();
+    void on_connection_list_itemActivated(QListWidgetItem *item);
+    void on_bt_sort_clicked();
+    void on_connection_list_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void on_bt_edit_clicked();
+    void on_bt_save_clicked();
+    void on_bt_cancel_clicked();
 
 private:
     Ui::DlgConnections *ui;
     PGconn *connection;
+    ConnectionsData &connections;
+    void connectionToEditors(int conn);
+    void editorsToConnection(int conn);
+    void initializeNew();
+    void loadList();    
+    int current_row;
+    Mode mode;
 };
 
 #endif // DLGCONNECTIONS_H

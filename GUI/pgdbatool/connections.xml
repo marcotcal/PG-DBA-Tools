@@ -11,7 +11,7 @@
   <!ELEMENT password (#PCDATA)>
 ]>
 <connections>
-    <connection id="1" name="local">
+    <connection name="Local">
         <host>
             127.0.0.1
         </host>
@@ -28,7 +28,7 @@
             ********
         </password>
     </connection>
-    <connection id="2" name="Qvaliz">
+    <connection name="Qvaliz">
         <host>
             apps.qvaliz.pt
         </host>

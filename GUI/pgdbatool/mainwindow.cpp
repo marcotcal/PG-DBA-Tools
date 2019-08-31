@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connections.readConnections();
     readSettings();    
     disable_actions();
     setConnectionsTree();
@@ -74,12 +73,14 @@ void MainWindow::readSettings()
     } else {
         restoreGeometry(geometry);
     }
+    connections.readConnections();
 }
 
 void MainWindow::writeSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("geometry", saveGeometry());
+    connections.writeConnections();
 }
 
 void MainWindow::disable_actions()
@@ -124,8 +125,7 @@ void MainWindow::setConnectionsTree()
         ConnectionElement *conn = connections.getConnections().at(i);
         QStringList columns;
         columns << conn->name();
-        item = new QTreeWidgetItem(ui->connection_list, columns);
-        item->setData(0, Qt::UserRole, QVariant(conn->id()));
+        item = new QTreeWidgetItem(ui->connection_list, columns);        
     }
 }
 
@@ -187,7 +187,7 @@ void MainWindow::on_actionSQL_Tool_triggered()
 
 void MainWindow::on_actionManageConnections_triggered()
 {
-    DlgConnections *dlg = new DlgConnections(this);
+    DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
 }
 

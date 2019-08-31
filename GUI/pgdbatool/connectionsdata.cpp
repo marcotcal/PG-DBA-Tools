@@ -13,16 +13,6 @@ ConnectionElement::~ConnectionElement()
 
 }
 
-int ConnectionElement::id()
-{
-    return connection_id;
-}
-
-void ConnectionElement::setId(int id)
-{
-    connection_id = id;
-}
-
 QString ConnectionElement::name()
 {
     return connection_name;
@@ -55,7 +45,6 @@ ConnectionsData::~ConnectionsData()
 
 void ConnectionsData::retrievElements(QDomElement root)
 {
-    int id;
     QString name;
 
     QDomNodeList nodes = root.elementsByTagName("connection");
@@ -66,10 +55,8 @@ void ConnectionsData::retrievElements(QDomElement root)
         if (ele.isElement()) {
             QDomElement e = ele.toElement();
             if(e.tagName() == "connection") {
-                id = e.attribute("id").toInt();
                 name = e.attribute("name");
-                ConnectionElement *ce = new ConnectionElement();
-                ce->setId(id);
+                ConnectionElement *ce = new ConnectionElement();                
                 ce->setName(name);
                 QDomNodeList cfgs = ele.childNodes();
                 for (int j = 0; j < cfgs.count(); j++) {
@@ -114,8 +101,82 @@ bool ConnectionsData::readConnections()
     return true;
 }
 
+void ConnectionsData::writeConnections()
+{
+    QFile file("connections.xml");
+    QString DTD =
+        "<!DOCTYPE connections [\n"
+        "  <!ELEMENT connections (connection*)>\n"
+        "  <!ELEMENT connection (host,dbname,port?,user?,password?)>\n"
+        "  <!ATTLIST connection id CDATA \"\">\n"
+        "  <!ATTLIST connection name CDATA \"\">\n"
+        "  <!ELEMENT host (#PCDATA)>\n"
+        "  <!ELEMENT dbname (#PCDATA)>\n"
+        "  <!ELEMENT port (#PCDATA)>\n"
+        "  <!ELEMENT user (#PCDATA)>\n"
+        "  <!ELEMENT password (#PCDATA)>\n"
+        "]>";
+
+    file.open(QIODevice::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.writeStartDocument();
+    xmlWriter.writeDTD(DTD);
+    xmlWriter.writeStartElement("connections");
+
+    Q_FOREACH(ConnectionElement *conn, connections) {
+        xmlWriter.writeStartElement("connection");
+        xmlWriter.writeAttribute("","name", conn->name());
+
+        xmlWriter.writeStartElement("host");
+        xmlWriter.writeCharacters(conn->parameter("host").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("dbname");
+        xmlWriter.writeCharacters(conn->parameter("dbname").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("port");
+        xmlWriter.writeCharacters(conn->parameter("port").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("user");
+        xmlWriter.writeCharacters(conn->parameter("user").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("password");
+        xmlWriter.writeCharacters(conn->parameter("password").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeEndElement();
+    }
+
+    xmlWriter.writeEndElement();
+    file.close();
+}
+
 QList<ConnectionElement *> ConnectionsData::getConnections()
 {
     return connections;
+}
+
+ConnectionElement *ConnectionsData::newConnection()
+{
+    ConnectionElement *ele = new ConnectionElement();
+    ele->setName("New Connection");
+    ele->addParameter("host","localhost");
+    ele->addParameter("port",5432);
+    ele->addParameter("user","postgres");
+    ele->addParameter("password","");
+    ele->addParameter("dbname","postgres");
+
+    connections.append(ele);
+    return  ele;
+}
+
+void ConnectionsData::sortByName()
+{
+    std::sort(connections.begin(), connections.end(),
+              [](ConnectionElement *a, ConnectionElement *b) -> bool { return a->name() < b->name(); });
 }
 
