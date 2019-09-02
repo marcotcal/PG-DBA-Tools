@@ -14,6 +14,10 @@ class DlgMenuNew : public QDialog
 public:
     explicit DlgMenuNew(QWidget *parent = nullptr);
     ~DlgMenuNew();
+    int getSelection();
+private slots:
+
+    void on_editors_list_currentRowChanged(int currentRow);
 
 private:
     Ui::DlgMenuNew *ui;

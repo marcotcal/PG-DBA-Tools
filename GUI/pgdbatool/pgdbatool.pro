@@ -30,7 +30,8 @@ SOURCES += \
         postgresqllexer.cpp \
         dlgconnections.cpp \
     connectionsdata.cpp \
-    dlgmenunew.cpp
+    dlgmenunew.cpp \
+    querymodel.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,13 +39,15 @@ HEADERS += \
         postgresqllexer.h \
         dlgconnections.h \
     connectionsdata.h \
-    dlgmenunew.h
+    dlgmenunew.h \
+    querymodel.h
 
 FORMS += \
         mainwindow.ui \
         sqltool.ui \
         dlgconnections.ui \
-    dlgmenunew.ui
+    dlgmenunew.ui \
+    querymodel.ui
 
 LIBS += -lqscintilla2_qt5
 

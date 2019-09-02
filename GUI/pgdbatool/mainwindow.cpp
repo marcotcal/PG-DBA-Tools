@@ -17,6 +17,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
+#include "dlgmenunew.h"
 #include "dlgconnections.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -129,35 +130,7 @@ void MainWindow::setConnectionsTree()
     }
 }
 
-void MainWindow::on_actionExit_triggered()
-{
-    close();
-}
-
-void MainWindow::on_actionNew_triggered()
-{
-
-}
-
-void MainWindow::on_actionOpen_triggered()
-{
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    if (sql) {
-        sql->openFileOnCurrent();
-    }
-}
-
-void MainWindow::on_actionSave_triggered()
-{
-
-}
-
-void MainWindow::on_actionSave_As_triggered()
-{
-
-}
-
-void MainWindow::on_actionSQL_Tool_triggered()
+void MainWindow::openNewSQLTool()
 {
     SqlTool *sql;
     bool ok;
@@ -182,7 +155,56 @@ void MainWindow::on_actionSQL_Tool_triggered()
         tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));
         tree_item->setSelected(true);
     }
+}
 
+void MainWindow::openNewQueryModel()
+{
+
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    close();
+}
+
+void MainWindow::on_actionNew_triggered()
+{
+    DlgMenuNew *dlg = new DlgMenuNew(this);
+
+    if (dlg->exec() == QDialog::Accepted) {
+
+        switch(dlg->getSelection()) {
+        case 0:
+            openNewSQLTool();
+            break;
+        case 1:
+            openNewQueryModel();
+            break;
+        }
+    }
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql) {
+        sql->openFileOnCurrent();
+    }
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+
+}
+
+void MainWindow::on_actionSave_As_triggered()
+{
+
+}
+
+void MainWindow::on_actionSQL_Tool_triggered()
+{
+    openNewSQLTool();
 }
 
 void MainWindow::on_actionManageConnections_triggered()
