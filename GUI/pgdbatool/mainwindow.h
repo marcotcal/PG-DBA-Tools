@@ -20,6 +20,7 @@
 #include <QMainWindow>
 #include <QTreeWidgetItem>
 #include "sqltool.h"
+#include "querymodel.h"
 #include "connectionsdata.h"
 
 namespace Ui {

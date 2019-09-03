@@ -138,7 +138,7 @@ void MainWindow::openNewSQLTool()
     QStringList columns;
     QString text;
 
-    text = QString("Page %1").arg(ui->main_stack->count()+1);
+    text = QString("New Sql Tool %1").arg(ui->main_stack->count()+1);
 
     text = QInputDialog::getText(this, tr("New SQL Tool Set"),
                                              tr("Set Name:"), QLineEdit::Normal,
@@ -153,13 +153,37 @@ void MainWindow::openNewSQLTool()
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(sql);
         tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));
+        ui->editor_list->clearSelection();
         tree_item->setSelected(true);
     }
 }
 
 void MainWindow::openNewQueryModel()
 {
+    QueryModel *qmod;
+    QTreeWidgetItem *tree_item;
+    bool ok;
+    QStringList columns;
+    QString text;
 
+    text = QString("New Query Model %1").arg(ui->main_stack->count()+1);
+
+    text = QInputDialog::getText(this, tr("New Query Model"),
+                                             tr("Qeury Model Name:"), QLineEdit::Normal,
+                                             text, &ok);
+
+    if (ok && !text.isEmpty()) {
+
+        columns.append(text);
+
+        tree_item = new QTreeWidgetItem(ui->editor_list, columns);
+        qmod = new QueryModel(ui->main_stack);
+        ui->main_stack->addWidget(qmod);
+        ui->main_stack->setCurrentWidget(qmod);
+        tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));
+        ui->editor_list->clearSelection();
+        tree_item->setSelected(true);
+    }
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -187,8 +211,19 @@ void MainWindow::on_actionNew_triggered()
 void MainWindow::on_actionOpen_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
+
     if (sql) {
         sql->openFileOnCurrent();
+    } else if (model) {
+
+
+    } else {
+
+        QString file_name;
+
+        file_name = QFileDialog::getOpenFileName(this, "Open File", "./", "SQL files (*.sql);;Model files (*.mdx);;All files (*.*))");
+
     }
 }
 
@@ -279,6 +314,7 @@ void MainWindow::on_actionManage_Plugins_triggered()
 
 void MainWindow::on_editor_list_itemActivated(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(column);
     ui->main_stack->setCurrentIndex(item->data(0, Qt::UserRole).toInt());
 }
 
