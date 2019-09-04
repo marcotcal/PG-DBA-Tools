@@ -83,7 +83,7 @@ bool SqlTool::openFileOnCurrent()
     QString file_name;
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
 
-    file_name = QFileDialog::getOpenFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*))");
+    file_name = QFileDialog::getOpenFileName(this, "Open SQL File", "./", "sql files (*.sql);; All files (*.*)");
 
     if(file_name != "") {
 
@@ -151,7 +151,7 @@ bool SqlTool::closeCurrentEditor() {
 
         switch(ret) {
             case QMessageBox::Save:
-                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*))");
+                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*)");
                 if (file_name != "") {
                     QFile destination(file_name);
                     if(destination.open(QIODevice::WriteOnly)) {

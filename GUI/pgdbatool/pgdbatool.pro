@@ -63,4 +63,5 @@ RESOURCES += \
     pgdbatool.qrc
 
 DISTFILES += \
-    connections.xml
+    connections.xml \
+    modelo.xml

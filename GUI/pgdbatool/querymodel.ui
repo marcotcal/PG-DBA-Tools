@@ -262,7 +262,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QsciScintilla" name="textEdit">
+      <widget class="QsciScintilla" name="sql_editor">
        <property name="toolTip">
         <string/>
        </property>

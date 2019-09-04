@@ -2,7 +2,6 @@
 <!DOCTYPE connections [
   <!ELEMENT connections (connection*)>  
   <!ELEMENT connection (host,dbname,port?,user?,password?)>
-  <!ATTLIST connection id CDATA "">
   <!ATTLIST connection name CDATA "">
   <!ELEMENT host (#PCDATA)>
   <!ELEMENT dbname (#PCDATA)>
@@ -11,7 +10,7 @@
   <!ELEMENT password (#PCDATA)>
 ]>
 <connections>
-    <connection id="1" name="local">
+    <connection name="local">
         <host>
             127.0.0.1
         </host>

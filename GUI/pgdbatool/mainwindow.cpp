@@ -216,19 +216,18 @@ void MainWindow::on_actionOpen_triggered()
     if (sql) {
         sql->openFileOnCurrent();
     } else if (model) {
-
-
+        model->openFile();
     } else {
-
         QString file_name;
-
-        file_name = QFileDialog::getOpenFileName(this, "Open File", "./", "SQL files (*.sql);;Model files (*.mdx);;All files (*.*))");
-
+        file_name = QFileDialog::getOpenFileName(this, "Open File", "./", "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
     }
 }
 
 void MainWindow::on_actionSave_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
+
 
 }
 

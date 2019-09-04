@@ -14,7 +14,8 @@ class QueryModel : public QWidget
 public:
     explicit QueryModel(QWidget *parent = nullptr);
     ~QueryModel();
-
+    void saveFile();
+    bool openFile();
 private:
     Ui::QueryModel *ui;
 };

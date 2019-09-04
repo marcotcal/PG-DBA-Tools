@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (code, description, parameters, query)>
+  <!ELEMENT parameters (parameter*)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false)#required>
+  <!ELEMENT code (#PCDATA)>
+  <!ELEMENT description (#PCDATA)>
+  <!ELEMENT query (#CDATA)>
+]>
+<model>
+    <code>TST001</code>
+    <description>Test Model</description>
+    <parameters>
+        <parameter code="p_class" description="Object Type" mandatory="true"/>
+        <parameter code="p_schema" description="Schema Name" mandatory="true"/>
+    </parameters>
+    <query>
+    <![CDATA[
+        SELECT *
+        FROM test
+        WHERE class = :p_class AND schema = :p_schema
+    ]]>
+    </query>
+</model>
+

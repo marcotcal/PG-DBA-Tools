@@ -93,7 +93,6 @@ bool ConnectionsData::readConnections()
     QFile file("connections.xml");
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        std::cout << "Failed to open the file for reading.";
         return false;
     }
     else
@@ -101,7 +100,6 @@ bool ConnectionsData::readConnections()
         // loading
         if(!document.setContent(&file))
         {
-            std::cout << "Failed to load the file for reading.";
             return false;
         }
         file.close();
