@@ -4,10 +4,10 @@
   <!ELEMENT parameters (parameter*)>
   <!ATTLIST parameter code CDATA "">
   <!ATTLIST parameter description CDATA "">
-  <!ATTLIST parameter mandatory (true|false)#required>
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
   <!ELEMENT code (#PCDATA)>
   <!ELEMENT description (#PCDATA)>
-  <!ELEMENT query (#CDATA)>
+  <!ELEMENT query_text (#PCDATA)>
 ]>
 <model>
     <code>TST001</code>
@@ -16,12 +16,11 @@
         <parameter code="p_class" description="Object Type" mandatory="true"/>
         <parameter code="p_schema" description="Schema Name" mandatory="true"/>
     </parameters>
-    <query>
-    <![CDATA[
-        SELECT *
-        FROM test
-        WHERE class = :p_class AND schema = :p_schema
+    <query_text>
+    <![CDATA[SELECT *
+FROM test
+WHERE class = :p_class AND schema <= :p_schema
     ]]>
-    </query>
+    </query_text>
 </model>
 

@@ -106,4 +106,7 @@
         <file>images/icons/icons8-upload-link-document-40.png</file>
         <file>images/icons/icons8-upload-to-the-cloud-40.png</file>
     </qresource>
+    <qresource prefix="/query_defs">
+        <file>query_models/modelo.xml</file>
+    </qresource>
 </RCC>

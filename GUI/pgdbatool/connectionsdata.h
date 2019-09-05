@@ -29,7 +29,7 @@ public:
     bool readConnections();
     QList<ConnectionElement *> getConnections();
 private:
-    void retrievElements(QDomElement root);
+    void retrieveElements(QDomElement root);
     QList<ConnectionElement *> connections;
 
 };

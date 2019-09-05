@@ -74,7 +74,7 @@ private:
     void enable_sql_transactions(SqlTool *sql);
     void setConnectionsTree();
     void openNewSQLTool();
-    void openNewQueryModel();
+    void openNewQueryModel();    
 };
 
 #endif // MAINWINDOW_H

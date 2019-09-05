@@ -53,7 +53,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLineEdit" name="lineEdit_2">
+      <widget class="QLineEdit" name="code">
        <property name="maximumSize">
         <size>
          <width>150</width>
@@ -63,10 +63,10 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="description"/>
      </item>
      <item row="1" column="2">
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="groups">
        <property name="minimumSize">
         <size>
          <width>300</width>
@@ -137,10 +137,15 @@
           </layout>
          </item>
          <item>
-          <widget class="QTableWidget" name="tableWidget">
+          <widget class="QTableWidget" name="parameter_table">
            <column>
             <property name="text">
-             <string>Name</string>
+             <string>Code</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Description</string>
             </property>
            </column>
            <column>

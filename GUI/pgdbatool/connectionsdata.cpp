@@ -53,7 +53,7 @@ ConnectionsData::~ConnectionsData()
 
 }
 
-void ConnectionsData::retrievElements(QDomElement root)
+void ConnectionsData::retrieveElements(QDomElement root)
 {
     int id;
     QString name;
@@ -108,7 +108,7 @@ bool ConnectionsData::readConnections()
     // Getting root element
     QDomElement root = document.firstChildElement();
 
-    retrievElements(root);
+    retrieveElements(root);
     return true;
 }
 
