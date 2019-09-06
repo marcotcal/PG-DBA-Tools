@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QList>
 #include <iostream>
+#include <QXmlSimpleReader>
 
 ConnectionElement::ConnectionElement(QObject *parent) : QObject (parent)
 {
@@ -74,8 +75,6 @@ void ConnectionsData::retrievElements(QDomElement root)
 
 bool ConnectionsData::readConnections()
 {
-    QDomDocument document;
-
     // Open a file for reading
     QFile file("connections.xml");
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -83,21 +82,26 @@ bool ConnectionsData::readConnections()
         std::cout << "Failed to open the file for reading.";
         return false;
     }
-    else
-    {
-        // loading
-        if(!document.setContent(&file))
-        {
-            std::cout << "Failed to load the file for reading.";
-            return false;
+
+    QXmlStreamReader reader(&file);
+
+    if (reader.readNextStartElement()) {
+
+        if (reader.name() == "connections") {
+
+            while(reader.readNextStartElement()) {
+                if (reader.name() == "connection)") {
+                    ConnectionElement *ce = new ConnectionElement();
+                    ce->setName(reader.attributes().value("name").toString());
+                    while(reader.readNextStartElement()) {
+                        ce->addParameter(reader.name().toString(), reader.readElementText());
+                    }
+                }
+            }
         }
-        file.close();
     }
 
-    // Getting root element
-    QDomElement root = document.firstChildElement();
 
-    retrievElements(root);
     return true;
 }
 
