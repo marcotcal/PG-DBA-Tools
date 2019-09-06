@@ -68,6 +68,7 @@ bool QueryModel::openFile()
                 item->setCheckState(Qt::Unchecked);
             }
             ui->parameter_table->setItem(row, 2, item);
+	    row++;
         }
 
         return true;
