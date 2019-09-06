@@ -29,7 +29,6 @@ public:
     ConnectionElement *newConnection();
     void sortByName();
 private:
-    void retrievElements(QDomElement root);
     QList<ConnectionElement *> connections;
 };
 

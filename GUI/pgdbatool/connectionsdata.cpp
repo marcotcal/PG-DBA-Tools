@@ -44,35 +44,6 @@ ConnectionsData::~ConnectionsData()
 
 }
 
-void ConnectionsData::retrievElements(QDomElement root)
-{
-    QString name;
-
-    QDomNodeList nodes = root.elementsByTagName("connection");
-
-    for(int i = 0; i < nodes.count(); i++)
-    {
-        QDomNode ele = nodes.at(i);
-        if (ele.isElement()) {
-            QDomElement e = ele.toElement();
-            if(e.tagName() == "connection") {
-                name = e.attribute("name");
-                ConnectionElement *ce = new ConnectionElement();                
-                ce->setName(name);
-                QDomNodeList cfgs = ele.childNodes();
-                for (int j = 0; j < cfgs.count(); j++) {
-                    QDomNode cfg = cfgs.at(j);
-                    if (cfg.isElement()) {
-                        QDomElement c = cfg.toElement();
-                        ce->addParameter(c.tagName(), c.text().trimmed());
-                    }
-                }
-                connections.append(ce);
-            }
-        }
-    }
-}
-
 bool ConnectionsData::readConnections()
 {
     // Open a file for reading
@@ -89,18 +60,21 @@ bool ConnectionsData::readConnections()
 
         if (reader.name() == "connections") {
 
-            while(reader.readNextStartElement()) {
-                if (reader.name() == "connection)") {
+            while(reader.readNextStartElement()){
+                if (reader.name().toString() == "connection") {
                     ConnectionElement *ce = new ConnectionElement();
-                    ce->setName(reader.attributes().value("name").toString());
+                    QString name = reader.attributes().value("name").toString();
+                    ce->setName(name);
                     while(reader.readNextStartElement()) {
-                        ce->addParameter(reader.name().toString(), reader.readElementText());
+                        QString param = reader.name().toString();
+                        QString value = reader.readElementText().trimmed();
+                        ce->addParameter(param, value);
                     }
+                    connections.append(ce);
                 }
             }
         }
     }
-
 
     return true;
 }
