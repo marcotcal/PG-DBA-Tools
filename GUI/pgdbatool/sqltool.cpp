@@ -81,8 +81,24 @@ bool SqlTool::closeAllEditors() {
 bool SqlTool::openFileOnCurrent()
 {
     QString file_name;
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
 
-    file_name = QFileDialog::getOpenFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*))");
+    file_name = QFileDialog::getOpenFileName(this, "Open SQL File", "./", "sql files (*.sql);; All files (*.*)");
+
+    if(file_name != "") {
+
+        QFile file(file_name);
+        if (!editor)
+            editor = addEditor();
+
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return false;
+        QTextStream in(&file);
+        editor->setText(in.readAll());
+        editor->setIsModified(false);
+        return true;
+    }
+    return false;
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {
@@ -106,7 +122,7 @@ void SqlTool::initializeEditor(EditorItem *editor) {
     editor->setIsModified(false);
 }
 
-void SqlTool::addEditor() {
+EditorItem *SqlTool::addEditor() {
 
     QString new_sufix = QString("%1").arg(ui->editors_tabs->count()+1);
     EditorItem *editor = new EditorItem();
@@ -118,6 +134,7 @@ void SqlTool::addEditor() {
     ui->editors_tabs->addTab(editor, "SQL "+new_sufix);
     ui->editors_tabs->setCurrentIndex(ui->editors_tabs->count()-1);
     editor->setFocus();
+    return editor;
 }
 
 bool SqlTool::closeCurrentEditor() {
@@ -134,7 +151,7 @@ bool SqlTool::closeCurrentEditor() {
 
         switch(ret) {
             case QMessageBox::Save:
-                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*))");
+                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*)");
                 if (file_name != "") {
                     QFile destination(file_name);
                     if(destination.open(QIODevice::WriteOnly)) {

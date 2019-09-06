@@ -20,6 +20,7 @@
 #include <QMainWindow>
 #include <QTreeWidgetItem>
 #include "sqltool.h"
+#include "querymodel.h"
 #include "connectionsdata.h"
 
 namespace Ui {
@@ -72,6 +73,8 @@ private:
     void enable_sql_tool_actions(SqlTool *sql);
     void enable_sql_transactions(SqlTool *sql);
     void setConnectionsTree();
+    void openNewSQLTool();
+    void openNewQueryModel();    
 };
 
 #endif // MAINWINDOW_H

@@ -24,37 +24,44 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-        sqltool.cpp \
-        postgresqllexer.cpp \
-        dlgconnections.cpp \
-    connectionsdata.cpp
+    main.cpp \
+    mainwindow.cpp \
+    sqltool.cpp \
+    postgresqllexer.cpp \
+    dlgconnections.cpp \
+    connectionsdata.cpp \
+    dlgmenunew.cpp \
+    querymodel.cpp \
+    dlgconfiguration.cpp \
+    querymodeldata.cpp
 
 HEADERS += \
-        mainwindow.h \
-        sqltool.h \
-        postgresqllexer.h \
-        dlgconnections.h \
-    connectionsdata.h
+    mainwindow.h \
+    sqltool.h \
+    postgresqllexer.h \
+    dlgconnections.h \
+    connectionsdata.h \
+    dlgmenunew.h \
+    querymodel.h \
+    dlgconfiguration.h \
+    querymodeldata.h
 
 FORMS += \
-        mainwindow.ui \
-        sqltool.ui \
-        dlgconnections.ui
+    mainwindow.ui \
+    sqltool.ui \
+    dlgconnections.ui \
+    dlgmenunew.ui \
+    querymodel.ui \
+    dlgconfiguration.ui
 
 LIBS += -lqscintilla2_qt5
 
 unix:INCLUDEPATH += /usr/include/pgsql
 unix:LIBS += -lpq -lpgcommon -lpgport -lssl -lcrypto -lgssapi_krb5 -lz -lrt -lcrypt -ldl -lm
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
 RESOURCES += \
     pgdbatool.qrc
 
 DISTFILES += \
-    connections.xml
+    connections.xml \
+    modelo.xml

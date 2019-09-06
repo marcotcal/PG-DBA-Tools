@@ -2,7 +2,6 @@
 <!DOCTYPE connections [
   <!ELEMENT connections (connection*)>  
   <!ELEMENT connection (host,dbname,port?,user?,password?)>
-  <!ATTLIST connection id CDATA "">
   <!ATTLIST connection name CDATA "">
   <!ELEMENT host (#PCDATA)>
   <!ELEMENT dbname (#PCDATA)>

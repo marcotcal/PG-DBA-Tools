@@ -51,7 +51,7 @@ class SqlTool : public QWidget
 public:
     explicit SqlTool(QWidget *parent = nullptr);
     ~SqlTool();
-    void addEditor();
+    EditorItem *addEditor();
     bool closeCurrentEditor();
     bool connected();
     void databaseConnect();

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (code, description, query_text, parameters?, orders?)>
+  <!ELEMENT code (#PCDATA)>
+  <!ELEMENT description (#PCDATA)>
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT orders (order*)>
+  <!ATTLIST order code CDATA "">
+  <!ATTLIST order fields CDATA "">
+]>
+<model>
+    <code>TST001</code>
+    <description>Test Model</description>
+    <parameters>
+        <parameter code="p_class" description="Object Type" mandatory="true"/>
+        <parameter code="p_schema" description="Schema Name" mandatory="true"/>
+    </parameters>
+    <query_text>
+    <![CDATA[SELECT *
+FROM test
+WHERE class = :p_class AND schema <= :p_schema
+    ]]>
+    </query_text>
+</model>
+
