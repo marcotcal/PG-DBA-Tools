@@ -13,18 +13,18 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,1">
+  <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,0,1">
    <property name="spacing">
     <number>2</number>
    </property>
    <property name="leftMargin">
-    <number>6</number>
+    <number>2</number>
    </property>
    <property name="topMargin">
     <number>2</number>
    </property>
    <property name="rightMargin">
-    <number>6</number>
+    <number>2</number>
    </property>
    <property name="bottomMargin">
     <number>2</number>
@@ -33,6 +33,12 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="label_4">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(223, 223, 223);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
        <property name="text">
         <string>Code</string>
        </property>
@@ -40,15 +46,27 @@
      </item>
      <item row="0" column="1">
       <widget class="QLabel" name="label">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(223, 223, 223);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
        <property name="text">
         <string>Description</string>
        </property>
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_6">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(223, 223, 223);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
        <property name="text">
-        <string>Group</string>
+        <string>Test Connection</string>
        </property>
       </widget>
      </item>
@@ -66,23 +84,25 @@
       <widget class="QLineEdit" name="description"/>
      </item>
      <item row="1" column="2">
-      <widget class="QComboBox" name="groups">
-       <property name="minimumSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="connection_list"/>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="5,3">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QLabel" name="label_2">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(223, 223, 223);</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
          <property name="text">
           <string>Parameters</string>
          </property>
@@ -90,10 +110,13 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayout">
            <property name="spacing">
-            <number>2</number>
+            <number>0</number>
            </property>
            <item>
             <widget class="QToolButton" name="toolButton">
@@ -105,6 +128,16 @@
              </property>
              <property name="text">
               <string>Add Parameter</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/icons8-add-row-40.png</normaloff>:/icons/images/icons/icons8-add-row-40.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -119,6 +152,33 @@
              <property name="text">
               <string>Remove Parameter</string>
              </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/icons8-delete-row-40.png</normaloff>:/icons/images/icons/icons8-delete-row-40.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButton_5">
+             <property name="text">
+              <string>Test Parameters</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/icons8-automation-48.png</normaloff>:/icons/images/icons/icons8-automation-48.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
             </widget>
            </item>
            <item>
@@ -129,7 +189,7 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>40</height>
+               <height>2</height>
               </size>
              </property>
             </spacer>
@@ -160,38 +220,245 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <property name="spacing">
-        <number>2</number>
-       </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="label_3">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(223, 223, 223);</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
          <property name="text">
-          <string>Test Connection</string>
+          <string>Orders</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="connection_list"/>
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QToolButton" name="toolButton_3">
+             <property name="text">
+              <string>Add Order</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/icons8-add-row-40.png</normaloff>:/icons/images/icons/icons8-add-row-40.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButton_6">
+             <property name="text">
+              <string>Remove Order</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/icons8-delete-row-40.png</normaloff>:/icons/images/icons/icons8-delete-row-40.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButton_7">
+             <property name="text">
+              <string>Up</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/up_arrow-48.png</normaloff>:/icons/images/icons/up_arrow-48.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButton_8">
+             <property name="text">
+              <string>Down</string>
+             </property>
+             <property name="icon">
+              <iconset resource="pgdbatool.qrc">
+               <normaloff>:/icons/images/icons/down_arrow-48.png</normaloff>:/icons/images/icons/down_arrow-48.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>2</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="order_table">
+           <column>
+            <property name="text">
+             <string>Name</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Fields</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(223, 223, 223);</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string>Columns</string>
+         </property>
+        </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <widget class="QTableWidget" name="column_table">
+         <column>
+          <property name="text">
+           <string>Title</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>width</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QToolButton" name="toolButton_4">
+          <widget class="QToolButton" name="toolButton_9">
            <property name="text">
-            <string>Execute Query</string>
+            <string>Add Order</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-add-row-40.png</normaloff>:/icons/images/icons/icons8-add-row-40.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton_5">
+          <widget class="QToolButton" name="toolButton_10">
            <property name="text">
-            <string>Test Parameters</string>
+            <string>Remove Order</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-delete-row-40.png</normaloff>:/icons/images/icons/icons8-delete-row-40.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_2">
+          <widget class="QToolButton" name="toolButton_11">
+           <property name="text">
+            <string>Up</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/up_arrow-48.png</normaloff>:/icons/images/icons/up_arrow-48.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton_12">
+           <property name="text">
+            <string>Down</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/down_arrow-48.png</normaloff>:/icons/images/icons/down_arrow-48.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -205,48 +472,41 @@
          </item>
         </layout>
        </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
+        <widget class="QsciScintilla" name="sql_editor">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <widget class="QLabel" name="label_7">
+          <widget class="QToolButton" name="toolButton_4">
            <property name="text">
-            <string>Send Result To</string>
+            <string>Execute Query</string>
+           </property>
+           <property name="icon">
+            <iconset resource="pgdbatool.qrc">
+             <normaloff>:/icons/images/icons/icons8-gears-48.png</normaloff>:/icons/images/icons/icons8-gears-48.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QRadioButton" name="radioButton">
-             <property name="text">
-              <string>Text</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioButton_2">
-             <property name="text">
-              <string>Grid</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
+          <spacer name="verticalSpacer_3">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -261,22 +521,8 @@
         </layout>
        </item>
       </layout>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QsciScintilla" name="sql_editor">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="whatsThis">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -287,6 +533,8 @@
    <header>Qsci/qsciscintilla.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="pgdbatool.qrc"/>
+ </resources>
  <connections/>
 </ui>

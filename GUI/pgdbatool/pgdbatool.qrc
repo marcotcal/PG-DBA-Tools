@@ -105,6 +105,10 @@
         <file>images/icons/icons8-txt-40.png</file>
         <file>images/icons/icons8-upload-link-document-40.png</file>
         <file>images/icons/icons8-upload-to-the-cloud-40.png</file>
+        <file>images/icons/down_arrow-48.png</file>
+        <file>images/icons/left_arrow-48.png</file>
+        <file>images/icons/up_arrow-48.png</file>
+        <file>images/icons/right_arrow-48.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>
