@@ -121,6 +121,7 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
 
 void MainWindow::setConnectionsTree()
 {
+    ui->connection_list->clear();
     QTreeWidgetItem *item;
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
@@ -128,6 +129,8 @@ void MainWindow::setConnectionsTree()
         columns << conn->name();
         item = new QTreeWidgetItem(ui->connection_list, columns);        
     }
+    if (ui->connection_list->topLevelItem(0))
+        ui->connection_list->setCurrentItem(ui->connection_list->topLevelItem(0), 0, QItemSelectionModel::Select);
 }
 
 void MainWindow::openNewSQLTool()
@@ -245,6 +248,7 @@ void MainWindow::on_actionManageConnections_triggered()
 {
     DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
+    setConnectionsTree();
 }
 
 void MainWindow::on_actionDatabase_to_Database_triggered()
