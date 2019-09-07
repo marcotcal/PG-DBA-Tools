@@ -17,7 +17,9 @@
 #include "dlgconnections.h"
 #include "ui_dlgconnections.h"
 #include <QtConfig>
+#include <QMessageBox>
 #include <algorithm>
+#include <libpq-fe.h>
 
 DlgConnections::DlgConnections(ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
@@ -62,12 +64,12 @@ void DlgConnections::connectionToEditors(int conn)
 {
     ConnectionElement *ele = connections.getConnections().at(conn);
     ui->connection_name->setText(ele->name());
-    ui->host->setText(ele->parameter("host").toString());
-    ui->port->setValue(ele->parameter("port").toInt());
-    ui->user_name->setText(ele->parameter("user").toString());
-    ui->password->setText(ele->parameter("password").toString());
-    ui->database->setText(ele->parameter("dbname").toString());
-    ui->service->setText(ele->parameter("service").toString());
+    ui->host->setText(ele->getParameter("host").toString());
+    ui->port->setValue(ele->getParameter("port").toInt());
+    ui->user_name->setText(ele->getParameter("user").toString());
+    ui->password->setText(ele->getParameter("password").toString());
+    ui->database->setText(ele->getParameter("dbname").toString());
+    ui->service->setText(ele->getParameter("service").toString());
 }
 
 void DlgConnections::editorsToConnection(int conn)
@@ -141,6 +143,7 @@ void DlgConnections::on_bt_sort_clicked()
 
 void DlgConnections::on_connection_list_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
+    Q_UNUSED(previous)
     if (current) {
         current_row = ui->connection_list->row(current);
         connectionToEditors(current_row);
@@ -177,4 +180,38 @@ void DlgConnections::on_bt_cancel_clicked()
 {
     setEditingMode(BROWSE_MODE);
     connectionToEditors(current_row);
+}
+
+void DlgConnections::on_bt_test_connetion_clicked()
+{
+    QMessageBox msg;
+    PGconn *conn;
+    QString conn_str = "";
+
+    if (!ui->host->text().isEmpty())
+        conn_str += "host="+ui->host->text();
+    if (!ui->database->text().isEmpty())
+        conn_str += " dbname="+ui->database->text();
+    if (!ui->user_name->text().isEmpty())
+        conn_str += " user="+ui->user_name->text();
+    if (!ui->password->text().isEmpty())
+        conn_str += " password="+ui->password->text();
+    if (ui->port->value() > 0)
+        conn_str += QString(" port=%1").arg(ui->port->value());
+    if (!ui->service->text().isEmpty())
+        conn_str += " service="+ui->service->text();
+
+    // TODO - Add the other parameters to the connection
+
+    conn = PQconnectdb(conn_str.toStdString().c_str());
+
+    if (PQstatus(conn) == CONNECTION_OK) {
+        PQfinish(conn);
+        msg.setText("Successful Connection");
+        msg.exec();
+        return;
+    }
+    msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
+    msg.exec();
+
 }

@@ -252,6 +252,26 @@
              <item row="5" column="1">
               <widget class="QLineEdit" name="service"/>
              </item>
+             <item row="6" column="1">
+              <widget class="QToolButton" name="bt_test_connetion">
+               <property name="text">
+                <string>Test Connection</string>
+               </property>
+               <property name="icon">
+                <iconset resource="pgdbatool.qrc">
+                 <normaloff>:/icons/images/icons/icons8-automation-48.png</normaloff>:/icons/images/icons/icons8-automation-48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonFollowStyle</enum>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
            <widget class="QWidget" name="tb_ssl">

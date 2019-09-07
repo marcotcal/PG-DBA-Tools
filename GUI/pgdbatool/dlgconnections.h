@@ -46,6 +46,8 @@ private slots:
     void on_bt_save_clicked();
     void on_bt_cancel_clicked();
 
+    void on_bt_test_connetion_clicked();
+
 private:
     Ui::DlgConnections *ui;
     PGconn *connection;

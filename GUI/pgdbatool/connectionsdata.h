@@ -12,7 +12,8 @@ public:
     QString name();
     void setName(QString name);
     void addParameter(QString param, QVariant value);
-    QVariant parameter(QString param);    
+    QMap<QString, QVariant> getParameters();
+    QVariant getParameter(QString param);
 private:    
     QString connection_name;
     QMap<QString, QVariant> parameters;

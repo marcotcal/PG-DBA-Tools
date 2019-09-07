@@ -29,7 +29,12 @@ void ConnectionElement::addParameter(QString param, QVariant value)
     parameters[param] = value;
 }
 
-QVariant ConnectionElement::parameter(QString param)
+QMap<QString, QVariant> ConnectionElement::getParameters()
+{
+    return parameters;
+}
+
+QVariant ConnectionElement::getParameter(QString param)
 {
     return parameters[param];
 }
@@ -107,23 +112,23 @@ void ConnectionsData::writeConnections()
         xmlWriter.writeAttribute("","name", conn->name());
 
         xmlWriter.writeStartElement("host");
-        xmlWriter.writeCharacters(conn->parameter("host").toString());
+        xmlWriter.writeCharacters(conn->getParameter("host").toString());
         xmlWriter.writeEndElement();
 
         xmlWriter.writeStartElement("dbname");
-        xmlWriter.writeCharacters(conn->parameter("dbname").toString());
+        xmlWriter.writeCharacters(conn->getParameter("dbname").toString());
         xmlWriter.writeEndElement();
 
         xmlWriter.writeStartElement("port");
-        xmlWriter.writeCharacters(conn->parameter("port").toString());
+        xmlWriter.writeCharacters(conn->getParameter("port").toString());
         xmlWriter.writeEndElement();
 
         xmlWriter.writeStartElement("user");
-        xmlWriter.writeCharacters(conn->parameter("user").toString());
+        xmlWriter.writeCharacters(conn->getParameter("user").toString());
         xmlWriter.writeEndElement();
 
         xmlWriter.writeStartElement("password");
-        xmlWriter.writeCharacters(conn->parameter("password").toString());
+        xmlWriter.writeCharacters(conn->getParameter("password").toString());
         xmlWriter.writeEndElement();
 
         xmlWriter.writeEndElement();
