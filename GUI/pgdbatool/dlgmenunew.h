@@ -2,6 +2,7 @@
 #define DLGMENUNEW_H
 
 #include <QDialog>
+#include <QListWidgetItem>
 
 namespace Ui {
 class DlgMenuNew;
@@ -18,6 +19,7 @@ public:
 private slots:
 
     void on_editors_list_currentRowChanged(int currentRow);
+    void on_editors_list_itemDoubleClicked(QListWidgetItem *item);
 
 private:
     Ui::DlgMenuNew *ui;
