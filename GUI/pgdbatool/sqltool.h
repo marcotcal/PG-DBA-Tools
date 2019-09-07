@@ -24,6 +24,7 @@
 #include "Qsci/qsciscintilla.h"
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
+#include "connectionsdata.h"
 
 namespace Ui {
 class SqlTool;
@@ -49,7 +50,7 @@ class SqlTool : public QWidget
     Q_OBJECT
 
 public:
-    explicit SqlTool(QWidget *parent = nullptr);
+    explicit SqlTool(ConnectionsData &connections, QWidget *parent = nullptr);
     ~SqlTool();
     EditorItem *addEditor();
     bool closeCurrentEditor();
@@ -68,6 +69,7 @@ private:
     QList<EditorItem*> editors;
     bool in_transaction;
     bool is_connected;
+    ConnectionsData &connections;
 
     void initializeEditor(EditorItem *editor);
 };

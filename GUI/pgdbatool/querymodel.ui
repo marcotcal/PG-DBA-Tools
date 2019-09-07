@@ -172,7 +172,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_2"/>
+        <widget class="QComboBox" name="connection_list"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">

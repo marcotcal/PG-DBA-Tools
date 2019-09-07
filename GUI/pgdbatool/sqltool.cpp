@@ -44,14 +44,20 @@ EditorItem::~EditorItem() {
 
 }
 
-SqlTool::SqlTool(QWidget *parent) :
+SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::SqlTool)
+    ui(new Ui::SqlTool),
+    connections(connections)
 {
     ui->setupUi(this);
     addEditor();
     in_transaction = false;
     is_connected = false;
+    ui->connection_list->clear();
+    for (int i = 0; i < connections.getConnections().count(); i++) {
+        ConnectionElement *conn = connections.getConnections().at(i);
+        ui->connection_list->addItem(conn->name());
+    }
 }
 
 SqlTool::~SqlTool()

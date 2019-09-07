@@ -2,6 +2,7 @@
 #define QUERYMODEL_H
 
 #include "querymodeldata.h"
+#include "connectionsdata.h"
 #include <QWidget>
 #include <QValidator>
 
@@ -26,7 +27,7 @@ class QueryModel : public QWidget
     Q_OBJECT
 
 public:
-    explicit QueryModel(QWidget *parent = nullptr);
+    explicit QueryModel(ConnectionsData &connections, QWidget *parent = nullptr);
     ~QueryModel();
     void saveFile();
     bool openFile();
@@ -36,6 +37,7 @@ private:
     void initializeParameters();
     void initializeEditor();    
     bool is_modified;
+    ConnectionsData &connections;
 };
 
 #endif // QUERYMODEL_H

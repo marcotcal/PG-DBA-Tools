@@ -152,7 +152,7 @@ void MainWindow::openNewSQLTool()
         columns.append(text);
 
         tree_item = new QTreeWidgetItem(ui->editor_list, columns);
-        sql = new SqlTool(ui->main_stack);
+        sql = new SqlTool(connections, ui->main_stack);
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(sql);
         tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));
@@ -180,7 +180,7 @@ void MainWindow::openNewQueryModel()
         columns.append(text);
 
         tree_item = new QTreeWidgetItem(ui->editor_list, columns);
-        qmod = new QueryModel(ui->main_stack);
+        qmod = new QueryModel(connections, ui->main_stack);
         ui->main_stack->addWidget(qmod);
         ui->main_stack->setCurrentWidget(qmod);
         tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));

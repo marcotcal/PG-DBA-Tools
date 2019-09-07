@@ -5,14 +5,20 @@
 #include <QFileDialog>
 #include <QTextStream>
 
-QueryModel::QueryModel(QWidget *parent) :
+QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::QueryModel)
+    ui(new Ui::QueryModel),
+    connections(connections)
 {
     ui->setupUi(this);
     initializeParameters();
     initializeEditor();
     ui->code->setValidator(new UpercaseValidator);    
+    ui->connection_list->clear();
+    for (int i = 0; i < connections.getConnections().count(); i++) {
+        ConnectionElement *conn = connections.getConnections().at(i);
+        ui->connection_list->addItem(conn->name());
+    }
 }
 
 QueryModel::~QueryModel()
