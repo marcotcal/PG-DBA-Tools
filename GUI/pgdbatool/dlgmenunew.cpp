@@ -48,3 +48,8 @@ void DlgMenuNew::on_editors_list_currentRowChanged(int currentRow)
     about = ui->editors_list->item(currentRow)->data(Qt::UserRole).toString();
     ui->editor_about->setText(about);
 }
+
+void DlgMenuNew::on_editors_list_itemDoubleClicked(QListWidgetItem *item)
+{
+    accept();
+}
