@@ -19,6 +19,7 @@
 #include <QtWidgets>
 #include "dlgmenunew.h"
 #include "dlgconnections.h"
+#include "dlgconfiguration.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -66,6 +67,8 @@ void MainWindow::readSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
+    path_to_sql = settings.value("path_to_sql", "").toString();
+    path_to_models = settings.value("path_to_models", "").toString();
     if (geometry.isEmpty()) {
         const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
         resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
@@ -81,6 +84,8 @@ void MainWindow::writeSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("geometry", saveGeometry());
+    settings.setValue("path_to_models", path_to_models);
+    settings.setValue("path_to_sql", path_to_sql);
     connections.writeConnections();
 }
 
@@ -349,5 +354,16 @@ void MainWindow::on_actionDisconect_triggered()
     if (sql) {
         sql->databaseDisconnect();
         enable_sql_tool_actions(sql);
+    }
+}
+
+void MainWindow::on_actionConfigurations_triggered()
+{
+    DlgConfiguration *conf = new DlgConfiguration(this);
+    conf->setPathToSql(path_to_sql);
+    conf->setPathToModels(path_to_models);
+    if (conf->exec()) {
+        path_to_sql = conf->getPathToSql();
+        path_to_models = conf->getPathToModels();
     }
 }
