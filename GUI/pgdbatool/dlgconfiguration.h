@@ -14,6 +14,13 @@ class DlgConfiguration : public QDialog
 public:
     explicit DlgConfiguration(QWidget *parent = nullptr);
     ~DlgConfiguration();
+    QString getPathToModels();
+    QString getPathToSql();
+    void setPathToModels(QString value);
+    void setPathToSql(QString value);
+private slots:
+    void on_bt_open_path_models_clicked();
+    void on_bt_open_path_sql_clicked();
 
 private:
     Ui::DlgConfiguration *ui;

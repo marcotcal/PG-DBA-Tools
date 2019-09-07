@@ -85,6 +85,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionManage_Plugins"/>
+    <addaction name="actionConfigurations"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -340,6 +341,11 @@
    </property>
    <property name="text">
     <string>Disconect</string>
+   </property>
+  </action>
+  <action name="actionConfigurations">
+   <property name="text">
+    <string>Configurations</string>
    </property>
   </action>
  </widget>

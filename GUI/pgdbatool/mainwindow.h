@@ -61,10 +61,14 @@ private slots:
     void on_actionConnect_triggered();
     void on_actionDisconect_triggered();
 
+    void on_actionConfigurations_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     ConnectionsData connections;
+    QString path_to_sql;
+    QString path_to_models;
 
     bool maybeSave();
     void readSettings();
