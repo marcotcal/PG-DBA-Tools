@@ -37,8 +37,11 @@ public:
     bool loadResource(QString resource);
     bool loadFromFile(QString file_name);
     QString getCode() { return code; }
+    void setCode(QString value) { code = value; }
     QString getDescription() {return description; }
+    void setDescription(QString value) { description = value; }
     QString getQueryText() { return query_text; }
+    void setQueryText(QString value) { query_text = value; }
     QList <QueryParameter *> getParameters() { return parameters; }
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }
