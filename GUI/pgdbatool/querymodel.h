@@ -35,6 +35,8 @@ private:
     Ui::QueryModel *ui;
     QueryModelData data;
     void initializeParameters();
+    void initializeOrders();
+    void initializeColumns();
     void initializeEditor();    
     bool is_modified;
     ConnectionsData &connections;

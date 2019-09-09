@@ -84,7 +84,14 @@
       <widget class="QLineEdit" name="description"/>
      </item>
      <item row="1" column="2">
-      <widget class="QComboBox" name="connection_list"/>
+      <widget class="QComboBox" name="connection_list">
+       <property name="minimumSize">
+        <size>
+         <width>300</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -352,7 +359,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <property name="spacing">
         <number>0</number>
@@ -474,7 +481,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QsciScintilla" name="sql_editor">

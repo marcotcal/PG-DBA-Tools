@@ -13,7 +13,7 @@
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
   <!ELEMENT orders (order*)>
-  <!ATTLIST order code CDATA "">
+  <!ATTLIST order desscription CDATA "">
   <!ATTLIST order fields CDATA "">
 ]>
 <model>
@@ -23,6 +23,10 @@
         <parameter code="p_class" description="Object Type" mandatory="true"/>
         <parameter code="p_schema" description="Schema Name" mandatory="true"/>
     </parameters>
+    <orders>
+        <order description="Order 1" fields="field1, field2"/>
+        <order description="Order 2" fields="field2"/>
+    </orders>
     <query_text>
     <![CDATA[SELECT *
 FROM test

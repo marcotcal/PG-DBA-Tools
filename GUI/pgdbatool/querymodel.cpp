@@ -12,6 +12,8 @@ QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
 {
     ui->setupUi(this);
     initializeParameters();
+    initializeOrders();
+    initializeColumns();
     initializeEditor();
     ui->code->setValidator(new UpercaseValidator);    
     ui->connection_list->clear();
@@ -19,6 +21,7 @@ QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
         ConnectionElement *conn = connections.getConnections().at(i);
         ui->connection_list->addItem(conn->name());
     }
+    ui->splitter->setStretchFactor(1,4);
 }
 
 QueryModel::~QueryModel()
@@ -87,6 +90,18 @@ void QueryModel::initializeParameters()
     ui->parameter_table->setColumnWidth(0, 100);
     ui->parameter_table->setColumnWidth(1, 500);
     ui->parameter_table->setColumnWidth(2, 100);
+}
+
+void QueryModel::initializeOrders()
+{
+    ui->order_table->setColumnWidth(0,300);
+    ui->order_table->setColumnWidth(1,150);
+}
+
+void QueryModel::initializeColumns()
+{
+    ui->column_table->setColumnWidth(0,170);
+    ui->column_table->setColumnWidth(1,60);
 }
 
 void QueryModel::saveFile()
