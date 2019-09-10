@@ -27,48 +27,37 @@ bool QueryModelData::loadFromFile(QString file_name)
         }
         QXmlStreamReader reader(&file);
 
-        QueryModelData *query_model = new QueryModelData();
+        while(!reader.atEnd() && !reader.hasError()) {
 
-        if (reader.readNextStartElement()) {
+            QXmlStreamReader::TokenType token = reader.readNext();
 
+            if(token == QXmlStreamReader::StartDocument) {
+                continue;
+            }
             if (reader.name() == "model") {
-
-                while(reader.readNextStartElement()) {
-                    if (reader.name().toString() == "code") {
-                        code = reader.readElementText().trimmed();
-                        query_model->setCode(code);
+                QXmlStreamAttributes attributes = reader.attributes();
+                if(attributes.hasAttribute("code"))
+                    code = attributes.value("code").toString();
+                if(attributes.hasAttribute("description"))
+                    description = attributes.value("description").toString();
+                while(!(reader.tokenType() == QXmlStreamReader::EndElement &&
+                           reader.name().toString() == "model")) {
+                    if(reader.tokenType() == QXmlStreamReader::StartElement) {
+                        query_text = reader.text().toString().trimmed();
                     }
-                    if (reader.name().toString() == "description") {
-                        description = reader.readElementText().trimmed();
-                        query_model->setDescription(description);
-                    }
-                    if (reader.name().toString() == "query_text") {
-                        query_text = reader.readElementText().trimmed();
-                        query_model->setDescription(query_text);
-                    }
-                    if (reader.name().toString() == "parameters") {
-                        while(reader.readNextStartElement()) {
-                            /*
-                            if (reader.name().toString() == "parameter") {
-                                QXmlStreamAttributes attr = reader.attributes();
-                            }
-                            */
-                            a = reader.name().toString();
-                        }
-                    }
-                    if (reader.name().toString() == "orders") {
-                        while(reader.readNextStartElement()) {
-                            QString param = reader.name().toString();
-                            QString value = reader.readElementText().trimmed();
-                        }
-                    }
-
-
                 }
             }
         }
 
-        return true;
+        if(reader.hasError()) {
+            error = true;
+            error_message = reader.errorString();
+            reader.clear();
+            return false;
+         }
+
+         reader.clear();
+         return true;
 
     } else {
         error = true;
