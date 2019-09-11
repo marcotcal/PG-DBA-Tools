@@ -25,57 +25,54 @@ bool QueryModelData::loadFromFile(QString file_name)
             error_message = "could not open file";
             return false;
         }
-        QXmlStreamReader reader(&file);
+        reader.setDevice(&file);
 
-        while(!reader.atEnd() && !reader.hasError()) {
+        while(!reader.atEnd()) {
 
-            QXmlStreamReader::TokenType token = reader.readNext();
+            while(reader.readNext()) {
 
-            if(token == QXmlStreamReader::StartDocument) {
-                continue;
-            }
-            if (reader.name() == "model") {
-                QXmlStreamAttributes attributes = reader.attributes();
-                if(attributes.hasAttribute("code"))
-                    code = attributes.value("code").toString();
-                if(attributes.hasAttribute("description"))
-                    description = attributes.value("description").toString();                
-            }
+                if(reader.isStartDocument())
+                    continue;
 
-            if (reader.name() == "query_text") {
-                query_text = reader.readElementText().trimmed();
-            }
+                if (reader.isEndDocument())
+                    break;
 
-            if (reader.name() == "parameters") {
+                if (reader.isStartElement()) {
 
-                while(!reader.atEnd() && !reader.hasError()) {
-
-                    QXmlStreamReader::TokenType token = reader.readNext();
-
-                    if (reader.name() == "parameter") {
+                    if (reader.name() == "model") {
                         QXmlStreamAttributes attributes = reader.attributes();
                         if(attributes.hasAttribute("code"))
-                            QString code = attributes.value("code").toString();
+                             code = attributes.value("code").toString();
                         if(attributes.hasAttribute("description"))
-                            QString description = attributes.value("description").toString();
+                             description = attributes.value("description").toString();
+                    } else if (reader.name() == "query_text") {
+                        query_text = reader.readElementText().trimmed();
+                    } else if (reader.name() == "parameter") {
+                        QXmlStreamAttributes attributes = reader.attributes();
+                        QString code;
+                        QString description;
+                        QString mandatory;
+                        if(attributes.hasAttribute("code"))
+                             code = attributes.value("code").toString();
+                        if(attributes.hasAttribute("description"))
+                             description = attributes.value("description").toString();
                         if(attributes.hasAttribute("mandatory"))
-                            QString mandatory = attributes.value("mandatory").toString();
+                             mandatory = attributes.value("mandatory").toString();
+                        parameters.append(new QueryParameter(code, description, (mandatory == "true")));
+                    } else if (reader.name() == "order") {
+                        QXmlStreamAttributes attributes = reader.attributes();
+                        QString fields;
+                        QString description;
+
+                        if(attributes.hasAttribute("description"))
+                            description = attributes.value("description").toString();
+                        if(attributes.hasAttribute("fields"))
+                            fields = attributes.value("fields").toString();
+                        orders.append(new QueryOrder(description, fields));
                     }
-
-                    if (token == QXmlStreamReader::EndElement)
-                        break;
-
-
                 }
             }
         }
-
-        if(reader.hasError()) {
-            error = true;
-            error_message = reader.errorString();
-            reader.clear();
-            return false;
-         }
 
          reader.clear();
          return true;
@@ -86,4 +83,3 @@ bool QueryModelData::loadFromFile(QString file_name)
         return false;
     }
 }
-

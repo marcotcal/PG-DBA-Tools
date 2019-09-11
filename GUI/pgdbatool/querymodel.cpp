@@ -77,7 +77,18 @@ bool QueryModel::openFile()
                 item->setCheckState(Qt::Unchecked);
             }
             ui->parameter_table->setItem(row, 2, item);
-	    row++;
+            row++;
+        }
+
+        ui->order_table->setRowCount(data.getOrders().count());
+
+        row = 0;
+        foreach(QueryOrder *order, data.getOrders()) {
+            item = new QTableWidgetItem(order->getDescription());
+            ui->order_table->setItem(row, 0, item);
+            item = new QTableWidgetItem(order->getFields());
+            ui->order_table->setItem(row, 1, item);
+            row++;
         }
 
         return true;

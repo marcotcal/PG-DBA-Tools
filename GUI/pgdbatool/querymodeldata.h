@@ -2,7 +2,7 @@
 #define QUERYMODELDATA_H
 #include <QObject>
 #include <QList>
-#include <QDomElement>
+#include <QXmlStreamReader>
 \
 class QueryParameter : public QObject
 {
@@ -26,6 +26,24 @@ private:
     bool mandatory;
 };
 
+class QueryOrder : public QObject
+{
+    Q_OBJECT
+
+public:
+    QueryOrder(QString description, QString fields, QObject *parent = nullptr) :
+        QObject(parent), description(description), fields(fields)
+    {
+
+    }
+    ~QueryOrder() { }
+    QString getDescription() { return description; }
+    QString getFields() { return fields; }
+private:
+    QString description;
+    QString fields;
+};
+
 class QueryModelData : public QObject
 {
 
@@ -43,6 +61,7 @@ public:
     QString getQueryText() { return query_text; }
     void setQueryText(QString value) { query_text = value; }
     QList <QueryParameter *> getParameters() { return parameters; }
+    QList <QueryOrder *> getOrders() { return orders; }
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }
 private:
@@ -50,9 +69,10 @@ private:
     QString description;
     QString query_text;
     QList<QueryParameter *> parameters;
-    void retrieveElements(QDomElement root);
+    QList<QueryOrder *> orders;
     bool error;
     QString error_message;
+    QXmlStreamReader reader;
 };
 
 #endif // QUERYMODELDATA_H
