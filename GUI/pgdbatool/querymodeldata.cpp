@@ -39,12 +39,33 @@ bool QueryModelData::loadFromFile(QString file_name)
                 if(attributes.hasAttribute("code"))
                     code = attributes.value("code").toString();
                 if(attributes.hasAttribute("description"))
-                    description = attributes.value("description").toString();
-                while(!(reader.tokenType() == QXmlStreamReader::EndElement &&
-                           reader.name().toString() == "model")) {
-                    if(reader.tokenType() == QXmlStreamReader::StartElement) {
-                        query_text = reader.text().toString().trimmed();
+                    description = attributes.value("description").toString();                
+            }
+
+            if (reader.name() == "query_text") {
+                query_text = reader.readElementText().trimmed();
+            }
+
+            if (reader.name() == "parameters") {
+
+                while(!reader.atEnd() && !reader.hasError()) {
+
+                    QXmlStreamReader::TokenType token = reader.readNext();
+
+                    if (reader.name() == "parameter") {
+                        QXmlStreamAttributes attributes = reader.attributes();
+                        if(attributes.hasAttribute("code"))
+                            QString code = attributes.value("code").toString();
+                        if(attributes.hasAttribute("description"))
+                            QString description = attributes.value("description").toString();
+                        if(attributes.hasAttribute("mandatory"))
+                            QString mandatory = attributes.value("mandatory").toString();
                     }
+
+                    if (token == QXmlStreamReader::EndElement)
+                        break;
+
+
                 }
             }
         }
