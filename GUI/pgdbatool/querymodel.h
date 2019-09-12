@@ -31,6 +31,31 @@ public:
     ~QueryModel();
     void saveFile();
     bool openFile();
+private slots:
+    void on_bt_add_parameter_clicked();
+
+    void on_bt_delete_parameter_clicked();
+
+    void on_bt_test_parameter_clicked();
+
+    void on_bt_add_order_clicked();
+
+    void on_bt_delete_order_clicked();
+
+    void on_bt_order_up_clicked();
+
+    void on_bt_order_down_clicked();
+
+    void on_bt_add_column_clicked();
+
+    void on_bt_delete_column_clicked();
+
+    void on_bt_column_up_clicked();
+
+    void on_bt_column_down_clicked();
+
+    void on_bt_test_query_clicked();
+
 private:
     Ui::QueryModel *ui;
     QueryModelData data;

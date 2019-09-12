@@ -52,18 +52,16 @@ class QueryColumn : public QObject
 
 public:
 
-    QueryColumn(int number, QString title, int width, QObject *parent = nullptr) : QObject(parent),
-        number(number), title(title), width(width)
+    QueryColumn(QString title, int width, QObject *parent = nullptr) : QObject(parent),
+        title(title), width(width)
     {
 
     }
     ~QueryColumn() { }
-    int getNumber() { return number; }
     QString getTitle() { return title; }
     int getWidth() { return width; }
 
 private:
-    int number;
     QString title;
     int width;
 };

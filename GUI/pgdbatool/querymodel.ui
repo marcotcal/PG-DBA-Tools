@@ -126,7 +126,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QToolButton" name="toolButton">
+            <widget class="QToolButton" name="bt_add_parameter">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -149,7 +149,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="toolButton_2">
+            <widget class="QToolButton" name="bt_delete_parameter">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -172,7 +172,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="toolButton_5">
+            <widget class="QToolButton" name="bt_test_parameter">
              <property name="text">
               <string>Test Parameters</string>
              </property>
@@ -252,7 +252,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QToolButton" name="toolButton_3">
+            <widget class="QToolButton" name="bt_add_order">
              <property name="text">
               <string>Add Order</string>
              </property>
@@ -269,7 +269,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="toolButton_6">
+            <widget class="QToolButton" name="bt_delete_order">
              <property name="text">
               <string>Remove Order</string>
              </property>
@@ -286,7 +286,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="toolButton_7">
+            <widget class="QToolButton" name="bt_order_up">
              <property name="text">
               <string>Up</string>
              </property>
@@ -303,7 +303,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="toolButton_8">
+            <widget class="QToolButton" name="bt_order_down">
              <property name="text">
               <string>Down</string>
              </property>
@@ -384,11 +384,6 @@
         <widget class="QTableWidget" name="column_table">
          <column>
           <property name="text">
-           <string>number</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
            <string>Title</string>
           </property>
          </column>
@@ -402,7 +397,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QToolButton" name="toolButton_9">
+          <widget class="QToolButton" name="bt_add_column">
            <property name="text">
             <string>Add Order</string>
            </property>
@@ -419,7 +414,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton_10">
+          <widget class="QToolButton" name="bt_delete_column">
            <property name="text">
             <string>Remove Order</string>
            </property>
@@ -436,7 +431,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton_11">
+          <widget class="QToolButton" name="bt_column_up">
            <property name="text">
             <string>Up</string>
            </property>
@@ -453,7 +448,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton_12">
+          <widget class="QToolButton" name="bt_column_down">
            <property name="text">
             <string>Down</string>
            </property>
@@ -501,7 +496,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <widget class="QToolButton" name="toolButton_4">
+          <widget class="QToolButton" name="bt_test_query">
            <property name="text">
             <string>Execute Query</string>
            </property>

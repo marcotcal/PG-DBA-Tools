@@ -16,7 +16,6 @@
   <!ATTLIST order description CDATA "">
   <!ATTLIST order fields CDATA "">
   <!ELEMENT columns (column*)>
-  <!ATTLIST order id CDATA "">
   <!ATTLIST order title CDATA "">
   <!ATTLIST order width CDATA "">
 ]>
@@ -30,8 +29,8 @@
         <order description="Order 2" fields="field2"/>
     </orders>
     <columns>
-        <column number="1" title="Class" width="200"/>
-        <column number="2" title="Schema" width="200"/>
+        <column title="Class" width="200"/>
+        <column title="Schema" width="200"/>
     </columns>
     <query_text>
     <![CDATA[SELECT *

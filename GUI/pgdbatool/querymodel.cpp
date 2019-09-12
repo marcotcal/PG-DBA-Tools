@@ -21,7 +21,7 @@ QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
         ConnectionElement *conn = connections.getConnections().at(i);
         ui->connection_list->addItem(conn->name());
     }
-    ui->splitter->setStretchFactor(1,2);
+    ui->splitter->setStretchFactor(1,4);
 }
 
 QueryModel::~QueryModel()
@@ -79,6 +79,7 @@ bool QueryModel::openFile()
             item = new QTableWidgetItem(param->getDescription());
             ui->parameter_table->setItem(row, 1, item);
             item = new QTableWidgetItem();
+            item->setFlags(item->flags() & ~ Qt::ItemIsEditable);
             item->data(Qt::CheckStateRole);
             if (param->getMandatory())
                 item->setCheckState(Qt::Checked);
@@ -103,13 +104,11 @@ bool QueryModel::openFile()
         ui->column_table->setRowCount(data.getColumns().count());
 
         row = 0;
-        foreach(QueryColumn *column, data.getColumns()) {
-            item = new QTableWidgetItem(QString("%1").arg(column->getNumber()));
-            ui->column_table->setItem(row, 0, item);
+        foreach(QueryColumn *column, data.getColumns()) {            
             item = new QTableWidgetItem(column->getTitle());
-            ui->column_table->setItem(row, 1, item);
+            ui->column_table->setItem(row, 0, item);
             item = new QTableWidgetItem(QString("%1").arg(column->getWidth()));
-            ui->column_table->setItem(row, 2, item);
+            ui->column_table->setItem(row, 1, item);
             row++;
         }
 
@@ -127,18 +126,183 @@ void QueryModel::initializeParameters()
 
 void QueryModel::initializeOrders()
 {
-    ui->order_table->setColumnWidth(0,300);
+    ui->order_table->setColumnWidth(0,250);
     ui->order_table->setColumnWidth(1,150);
 }
 
 void QueryModel::initializeColumns()
 {
-    ui->column_table->setColumnWidth(0,60);
-    ui->column_table->setColumnWidth(1,170);
-    ui->column_table->setColumnWidth(2,60);
+    ui->column_table->setColumnWidth(0,155);
+    ui->column_table->setColumnWidth(1,60);
 }
 
 void QueryModel::saveFile()
+{
+
+}
+
+void QueryModel::on_bt_add_parameter_clicked()
+{
+    int last_row = 0;
+    QTableWidgetItem *item;
+    last_row = ui->parameter_table->rowCount();
+    ui->parameter_table->setRowCount(ui->parameter_table->rowCount()+1);
+    item = new QTableWidgetItem("");
+    ui->parameter_table->setItem(last_row, 0, item);
+    item = new QTableWidgetItem("");
+    ui->parameter_table->setItem(last_row, 1, item);
+    item = new QTableWidgetItem();
+    item->data(Qt::CheckStateRole);
+    item->setCheckState(Qt::Unchecked);
+    item->setFlags(item->flags() & ~ Qt::ItemIsEditable);
+    ui->parameter_table->setItem(last_row, 2, item);
+}
+
+void QueryModel::on_bt_delete_parameter_clicked()
+{
+    ui->parameter_table->removeRow(ui->parameter_table->currentRow());
+}
+
+void QueryModel::on_bt_test_parameter_clicked()
+{
+
+}
+
+void QueryModel::on_bt_add_order_clicked()
+{
+    int last_row = 0;
+    QTableWidgetItem *item;
+    last_row = ui->order_table->rowCount();
+    ui->order_table->setRowCount(ui->order_table->rowCount()+1);
+    item = new QTableWidgetItem("");
+    ui->order_table->setItem(last_row, 0, item);
+    item = new QTableWidgetItem("");
+    ui->order_table->setItem(last_row, 1, item);
+}
+
+void QueryModel::on_bt_delete_order_clicked()
+{
+    ui->order_table->removeRow(ui->order_table->currentRow());
+}
+
+void QueryModel::on_bt_order_up_clicked()
+{
+    QString sel_col1;
+    QString sel_col2;
+    QString pre_col1;
+    QString pre_col2;
+    int sel_row = ui->order_table->currentRow();
+
+    if(sel_row > 0) {
+
+        sel_col1 = ui->order_table->item(sel_row, 0)->text();
+        sel_col2 = ui->order_table->item(sel_row, 1)->text();
+        pre_col1 = ui->order_table->item(sel_row -1, 0)->text();
+        pre_col2 = ui->order_table->item(sel_row -1, 1)->text();
+
+        ui->order_table->setItem(sel_row, 0, new QTableWidgetItem(pre_col1));
+        ui->order_table->setItem(sel_row, 1, new QTableWidgetItem(pre_col2));
+        ui->order_table->setItem(sel_row -1, 0, new QTableWidgetItem(sel_col1));
+        ui->order_table->setItem(sel_row -1, 1, new QTableWidgetItem(sel_col2));
+
+        ui->order_table->selectRow(sel_row-1);
+
+    }
+}
+
+void QueryModel::on_bt_order_down_clicked()
+{
+    QString sel_col1;
+    QString sel_col2;
+    QString pos_col1;
+    QString pos_col2;
+    int sel_row = ui->order_table->currentRow();
+
+    if(sel_row < ui->order_table->rowCount()-1) {
+
+        sel_col1 = ui->order_table->item(sel_row, 0)->text();
+        sel_col2 = ui->order_table->item(sel_row, 1)->text();
+        pos_col1 = ui->order_table->item(sel_row + 1, 0)->text();
+        pos_col2 = ui->order_table->item(sel_row + 1, 1)->text();
+
+        ui->order_table->setItem(sel_row, 0, new QTableWidgetItem(pos_col1));
+        ui->order_table->setItem(sel_row, 1, new QTableWidgetItem(pos_col2));
+        ui->order_table->setItem(sel_row + 1, 0, new QTableWidgetItem(sel_col1));
+        ui->order_table->setItem(sel_row + 1, 1, new QTableWidgetItem(sel_col2));
+
+        ui->order_table->selectRow(sel_row+1);
+
+    }
+}
+
+void QueryModel::on_bt_add_column_clicked()
+{
+    int last_row = 0;
+    QTableWidgetItem *item;
+    last_row = ui->column_table->rowCount();
+    ui->column_table->setRowCount(ui->column_table->rowCount()+1);
+    item = new QTableWidgetItem(QString("column_%1").arg(last_row+1));
+    ui->column_table->setItem(last_row, 0, item);
+    item = new QTableWidgetItem("200");
+    ui->column_table->setItem(last_row, 1, item);
+}
+
+void QueryModel::on_bt_delete_column_clicked()
+{
+    ui->column_table->removeRow(ui->column_table->currentRow());
+}
+
+void QueryModel::on_bt_column_up_clicked()
+{
+    QString sel_col1;
+    QString sel_col2;
+    QString pre_col1;
+    QString pre_col2;
+    int sel_row = ui->column_table->currentRow();
+
+    if(sel_row > 0) {
+
+        sel_col1 = ui->column_table->item(sel_row, 0)->text();
+        sel_col2 = ui->column_table->item(sel_row, 1)->text();
+        pre_col1 = ui->column_table->item(sel_row -1, 0)->text();
+        pre_col2 = ui->column_table->item(sel_row -1, 1)->text();
+
+        ui->column_table->setItem(sel_row, 0, new QTableWidgetItem(pre_col1));
+        ui->column_table->setItem(sel_row, 1, new QTableWidgetItem(pre_col2));
+        ui->column_table->setItem(sel_row -1, 0, new QTableWidgetItem(sel_col1));
+        ui->column_table->setItem(sel_row -1, 1, new QTableWidgetItem(sel_col2));
+
+        ui->column_table->selectRow(sel_row-1);
+
+    }
+}
+
+void QueryModel::on_bt_column_down_clicked()
+{
+    QString sel_col1;
+    QString sel_col2;
+    QString pos_col1;
+    QString pos_col2;
+    int sel_row = ui->column_table->currentRow();
+
+    if(sel_row < ui->column_table->rowCount()-1) {
+
+        sel_col1 = ui->column_table->item(sel_row, 0)->text();
+        sel_col2 = ui->column_table->item(sel_row, 1)->text();
+        pos_col1 = ui->column_table->item(sel_row + 1, 0)->text();
+        pos_col2 = ui->column_table->item(sel_row + 1, 1)->text();
+
+        ui->column_table->setItem(sel_row, 0, new QTableWidgetItem(pos_col1));
+        ui->column_table->setItem(sel_row, 1, new QTableWidgetItem(pos_col2));
+        ui->column_table->setItem(sel_row + 1, 0, new QTableWidgetItem(sel_col1));
+        ui->column_table->setItem(sel_row + 1, 1, new QTableWidgetItem(sel_col2));
+
+        ui->column_table->selectRow(sel_row+1);
+
+    }
+}
+
+void QueryModel::on_bt_test_query_clicked()
 {
 
 }

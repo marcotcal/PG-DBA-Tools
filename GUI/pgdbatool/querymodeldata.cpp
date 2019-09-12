@@ -71,18 +71,16 @@ bool QueryModelData::loadFromFile(QString file_name)
                         orders.append(new QueryOrder(description, fields));
                     }  else if (reader.name() == "column") {
                         QXmlStreamAttributes attributes = reader.attributes();
-                        int number;
                         QString title;
-                        int width;
+                        int width = 100;
 
-                        if(attributes.hasAttribute("number"))
-                            number = attributes.value("number").toInt();
                         if(attributes.hasAttribute("title"))
                             title = attributes.value("title").toString();
+
                         if(attributes.hasAttribute("width"))
                             width = attributes.value("width").toInt();
 
-                        columns.append(new QueryColumn(number, title, width));
+                        columns.append(new QueryColumn(title, width));
                     }
                 }
             }
