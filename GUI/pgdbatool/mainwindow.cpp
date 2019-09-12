@@ -126,8 +126,8 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
 
 void MainWindow::setConnectionsTree()
 {
-    ui->connection_list->clear();
     QTreeWidgetItem *item;
+    ui->connection_list->clear();
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
         QStringList columns;
@@ -227,7 +227,7 @@ void MainWindow::on_actionOpen_triggered()
         model->openFile();
     } else {
         QString file_name;
-        file_name = QFileDialog::getOpenFileName(this, "Open File", "./", "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
+        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql, "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
     }
 }
 

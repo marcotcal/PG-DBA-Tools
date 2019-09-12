@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE model [
-  <!ELEMENT model (query_text, parameters?, orders?)>
+  <!ELEMENT model (query_text, parameters?, orders?, columns?)>
   <!ATTLIST model code CDATA "">
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
@@ -13,8 +13,12 @@
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
   <!ELEMENT orders (order*)>
-  <!ATTLIST order desscription CDATA "">
+  <!ATTLIST order description CDATA "">
   <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order id CDATA "">
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
 ]>
 <model code="TST001" description="Test Model">
     <parameters>
@@ -25,6 +29,10 @@
         <order description="Order 1" fields="field1, field2"/>
         <order description="Order 2" fields="field2"/>
     </orders>
+    <columns>
+        <column number="1" title="Class" width="200"/>
+        <column number="2" title="Schema" width="200"/>
+    </columns>
     <query_text>
     <![CDATA[SELECT *
 FROM test

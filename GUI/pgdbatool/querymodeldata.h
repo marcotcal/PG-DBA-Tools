@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QList>
 #include <QXmlStreamReader>
-\
+
 class QueryParameter : public QObject
 {
 
@@ -20,6 +20,7 @@ public:
     QString getCode() { return code; }
     QString getDescription() { return description; }
     bool getMandatory() { return mandatory; }
+
 private:
     QString code;
     QString description;
@@ -44,6 +45,29 @@ private:
     QString fields;
 };
 
+class QueryColumn : public QObject
+{
+
+    Q_OBJECT
+
+public:
+
+    QueryColumn(int number, QString title, int width, QObject *parent = nullptr) : QObject(parent),
+        number(number), title(title), width(width)
+    {
+
+    }
+    ~QueryColumn() { }
+    int getNumber() { return number; }
+    QString getTitle() { return title; }
+    int getWidth() { return width; }
+
+private:
+    int number;
+    QString title;
+    int width;
+};
+
 class QueryModelData : public QObject
 {
 
@@ -62,6 +86,7 @@ public:
     void setQueryText(QString value) { query_text = value; }
     QList <QueryParameter *> getParameters() { return parameters; }
     QList <QueryOrder *> getOrders() { return orders; }
+    QList <QueryColumn *> getColumns() { return columns; }
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }
 private:
@@ -70,6 +95,7 @@ private:
     QString query_text;
     QList<QueryParameter *> parameters;
     QList<QueryOrder *> orders;
+    QList<QueryColumn *> columns;
     bool error;
     QString error_message;
     QXmlStreamReader reader;

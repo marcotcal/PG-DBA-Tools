@@ -21,7 +21,7 @@ QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
         ConnectionElement *conn = connections.getConnections().at(i);
         ui->connection_list->addItem(conn->name());
     }
-    ui->splitter->setStretchFactor(1,4);
+    ui->splitter->setStretchFactor(1,2);
 }
 
 QueryModel::~QueryModel()
@@ -52,10 +52,19 @@ bool QueryModel::openFile()
 {
     QString file_name;    
     QTableWidgetItem *item;
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    QString path = settings.value("path_to_models", "").toString();
 
-    file_name = QFileDialog::getOpenFileName(this, "Open Model File", "./", "Model files (*.xml);;All files (*.*)");
+    file_name = QFileDialog::getOpenFileName(this, "Open Model File", path, "Model files (*.xml);;All files (*.*)");
 
     if (data.loadFromFile(file_name)) {
+
+        ui->code->clear();
+        ui->description->clear();
+        ui->sql_editor->clear();
+        ui->parameter_table->clear();
+        ui->order_table->clear();
+        ui->column_table->clear();
 
         ui->code->setText(data.getCode());
         ui->description->setText(data.getDescription());
@@ -91,6 +100,19 @@ bool QueryModel::openFile()
             row++;
         }
 
+        ui->column_table->setRowCount(data.getColumns().count());
+
+        row = 0;
+        foreach(QueryColumn *column, data.getColumns()) {
+            item = new QTableWidgetItem(QString("%1").arg(column->getNumber()));
+            ui->column_table->setItem(row, 0, item);
+            item = new QTableWidgetItem(column->getTitle());
+            ui->column_table->setItem(row, 1, item);
+            item = new QTableWidgetItem(QString("%1").arg(column->getWidth()));
+            ui->column_table->setItem(row, 2, item);
+            row++;
+        }
+
         return true;
     } else
         return false;
@@ -111,8 +133,9 @@ void QueryModel::initializeOrders()
 
 void QueryModel::initializeColumns()
 {
-    ui->column_table->setColumnWidth(0,170);
-    ui->column_table->setColumnWidth(1,60);
+    ui->column_table->setColumnWidth(0,60);
+    ui->column_table->setColumnWidth(1,170);
+    ui->column_table->setColumnWidth(2,60);
 }
 
 void QueryModel::saveFile()

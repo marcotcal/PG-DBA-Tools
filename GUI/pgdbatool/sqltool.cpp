@@ -86,10 +86,12 @@ bool SqlTool::closeAllEditors() {
 
 bool SqlTool::openFileOnCurrent()
 {
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     QString file_name;
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    QString path = settings.value("path_to_sql", "").toString();
 
-    file_name = QFileDialog::getOpenFileName(this, "Open SQL File", "./", "sql files (*.sql);; All files (*.*)");
+    file_name = QFileDialog::getOpenFileName(this, "Open SQL File", path, "sql files (*.sql);; All files (*.*)");
 
     if(file_name != "") {
 
