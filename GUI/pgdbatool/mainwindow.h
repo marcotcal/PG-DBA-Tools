@@ -63,6 +63,8 @@ private slots:
 
     void on_actionConfigurations_triggered();
 
+    void on_actionClose_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -75,7 +77,8 @@ private:
     void writeSettings();
     void disable_actions();
     void enable_sql_tool_actions(SqlTool *sql);
-    void enable_sql_transactions(SqlTool *sql);
+    void enable_model_actions(QueryModel *model);
+    void enable_sql_transactions(SqlTool *sql);    
     void setConnectionsTree();
     void openNewSQLTool();
     void openNewQueryModel();    

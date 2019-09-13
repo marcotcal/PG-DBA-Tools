@@ -116,6 +116,14 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
         ui->actionCommit_Transaction->setEnabled(false);
         ui->actionRollback_Transaction->setEnabled(false);
     }
+    ui->actionSave->setEnabled(true);
+    ui->actionSave_As->setEnabled(true);
+}
+
+void MainWindow::enable_model_actions(QueryModel *model)
+{
+    ui->actionSave->setEnabled(true);
+    ui->actionSave_As->setEnabled(true);
 }
 
 void MainWindow::enable_sql_transactions(SqlTool *sql) {
@@ -329,11 +337,15 @@ void MainWindow::on_editor_list_itemActivated(QTreeWidgetItem *item, int column)
 void MainWindow::on_main_stack_currentChanged(int arg1)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->widget(arg1));
+    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
 
     disable_actions();
 
     if (sql) {
         enable_sql_tool_actions(sql);
+    }
+    if (model){
+        enable_model_actions(model);
     }
 }
 
@@ -366,4 +378,16 @@ void MainWindow::on_actionConfigurations_triggered()
         path_to_sql = conf->getPathToSql();
         path_to_models = conf->getPathToModels();
     }
+}
+
+void MainWindow::on_actionClose_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
+
+    delete ui->editor_list->currentItem();
+    QWidget* widget = ui->main_stack->currentWidget();
+    ui->main_stack->removeWidget(widget);
+    widget->deleteLater();
+
 }

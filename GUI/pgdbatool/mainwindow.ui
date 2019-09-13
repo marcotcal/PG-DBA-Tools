@@ -52,6 +52,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
+    <addaction name="actionClose"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -346,6 +347,11 @@
   <action name="actionConfigurations">
    <property name="text">
     <string>Configurations</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
    </property>
   </action>
  </widget>
