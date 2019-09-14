@@ -365,14 +365,30 @@ void MainWindow::on_actionConfigurations_triggered()
 
 void MainWindow::on_actionClose_triggered()
 {
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
-
-    delete ui->editor_list->currentItem();
     QWidget* widget = ui->main_stack->currentWidget();
+    SqlTool *sql = dynamic_cast<SqlTool*>(widget);
+    QueryModel *model = dynamic_cast<QueryModel*>(widget);
+    int row = ui->main_stack->currentIndex();
+
+    if (sql) {
+        if(!sql->closeAllEditors())
+        return;
+    }
+
     ui->main_stack->removeWidget(widget);
     widget->deleteLater();
 
+    QListWidgetItem *item = ui->editor_list->takeItem(row);
+    delete item;
+
+    if (row > 0) {
+        row--;
+        ui->main_stack->setCurrentIndex(row);
+        ui->editor_list->setCurrentRow(row);
+    } else if (ui->main_stack->count() > 0) {
+        ui->main_stack->setCurrentIndex(0);
+        ui->editor_list->setCurrentRow(0);
+    }
 }
 
 void MainWindow::on_editor_list_currentRowChanged(int currentRow)
