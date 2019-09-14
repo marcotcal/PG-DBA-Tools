@@ -87,6 +87,8 @@ public:
     QList <QueryColumn *> getColumns() { return columns; }
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }
+    bool canCloseOrReplace();
+    bool saveModel();
 private:
     QString code;
     QString description;
@@ -97,6 +99,7 @@ private:
     bool error;
     QString error_message;
     QXmlStreamReader reader;
+    bool modified;
 };
 
 #endif // QUERYMODELDATA_H
