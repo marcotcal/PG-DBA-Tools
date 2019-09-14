@@ -138,7 +138,7 @@ void ConnectionsData::writeConnections()
     file.close();
 }
 
-QList<ConnectionElement *> ConnectionsData::getConnections()
+QList<ConnectionElement *> &ConnectionsData::getConnections()
 {
     return connections;
 }

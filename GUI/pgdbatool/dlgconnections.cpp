@@ -52,7 +52,14 @@ void DlgConnections::on_bt_add_connection_clicked()
 
 void DlgConnections::on_bt_delete_connection_clicked()
 {
+    int row = ui->connection_list->currentRow();
+    QListWidgetItem *item = ui->connection_list->takeItem(row);
+    delete item;
+    ConnectionElement *data = connections.getConnections().takeAt(row);
+    delete data;
 
+    if (ui->connection_list->count() > 0)
+        ui->connection_list->setCurrentRow(0);
 }
 
 void DlgConnections::on_connection_list_itemActivated(QListWidgetItem *item)
