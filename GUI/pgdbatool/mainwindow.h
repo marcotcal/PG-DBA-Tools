@@ -56,14 +56,12 @@ private slots:
     void on_actionRollback_Transaction_triggered();
     void on_actionCommit_Transaction_triggered();
     void on_actionManage_Plugins_triggered();
-    void on_editor_list_itemActivated(QTreeWidgetItem *item, int column);
     void on_main_stack_currentChanged(int arg1);
     void on_actionConnect_triggered();
     void on_actionDisconect_triggered();
-
     void on_actionConfigurations_triggered();
-
     void on_actionClose_triggered();
+    void on_editor_list_currentRowChanged(int currentRow);
 
 private:
     Ui::MainWindow *ui;
@@ -79,7 +77,7 @@ private:
     void enable_sql_tool_actions(SqlTool *sql);
     void enable_model_actions(QueryModel *model);
     void enable_sql_transactions(SqlTool *sql);    
-    void setConnectionsTree();
+    void setConnectionsList();
     void openNewSQLTool();
     void openNewQueryModel();    
 };

@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     readSettings();    
     disable_actions();
-    setConnectionsTree();
+    setConnectionsList();
 }
 
 MainWindow::~MainWindow()
@@ -132,18 +132,15 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
     ui->actionRollback_Transaction->setEnabled(sql->transaction());
 }
 
-void MainWindow::setConnectionsTree()
+void MainWindow::setConnectionsList()
 {
-    QTreeWidgetItem *item;
     ui->connection_list->clear();
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
-        QStringList columns;
-        columns << conn->name();
-        item = new QTreeWidgetItem(ui->connection_list, columns);        
+        new QListWidgetItem(conn->name(), ui->connection_list);
     }
-    if (ui->connection_list->topLevelItem(0))
-        ui->connection_list->setCurrentItem(ui->connection_list->topLevelItem(0), 0, QItemSelectionModel::Select);
+    if (ui->connection_list->count() > 0)
+        ui->connection_list->setCurrentRow(0);
 }
 
 void MainWindow::openNewSQLTool()
@@ -151,7 +148,6 @@ void MainWindow::openNewSQLTool()
     SqlTool *sql;
     bool ok;
     QTreeWidgetItem *tree_item;
-    QStringList columns;
     QString text;
 
     text = QString("New Sql Tool %1").arg(ui->main_stack->count()+1);
@@ -162,15 +158,12 @@ void MainWindow::openNewSQLTool()
 
     if (ok && !text.isEmpty()) {
 
-        columns.append(text);
-
-        tree_item = new QTreeWidgetItem(ui->editor_list, columns);
+        new QListWidgetItem(text, ui->editor_list);
         sql = new SqlTool(connections, ui->main_stack);
         ui->main_stack->addWidget(sql);
-        ui->main_stack->setCurrentWidget(sql);
-        tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));
+        ui->main_stack->setCurrentWidget(sql);        
         ui->editor_list->clearSelection();
-        tree_item->setSelected(true);
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
     }
 }
 
@@ -178,8 +171,7 @@ void MainWindow::openNewQueryModel()
 {
     QueryModel *qmod;
     QTreeWidgetItem *tree_item;
-    bool ok;
-    QStringList columns;
+    bool ok;    
     QString text;
 
     text = QString("New Query Model %1").arg(ui->main_stack->count()+1);
@@ -190,15 +182,12 @@ void MainWindow::openNewQueryModel()
 
     if (ok && !text.isEmpty()) {
 
-        columns.append(text);
-
-        tree_item = new QTreeWidgetItem(ui->editor_list, columns);
+        new QListWidgetItem(text, ui->editor_list);
         qmod = new QueryModel(connections, ui->main_stack);
         ui->main_stack->addWidget(qmod);
-        ui->main_stack->setCurrentWidget(qmod);
-        tree_item->setData(0, Qt::UserRole, QVariant(ui->main_stack->currentIndex()));
+        ui->main_stack->setCurrentWidget(qmod);        
         ui->editor_list->clearSelection();
-        tree_item->setSelected(true);
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
     }
 }
 
@@ -261,7 +250,7 @@ void MainWindow::on_actionManageConnections_triggered()
 {
     DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
-    setConnectionsTree();
+    setConnectionsList();
 }
 
 void MainWindow::on_actionDatabase_to_Database_triggered()
@@ -328,12 +317,6 @@ void MainWindow::on_actionManage_Plugins_triggered()
 
 }
 
-void MainWindow::on_editor_list_itemActivated(QTreeWidgetItem *item, int column)
-{
-    Q_UNUSED(column);
-    ui->main_stack->setCurrentIndex(item->data(0, Qt::UserRole).toInt());
-}
-
 void MainWindow::on_main_stack_currentChanged(int arg1)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->widget(arg1));
@@ -390,4 +373,9 @@ void MainWindow::on_actionClose_triggered()
     ui->main_stack->removeWidget(widget);
     widget->deleteLater();
 
+}
+
+void MainWindow::on_editor_list_currentRowChanged(int currentRow)
+{
+    ui->main_stack->setCurrentIndex(currentRow);
 }

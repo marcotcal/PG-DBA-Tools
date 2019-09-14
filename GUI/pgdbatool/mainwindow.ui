@@ -139,13 +139,7 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeWidget" name="connection_list">
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="QListWidget" name="connection_list"/>
      </item>
     </layout>
    </widget>
@@ -160,19 +154,7 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QTreeWidget" name="editor_list">
-       <property name="editTriggers">
-        <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <column>
-        <property name="text">
-         <string>Editors List</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="QListWidget" name="editor_list"/>
      </item>
     </layout>
    </widget>
