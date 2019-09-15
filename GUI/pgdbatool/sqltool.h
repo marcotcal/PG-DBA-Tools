@@ -64,6 +64,9 @@ public:
     void commit();
     bool closeAllEditors();
     bool openFileOnCurrent(QFile &file);
+private slots:
+    void on_limit_result_clicked(bool checked);
+
 private:
     Ui::SqlTool *ui;
     QList<EditorItem*> editors;

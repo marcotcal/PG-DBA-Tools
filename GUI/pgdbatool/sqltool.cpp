@@ -22,6 +22,7 @@
 #include <QTextStream>
 #include <QFileInfo>
 #include <QFile>
+#include <QFontDatabase>
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
@@ -88,9 +89,7 @@ bool SqlTool::closeAllEditors() {
 
 bool SqlTool::openFileOnCurrent(QFile &file)
 {
-    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
-    QString path = settings.value("path_to_sql", "").toString();
 
     if (!editor)
         editor = addEditor();
@@ -101,6 +100,10 @@ bool SqlTool::openFileOnCurrent(QFile &file)
     QTextStream in(&file);
     editor->setText(in.readAll());
     editor->setIsModified(false);
+
+    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(),
+                                           QFileInfo(file).baseName());
+
     return true;
 }
 
@@ -220,4 +223,9 @@ void SqlTool::commit() {
 
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
     in_transaction = false;
+}
+
+void SqlTool::on_limit_result_clicked(bool checked)
+{
+    ui->line_limit->setEnabled(checked);
 }

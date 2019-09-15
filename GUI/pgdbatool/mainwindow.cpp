@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();    
     disable_actions();
     setConnectionsList();
+    ui->output_stack->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow()
@@ -98,6 +99,7 @@ void MainWindow::disable_actions()
     ui->actionStart_Transaction->setEnabled(false);
     ui->actionCommit_Transaction->setEnabled(false);
     ui->actionRollback_Transaction->setEnabled(false);
+    ui->actionExecute->setEnabled(false);
 }
 
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
@@ -122,6 +124,7 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
 
 void MainWindow::enable_model_actions(QueryModel *model)
 {
+    Q_UNUSED(model)
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
 }
@@ -130,6 +133,7 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
     ui->actionStart_Transaction->setEnabled(!sql->transaction());
     ui->actionCommit_Transaction->setEnabled(sql->transaction());
     ui->actionRollback_Transaction->setEnabled(sql->transaction());
+    ui->actionExecute->setEnabled(sql->transaction());
 }
 
 void MainWindow::setConnectionsList()
@@ -193,11 +197,11 @@ void MainWindow::on_actionNew_triggered()
 
         switch(dlg->getSelection()) {
         case 0:
-            name = QString("New Sql Tool %1").arg(ui->main_stack->count()+1);
+            name = QString("Sql Tool %1").arg(ui->main_stack->count()+1);
             openNewSQLTool(name);
             break;
         case 1:
-            name = QString("New Query Model %1").arg(ui->main_stack->count()+1);
+            name = QString("Query Model %1").arg(ui->main_stack->count()+1);
             openNewQueryModel(name);
             break;
         }
@@ -216,7 +220,7 @@ void MainWindow::on_actionOpen_triggered()
         if (file_name != "") {
             file.setFileName(file_name);
             sql->openFileOnCurrent(file);
-            ui->editor_list->currentItem()->setText(QFileInfo(file).baseName());
+            ui->editor_list->currentItem()->setText(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
         }
     } else if (model) {
         file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_models, "Model files (*.xml);;All files (*.*))");
@@ -231,7 +235,7 @@ void MainWindow::on_actionOpen_triggered()
         if (file_name != "") {
             QFile file(file_name);
             if (QFileInfo(file).suffix().toLower() == "sql") {
-                    sql = openNewSQLTool(QFileInfo(file).baseName());
+                    sql = openNewSQLTool(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
                     sql->openFileOnCurrent(file);
             } else {
                 model = openNewQueryModel(QFileInfo(file).baseName());
@@ -262,7 +266,7 @@ void MainWindow::on_actionSave_As_triggered()
 
 void MainWindow::on_actionSQL_Tool_triggered()
 {
-    openNewSQLTool(QString("New Sql Tool %1").arg(ui->main_stack->count()+1));
+    openNewSQLTool(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
 }
 
 void MainWindow::on_actionManageConnections_triggered()
@@ -418,4 +422,25 @@ void MainWindow::on_actionClose_triggered()
 void MainWindow::on_editor_list_currentRowChanged(int currentRow)
 {
     ui->main_stack->setCurrentIndex(currentRow);
+}
+
+void MainWindow::on_bt_txt_clicked()
+{
+    ui->output_stack->setCurrentIndex(0);
+
+}
+
+void MainWindow::on_bt_grid_clicked()
+{
+    ui->output_stack->setCurrentIndex(1);
+}
+
+void MainWindow::on_bt_html_clicked()
+{
+    ui->output_stack->setCurrentIndex(2);
+}
+
+void MainWindow::on_actionExecute_triggered()
+{
+
 }

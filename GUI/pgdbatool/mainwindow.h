@@ -63,6 +63,14 @@ private slots:
     void on_actionClose_triggered();
     void on_editor_list_currentRowChanged(int currentRow);
 
+    void on_bt_txt_clicked();
+
+    void on_bt_grid_clicked();
+
+    void on_bt_html_clicked();
+
+    void on_actionExecute_triggered();
+
 private:
     Ui::MainWindow *ui;
 
