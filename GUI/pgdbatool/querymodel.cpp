@@ -4,6 +4,7 @@
 #include <QFontDatabase>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QMessageBox>
 
 QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
     QWidget(parent),
@@ -112,6 +113,8 @@ bool QueryModel::openFile()
             row++;
         }
 
+        is_modified = false;
+
         return true;
     } else
         return false;
@@ -145,22 +148,30 @@ void QueryModel::on_bt_add_parameter_clicked()
 {
     int last_row = 0;
     QTableWidgetItem *item;
+
     last_row = ui->parameter_table->rowCount();
     ui->parameter_table->setRowCount(ui->parameter_table->rowCount()+1);
+
     item = new QTableWidgetItem("");
     ui->parameter_table->setItem(last_row, 0, item);
+
     item = new QTableWidgetItem("");
     ui->parameter_table->setItem(last_row, 1, item);
+
     item = new QTableWidgetItem();
     item->data(Qt::CheckStateRole);
     item->setCheckState(Qt::Unchecked);
-    item->setFlags(item->flags() & ~ Qt::ItemIsEditable);
+    item->setFlags(item->flags() & ~ Qt::ItemIsEditable);    
     ui->parameter_table->setItem(last_row, 2, item);
+
+    is_modified = true;
 }
 
 void QueryModel::on_bt_delete_parameter_clicked()
 {
     ui->parameter_table->removeRow(ui->parameter_table->currentRow());
+
+    is_modified = true;
 }
 
 void QueryModel::on_bt_test_parameter_clicked()
@@ -172,12 +183,17 @@ void QueryModel::on_bt_add_order_clicked()
 {
     int last_row = 0;
     QTableWidgetItem *item;
+
     last_row = ui->order_table->rowCount();
     ui->order_table->setRowCount(ui->order_table->rowCount()+1);
+
     item = new QTableWidgetItem("");
     ui->order_table->setItem(last_row, 0, item);
+
     item = new QTableWidgetItem("");
     ui->order_table->setItem(last_row, 1, item);
+
+    is_modified = true;
 }
 
 void QueryModel::on_bt_delete_order_clicked()
@@ -207,6 +223,7 @@ void QueryModel::on_bt_order_up_clicked()
 
         ui->order_table->selectRow(sel_row-1);
 
+        is_modified = true;
     }
 }
 
@@ -232,6 +249,7 @@ void QueryModel::on_bt_order_down_clicked()
 
         ui->order_table->selectRow(sel_row+1);
 
+        is_modified = true;
     }
 }
 
@@ -239,17 +257,24 @@ void QueryModel::on_bt_add_column_clicked()
 {
     int last_row = 0;
     QTableWidgetItem *item;
+
     last_row = ui->column_table->rowCount();
     ui->column_table->setRowCount(ui->column_table->rowCount()+1);
+
     item = new QTableWidgetItem(QString("column_%1").arg(last_row+1));
     ui->column_table->setItem(last_row, 0, item);
+
     item = new QTableWidgetItem("200");
     ui->column_table->setItem(last_row, 1, item);
+
+    is_modified = true;
 }
 
 void QueryModel::on_bt_delete_column_clicked()
 {
     ui->column_table->removeRow(ui->column_table->currentRow());
+
+    is_modified = true;
 }
 
 void QueryModel::on_bt_column_up_clicked()
@@ -274,7 +299,8 @@ void QueryModel::on_bt_column_up_clicked()
 
         ui->column_table->selectRow(sel_row-1);
 
-    }
+        is_modified = true;
+    }    
 }
 
 void QueryModel::on_bt_column_down_clicked()
@@ -299,10 +325,68 @@ void QueryModel::on_bt_column_down_clicked()
 
         ui->column_table->selectRow(sel_row+1);
 
+        is_modified = true;
     }
 }
 
 void QueryModel::on_bt_test_query_clicked()
 {
 
+}
+
+bool QueryModel::canCloseOrReplace()
+{
+    QMessageBox msgBox;
+    QString file_name;
+
+    if (is_modified) {
+        msgBox.setText(QString("The query model has been modified."));
+        msgBox.setInformativeText("Do you want to save your changes?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+        int ret = msgBox.exec();
+
+        switch(ret) {
+            case QMessageBox::Save:
+                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*)");
+                if (file_name != "") {
+                    if (!data.saveModel())
+                        return false;
+                } else {
+                    return false;
+                }
+                break;
+            case QMessageBox::Discard:
+                break;
+            case QMessageBox::Cancel:
+                return false;
+            default:
+                break;
+        }
+    }
+
+    return true;
+}
+
+void QueryModel::on_sql_editor_textChanged()
+{
+    is_modified = true;
+}
+
+void QueryModel::on_parameter_table_itemChanged(QTableWidgetItem *item)
+{
+    Q_UNUSED(item);
+    is_modified = true;
+}
+
+void QueryModel::on_order_table_itemChanged(QTableWidgetItem *item)
+{
+    Q_UNUSED(item);
+    is_modified = true;
+}
+
+void QueryModel::on_column_table_itemChanged(QTableWidgetItem *item)
+{
+    Q_UNUSED(item);
+    is_modified = true;
 }

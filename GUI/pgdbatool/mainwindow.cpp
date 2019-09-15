@@ -372,7 +372,12 @@ void MainWindow::on_actionClose_triggered()
 
     if (sql) {
         if(!sql->closeAllEditors())
-        return;
+            return;
+    }
+
+    if (model) {
+        if(!model->canCloseOrReplace())
+            return;
     }
 
     ui->main_stack->removeWidget(widget);

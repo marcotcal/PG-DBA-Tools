@@ -1,14 +1,10 @@
 #include "querymodeldata.h"
 #include <QXmlStreamReader>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QTextStream>
 
 QueryModelData::QueryModelData(QObject *parent) : QObject(parent)
 {
     error = false;
     error_message = "";
-    modified = false;
 }
 
 QueryModelData::~QueryModelData()
@@ -19,12 +15,6 @@ QueryModelData::~QueryModelData()
 bool QueryModelData::loadFromFile(QString file_name)
 {  
     QString a;
-
-    if (!canCloseOrReplace()) {
-        error = false;
-        error_message = "";
-        return false;
-    }
 
     if(file_name != "") {
 
@@ -106,40 +96,7 @@ bool QueryModelData::loadFromFile(QString file_name)
     }
 }
 
-bool QueryModelData::canCloseOrReplace()
+bool QueryModelData::saveModel()
 {
-    QMessageBox msgBox;
-    QString file_name;
 
-    if (modified) {
-        msgBox.setText(QString("The document %1 has been modified.").arg(editor->objectName()));
-        msgBox.setInformativeText("Do you want to save your changes?");
-        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Save);
-        int ret = msgBox.exec();
-
-        switch(ret) {
-            case QMessageBox::Save:
-                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*)");
-                if (file_name != "") {
-                    QFile destination(file_name);
-                    if(destination.open(QIODevice::WriteOnly)) {
-                        QTextStream ts(&destination);
-                        ts << editor->text();
-                    }
-                } else {
-                    return false;
-                }
-                break;
-            case QMessageBox::Discard:
-                break;
-            case QMessageBox::Cancel:
-                return false;
-            default:
-                break;
-        }
-    }
-
-
-    }
 }

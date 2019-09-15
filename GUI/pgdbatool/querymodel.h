@@ -5,6 +5,7 @@
 #include "connectionsdata.h"
 #include <QWidget>
 #include <QValidator>
+#include <QTableWidgetItem>
 
 namespace Ui {
 class QueryModel;
@@ -31,6 +32,7 @@ public:
     ~QueryModel();
     void saveFile();
     bool openFile();
+    bool canCloseOrReplace();
 private slots:
     void on_bt_add_parameter_clicked();
     void on_bt_delete_parameter_clicked();
@@ -43,7 +45,14 @@ private slots:
     void on_bt_delete_column_clicked();
     void on_bt_column_up_clicked();
     void on_bt_column_down_clicked();
-    void on_bt_test_query_clicked();
+    void on_bt_test_query_clicked();    
+    void on_sql_editor_textChanged();
+
+    void on_parameter_table_itemChanged(QTableWidgetItem *item);
+
+    void on_order_table_itemChanged(QTableWidgetItem *item);
+
+    void on_column_table_itemChanged(QTableWidgetItem *item);
 
 private:
     Ui::QueryModel *ui;
