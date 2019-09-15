@@ -75,19 +75,19 @@ public:
     explicit QueryModelData(QObject *parent = nullptr);
     ~QueryModelData();
     bool loadResource(QString resource);
-    bool loadFromFile(QString file_name);
+    bool loadFromFile(QFile &file);
     QString getCode() { return code; }
     void setCode(QString value) { code = value; }
     QString getDescription() {return description; }
     void setDescription(QString value) { description = value; }
     QString getQueryText() { return query_text; }
     void setQueryText(QString value) { query_text = value; }
-    QList <QueryParameter *> getParameters() { return parameters; }
-    QList <QueryOrder *> getOrders() { return orders; }
-    QList <QueryColumn *> getColumns() { return columns; }
+    QList <QueryParameter *> &getParameters() { return parameters; }
+    QList <QueryOrder *> &getOrders() { return orders; }
+    QList <QueryColumn *> &getColumns() { return columns; }
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }    
-    bool saveModel();
+    bool saveModel(QString file_name);
 private:
     QString code;
     QString description;

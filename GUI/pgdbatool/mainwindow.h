@@ -78,8 +78,8 @@ private:
     void enable_model_actions(QueryModel *model);
     void enable_sql_transactions(SqlTool *sql);    
     void setConnectionsList();
-    void openNewSQLTool();
-    void openNewQueryModel();    
+    SqlTool *openNewSQLTool(QString name);
+    QueryModel *openNewQueryModel(QString name);
 };
 
 #endif // MAINWINDOW_H

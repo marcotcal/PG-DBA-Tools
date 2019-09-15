@@ -11,18 +11,25 @@ QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
     ui(new Ui::QueryModel),
     connections(connections)
 {
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+
     ui->setupUi(this);
     initializeParameters();
     initializeOrders();
     initializeColumns();
     initializeEditor();
     ui->code->setValidator(new UpercaseValidator);    
+
     ui->connection_list->clear();
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
         ui->connection_list->addItem(conn->name());
     }
+
     ui->splitter->setStretchFactor(1,4);
+
+    file_name = "";
+    default_path = settings.value("path_to_models", "").toString();
 }
 
 QueryModel::~QueryModel()
@@ -49,75 +56,115 @@ void QueryModel::initializeEditor() {
     is_modified = false;
 }
 
-bool QueryModel::openFile()
-{
-    QString file_name;    
-    QTableWidgetItem *item;
-    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    QString path = settings.value("path_to_models", "").toString();
-
-    file_name = QFileDialog::getOpenFileName(this, "Open Model File", path, "Model files (*.xml);;All files (*.*)");
-
-    if (data.loadFromFile(file_name)) {
-
-        ui->code->clear();
-        ui->description->clear();
-        ui->sql_editor->clear();
-        ui->parameter_table->clear();
-        ui->order_table->clear();
-        ui->column_table->clear();
-
-        ui->code->setText(data.getCode());
-        ui->description->setText(data.getDescription());
-        ui->sql_editor->setText(data.getQueryText());
-
-        ui->parameter_table->setRowCount(data.getParameters().count());
-
-        int row = 0;
-        foreach(QueryParameter *param, data.getParameters()) {
-            item = new QTableWidgetItem(param->getCode());
-            ui->parameter_table->setItem(row, 0, item);
-            item = new QTableWidgetItem(param->getDescription());
-            ui->parameter_table->setItem(row, 1, item);
-            item = new QTableWidgetItem();
-            item->setFlags(item->flags() & ~ Qt::ItemIsEditable);
-            item->data(Qt::CheckStateRole);
-            if (param->getMandatory())
-                item->setCheckState(Qt::Checked);
-            else {
-                item->setCheckState(Qt::Unchecked);
-            }
-            ui->parameter_table->setItem(row, 2, item);
-            row++;
-        }
-
-        ui->order_table->setRowCount(data.getOrders().count());
-
-        row = 0;
-        foreach(QueryOrder *order, data.getOrders()) {
-            item = new QTableWidgetItem(order->getDescription());
-            ui->order_table->setItem(row, 0, item);
-            item = new QTableWidgetItem(order->getFields());
-            ui->order_table->setItem(row, 1, item);
-            row++;
-        }
-
-        ui->column_table->setRowCount(data.getColumns().count());
-
-        row = 0;
-        foreach(QueryColumn *column, data.getColumns()) {            
-            item = new QTableWidgetItem(column->getTitle());
-            ui->column_table->setItem(row, 0, item);
-            item = new QTableWidgetItem(QString("%1").arg(column->getWidth()));
-            ui->column_table->setItem(row, 1, item);
-            row++;
-        }
-
-        is_modified = false;
-
+bool QueryModel::openFile(QFile &file)
+{    
+    if (data.loadFromFile(file)) {
+        dataToEditors();
         return true;
     } else
         return false;
+}
+
+void QueryModel::dataToEditors()
+{
+    QTableWidgetItem *item;
+
+    ui->code->clear();
+    ui->description->clear();
+    ui->sql_editor->clear();
+    ui->parameter_table->clear();
+    ui->order_table->clear();
+    ui->column_table->clear();
+
+    ui->code->setText(data.getCode());
+    ui->description->setText(data.getDescription());
+    ui->sql_editor->setText(data.getQueryText());
+
+    ui->parameter_table->setRowCount(data.getParameters().count());
+
+    int row = 0;
+    foreach(QueryParameter *param, data.getParameters()) {
+        item = new QTableWidgetItem(param->getCode());
+        ui->parameter_table->setItem(row, 0, item);
+        item = new QTableWidgetItem(param->getDescription());
+        ui->parameter_table->setItem(row, 1, item);
+        item = new QTableWidgetItem();
+        item->setFlags(item->flags() & ~ Qt::ItemIsEditable);
+        item->data(Qt::CheckStateRole);
+        if (param->getMandatory())
+            item->setCheckState(Qt::Checked);
+        else {
+            item->setCheckState(Qt::Unchecked);
+        }
+        ui->parameter_table->setItem(row, 2, item);
+        row++;
+    }
+
+    ui->order_table->setRowCount(data.getOrders().count());
+
+    row = 0;
+    foreach(QueryOrder *order, data.getOrders()) {
+        item = new QTableWidgetItem(order->getDescription());
+        ui->order_table->setItem(row, 0, item);
+        item = new QTableWidgetItem(order->getFields());
+        ui->order_table->setItem(row, 1, item);
+        row++;
+    }
+
+    ui->column_table->setRowCount(data.getColumns().count());
+
+    row = 0;
+    foreach(QueryColumn *column, data.getColumns()) {
+        item = new QTableWidgetItem(column->getTitle());
+        ui->column_table->setItem(row, 0, item);
+        item = new QTableWidgetItem(QString("%1").arg(column->getWidth()));
+        ui->column_table->setItem(row, 1, item);
+        row++;
+    }
+
+    is_modified = false;
+}
+
+void QueryModel::editorsToData()
+{
+    data.setCode(ui->code->text());
+    data.setDescription(ui->description->text());
+    data.setQueryText(ui->sql_editor->text());
+
+    qDeleteAll(data.getParameters());
+    data.getParameters().clear();
+
+    qDeleteAll(data.getColumns());
+    data.getColumns().clear();
+
+    qDeleteAll(data.getOrders());
+    data.getOrders().clear();
+
+
+    for (int row = 0; row < ui->parameter_table->rowCount(); row++ )
+    {
+        data.getParameters().append(
+                    new QueryParameter(ui->parameter_table->item(row,0)->text(),
+                                       ui->parameter_table->item(row,1)->text(),
+                                       (ui->parameter_table->item(row,2)->checkState())));
+    }
+
+    for (int row = 0; row < ui->order_table->rowCount(); row++ )
+    {
+        data.getOrders().append(
+                    new QueryOrder(
+                            ui->order_table->item(row,0)->text(),
+                            ui->order_table->item(row,1)->text()));
+    }
+
+    for (int row = 0; row < ui->column_table->rowCount(); row++ )
+    {
+        data.getColumns().append(
+                    new QueryColumn(
+                            ui->column_table->item(row,0)->text(),
+                            ui->column_table->item(row,1)->text().toInt()));
+    }
+
 }
 
 void QueryModel::initializeParameters()
@@ -141,7 +188,36 @@ void QueryModel::initializeColumns()
 
 void QueryModel::saveFile()
 {
+    if (file_name == "") {
+        file_name = QFileDialog::getSaveFileName(this, "Save Model File", default_path,
+                                                 "Model files (*.xml);;All files (*.*)");
+        if (file_name != "") {
+            editorsToData();
+            data.saveModel(file_name);
+            is_modified = false;
+        } else {
+            return;
+        }
+    } else {
+       editorsToData();
+       data.saveModel(file_name);
+    }
+}
 
+void QueryModel::saveFileAs()
+{
+    QString alt_file_name;
+
+    alt_file_name = QFileDialog::getSaveFileName(this, "Save Model File", default_path,
+                                             "Model files (*.xml);;All files (*.*)");
+    if (alt_file_name != "") {
+        editorsToData();
+        data.saveModel(alt_file_name);
+        file_name = alt_file_name;
+        is_modified = false;
+    } else {
+        return;
+    }
 }
 
 void QueryModel::on_bt_add_parameter_clicked()
@@ -338,6 +414,8 @@ bool QueryModel::canCloseOrReplace()
 {
     QMessageBox msgBox;
     QString file_name;
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    QString path = settings.value("path_to_models", "").toString();
 
     if (is_modified) {
         msgBox.setText(QString("The query model has been modified."));
@@ -348,9 +426,9 @@ bool QueryModel::canCloseOrReplace()
 
         switch(ret) {
             case QMessageBox::Save:
-                file_name = QFileDialog::getSaveFileName(this, "Save SQL File", "./", "sql files (*.sql);;All files (*.*)");
+                file_name = QFileDialog::getSaveFileName(this, "Save Model File", path, "Model files (*.xml);;All files (*.*)");
                 if (file_name != "") {
-                    if (!data.saveModel())
+                    if (!data.saveModel(file_name))
                         return false;
                 } else {
                     return false;

@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QValidator>
 #include <QTableWidgetItem>
+#include <QFile>
 
 namespace Ui {
 class QueryModel;
@@ -31,7 +32,8 @@ public:
     explicit QueryModel(ConnectionsData &connections, QWidget *parent = nullptr);
     ~QueryModel();
     void saveFile();
-    bool openFile();
+    void saveFileAs();
+    bool openFile(QFile &file);
     bool canCloseOrReplace();
 private slots:
     void on_bt_add_parameter_clicked();
@@ -47,22 +49,26 @@ private slots:
     void on_bt_column_down_clicked();
     void on_bt_test_query_clicked();    
     void on_sql_editor_textChanged();
-
     void on_parameter_table_itemChanged(QTableWidgetItem *item);
-
     void on_order_table_itemChanged(QTableWidgetItem *item);
-
     void on_column_table_itemChanged(QTableWidgetItem *item);
 
 private:
     Ui::QueryModel *ui;
     QueryModelData data;
+    void dataToEditors();
+    void editorsToData();
     void initializeParameters();
     void initializeOrders();
     void initializeColumns();
-    void initializeEditor();    
+    void initializeEditor();
     bool is_modified;
+    QString file_name;
+    QString default_path;
     ConnectionsData &connections;
+
+
+
 };
 
 #endif // QUERYMODEL_H

@@ -20,6 +20,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QFileInfo>
+#include <QFile>
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
@@ -84,29 +86,22 @@ bool SqlTool::closeAllEditors() {
     return true;
 }
 
-bool SqlTool::openFileOnCurrent()
+bool SqlTool::openFileOnCurrent(QFile &file)
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    QString file_name;
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QString path = settings.value("path_to_sql", "").toString();
 
-    file_name = QFileDialog::getOpenFileName(this, "Open SQL File", path, "sql files (*.sql);; All files (*.*)");
+    if (!editor)
+        editor = addEditor();
 
-    if(file_name != "") {
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
 
-        QFile file(file_name);
-        if (!editor)
-            editor = addEditor();
-
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            return false;
-        QTextStream in(&file);
-        editor->setText(in.readAll());
-        editor->setIsModified(false);
-        return true;
-    }
-    return false;
+    QTextStream in(&file);
+    editor->setText(in.readAll());
+    editor->setIsModified(false);
+    return true;
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {

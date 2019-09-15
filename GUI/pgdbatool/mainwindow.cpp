@@ -143,52 +143,40 @@ void MainWindow::setConnectionsList()
         ui->connection_list->setCurrentRow(0);
 }
 
-void MainWindow::openNewSQLTool()
+SqlTool *MainWindow::openNewSQLTool(QString name)
 {
     SqlTool *sql;
-    bool ok;
-    QTreeWidgetItem *tree_item;
-    QString text;
 
-    text = QString("New Sql Tool %1").arg(ui->main_stack->count()+1);
+    if (!name.isEmpty()) {
 
-    text = QInputDialog::getText(this, tr("New SQL Tool Set"),
-                                             tr("Set Name:"), QLineEdit::Normal,
-                                             text, &ok);
-
-    if (ok && !text.isEmpty()) {
-
-        new QListWidgetItem(text, ui->editor_list);
+        new QListWidgetItem(name, ui->editor_list);
         sql = new SqlTool(connections, ui->main_stack);
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(sql);        
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+
+        return sql;
     }
+    return nullptr;
 }
 
-void MainWindow::openNewQueryModel()
+QueryModel *MainWindow::openNewQueryModel(QString name)
 {
     QueryModel *qmod;
-    QTreeWidgetItem *tree_item;
-    bool ok;    
-    QString text;
 
-    text = QString("New Query Model %1").arg(ui->main_stack->count()+1);
+    if (!name.isEmpty()) {
 
-    text = QInputDialog::getText(this, tr("New Query Model"),
-                                             tr("Qeury Model Name:"), QLineEdit::Normal,
-                                             text, &ok);
-
-    if (ok && !text.isEmpty()) {
-
-        new QListWidgetItem(text, ui->editor_list);
+        new QListWidgetItem(name, ui->editor_list);
         qmod = new QueryModel(connections, ui->main_stack);
         ui->main_stack->addWidget(qmod);
         ui->main_stack->setCurrentWidget(qmod);        
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+
+        return qmod;
     }
+    return nullptr;
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -199,15 +187,18 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionNew_triggered()
 {
     DlgMenuNew *dlg = new DlgMenuNew(this);
+    QString name;
 
     if (dlg->exec() == QDialog::Accepted) {
 
         switch(dlg->getSelection()) {
         case 0:
-            openNewSQLTool();
+            name = QString("New Sql Tool %1").arg(ui->main_stack->count()+1);
+            openNewSQLTool(name);
             break;
         case 1:
-            openNewQueryModel();
+            name = QString("New Query Model %1").arg(ui->main_stack->count()+1);
+            openNewQueryModel(name);
             break;
         }
     }
@@ -217,14 +208,36 @@ void MainWindow::on_actionOpen_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
+    QString file_name;
+    QFile file;
 
     if (sql) {
-        sql->openFileOnCurrent();
+        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql, "SQL files (*.sql);;All files (*.*))");
+        if (file_name != "") {
+            file.setFileName(file_name);
+            sql->openFileOnCurrent(file);
+            ui->editor_list->currentItem()->setText(QFileInfo(file).baseName());
+        }
     } else if (model) {
-        model->openFile();
+        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_models, "Model files (*.xml);;All files (*.*))");
+        if (file_name != "") {
+            file.setFileName(file_name);
+            model->openFile(file);
+            ui->editor_list->currentItem()->setText(QFileInfo(file).baseName());
+        }
     } else {
-        QString file_name;
-        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql, "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
+        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql,
+                                                 "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
+        if (file_name != "") {
+            QFile file(file_name);
+            if (QFileInfo(file).suffix().toLower() == "sql") {
+                    sql = openNewSQLTool(QFileInfo(file).baseName());
+                    sql->openFileOnCurrent(file);
+            } else {
+                model = openNewQueryModel(QFileInfo(file).baseName());
+                model->openFile(file);
+            }
+         }
     }
 }
 
@@ -233,17 +246,23 @@ void MainWindow::on_actionSave_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
 
+    if (model)
+        model->saveFile();
 
 }
 
 void MainWindow::on_actionSave_As_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
 
+    if (model)
+        model->saveFileAs();
 }
 
 void MainWindow::on_actionSQL_Tool_triggered()
 {
-    openNewSQLTool();
+    openNewSQLTool(QString("New Sql Tool %1").arg(ui->main_stack->count()+1));
 }
 
 void MainWindow::on_actionManageConnections_triggered()
