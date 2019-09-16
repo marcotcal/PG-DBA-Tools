@@ -39,6 +39,18 @@ QVariant ConnectionElement::getParameter(QString param)
     return parameters[param];
 }
 
+QString ConnectionElement::connectStr()
+{        
+    QMap<QString, QVariant>::iterator i;
+    QString cr = "";
+
+    for(i = parameters.begin(); i != parameters.end(); ++i) {
+        if (!i.value().isNull())
+            cr += i.key() + "=" + i.value().toString() + " ";
+    }
+    return cr;
+}
+
 ConnectionsData::ConnectionsData()
 {
 
@@ -162,4 +174,3 @@ void ConnectionsData::sortByName()
     std::sort(connections.begin(), connections.end(),
               [](ConnectionElement *a, ConnectionElement *b) -> bool { return a->name() < b->name(); });
 }
-

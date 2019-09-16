@@ -71,6 +71,9 @@ SqlTool::~SqlTool()
 
     for (int i = 0; i < count; i++)
       delete (editors.takeAt(0));
+
+    if (is_connected)
+        databaseDisconnect();
 }
 
 bool SqlTool::closeAllEditors() {
@@ -188,13 +191,24 @@ bool SqlTool::connected() {
 }
 
 void SqlTool::databaseConnect() {
+    QMessageBox msg;
+    QString conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
+    conn = PQconnectdb(conn_str.toStdString().c_str());
 
-    ui->led_connected->setStyleSheet("background-color:#00FF00;border-radius:6;");
-    is_connected = true;
+    if (PQstatus(conn) == CONNECTION_OK) {
+        ui->connection_list->setEnabled(false);
+        ui->led_connected->setStyleSheet("background-color:#00FF00;border-radius:6;");
+        is_connected = true;
+        return;
+    }
+    msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
+    msg.exec();
 }
 
 void SqlTool::databaseDisconnect() {
 
+    PQfinish(conn);
+    ui->connection_list->setEnabled(true);
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
     is_connected = false;
 }
@@ -204,6 +218,16 @@ bool SqlTool::transaction() {
 }
 
 void SqlTool::beginTransaction() {
+    QMessageBox msg;
+
+    PGresult *res = PQexec(conn, "BEGIN");
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        msg.setText(QString("BEGIN command failed: %1").arg(PQerrorMessage(conn)));
+        msg.exec();
+        PQclear(res);
+        return;
+    }
 
     ui->led_transaction->setStyleSheet("background-color:#FFE000;border-radius:6;");
     in_transaction = true;
@@ -211,15 +235,78 @@ void SqlTool::beginTransaction() {
 
 void SqlTool::executeCurrent() {
 
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    QMessageBox msg;
+
+    PGresult *res = PQexec(conn, editor->text().toStdString().c_str());
+
+    switch(PQresultStatus(res)) {
+
+    case PGRES_EMPTY_QUERY:
+        msg.setText("Empty query");
+        msg.exec();
+        break;
+    case PGRES_COMMAND_OK:
+        msg.setText("Command Ok");
+        msg.exec();
+        break;
+    case PGRES_TUPLES_OK:
+        msg.setText("Tuples Ok query");
+        msg.exec();
+        break;
+    case PGRES_SINGLE_TUPLE:
+
+        break;
+    case PGRES_COPY_IN:
+
+        break;
+    case PGRES_COPY_OUT:
+
+        break;
+    case PGRES_COPY_BOTH:
+
+        break;
+    case PGRES_BAD_RESPONSE:
+
+        break;
+    case PGRES_FATAL_ERROR:
+
+        break;
+    case PGRES_NONFATAL_ERROR:
+
+        break;
+    }
+    PQclear(res);
 }
 
 void SqlTool::rollback() {
+
+    QMessageBox msg;
+
+    PGresult *res = PQexec(conn, "ROLLBACK");
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        msg.setText(QString("ROLLBACK command failed: %1").arg(PQerrorMessage(conn)));
+        msg.exec();
+        PQclear(res);
+        return;
+    }
 
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
     in_transaction = false;
 }
 
 void SqlTool::commit() {
+    QMessageBox msg;
+
+    PGresult *res = PQexec(conn, "COMMIT");
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        msg.setText(QString("COMMIT command failed: %1").arg(PQerrorMessage(conn)));
+        msg.exec();
+        PQclear(res);
+        return;
+    }
 
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
     in_transaction = false;

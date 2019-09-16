@@ -22,7 +22,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0,0,0,0" columnminimumwidth="0,0,0,0,0">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,1,0,0">
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -35,14 +35,21 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="spacing">
+      <property name="horizontalSpacing">
+       <number>2</number>
+      </property>
+      <property name="verticalSpacing">
        <number>0</number>
       </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Connection</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QCheckBox" name="limit_result">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(233, 233, 233);</string>
-        </property>
         <property name="text">
          <string>Limit Result By</string>
         </property>
@@ -51,7 +58,73 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="3">
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Run on Save Point Context</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>T</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>C</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QComboBox" name="connection_list">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="line_limit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximum">
+         <number>999999</number>
+        </property>
+        <property name="value">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="3">
        <widget class="QWidget" name="led_transaction" native="true">
         <property name="minimumSize">
          <size>
@@ -70,17 +143,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(233, 233, 233);</string>
-        </property>
-        <property name="text">
-         <string>Connection</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
+      <item row="1" column="4">
        <widget class="QWidget" name="led_connected" native="true">
         <property name="minimumSize">
          <size>
@@ -96,81 +159,6 @@
         </property>
         <property name="toolTipDuration">
          <number>-9</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" rowspan="3">
-       <widget class="QSpinBox" name="line_limit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximum">
-         <number>999999</number>
-        </property>
-        <property name="value">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" rowspan="3">
-       <widget class="QComboBox" name="connection_list">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>300</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="2">
-       <widget class="QCheckBox" name="checkBox">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(233, 233, 233);</string>
-        </property>
-        <property name="text">
-         <string>Run on Save Point Context</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="label_2">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(233, 233, 233);background-color: rgb(233, 233, 233);</string>
-        </property>
-        <property name="text">
-         <string>T</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="label_3">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(233, 233, 233);</string>
-        </property>
-        <property name="text">
-         <string>C</string>
         </property>
        </widget>
       </item>

@@ -14,8 +14,9 @@ public:
     void addParameter(QString param, QVariant value);
     QMap<QString, QVariant> getParameters();
     QVariant getParameter(QString param);
+    QString connectStr();
 private:    
-    QString connection_name;
+    QString connection_name;    
     QMap<QString, QVariant> parameters;
 };
 
@@ -28,7 +29,7 @@ public:
     void writeConnections();
     QList<ConnectionElement *> &getConnections();
     ConnectionElement *newConnection();
-    void sortByName();
+    void sortByName();    
 private:
     QList<ConnectionElement *> connections;
 };

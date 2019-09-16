@@ -25,6 +25,7 @@
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
 #include "connectionsdata.h"
+#include <libpq-fe.h>
 
 namespace Ui {
 class SqlTool;
@@ -73,6 +74,7 @@ private:
     bool in_transaction;
     bool is_connected;
     ConnectionsData &connections;
+    PGconn *conn;
 
     void initializeEditor(EditorItem *editor);
 };

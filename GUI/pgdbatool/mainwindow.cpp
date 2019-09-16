@@ -442,5 +442,7 @@ void MainWindow::on_bt_html_clicked()
 
 void MainWindow::on_actionExecute_triggered()
 {
-
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql)
+        sql->executeCurrent();
 }
