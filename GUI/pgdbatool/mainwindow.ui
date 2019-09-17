@@ -285,7 +285,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPlainTextEdit" name="plainTextEdit">
+          <widget class="QPlainTextEdit" name="text_output">
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>
@@ -347,6 +347,25 @@
          </item>
         </layout>
        </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_4">
+   <property name="windowTitle">
+    <string>Messages</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QPlainTextEdit" name="message_output">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>

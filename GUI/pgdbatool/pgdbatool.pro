@@ -33,7 +33,9 @@ SOURCES += \
     dlgmenunew.cpp \
     querymodel.cpp \
     dlgconfiguration.cpp \
-    querymodeldata.cpp
+    querymodeldata.cpp \
+    resultoutput.cpp \
+    plaintextoutput.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -44,7 +46,9 @@ HEADERS += \
     dlgmenunew.h \
     querymodel.h \
     dlgconfiguration.h \
-    querymodeldata.h
+    querymodeldata.h \
+    resultoutput.h \
+    plaintextoutput.h
 
 FORMS += \
     mainwindow.ui \

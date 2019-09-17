@@ -233,26 +233,25 @@ void SqlTool::beginTransaction() {
     in_transaction = true;
 }
 
-void SqlTool::executeCurrent() {
+void SqlTool::executeCurrent(ResultOutput* output) {
 
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QMessageBox msg;
 
     PGresult *res = PQexec(conn, editor->text().toStdString().c_str());
 
+    output->cleanMessage();
+
     switch(PQresultStatus(res)) {
 
     case PGRES_EMPTY_QUERY:
-        msg.setText("Empty query");
-        msg.exec();
+        output->generateStatusMessage(res);
         break;
     case PGRES_COMMAND_OK:
-        msg.setText("Command Ok");
-        msg.exec();
+        output->generateStatusMessage(res);
         break;
-    case PGRES_TUPLES_OK:
-        msg.setText("Tuples Ok query");
-        msg.exec();
+    case PGRES_TUPLES_OK:    
+        output->generateOutput(res);
         break;
     case PGRES_SINGLE_TUPLE:
 
@@ -267,13 +266,16 @@ void SqlTool::executeCurrent() {
 
         break;
     case PGRES_BAD_RESPONSE:
-
+        output->generateError(conn);
+        output->generateStatusMessage(res);
         break;
     case PGRES_FATAL_ERROR:
-
+        output->generateError(conn);
+        output->generateStatusMessage(res);
         break;
     case PGRES_NONFATAL_ERROR:
-
+        output->generateError(conn);
+        output->generateStatusMessage(res);
         break;
     }
     PQclear(res);

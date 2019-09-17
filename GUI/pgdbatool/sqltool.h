@@ -21,6 +21,7 @@
 #define SQLTOOL_H
 
 #include <QWidget>
+#include "resultoutput.h"
 #include "Qsci/qsciscintilla.h"
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
@@ -60,7 +61,7 @@ public:
     void databaseDisconnect();
     bool transaction();
     void beginTransaction();
-    void executeCurrent();
+    void executeCurrent(ResultOutput* output);
     void rollback();
     void commit();
     bool closeAllEditors();

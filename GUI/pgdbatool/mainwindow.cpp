@@ -20,6 +20,7 @@
 #include "dlgmenunew.h"
 #include "dlgconnections.h"
 #include "dlgconfiguration.h"
+#include "plaintextoutput.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -443,6 +444,16 @@ void MainWindow::on_bt_html_clicked()
 void MainWindow::on_actionExecute_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    if (sql)
-        sql->executeCurrent();
+    if (sql) {
+        switch(ui->output_stack->currentIndex()) {
+        case 0:
+            sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this));
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+        }
+    }
+
 }
