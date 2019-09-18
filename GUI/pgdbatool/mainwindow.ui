@@ -46,7 +46,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Fi&amp;le</string>
     </property>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
@@ -133,7 +133,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="windowTitle">
-    <string>Connections</string>
+    <string>&amp;Connections</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -148,7 +148,7 @@
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>SQL Editors</string>
+    <string>S&amp;QL Editors</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -166,7 +166,7 @@
     <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Output</string>
+    <string>&amp;Output</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -286,6 +286,11 @@
          </property>
          <item>
           <widget class="QPlainTextEdit" name="text_output">
+           <property name="font">
+            <font>
+             <family>Courier 10 Pitch</family>
+            </font>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>
@@ -354,7 +359,7 @@
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
    <property name="windowTitle">
-    <string>Messages</string>
+    <string>&amp;Messages</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -363,6 +368,11 @@
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QPlainTextEdit" name="message_output">
+       <property name="font">
+        <font>
+         <family>Courier 10 Pitch</family>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -377,7 +387,7 @@
      <normaloff>:/icons/images/icons/icons8-exit-sign-40.png</normaloff>:/icons/images/icons/icons8-exit-sign-40.png</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
   </action>
   <action name="actionNew">
@@ -386,7 +396,7 @@
      <normaloff>:/icons/images/icons/icons8-add-file-40.png</normaloff>:/icons/images/icons/icons8-add-file-40.png</iconset>
    </property>
    <property name="text">
-    <string>New...</string>
+    <string>&amp;New...</string>
    </property>
   </action>
   <action name="actionOpen">
@@ -395,7 +405,7 @@
      <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>&amp;Open</string>
    </property>
   </action>
   <action name="actionSave">
@@ -404,7 +414,7 @@
      <normaloff>:/icons/images/icons/icons8-save-40.png</normaloff>:/icons/images/icons/icons8-save-40.png</iconset>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
    </property>
   </action>
   <action name="actionSave_As">
@@ -413,7 +423,7 @@
      <normaloff>:/icons/images/icons/icons8-save-as-40.png</normaloff>:/icons/images/icons/icons8-save-as-40.png</iconset>
    </property>
    <property name="text">
-    <string>Save As...</string>
+    <string>Sa&amp;ve As...</string>
    </property>
   </action>
   <action name="actionSQL_Tool">
@@ -422,7 +432,7 @@
      <normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</iconset>
    </property>
    <property name="text">
-    <string>SQL Tool</string>
+    <string>&amp;SQL Tool</string>
    </property>
   </action>
   <action name="actionManageConnections">
@@ -431,7 +441,7 @@
      <normaloff>:/icons/images/icons/icons8-database-administrator-48.png</normaloff>:/icons/images/icons/icons8-database-administrator-48.png</iconset>
    </property>
    <property name="text">
-    <string>Manage Connections</string>
+    <string>&amp;Manage Connections</string>
    </property>
   </action>
   <action name="actionDatabase_to_Database">
@@ -440,7 +450,7 @@
      <normaloff>:/icons/images/icons/icons8-copy-40.png</normaloff>:/icons/images/icons/icons8-copy-40.png</iconset>
    </property>
    <property name="text">
-    <string>Database to Database</string>
+    <string>&amp;Database to Database</string>
    </property>
   </action>
   <action name="actionAdd_Editor">
@@ -449,7 +459,7 @@
      <normaloff>:/icons/images/icons/icons8-edit-file-40.png</normaloff>:/icons/images/icons/icons8-edit-file-40.png</iconset>
    </property>
    <property name="text">
-    <string>Add Editor</string>
+    <string>&amp;Add Editor</string>
    </property>
   </action>
   <action name="actionClose_Editor">
@@ -458,7 +468,7 @@
      <normaloff>:/icons/images/icons/icons8-delete-file-40.png</normaloff>:/icons/images/icons/icons8-delete-file-40.png</iconset>
    </property>
    <property name="text">
-    <string>Close Editor</string>
+    <string>&amp;Close Editor</string>
    </property>
   </action>
   <action name="actionCreate_Database">
@@ -467,7 +477,7 @@
      <normaloff>:/icons/images/icons/icons8-add-database-48.png</normaloff>:/icons/images/icons/icons8-add-database-48.png</iconset>
    </property>
    <property name="text">
-    <string>Create Database</string>
+    <string>&amp;Create Database</string>
    </property>
   </action>
   <action name="actionDrop_Database">
@@ -476,7 +486,7 @@
      <normaloff>:/icons/images/icons/icons8-delete-database-48.png</normaloff>:/icons/images/icons/icons8-delete-database-48.png</iconset>
    </property>
    <property name="text">
-    <string>Drop Database</string>
+    <string>D&amp;rop Database</string>
    </property>
   </action>
   <action name="actionStart_Transaction">
@@ -485,7 +495,7 @@
      <normaloff>:/icons/images/icons/icons8-tollbooth-40.png</normaloff>:/icons/images/icons/icons8-tollbooth-40.png</iconset>
    </property>
    <property name="text">
-    <string>Start Transaction</string>
+    <string>Start Tra&amp;nsaction</string>
    </property>
   </action>
   <action name="actionRollback_Transaction">
@@ -494,7 +504,7 @@
      <normaloff>:/icons/images/icons/icons8-cancel-40.png</normaloff>:/icons/images/icons/icons8-cancel-40.png</iconset>
    </property>
    <property name="text">
-    <string>Rollback Transaction</string>
+    <string>&amp;Rollback Transaction</string>
    </property>
   </action>
   <action name="actionCommit_Transaction">
@@ -503,7 +513,7 @@
      <normaloff>:/icons/images/icons/icons8-below-40.png</normaloff>:/icons/images/icons/icons8-below-40.png</iconset>
    </property>
    <property name="text">
-    <string>Commit Transaction</string>
+    <string>Co&amp;mmit Transaction</string>
    </property>
   </action>
   <action name="actionManage_Plugins">
@@ -512,12 +522,12 @@
      <normaloff>:/icons/images/icons/icons8-module-40.png</normaloff>:/icons/images/icons/icons8-module-40.png</iconset>
    </property>
    <property name="text">
-    <string>Manage Plugins</string>
+    <string>&amp;Manage Plugins</string>
    </property>
   </action>
   <action name="actionAbout_Program">
    <property name="text">
-    <string>About Program...</string>
+    <string>&amp;About Program...</string>
    </property>
   </action>
   <action name="actionConnect">
@@ -526,7 +536,7 @@
      <normaloff>:/icons/images/icons/icons8-connected-40.png</normaloff>:/icons/images/icons/icons8-connected-40.png</iconset>
    </property>
    <property name="text">
-    <string>Connect</string>
+    <string>C&amp;onnect</string>
    </property>
   </action>
   <action name="actionDisconect">
@@ -535,17 +545,17 @@
      <normaloff>:/icons/images/icons/icons8-disconnected-40.png</normaloff>:/icons/images/icons/icons8-disconnected-40.png</iconset>
    </property>
    <property name="text">
-    <string>Disconect</string>
+    <string>&amp;Disconect</string>
    </property>
   </action>
   <action name="actionConfigurations">
    <property name="text">
-    <string>Configurations</string>
+    <string>&amp;Configurations</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
-    <string>Close</string>
+    <string>&amp;Close</string>
    </property>
   </action>
   <action name="actionExecute">
@@ -554,7 +564,7 @@
      <normaloff>:/icons/images/icons/icons8-gears-48.png</normaloff>:/icons/images/icons/icons8-gears-48.png</iconset>
    </property>
    <property name="text">
-    <string>Execute</string>
+    <string>&amp;Execute</string>
    </property>
   </action>
  </widget>
