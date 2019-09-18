@@ -431,6 +431,16 @@ void MainWindow::on_bt_txt_clicked()
 
 }
 
+void MainWindow::on_bt_xml_clicked()
+{
+    ui->output_stack->setCurrentIndex(0);
+}
+
+void MainWindow::on_bt_json_clicked()
+{
+    ui->output_stack->setCurrentIndex(0);
+}
+
 void MainWindow::on_bt_grid_clicked()
 {
     ui->output_stack->setCurrentIndex(1);

@@ -10,45 +10,67 @@ void PlainTextOutput::generateOutput(PGresult *res)
 {
     int tuples = PQntuples(res);
     int columns = PQnfields(res);    
-    QMap<int, QVariant> row;
-    QList< QMap<int, QVariant>> rows;
+    QString line_separator = "";
+    QList<QVariant> row;
+    QList<QList<QVariant>> rows;
+    QList<QString> fields;
+    QList<int> max_field_lengths;
     cleanMessage();
 
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
     messages->insertPlainText(QString("Number of columns returned by the last command: %1\n").arg(columns));
 
-    for (int i = 0; i < columns; i++) {
-        messages->insertPlainText(QString("%1 - %2 - %3 - %4\n").arg(PQfname(res, i))
-                                  .arg(PQftype(res,i)).arg(PQfmod(res,i)).arg(PQgetlength(res,1,i)));
-    }
-
     dynamic_cast<QPlainTextEdit *>(output)->clear();
 
-    /*
+    // get field names
     for (int i = 0; i < columns; i++) {
-        QString cell;
-        cell.sprintf("%-15s", PQfname(res, i));
-        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(cell);
+        fields.append(QString::fromStdString(PQfname(res, i)));
+        max_field_lengths.append(QString::fromStdString(PQfname(res, i)).length());
     }
-    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("\n");
-    */
 
-
+    // get values
     for (int i = 0; i < tuples; i++)
     {
+        row.clear();
         for (int j = 0; j < columns; j++) {
             QVariant value = QString::fromStdString(PQgetvalue(res, i, j));
-            row[i] = value;
+            row.append(value);
         }
         rows.append(row);
     }
 
-    foreach(row, rows) {
-        for (QMap<int, QVariant>::iterator it = row.begin(); it != row.end(); it++ ) {
-            QString cell;
-            cell.sprintf("%-15s", it.value().toString());
-            dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(cell);
+    for (int c = 0; c < fields.count(); c++) {
+        for(int r = 0; r < rows.count(); r++) {
+            if (max_field_lengths.at(c) < rows.at(r).at(c).toString().length())
+                max_field_lengths.replace(c, rows.at(r).at(c).toString().length());
         }
     }
+
+    line_separator += "+";
+    for(int c = 0; c < fields.count(); c++) {
+        QString rep = "-";
+        line_separator += rep.repeated(max_field_lengths.at(c))+"+";
+    }
+    line_separator += "\n";
+
+    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
+    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("|");
+    for(int c = 0; c < fields.count(); c++) {
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(
+                    fields.at(c).leftJustified(max_field_lengths.at(c)) + "|");
+    }
+    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("\n");
+    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
+
+    for (int r = 0; r < rows.count(); r++) {
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("|");
+        for (int c = 0; c < rows.at(r).count(); c++) {
+            dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(
+                        rows.at(r).at(c).toString()
+                        .leftJustified(max_field_lengths.at(c)) + "|");
+        }
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("\n");
+    }
+    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
 
 }

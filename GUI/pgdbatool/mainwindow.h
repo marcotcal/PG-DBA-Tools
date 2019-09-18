@@ -71,6 +71,10 @@ private slots:
 
     void on_actionExecute_triggered();
 
+    void on_bt_xml_clicked();
+
+    void on_bt_json_clicked();
+
 private:
     Ui::MainWindow *ui;
 
