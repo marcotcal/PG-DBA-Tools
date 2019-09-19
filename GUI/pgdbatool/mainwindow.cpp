@@ -21,6 +21,7 @@
 #include "dlgconnections.h"
 #include "dlgconfiguration.h"
 #include "plaintextoutput.h"
+#include "xmltextoutput.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -107,6 +108,8 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
 {    
     ui->actionAdd_Editor->setEnabled(true);
     ui->actionClose_Editor->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionSave_As->setEnabled(true);
 
     ui->actionConnect->setEnabled(!sql->connected());
     ui->actionDisconect->setEnabled(sql->connected());
@@ -135,6 +138,8 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
     ui->actionCommit_Transaction->setEnabled(sql->transaction());
     ui->actionRollback_Transaction->setEnabled(sql->transaction());
     ui->actionExecute->setEnabled(sql->transaction());
+    ui->actionSave->setEnabled(true);
+    ui->actionSave_As->setEnabled(true);
 }
 
 void MainWindow::setConnectionsList()
@@ -220,7 +225,7 @@ void MainWindow::on_actionOpen_triggered()
         file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql, "SQL files (*.sql);;All files (*.*))");
         if (file_name != "") {
             file.setFileName(file_name);
-            sql->openFileOnCurrent(file);
+            sql->openFileOnCurrent(file);            
             ui->editor_list->currentItem()->setText(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
         }
     } else if (model) {
@@ -250,8 +255,9 @@ void MainWindow::on_actionSave_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
-
-    if (model)
+    if (sql)
+        sql->saveCurrent();
+    else if (model)
         model->saveFile();
 
 }
@@ -260,8 +266,9 @@ void MainWindow::on_actionSave_As_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
-
-    if (model)
+    if (sql)
+        sql->saveCurrentAs();
+    else if (model)
         model->saveFileAs();
 }
 
@@ -457,7 +464,10 @@ void MainWindow::on_actionExecute_triggered()
     if (sql) {
         switch(ui->output_stack->currentIndex()) {
         case 0:
-            sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this));
+            if (ui->bt_txt->isChecked())
+                sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this));
+            else if (ui->bt_xml->isChecked())
+                sql->executeCurrent(new XMLTextOutput(ui->text_output, ui->message_output, this));
             break;
         case 1:
             break;

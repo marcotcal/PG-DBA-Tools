@@ -16,6 +16,7 @@ public:
     virtual void generateError(PGconn *conn);
     virtual void generateStatusMessage(PGresult *res);
     void cleanMessage();
+    void setFetchLimit(int value);
 signals:
 
 public slots:
@@ -27,6 +28,7 @@ protected:
     PGresult *result;
     PGconn *connection;
     QTextCursor message_cursor;
+    int fetch_limit;
 
 private:
 

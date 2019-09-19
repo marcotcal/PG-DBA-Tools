@@ -19,6 +19,8 @@ void PlainTextOutput::generateOutput(PGresult *res)
 
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
     messages->insertPlainText(QString("Number of columns returned by the last command: %1\n").arg(columns));
+    if (fetch_limit != -1 && fetch_limit < tuples)
+        messages->insertPlainText(QString("Returned tuples where limited bt: %1 rows \n").arg(fetch_limit));
 
     dynamic_cast<QPlainTextEdit *>(output)->clear();
 
@@ -29,10 +31,10 @@ void PlainTextOutput::generateOutput(PGresult *res)
     }
 
     // get values
-    for (int i = 0; i < tuples; i++)
-    {
+    for (int i = 0; i < (fetch_limit != -1 ? fetch_limit : tuples) && i < tuples; i++)
+    {        
         row.clear();
-        for (int j = 0; j < columns; j++) {
+        for (int j = 0; j < columns; j++) {            
             QVariant value = QString::fromStdString(PQgetvalue(res, i, j));
             row.append(value);
         }

@@ -6,6 +6,7 @@ ResultOutput::ResultOutput(QWidget *output, QPlainTextEdit *messages, QObject *p
     messages(messages)
 {
     message_cursor = messages->textCursor();
+    fetch_limit = -1;
 }
 
 ResultOutput::~ResultOutput()
@@ -30,4 +31,9 @@ void ResultOutput::cleanMessage()
     messages->clear();
     messages->moveCursor(QTextCursor::Start);
 
+}
+
+void ResultOutput::setFetchLimit(int value)
+{
+    fetch_limit = value;
 }

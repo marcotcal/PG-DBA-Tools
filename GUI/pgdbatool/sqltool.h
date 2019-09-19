@@ -41,10 +41,13 @@ public:
     ~EditorItem();
     bool getIsModified();
     void setIsModified(bool value);
+    void setFileName(QString value);
+    const QString &getFileName() const;
 private slots:
     void setAsModified();
 private:
     bool is_modified;
+    QString file_name;
 };
 
 class SqlTool : public QWidget
@@ -66,6 +69,8 @@ public:
     void commit();
     bool closeAllEditors();
     bool openFileOnCurrent(QFile &file);
+    bool saveCurrent();
+    bool saveCurrentAs();
 private slots:
     void on_limit_result_clicked(bool checked);
 
@@ -76,6 +81,7 @@ private:
     bool is_connected;
     ConnectionsData &connections;
     PGconn *conn;
+    QString default_path;
 
     void initializeEditor(EditorItem *editor);
 };

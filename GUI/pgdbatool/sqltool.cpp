@@ -29,10 +29,21 @@
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     connect(this, SIGNAL(textChanged()), this, SLOT(setAsModified()));
+    file_name = "";
 }
 
 void EditorItem::setIsModified(bool value) {
     is_modified = value;
+}
+
+void EditorItem::setFileName(QString value)
+{
+    file_name = value;
+}
+
+const QString &EditorItem::getFileName() const
+{
+    return file_name;
 }
 
 void EditorItem::setAsModified() {
@@ -52,6 +63,7 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
     ui(new Ui::SqlTool),
     connections(connections)
 {
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     ui->setupUi(this);
     addEditor();
     in_transaction = false;
@@ -61,6 +73,7 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
         ConnectionElement *conn = connections.getConnections().at(i);
         ui->connection_list->addItem(conn->name());
     }
+    default_path = settings.value("path_to_sql", "").toString();
 }
 
 SqlTool::~SqlTool()
@@ -101,6 +114,7 @@ bool SqlTool::openFileOnCurrent(QFile &file)
         return false;
 
     QTextStream in(&file);
+    editor->setFileName(file.fileName());
     editor->setText(in.readAll());
     editor->setIsModified(false);
 
@@ -108,6 +122,45 @@ bool SqlTool::openFileOnCurrent(QFile &file)
                                            QFileInfo(file).baseName());
 
     return true;
+}
+
+bool SqlTool::saveCurrent()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        if (editor->isModified()) {
+            if (editor->getFileName() != "") {
+                QFile destination(editor->getFileName());
+                if(destination.open(QIODevice::WriteOnly)) {
+                    QTextStream ts(&destination);
+                    ts << editor->text();
+                    editor->setModified(false);
+                    return true;
+                }
+            } else {
+                return saveCurrentAs();
+            }
+        }
+    }
+    return false;
+}
+
+bool SqlTool::saveCurrentAs()
+{
+    QString file_name;
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        file_name = QFileDialog::getSaveFileName(this, "Save SQL File", default_path, "sql files (*.sql);;All files (*.*)");
+        if (file_name != "") {
+            editor->setFileName(file_name);
+            QFile destination(file_name);
+            if(destination.open(QIODevice::WriteOnly)) {
+                QTextStream ts(&destination);
+                ts << editor->text();
+                editor->setModified(false);
+            }
+        }
+    }
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {
@@ -237,6 +290,9 @@ void SqlTool::executeCurrent(ResultOutput* output) {
 
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QMessageBox msg;
+
+    if (ui->limit_result->isChecked())
+        output->setFetchLimit(ui->line_limit->value());
 
     PGresult *res = PQexec(conn, editor->text().toStdString().c_str());
 

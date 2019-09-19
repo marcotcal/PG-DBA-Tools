@@ -15,6 +15,21 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QStackedWidget" name="main_stack"/>
     </item>
@@ -103,13 +118,18 @@
    <addaction name="actionManageConnections"/>
    <addaction name="actionCreate_Database"/>
    <addaction name="actionDrop_Database"/>
-   <addaction name="actionSQL_Tool"/>
-   <addaction name="actionConnect"/>
-   <addaction name="actionDisconect"/>
+   <addaction name="separator"/>
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionSave_As"/>
+   <addaction name="separator"/>
+   <addaction name="actionSQL_Tool"/>
    <addaction name="actionAdd_Editor"/>
    <addaction name="actionClose_Editor"/>
+   <addaction name="separator"/>
+   <addaction name="actionConnect"/>
+   <addaction name="actionDisconect"/>
    <addaction name="actionStart_Transaction"/>
    <addaction name="actionRollback_Transaction"/>
    <addaction name="actionCommit_Transaction"/>
