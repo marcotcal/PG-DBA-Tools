@@ -344,7 +344,7 @@
      <item>
       <widget class="QStackedWidget" name="output_stack">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="pg_text">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -404,7 +404,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QTableWidget" name="tableWidget"/>
+          <widget class="QTableWidget" name="grid_output"/>
          </item>
         </layout>
        </widget>
@@ -426,7 +426,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QWebEngineView" name="webEngineView">
+          <widget class="QWebEngineView" name="html_output">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
              <horstretch>0</horstretch>

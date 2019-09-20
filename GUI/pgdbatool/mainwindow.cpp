@@ -22,6 +22,9 @@
 #include "dlgconfiguration.h"
 #include "plaintextoutput.h"
 #include "xmltextoutput.h"
+#include "jsonoutput.h"
+#include "htmloutput.h"
+#include "gridoutput.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -468,10 +471,14 @@ void MainWindow::on_actionExecute_triggered()
                 sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this));
             else if (ui->bt_xml->isChecked())
                 sql->executeCurrent(new XMLTextOutput(ui->text_output, ui->message_output, this));
+            else if (ui->bt_json)
+                sql->executeCurrent(new JSONOutput(ui->text_output, ui->message_output, this));
             break;
         case 1:
+            sql->executeCurrent(new GridOutput(ui->grid_output, ui->message_output, this));
             break;
         case 2:
+            sql->executeCurrent(new HtmlOutput(ui->html_output, ui->message_output, this));
             break;
         }
     }

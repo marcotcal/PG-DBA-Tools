@@ -36,7 +36,10 @@ SOURCES += \
     querymodeldata.cpp \
     resultoutput.cpp \
     plaintextoutput.cpp \
-    xmltextoutput.cpp
+    xmltextoutput.cpp \
+    jsonoutput.cpp \
+    htmloutput.cpp \
+    gridoutput.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -50,7 +53,10 @@ HEADERS += \
     querymodeldata.h \
     resultoutput.h \
     plaintextoutput.h \
-    xmltextoutput.h
+    xmltextoutput.h \
+    jsonoutput.h \
+    htmloutput.h \
+    gridoutput.h
 
 FORMS += \
     mainwindow.ui \
