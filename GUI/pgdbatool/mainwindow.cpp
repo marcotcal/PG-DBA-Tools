@@ -25,6 +25,7 @@
 #include "jsonoutput.h"
 #include "htmloutput.h"
 #include "gridoutput.h"
+#include "dlgtransaction.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -116,10 +117,12 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
 
     ui->actionConnect->setEnabled(!sql->connected());
     ui->actionDisconect->setEnabled(sql->connected());
+    // implicity transactions
+    ui->actionExecute->setEnabled(sql->connected());
     if (sql->connected()) {
         ui->actionStart_Transaction->setEnabled(true);
         ui->actionCommit_Transaction->setEnabled(false);
-        ui->actionRollback_Transaction->setEnabled(false);
+        ui->actionRollback_Transaction->setEnabled(false);     
     } else {
         ui->actionStart_Transaction->setEnabled(false);
         ui->actionCommit_Transaction->setEnabled(false);
@@ -140,7 +143,9 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
     ui->actionStart_Transaction->setEnabled(!sql->transaction());
     ui->actionCommit_Transaction->setEnabled(sql->transaction());
     ui->actionRollback_Transaction->setEnabled(sql->transaction());
-    ui->actionExecute->setEnabled(sql->transaction());
+    // suport implicit transactions
+    //ui->actionExecute->setEnabled(sql->transaction());
+    ui->actionExecute->setEnabled(sql->connected());
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
 }
@@ -319,9 +324,13 @@ void MainWindow::on_actionDrop_Database_triggered()
 void MainWindow::on_actionStart_Transaction_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    disable_actions();
+    DlgTransaction *dlg = new  DlgTransaction(this);
+
     if (sql) {
-        sql->beginTransaction();
+        disable_actions();
+        if (dlg->exec()) {
+            sql->beginTransaction(dlg->getCommand());
+        }
         enable_sql_transactions(sql);
     }
 }

@@ -63,7 +63,7 @@ public:
     void databaseConnect();
     void databaseDisconnect();
     bool transaction();
-    void beginTransaction();
+    void beginTransaction(QString command);
     void executeCurrent(ResultOutput* output);
     void rollback();
     void commit();

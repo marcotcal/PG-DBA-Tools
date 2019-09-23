@@ -10,6 +10,7 @@ class JSONOutput : public ResultOutput
 public:
     JSONOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent = nullptr);
     virtual void generateOutput(PGresult *res);
+    virtual void clearOutput();
 signals:
 
 public slots:

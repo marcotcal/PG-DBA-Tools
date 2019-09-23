@@ -57,3 +57,8 @@ void XMLTextOutput::generateOutput(PGresult *res)
     dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("</rows>\n");
 
 }
+
+void XMLTextOutput::clearOutput()
+{
+    dynamic_cast<QPlainTextEdit *>(output)->clear();
+}

@@ -15,6 +15,7 @@ public:
     virtual void generateOutput(PGresult *res) = 0;
     virtual void generateError(PGconn *conn);
     virtual void generateStatusMessage(PGresult *res);
+    virtual void clearOutput() = 0;
     void cleanMessage();
     void setFetchLimit(int value);
 signals:

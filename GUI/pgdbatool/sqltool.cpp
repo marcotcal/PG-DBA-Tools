@@ -263,6 +263,7 @@ void SqlTool::databaseDisconnect() {
     PQfinish(conn);
     ui->connection_list->setEnabled(true);
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
+    ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
     is_connected = false;
 }
 
@@ -270,10 +271,10 @@ bool SqlTool::transaction() {
     return in_transaction;
 }
 
-void SqlTool::beginTransaction() {
+void SqlTool::beginTransaction(QString command) {
     QMessageBox msg;
 
-    PGresult *res = PQexec(conn, "BEGIN");
+    PGresult *res = PQexec(conn, command.toStdString().c_str());
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         msg.setText(QString("BEGIN command failed: %1").arg(PQerrorMessage(conn)));
@@ -301,12 +302,15 @@ void SqlTool::executeCurrent(ResultOutput* output) {
     switch(PQresultStatus(res)) {
 
     case PGRES_EMPTY_QUERY:
+        output->clearOutput();
         output->generateStatusMessage(res);
         break;
     case PGRES_COMMAND_OK:
+        output->clearOutput();
         output->generateStatusMessage(res);
         break;
     case PGRES_TUPLES_OK:    
+        output->clearOutput();
         output->generateOutput(res);
         break;
     case PGRES_SINGLE_TUPLE:
@@ -322,14 +326,17 @@ void SqlTool::executeCurrent(ResultOutput* output) {
 
         break;
     case PGRES_BAD_RESPONSE:
+        output->clearOutput();
         output->generateError(conn);
         output->generateStatusMessage(res);
         break;
     case PGRES_FATAL_ERROR:
+        output->clearOutput();
         output->generateError(conn);
         output->generateStatusMessage(res);
         break;
     case PGRES_NONFATAL_ERROR:
+        output->clearOutput();
         output->generateError(conn);
         output->generateStatusMessage(res);
         break;

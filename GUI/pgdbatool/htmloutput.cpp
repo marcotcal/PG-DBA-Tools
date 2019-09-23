@@ -57,3 +57,9 @@ void HtmlOutput::generateOutput(PGresult *res)
 
     view->page()->setHtml(html);
 }
+
+void HtmlOutput::clearOutput()
+{
+    QWebEngineView *view = dynamic_cast<QWebEngineView *>(output);
+    view->page()->setHtml("<html><body></body></html>");
+}

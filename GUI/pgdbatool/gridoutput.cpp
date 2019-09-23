@@ -74,3 +74,8 @@ void GridOutput::generateOutput(PGresult *res)
     }
 
 }
+
+void GridOutput::clearOutput()
+{
+    dynamic_cast<QTableWidget *>(output)->clear();
+}

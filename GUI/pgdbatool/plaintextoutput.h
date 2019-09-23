@@ -10,6 +10,7 @@ class PlainTextOutput : public ResultOutput
 public:
     PlainTextOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent = nullptr);
     virtual void generateOutput(PGresult *res);
+    virtual void clearOutput();
 signals:
 
 public slots:

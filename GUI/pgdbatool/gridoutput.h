@@ -10,6 +10,7 @@ class GridOutput : public ResultOutput
 public:
     GridOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent = nullptr);
     virtual void generateOutput(PGresult *res);
+    virtual void clearOutput();
 signals:
 
 public slots:

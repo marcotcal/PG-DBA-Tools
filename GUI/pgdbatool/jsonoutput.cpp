@@ -61,3 +61,8 @@ void JSONOutput::generateOutput(PGresult *res)
     dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("]}\n");
 
 }
+
+void JSONOutput::clearOutput()
+{
+    dynamic_cast<QPlainTextEdit *>(output)->clear();
+}

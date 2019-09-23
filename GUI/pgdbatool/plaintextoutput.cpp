@@ -76,3 +76,8 @@ void PlainTextOutput::generateOutput(PGresult *res)
     dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
 
 }
+
+void PlainTextOutput::clearOutput()
+{
+    dynamic_cast<QPlainTextEdit *>(output)->clear();
+}

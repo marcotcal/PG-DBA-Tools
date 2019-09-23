@@ -10,6 +10,7 @@ class XMLTextOutput : public ResultOutput
 public:
     XMLTextOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent = nullptr);
     virtual void generateOutput(PGresult *res);
+    virtual void clearOutput();
 signals:
 
 public slots:
