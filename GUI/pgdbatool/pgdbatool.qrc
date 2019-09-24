@@ -116,5 +116,6 @@
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>
+        <file>query_models/index_sizes.xml</file>
     </qresource>
 </RCC>

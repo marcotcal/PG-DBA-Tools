@@ -9,6 +9,7 @@
 QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QueryModel),
+    data(connections, parent),
     connections(connections)
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());

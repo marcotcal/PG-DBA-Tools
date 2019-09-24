@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QList>
 #include <QXmlStreamReader>
+#include <connectionsdata.h>
+#include "resultoutput.h"
 
 class QueryParameter : public QObject
 {
@@ -72,7 +74,7 @@ class QueryModelData : public QObject
     Q_OBJECT
 
 public:
-    explicit QueryModelData(QObject *parent = nullptr);
+    explicit QueryModelData(ConnectionsData &connections, QObject *parent = nullptr);
     ~QueryModelData();
     bool loadResource(QString resource);
     bool loadFromFile(QFile &file);
@@ -88,6 +90,10 @@ public:
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }    
     bool saveModel(QString file_name);
+    void execute(ResultOutput* output);
+    void databaseConnect(int conn_number);
+    void databaseDisconnect();
+
 private:
     QString code;
     QString description;
@@ -96,8 +102,12 @@ private:
     QList<QueryOrder *> orders;
     QList<QueryColumn *> columns;
     bool error;
+    bool connected;
     QString error_message;
     QXmlStreamReader reader;
+    ConnectionsData &connections;
+    PGconn *conn;
+    void readXML();
 };
 
 #endif // QUERYMODELDATA_H

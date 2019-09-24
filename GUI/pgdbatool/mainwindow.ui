@@ -95,9 +95,22 @@
     </property>
     <addaction name="actionAbout_Program"/>
    </widget>
+   <widget class="QMenu" name="menuStatitics">
+    <property name="title">
+     <string>Statitics</string>
+    </property>
+    <widget class="QMenu" name="menuIndexes">
+     <property name="title">
+      <string>Indexes</string>
+     </property>
+     <addaction name="actionIndexes_Sizes"/>
+    </widget>
+    <addaction name="menuIndexes"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSQL"/>
    <addaction name="menuConnections"/>
+   <addaction name="menuStatitics"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -344,7 +357,7 @@
      <item>
       <widget class="QStackedWidget" name="output_stack">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="pg_text">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -650,6 +663,11 @@
    </property>
    <property name="text">
     <string>&amp;Execute</string>
+   </property>
+  </action>
+  <action name="actionIndexes_Sizes">
+   <property name="text">
+    <string>Indexes Sizes</string>
    </property>
   </action>
  </widget>

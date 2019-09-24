@@ -26,6 +26,7 @@
 #include "htmloutput.h"
 #include "gridoutput.h"
 #include "dlgtransaction.h"
+#include "querymodeldata.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -35,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     readSettings();    
     disable_actions();
+    data = new QueryModelData(connections, this);
     setConnectionsList();
     ui->output_stack->setCurrentIndex(0);
 }
@@ -492,4 +494,33 @@ void MainWindow::on_actionExecute_triggered()
         }
     }
 
+}
+
+void MainWindow::on_actionIndexes_Sizes_triggered()
+{
+    data->loadResource(":/query_defs/query_models/index_sizes.xml");
+    switch(ui->output_stack->currentIndex()) {
+    case 0:
+        if (ui->bt_txt->isChecked())
+            data->execute(new PlainTextOutput(ui->text_output, ui->message_output, this));
+        else if (ui->bt_xml->isChecked())
+            data->execute(new XMLTextOutput(ui->text_output, ui->message_output, this));
+        else if (ui->bt_json)
+            data->execute(new JSONOutput(ui->text_output, ui->message_output, this));
+        break;
+    case 1:
+        data->execute(new GridOutput(ui->grid_output, ui->message_output, this));
+        break;
+    case 2:
+        data->execute(new HtmlOutput(ui->html_output, ui->message_output, this));
+        break;
+    }
+}
+
+void MainWindow::on_connection_list_currentRowChanged(int currentRow)
+{
+    if (currentRow != -1) {
+        data->databaseDisconnect();
+        data->databaseConnect(currentRow);
+    }
 }
