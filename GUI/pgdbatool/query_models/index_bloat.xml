@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="INDX0002" description="Index Bloat">
+    <parameters/>
+    <orders/>
+    <columns/>
+    <query_text><![CDATA[SELECT N.nspname,
+       T.relname AS "table",
+       C.relname AS idx_name,
+       round(100 * pg_relation_size(indexrelid) / pg_relation_size(indrelid) ) / 100 AS "index_ratio %",
+       pg_size_pretty(pg_relation_size(indexrelid) ) AS index_size,
+       pg_size_pretty(pg_relation_size(indrelid) )   AS table_size_size
+  FROM pg_index I
+  LEFT JOIN pg_class C ON (c.oid = I.indexrelid)
+  LEFT JOIN pg_class T ON (T.oid = I.indrelid)
+  LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+ WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
+   AND c.relkind = 'i'
+   AND pg_relation_size(indrelid) > 0
+ ORDER BY 4 desc, 1;]]></query_text>
+</model>
