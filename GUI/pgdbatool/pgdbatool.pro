@@ -40,7 +40,8 @@ SOURCES += \
     jsonoutput.cpp \
     htmloutput.cpp \
     gridoutput.cpp \
-    dlgtransaction.cpp
+    dlgtransaction.cpp \
+    scitextoutput.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -58,7 +59,8 @@ HEADERS += \
     jsonoutput.h \
     htmloutput.h \
     gridoutput.h \
-    dlgtransaction.h
+    dlgtransaction.h \
+    scitextoutput.h
 
 FORMS += \
     mainwindow.ui \

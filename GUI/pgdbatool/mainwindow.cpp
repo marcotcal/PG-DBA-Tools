@@ -27,6 +27,7 @@
 #include "gridoutput.h"
 #include "dlgtransaction.h"
 #include "querymodeldata.h"
+#include "scitextoutput.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -503,15 +504,14 @@ void MainWindow::executeModelResource(QString resource_name)
     data->loadResource(resource_name);
 
     new QListWidgetItem(data->getDescription(), ui->editor_list);
-    QPlainTextEdit *editor = new QPlainTextEdit(ui->main_stack);
+    QsciScintilla *editor = new QsciScintilla(ui->main_stack);
     ui->main_stack->addWidget(editor);
     ui->main_stack->setCurrentWidget(editor);
     ui->editor_list->clearSelection();
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-    editor->setFont(fixedFont);
     editor->setReadOnly(true);
 
-    data->execute(new PlainTextOutput(editor, ui->message_output, this));
+    data->execute(new SciTextOutput(editor, ui->message_output, this));
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()
