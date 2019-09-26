@@ -508,14 +508,14 @@ void MainWindow::executeModelResource(QString resource_name)
     data->loadResource(resource_name);
 
     new QListWidgetItem(data->getDescription(), ui->editor_list);
-    QsciScintilla *editor = new QsciScintilla(ui->main_stack);
+    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
     ui->main_stack->addWidget(editor);
     ui->main_stack->setCurrentWidget(editor);
     ui->editor_list->clearSelection();
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-    editor->setReadOnly(true);
 
-    data->execute(new SciTextOutput(editor, ui->message_output, this));
+
+    data->execute(new HtmlOutput(editor, ui->message_output, this));
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()

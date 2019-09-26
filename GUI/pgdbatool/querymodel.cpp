@@ -58,7 +58,8 @@ void QueryModel::initializeEditor() {
 }
 
 bool QueryModel::openFile(QFile &file)
-{    
+{
+    data.clear();
     if (data.loadFromFile(file)) {
         dataToEditors();
         return true;
@@ -73,13 +74,24 @@ void QueryModel::dataToEditors()
     ui->code->clear();
     ui->description->clear();
     ui->sql_editor->clear();
-    ui->parameter_table->clear();
-    ui->order_table->clear();
-    ui->column_table->clear();
+    ui->parameter_table->clearContents();
+    //ui->parameter_table->setRowCount(0);
+    ui->order_table->clearContents();
+    //ui->order_table->setRowCount(0);
+    ui->column_table->clearContents();
+    //ui->column_table->setRowCount(0);
 
     ui->code->setText(data.getCode());
     ui->description->setText(data.getDescription());
     ui->sql_editor->setText(data.getQueryText());
+    ui->menu_path->setText(data.getMenuPath());
+
+    for(int i = 0; i < ui->output->count(); i++) {
+        if (ui->output->itemText(i) == data.getOutputType()) {
+            ui->output->setCurrentIndex(i);
+            break;
+        }
+    }
 
     ui->parameter_table->setRowCount(data.getParameters().count());
 
@@ -131,6 +143,8 @@ void QueryModel::editorsToData()
     data.setCode(ui->code->text());
     data.setDescription(ui->description->text());
     data.setQueryText(ui->sql_editor->text());
+    data.setMenuPath(ui->menu_path->text());
+    data.setOutputType(ui->output->currentText());
 
     qDeleteAll(data.getParameters());
     data.getParameters().clear();

@@ -39,6 +39,10 @@ void QueryModelData::readXML()
                          description = attributes.value("description").toString();
                 } else if (reader.name() == "query_text") {
                     query_text = reader.readElementText().trimmed();
+                } else if (reader.name() == "output_type") {
+                    output_type = reader.readElementText().trimmed();
+                } else if (reader.name() == "menu_path") {
+                    menu_path = reader.readElementText().trimmed();
                 } else if (reader.name() == "parameter") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString code;
@@ -125,10 +129,12 @@ bool QueryModelData::saveModel(QString file_name)
     QFile file(file_name);
     QString DTD =
             "<!DOCTYPE model [\n"
-            "  <!ELEMENT model (query_text, parameters?, orders?, columns?)>\n"
+            "  <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>\n"
             "  <!ATTLIST model code CDATA \"\">\n"
             "  <!ATTLIST model description CDATA \"\">\n"
             "  <!ELEMENT query_text (#PCDATA)>\n"
+            "  <!ELEMENT output_type (#PCDATA)>\n"
+            "  <!ELEMENT menu_path (#PCDATA)>\n"
             "  <!ELEMENT parameters (parameter*)>\n"
             "  <!ELEMENT parameter (widget?, str_options?, query_options?)>\n"
             "  <!ATTLIST parameter code CDATA \"\">\n"
@@ -136,7 +142,7 @@ bool QueryModelData::saveModel(QString file_name)
             "  <!ATTLIST parameter mandatory (true|false) #REQUIRED>\n"
             "  <!ELEMENT widget (#PCDATA)>\n"
             "  <!ELEMENT str_options (#PCDATA)>\n"
-            "  <!ELEMENT query_options (#PCDATA)>\n"
+            "  <!ELEMENT query_options (#PCDATA)>\n"            
             "  <!ELEMENT orders (order*)>\n"
             "  <!ATTLIST order description CDATA \"\">\n"
             "  <!ATTLIST order fields CDATA \"\">\n"
@@ -190,6 +196,14 @@ bool QueryModelData::saveModel(QString file_name)
     xmlWriter.writeCDATA(query_text);
     xmlWriter.writeEndElement();
 
+    xmlWriter.writeStartElement("output_type");
+    xmlWriter.writeCDATA(output_type);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("menu_path");
+    xmlWriter.writeCDATA(menu_path);
+    xmlWriter.writeEndElement();
+
     xmlWriter.writeEndElement();
 
     file.close();
@@ -216,6 +230,19 @@ void QueryModelData::databaseDisconnect() {
     if (connected)
         PQfinish(conn);
     connected = false;
+}
+
+void QueryModelData::clear()
+{
+    while (!parameters.isEmpty())
+        delete parameters.takeFirst();
+    while (!orders.isEmpty())
+        delete orders.takeFirst();
+    while (!columns.isEmpty())
+        delete columns.takeFirst();
+    description = "";
+    code = "";
+    query_text = "";
 }
 
 void QueryModelData::execute(ResultOutput *output)

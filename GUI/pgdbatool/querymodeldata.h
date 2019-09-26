@@ -84,6 +84,10 @@ public:
     void setDescription(QString value) { description = value; }
     QString getQueryText() { return query_text; }
     void setQueryText(QString value) { query_text = value; }
+    QString getMenuPath() { return menu_path; }
+    void setMenuPath(QString value) { menu_path = value; }
+    QString getOutputType() { return output_type; }
+    void setOutputType(QString value) { output_type = value; }
     QList <QueryParameter *> &getParameters() { return parameters; }
     QList <QueryOrder *> &getOrders() { return orders; }
     QList <QueryColumn *> &getColumns() { return columns; }
@@ -93,6 +97,7 @@ public:
     void execute(ResultOutput* output);
     void databaseConnect(int conn_number);
     void databaseDisconnect();
+    void clear();
 
 private:
     QString code;
@@ -104,6 +109,8 @@ private:
     bool error;
     bool connected;
     QString error_message;
+    QString menu_path;
+    QString output_type;
     QXmlStreamReader reader;
     ConnectionsData &connections;
     PGconn *conn;

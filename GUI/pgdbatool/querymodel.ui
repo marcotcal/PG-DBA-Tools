@@ -31,24 +31,8 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(223, 223, 223);</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="text">
-        <string>Code</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QLabel" name="label">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(223, 223, 223);</string>
-       </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
@@ -57,16 +41,23 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
+     <item row="0" column="4">
       <widget class="QLabel" name="label_6">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(223, 223, 223);</string>
-       </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
        <property name="text">
         <string>Test Connection</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>Code</string>
        </property>
       </widget>
      </item>
@@ -80,16 +71,57 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="description"/>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Output to</string>
+       </property>
+      </widget>
      </item>
-     <item row="1" column="2">
+     <item row="1" column="4">
       <widget class="QComboBox" name="connection_list">
        <property name="minimumSize">
         <size>
          <width>300</width>
          <height>0</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="description"/>
+     </item>
+     <item row="1" column="3">
+      <widget class="QComboBox" name="output">
+       <item>
+        <property name="text">
+         <string>Text With Separators</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Text Without Separators</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Grid</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Html</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLineEdit" name="menu_path"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Menu Path</string>
        </property>
       </widget>
      </item>
@@ -389,7 +421,7 @@
          </column>
          <column>
           <property name="text">
-           <string>width</string>
+           <string>Width</string>
           </property>
          </column>
         </widget>

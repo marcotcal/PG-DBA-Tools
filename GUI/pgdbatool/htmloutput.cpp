@@ -38,7 +38,21 @@ void HtmlOutput::generateOutput(PGresult *res)
         rows.append(row);
     }
 
-    html += "<html><body><table border='1'><tr>";
+    html += "<html><body>";
+    html += "<head>"
+            "<style>"
+            "table {"
+            "  border-collapse: collapse;"
+            "}"
+            "table th {"
+            "  background-color: #aaaaaa;"
+            "}"
+            "table, td, th {"
+            "  border: 1px solid #cccccc;"
+            "}"
+            "</style>";
+
+    html += "<table cellpadding='5' style='font-family:\"Courier New\", Courier, monospace; font-size:80%' border='1'><tr>";
 
     for(int c = 0; c < fields.count(); c++) {
         html += "<th>" + fields.at(c) + "</th>";
