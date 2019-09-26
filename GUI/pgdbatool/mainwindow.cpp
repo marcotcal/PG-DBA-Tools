@@ -142,6 +142,8 @@ void MainWindow::enable_model_actions(QueryModel *model)
 }
 
 void MainWindow::enable_sql_transactions(SqlTool *sql) {
+    if (!sql->connected())
+        return;
     ui->actionStart_Transaction->setEnabled(!sql->transaction());
     ui->actionCommit_Transaction->setEnabled(sql->transaction());
     ui->actionRollback_Transaction->setEnabled(sql->transaction());
@@ -333,6 +335,7 @@ void MainWindow::on_actionStart_Transaction_triggered()
         if (dlg->exec()) {
             sql->beginTransaction(dlg->getCommand());
         }
+        enable_sql_tool_actions(sql);
         enable_sql_transactions(sql);
     }
 }
@@ -371,6 +374,7 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 
     if (sql) {
         enable_sql_tool_actions(sql);
+        enable_sql_transactions(sql);
     }
     if (model){
         enable_model_actions(model);
