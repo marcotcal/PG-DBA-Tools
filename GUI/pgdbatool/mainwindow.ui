@@ -109,10 +109,16 @@
     </widget>
     <addaction name="menuIndexes"/>
    </widget>
+   <widget class="QMenu" name="menuStructure">
+    <property name="title">
+     <string>Structure</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSQL"/>
    <addaction name="menuConnections"/>
    <addaction name="menuStatitics"/>
+   <addaction name="menuStructure"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
