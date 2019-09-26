@@ -104,6 +104,8 @@
       <string>Indexes</string>
      </property>
      <addaction name="actionIndexes_Sizes"/>
+     <addaction name="actionIndexes_Bloat"/>
+     <addaction name="actionStat_All_Indexes"/>
     </widget>
     <addaction name="menuIndexes"/>
    </widget>
@@ -668,6 +670,16 @@
   <action name="actionIndexes_Sizes">
    <property name="text">
     <string>Indexes Sizes</string>
+   </property>
+  </action>
+  <action name="actionIndexes_Bloat">
+   <property name="text">
+    <string>Indexes Bloat</string>
+   </property>
+  </action>
+  <action name="actionStat_All_Indexes">
+   <property name="text">
+    <string>Stat All Indexes</string>
    </property>
   </action>
  </widget>

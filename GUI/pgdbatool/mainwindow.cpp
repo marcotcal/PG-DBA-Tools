@@ -496,25 +496,37 @@ void MainWindow::on_actionExecute_triggered()
 
 }
 
+void MainWindow::executeModelResource(QString resource_name)
+{
+    QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+
+    data->loadResource(resource_name);
+
+    new QListWidgetItem(data->getDescription(), ui->editor_list);
+    QPlainTextEdit *editor = new QPlainTextEdit(ui->main_stack);
+    ui->main_stack->addWidget(editor);
+    ui->main_stack->setCurrentWidget(editor);
+    ui->editor_list->clearSelection();
+    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+    editor->setFont(fixedFont);
+    editor->setReadOnly(true);
+
+    data->execute(new PlainTextOutput(editor, ui->message_output, this));
+}
+
 void MainWindow::on_actionIndexes_Sizes_triggered()
 {
-    data->loadResource(":/query_defs/query_models/index_sizes.xml");
-    switch(ui->output_stack->currentIndex()) {
-    case 0:
-        if (ui->bt_txt->isChecked())
-            data->execute(new PlainTextOutput(ui->text_output, ui->message_output, this));
-        else if (ui->bt_xml->isChecked())
-            data->execute(new XMLTextOutput(ui->text_output, ui->message_output, this));
-        else if (ui->bt_json)
-            data->execute(new JSONOutput(ui->text_output, ui->message_output, this));
-        break;
-    case 1:
-        data->execute(new GridOutput(ui->grid_output, ui->message_output, this));
-        break;
-    case 2:
-        data->execute(new HtmlOutput(ui->html_output, ui->message_output, this));
-        break;
-    }
+    executeModelResource(":/query_defs/query_models/index_sizes.xml");
+}
+
+void MainWindow::on_actionIndexes_Bloat_triggered()
+{
+    executeModelResource(":/query_defs/query_models/index_bloat.xml");
+}
+
+void MainWindow::on_actionStat_All_Indexes_triggered()
+{
+    executeModelResource(":/query_defs/query_models/stat_all_indexes.xml");
 }
 
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)

@@ -54,5 +54,6 @@ FROM
 WHERE relname NOT LIKE 'pg_%' AND
     relname NOT LIKE 'information%' AND
     relname NOT LIKE 'sql_%' AND
-    relkind IN ('i')]]></query_text>
+    relkind IN ('i')    
+ORDER BY 7 DESC, 1, 2    ]]></query_text>
 </model>

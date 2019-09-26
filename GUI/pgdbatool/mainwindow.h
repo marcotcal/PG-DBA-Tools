@@ -72,6 +72,10 @@ private slots:
 
     void on_connection_list_currentRowChanged(int currentRow);
 
+    void on_actionIndexes_Bloat_triggered();
+
+    void on_actionStat_All_Indexes_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -90,6 +94,8 @@ private:
     void setConnectionsList();
     SqlTool *openNewSQLTool(QString name);
     QueryModel *openNewQueryModel(QString name);
+
+    void executeModelResource(QString resource_name);
 };
 
 #endif // MAINWINDOW_H
