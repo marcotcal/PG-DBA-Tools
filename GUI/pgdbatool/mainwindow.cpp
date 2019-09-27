@@ -28,6 +28,7 @@
 #include "dlgtransaction.h"
 #include "querymodeldata.h"
 #include "scitextoutput.h"
+#include "dlgparameters.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -506,6 +507,10 @@ void MainWindow::executeModelResource(QString resource_name)
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
     data->loadResource(resource_name);
+
+    DlgParameters *param = new DlgParameters(data, this);
+
+    param->exec();
 
     new QListWidgetItem(data->getDescription(), ui->editor_list);
     QsciScintilla *editor = new QsciScintilla(ui->main_stack);

@@ -41,7 +41,8 @@ SOURCES += \
     htmloutput.cpp \
     gridoutput.cpp \
     dlgtransaction.cpp \
-    scitextoutput.cpp
+    scitextoutput.cpp \
+    dlgparameters.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -60,7 +61,8 @@ HEADERS += \
     htmloutput.h \
     gridoutput.h \
     dlgtransaction.h \
-    scitextoutput.h
+    scitextoutput.h \
+    dlgparameters.h
 
 FORMS += \
     mainwindow.ui \
@@ -69,7 +71,8 @@ FORMS += \
     dlgmenunew.ui \
     querymodel.ui \
     dlgconfiguration.ui \
-    dlgtransaction.ui
+    dlgtransaction.ui \
+    dlgparameters.ui
 
 LIBS += -lqscintilla2_qt5
 
