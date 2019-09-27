@@ -347,6 +347,7 @@ void MainWindow::on_actionRollback_Transaction_triggered()
     disable_actions();
     if (sql) {
         sql->rollback();
+        enable_sql_tool_actions(sql);
         enable_sql_transactions(sql);
     }
 }
@@ -357,6 +358,7 @@ void MainWindow::on_actionCommit_Transaction_triggered()
     disable_actions();
     if (sql) {
         sql->commit();
+        enable_sql_tool_actions(sql);
         enable_sql_transactions(sql);
     }
 }
@@ -501,6 +503,14 @@ void MainWindow::on_actionExecute_triggered()
 
 }
 
+void MainWindow::on_connection_list_currentRowChanged(int currentRow)
+{
+    if (currentRow != -1) {
+        data->databaseDisconnect();
+        data->databaseConnect(currentRow);
+    }
+}
+
 void MainWindow::executeModelResource(QString resource_name)
 {
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -533,10 +543,12 @@ void MainWindow::on_actionStat_All_Indexes_triggered()
     executeModelResource(":/query_defs/query_models/stat_all_indexes.xml");
 }
 
-void MainWindow::on_connection_list_currentRowChanged(int currentRow)
+void MainWindow::on_actionUseless_Indexes_triggered()
 {
-    if (currentRow != -1) {
-        data->databaseDisconnect();
-        data->databaseConnect(currentRow);
-    }
+    executeModelResource(":/query_defs/query_models/useless_indexes.xml");
+}
+
+void MainWindow::on_actionWasted_Index_Space_triggered()
+{
+    executeModelResource(":/query_defs/query_models/wasted_index_space.xml");
 }

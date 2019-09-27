@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT menu_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="INDX0004" description="Useless Indexes">
+    <parameters/>
+    <orders/>
+    <columns/>
+    <query_text><![CDATA[SELECT idstat.schemaname AS schema,
+       idstat.relname AS table_name,
+       indexrelname AS index_name,
+       idstat.idx_scan AS times_used,
+       pg_size_pretty(pg_relation_size(quote_ident(idstat.schemaname) || '.' || quote_ident(idstat.relname))) AS table_size,
+       pg_size_pretty(pg_relation_size(quote_ident(idstat.schemaname) || '.' || quote_ident(indexrelname))) AS index_size,
+       n_tup_upd + n_tup_ins + n_tup_del as num_writes,
+       indexdef AS definition
+FROM pg_stat_user_indexes AS idstat
+JOIN pg_indexes ON indexrelname = indexname
+JOIN pg_stat_user_tables AS tabstat ON idstat.relname = tabstat.relname
+WHERE idstat.idx_scan < 200
+  AND indexdef !~* 'unique'
+ORDER BY idstat.schemaname,
+	 idstat.relname,
+	 indexrelname;]]></query_text>
+    <output_type><![CDATA[Text With Separators]]></output_type>
+    <menu_path><![CDATA[/Statistics/Indexes/Useless Indexes]]></menu_path>
+</model>

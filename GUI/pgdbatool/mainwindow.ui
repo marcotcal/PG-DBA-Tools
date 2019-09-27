@@ -101,17 +101,19 @@
     </property>
     <widget class="QMenu" name="menuIndexes">
      <property name="title">
-      <string>Indexes</string>
+      <string>&amp;Indexes</string>
      </property>
      <addaction name="actionIndexes_Sizes"/>
      <addaction name="actionIndexes_Bloat"/>
      <addaction name="actionStat_All_Indexes"/>
+     <addaction name="actionUseless_Indexes"/>
+     <addaction name="actionWasted_Index_Space"/>
     </widget>
     <addaction name="menuIndexes"/>
    </widget>
    <widget class="QMenu" name="menuStructure">
     <property name="title">
-     <string>Structure</string>
+     <string>Str&amp;ucture</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
@@ -675,17 +677,27 @@
   </action>
   <action name="actionIndexes_Sizes">
    <property name="text">
-    <string>Indexes Sizes</string>
+    <string>&amp;Indexes Sizes</string>
    </property>
   </action>
   <action name="actionIndexes_Bloat">
    <property name="text">
-    <string>Indexes Bloat</string>
+    <string>Indexes &amp;Bloat</string>
    </property>
   </action>
   <action name="actionStat_All_Indexes">
    <property name="text">
-    <string>Stat All Indexes</string>
+    <string>&amp;Stat All Indexes</string>
+   </property>
+  </action>
+  <action name="actionUseless_Indexes">
+   <property name="text">
+    <string>Useless Indexes</string>
+   </property>
+  </action>
+  <action name="actionWasted_Index_Space">
+   <property name="text">
+    <string>Wasted Index Space</string>
    </property>
   </action>
  </widget>

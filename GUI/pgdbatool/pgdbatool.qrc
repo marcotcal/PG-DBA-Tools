@@ -119,5 +119,7 @@
         <file>query_models/index_sizes.xml</file>
         <file>query_models/index_bloat.xml</file>
         <file>query_models/stat_all_indexes.xml</file>
+        <file>query_models/useless_indexes.xml</file>
+        <file>query_models/wasted_index_space.xml</file>
     </qresource>
 </RCC>

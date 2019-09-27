@@ -76,6 +76,10 @@ private slots:
 
     void on_actionStat_All_Indexes_triggered();
 
+    void on_actionUseless_Indexes_triggered();
+
+    void on_actionWasted_Index_Space_triggered();
+
 private:
     Ui::MainWindow *ui;
 
