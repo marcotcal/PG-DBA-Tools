@@ -13,7 +13,7 @@ class DlgParameters : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgParameters(QueryModelData &data, QWidget *parent = 0);
+    explicit DlgParameters(QueryModelData &data, QWidget *parent = nullptr);
     ~DlgParameters();
 private:
     Ui::DlgParameters *ui;

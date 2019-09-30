@@ -106,6 +106,7 @@
      <addaction name="actionIndexes_Sizes"/>
      <addaction name="actionIndexes_Bloat"/>
      <addaction name="actionStat_All_Indexes"/>
+     <addaction name="actionUseless_Indexes"/>
     </widget>
     <addaction name="menuIndexes"/>
    </widget>
@@ -686,6 +687,11 @@
   <action name="actionStat_All_Indexes">
    <property name="text">
     <string>Stat All Indexes</string>
+   </property>
+  </action>
+  <action name="actionUseless_Indexes">
+   <property name="text">
+    <string>Useless Indexes</string>
    </property>
   </action>
  </widget>

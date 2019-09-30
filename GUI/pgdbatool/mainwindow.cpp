@@ -508,19 +508,21 @@ void MainWindow::executeModelResource(QString resource_name)
 
     data->loadResource(resource_name);
 
-    DlgParameters *param = new DlgParameters(data, this);
+    DlgParameters *param = new DlgParameters(*data, this);
 
-    param->exec();
+    if (param->exec()) {
 
-    new QListWidgetItem(data->getDescription(), ui->editor_list);
-    QsciScintilla *editor = new QsciScintilla(ui->main_stack);
-    ui->main_stack->addWidget(editor);
-    ui->main_stack->setCurrentWidget(editor);
-    ui->editor_list->clearSelection();
-    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-    editor->setReadOnly(true);
+        new QListWidgetItem(data->getDescription(), ui->editor_list);
+        QsciScintilla *editor = new QsciScintilla(ui->main_stack);
+        ui->main_stack->addWidget(editor);
+        ui->main_stack->setCurrentWidget(editor);
+        ui->editor_list->clearSelection();
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+        editor->setReadOnly(true);
 
-    data->execute(new SciTextOutput(editor, ui->message_output, this));
+        data->execute(new SciTextOutput(editor, ui->message_output, this));
+
+    }
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()
@@ -538,6 +540,11 @@ void MainWindow::on_actionStat_All_Indexes_triggered()
     executeModelResource(":/query_defs/query_models/stat_all_indexes.xml");
 }
 
+void MainWindow::on_actionUseless_Indexes_triggered()
+{
+    executeModelResource(":/query_defs/query_models/useless_indexes.xml");
+}
+
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
     if (currentRow != -1) {
@@ -545,3 +552,5 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
         data->databaseConnect(currentRow);
     }
 }
+
+
