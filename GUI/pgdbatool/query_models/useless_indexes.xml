@@ -9,6 +9,7 @@
   <!ATTLIST parameter code CDATA "">
   <!ATTLIST parameter description CDATA "">
   <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ATTLIST parameter expression CDATA "">
   <!ELEMENT widget (#PCDATA)>
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
@@ -22,8 +23,8 @@
 
 <model code="IDX0002" description="Useless Indexes">
     <parameters>
-        <parameter code="p_schema" description="Schema" mandatory="false"/>
-        <parameter code="p_relation" description="Table Name" mandatory="false"/>
+        <parameter code="p_schema" expression="idstat.schemaname = :p_schema" description="Schema" mandatory="false"/>
+        <parameter code="p_relation" expression="indexrelname = :p_relation" description="Table Name" mandatory="false"/>
     </parameters>
     <orders>
         <order description="Schema + Table" fields="1, 2"/>
@@ -42,6 +43,8 @@ JOIN pg_indexes ON indexrelname = indexname
 JOIN pg_stat_user_tables AS tabstat ON idstat.relname = tabstat.relname
 WHERE idstat.idx_scan < 200
   AND indexdef !~* 'unique'
+  [!p_schema!]
+  [!p_relation!]
 ORDER BY idstat.schemaname,
 	 idstat.relname,
 	 indexrelname;]]></query_text>

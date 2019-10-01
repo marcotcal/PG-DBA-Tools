@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1053</width>
+    <width>1281</width>
     <height>648</height>
    </rect>
   </property>
@@ -213,6 +213,11 @@
            <column>
             <property name="text">
              <string>Description</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Expression</string>
             </property>
            </column>
            <column>

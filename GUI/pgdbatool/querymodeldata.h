@@ -12,7 +12,7 @@ class QueryParameter : public QObject
     Q_OBJECT
 
 public:
-    QueryParameter(QString code, QString description,
+    QueryParameter(QString code, QString description, QString expression,
                    bool mandatory, QObject *parent = nullptr) :
         QObject(parent), code(code), description(description), mandatory(mandatory)
     {
@@ -21,11 +21,13 @@ public:
     ~QueryParameter() { }
     QString getCode() { return code; }
     QString getDescription() { return description; }
+    QString getExpression() { return expression; }
     bool getMandatory() { return mandatory; }
 
 private:
     QString code;
     QString description;
+    QString expression;
     bool mandatory;
 };
 

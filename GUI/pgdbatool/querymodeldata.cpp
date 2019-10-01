@@ -43,14 +43,17 @@ void QueryModelData::readXML()
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString code;
                     QString description;
+                    QString expression;
                     QString mandatory;
                     if(attributes.hasAttribute("code"))
                          code = attributes.value("code").toString();
                     if(attributes.hasAttribute("description"))
                          description = attributes.value("description").toString();
+                    if(attributes.hasAttribute("expression"))
+                         expression = attributes.value("expression").toString();
                     if(attributes.hasAttribute("mandatory"))
                          mandatory = attributes.value("mandatory").toString();
-                    parameters.append(new QueryParameter(code, description, (mandatory == "true")));
+                    parameters.append(new QueryParameter(code, description, expression, (mandatory == "true")));
                 } else if (reader.name() == "order") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString fields;
@@ -133,6 +136,7 @@ bool QueryModelData::saveModel(QString file_name)
             "  <!ELEMENT parameter (widget?, str_options?, query_options?)>\n"
             "  <!ATTLIST parameter code CDATA \"\">\n"
             "  <!ATTLIST parameter description CDATA \"\">\n"
+            "  <!ATTLIST parameter expression CDATA \"\">"
             "  <!ATTLIST parameter mandatory (true|false) #REQUIRED>\n"
             "  <!ELEMENT widget (#PCDATA)>\n"
             "  <!ELEMENT str_options (#PCDATA)>\n"
@@ -160,6 +164,7 @@ bool QueryModelData::saveModel(QString file_name)
         xmlWriter.writeStartElement("parameter");
         xmlWriter.writeAttribute("","code", param->getCode());
         xmlWriter.writeAttribute("","description", param->getDescription());
+        xmlWriter.writeAttribute("","expression", param->getExpression());
         if (param->getMandatory())
             xmlWriter.writeAttribute("","mandatory", "true");
         else
