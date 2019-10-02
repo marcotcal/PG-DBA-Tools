@@ -1,27 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE model [
-<<<<<<< HEAD
   <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>
   <!ATTLIST model code CDATA "">
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
   <!ELEMENT menu_path (#PCDATA)>
-=======
-  <!ELEMENT model (query_text, parameters?, orders?, columns?)>
-  <!ATTLIST model code CDATA "">
-  <!ATTLIST model description CDATA "">
-  <!ELEMENT query_text (#PCDATA)>
->>>>>>> IMP-0011
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (widget?, str_options?, query_options?)>
   <!ATTLIST parameter code CDATA "">
   <!ATTLIST parameter description CDATA "">
   <!ATTLIST parameter mandatory (true|false) #REQUIRED>
-<<<<<<< HEAD
-=======
   <!ATTLIST parameter expression CDATA "">
->>>>>>> IMP-0011
   <!ELEMENT widget (#PCDATA)>
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
@@ -33,11 +23,6 @@
   <!ATTLIST order width CDATA "">
 ]>
 
-<<<<<<< HEAD
-<model code="INDX0004" description="Useless Indexes">
-    <parameters/>
-    <orders/>
-=======
 <model code="IDX0002" description="Useless Indexes">
     <parameters>
         <parameter code="p_schema" expression="idstat.schemaname = :p_schema" description="Schema" mandatory="false"/>
@@ -46,7 +31,6 @@
     <orders>
         <order description="Schema + Table" fields="1, 2"/>
     </orders>
->>>>>>> IMP-0011
     <columns/>
     <query_text><![CDATA[SELECT idstat.schemaname AS schema,
        idstat.relname AS table_name,
@@ -61,18 +45,11 @@ JOIN pg_indexes ON indexrelname = indexname
 JOIN pg_stat_user_tables AS tabstat ON idstat.relname = tabstat.relname
 WHERE idstat.idx_scan < 200
   AND indexdef !~* 'unique'
-<<<<<<< HEAD
-ORDER BY idstat.schemaname,
-	 idstat.relname,
-	 indexrelname;]]></query_text>
-    <output_type><![CDATA[Text With Separators]]></output_type>
-    <menu_path><![CDATA[/Statistics/Indexes/Useless Indexes]]></menu_path>
-</model>
-=======
   [!p_schema!]
   [!p_relation!]
 ORDER BY idstat.schemaname,
 	 idstat.relname,
 	 indexrelname;]]></query_text>
+   <output_type><![CDATA[Text With Separators]]></output_type>
+   <menu_path><![CDATA[/Statistics/Indexes/Useless Indexes]]></menu_path>
 </model>
->>>>>>> IMP-0011

@@ -518,7 +518,7 @@ void MainWindow::executeModelResource(QString resource_name)
 
     data->loadResource(resource_name);
 
-    DlgParameters *param = new DlgParameters(*data, this);
+    DlgParameters *param = new DlgParameters(data, this);
 
     if (param->exec()) {
 
@@ -550,11 +550,6 @@ void MainWindow::on_actionStat_All_Indexes_triggered()
 }
 
 void MainWindow::on_actionUseless_Indexes_triggered()
-{
-    executeModelResource(":/query_defs/query_models/useless_indexes.xml");
-}
-
-void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
     executeModelResource(":/query_defs/query_models/useless_indexes.xml");
 }

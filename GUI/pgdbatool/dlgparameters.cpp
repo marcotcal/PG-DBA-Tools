@@ -1,7 +1,7 @@
 #include "dlgparameters.h"
 #include "ui_dlgparameters.h"
 
-DlgParameters::DlgParameters(QueryModelData &data, QWidget *parent) :
+DlgParameters::DlgParameters(QueryModelData *data, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DlgParameters),
     data(data)
@@ -18,9 +18,10 @@ DlgParameters::~DlgParameters()
 
 void DlgParameters::loadParameters()
 {
-    if(data.getParameters().count() >0) {
+    ui->parameter_table->clear();
+    if(data->getParameters().count() >0) {
         ui->parameter_stack->setCurrentIndex(0);
-        ui->parameter_table->setRowCount(data.getParameters().count());
+        ui->parameter_table->setRowCount(data->getParameters().count());
         ui->parameter_table->setColumnCount(2);
     }
 }
