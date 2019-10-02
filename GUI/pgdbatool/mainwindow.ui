@@ -700,6 +700,11 @@
     <string>Wasted Index Space</string>
    </property>
   </action>
+  <action name="actionUseless_Indexes">
+   <property name="text">
+    <string>Useless Indexes</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

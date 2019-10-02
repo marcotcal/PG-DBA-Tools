@@ -69,15 +69,10 @@ private slots:
     void on_bt_xml_clicked();
     void on_bt_json_clicked();
     void on_actionIndexes_Sizes_triggered();
-
     void on_connection_list_currentRowChanged(int currentRow);
-
     void on_actionIndexes_Bloat_triggered();
-
     void on_actionStat_All_Indexes_triggered();
-
     void on_actionUseless_Indexes_triggered();
-
     void on_actionWasted_Index_Space_triggered();
 
 private:

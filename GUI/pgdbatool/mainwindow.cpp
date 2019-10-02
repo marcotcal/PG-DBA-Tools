@@ -28,6 +28,7 @@
 #include "dlgtransaction.h"
 #include "querymodeldata.h"
 #include "scitextoutput.h"
+#include "dlgparameters.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -517,15 +518,20 @@ void MainWindow::executeModelResource(QString resource_name)
 
     data->loadResource(resource_name);
 
-    new QListWidgetItem(data->getDescription(), ui->editor_list);
-    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
-    ui->main_stack->addWidget(editor);
-    ui->main_stack->setCurrentWidget(editor);
-    ui->editor_list->clearSelection();
-    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+    DlgParameters *param = new DlgParameters(*data, this);
 
+    if (param->exec()) {
 
-    data->execute(new HtmlOutput(editor, ui->message_output, this));
+        new QListWidgetItem(data->getDescription(), ui->editor_list);
+        QWebEngineView *editor = new QWebEngineView(ui->main_stack);
+        ui->main_stack->addWidget(editor);
+        ui->main_stack->setCurrentWidget(editor);
+        ui->editor_list->clearSelection();
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+
+        data->execute(new HtmlOutput(editor, ui->message_output, this));
+        
+    }
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()
@@ -548,7 +554,14 @@ void MainWindow::on_actionUseless_Indexes_triggered()
     executeModelResource(":/query_defs/query_models/useless_indexes.xml");
 }
 
+void MainWindow::on_connection_list_currentRowChanged(int currentRow)
+{
+    executeModelResource(":/query_defs/query_models/useless_indexes.xml");
+}
+
 void MainWindow::on_actionWasted_Index_Space_triggered()
 {
     executeModelResource(":/query_defs/query_models/wasted_index_space.xml");
 }
+
+

@@ -101,6 +101,8 @@ void QueryModel::dataToEditors()
         ui->parameter_table->setItem(row, 0, item);
         item = new QTableWidgetItem(param->getDescription());
         ui->parameter_table->setItem(row, 1, item);
+        item = new QTableWidgetItem(param->getExpression());
+        ui->parameter_table->setItem(row, 2, item);
         item = new QTableWidgetItem();
         item->setFlags(item->flags() & ~ Qt::ItemIsEditable);
         item->data(Qt::CheckStateRole);
@@ -109,7 +111,7 @@ void QueryModel::dataToEditors()
         else {
             item->setCheckState(Qt::Unchecked);
         }
-        ui->parameter_table->setItem(row, 2, item);
+        ui->parameter_table->setItem(row, 3, item);
         row++;
     }
 
@@ -161,7 +163,8 @@ void QueryModel::editorsToData()
         data.getParameters().append(
                     new QueryParameter(ui->parameter_table->item(row,0)->text(),
                                        ui->parameter_table->item(row,1)->text(),
-                                       (ui->parameter_table->item(row,2)->checkState())));
+                                       ui->parameter_table->item(row,2)->text(),
+                                      (ui->parameter_table->item(row,3)->checkState())));
     }
 
     for (int row = 0; row < ui->order_table->rowCount(); row++ )
@@ -186,7 +189,8 @@ void QueryModel::initializeParameters()
 {
     ui->parameter_table->setColumnWidth(0, 100);
     ui->parameter_table->setColumnWidth(1, 500);
-    ui->parameter_table->setColumnWidth(2, 100);
+    ui->parameter_table->setColumnWidth(2, 500);
+    ui->parameter_table->setColumnWidth(3, 100);
 }
 
 void QueryModel::initializeOrders()
