@@ -70,6 +70,7 @@ bool QueryModel::openFile(QFile &file)
 void QueryModel::dataToEditors()
 {
     QTableWidgetItem *item;
+    QComboBox *combo;
 
     ui->code->clear();
     ui->description->clear();
@@ -96,6 +97,8 @@ void QueryModel::dataToEditors()
     ui->parameter_table->setRowCount(data.getParameters().count());
 
     int row = 0;
+    int index;
+
     foreach(QueryParameter *param, data.getParameters()) {
         item = new QTableWidgetItem(param->getCode());
         ui->parameter_table->setItem(row, 0, item);
@@ -112,6 +115,31 @@ void QueryModel::dataToEditors()
             item->setCheckState(Qt::Unchecked);
         }
         ui->parameter_table->setItem(row, 3, item);
+
+        combo = new QComboBox(this);
+        combo->addItems(QStringList() << "Text" << "Number" << "Date and Time");
+        item = new QTableWidgetItem("");
+        ui->parameter_table->setItem(row, 4, item);
+        ui->parameter_table->setCellWidget(row, 4, combo);
+
+        index = combo->findText(data.getParameters().at(row)->getType());
+        if (index != -1)
+            combo->setCurrentIndex(index);
+        else
+            combo->setCurrentIndex(0);
+
+        combo = new QComboBox(this);
+        combo->addItems(QStringList() << "Single" << "List" << "Range");
+        item = new QTableWidgetItem("");
+        ui->parameter_table->setItem(row, 5, item);
+        ui->parameter_table->setCellWidget(row, 5, combo);
+
+        index = combo->findText(data.getParameters().at(row)->getSubType());
+        if (index != -1)
+            combo->setCurrentIndex(index);
+        else
+            combo->setCurrentIndex(0);
+
         row++;
     }
 
@@ -160,11 +188,25 @@ void QueryModel::editorsToData()
 
     for (int row = 0; row < ui->parameter_table->rowCount(); row++ )
     {
-        data.getParameters().append(
-                    new QueryParameter(ui->parameter_table->item(row,0)->text(),
-                                       ui->parameter_table->item(row,1)->text(),
-                                       ui->parameter_table->item(row,2)->text(),
-                                      (ui->parameter_table->item(row,3)->checkState())));
+        QComboBox *combo;
+
+        QueryParameter *param = new QueryParameter(ui->parameter_table->item(row,0)->text(),
+                                                   ui->parameter_table->item(row,1)->text(),
+                                                  (ui->parameter_table->item(row,3)->checkState()));
+
+        param->setExpression(ui->parameter_table->item(row,2)->text());
+
+        combo = dynamic_cast<QComboBox*>(ui->parameter_table->cellWidget(row,3));
+        if (combo) {
+            param->setType(combo->itemText(combo->currentIndex()));
+        }
+
+        combo = dynamic_cast<QComboBox*>(ui->parameter_table->cellWidget(row,4));
+        if (combo) {
+            param->setSubType(combo->itemText(combo->currentIndex()));
+        }
+
+        data.getParameters().append(param);
     }
 
     for (int row = 0; row < ui->order_table->rowCount(); row++ )
@@ -188,9 +230,11 @@ void QueryModel::editorsToData()
 void QueryModel::initializeParameters()
 {
     ui->parameter_table->setColumnWidth(0, 100);
-    ui->parameter_table->setColumnWidth(1, 500);
-    ui->parameter_table->setColumnWidth(2, 500);
+    ui->parameter_table->setColumnWidth(1, 200);
+    ui->parameter_table->setColumnWidth(2, 300);
     ui->parameter_table->setColumnWidth(3, 100);
+    ui->parameter_table->setColumnWidth(4, 120);
+    ui->parameter_table->setColumnWidth(5, 80);
 }
 
 void QueryModel::initializeOrders()
@@ -241,6 +285,8 @@ void QueryModel::saveFileAs()
 
 void QueryModel::on_bt_add_parameter_clicked()
 {
+    QComboBox *combo;
+
     int last_row = 0;
     QTableWidgetItem *item;
 
@@ -253,11 +299,26 @@ void QueryModel::on_bt_add_parameter_clicked()
     item = new QTableWidgetItem("");
     ui->parameter_table->setItem(last_row, 1, item);
 
+    item = new QTableWidgetItem("");
+    ui->parameter_table->setItem(last_row, 2, item);
+
     item = new QTableWidgetItem();
     item->data(Qt::CheckStateRole);
     item->setCheckState(Qt::Unchecked);
     item->setFlags(item->flags() & ~ Qt::ItemIsEditable);    
-    ui->parameter_table->setItem(last_row, 2, item);
+    ui->parameter_table->setItem(last_row, 3, item);
+
+    combo = new QComboBox(this);
+    combo->addItems(QStringList() << "Text" << "Number" << "Date and Time");
+    item = new QTableWidgetItem("");
+    ui->parameter_table->setItem(last_row, 4, item);
+    ui->parameter_table->setCellWidget(last_row, 4, combo);
+
+    combo = new QComboBox(this);
+    combo->addItems(QStringList() << "Single" << "List" << "Range");
+    item = new QTableWidgetItem("");
+    ui->parameter_table->setItem(last_row, 5, item);
+    ui->parameter_table->setCellWidget(last_row, 5, combo);
 
     is_modified = true;
 }

@@ -25,8 +25,16 @@
 
 <model code="IDX0002" description="Useless Indexes">
     <parameters>
-        <parameter code="p_schema" expression="idstat.schemaname = :p_schema" description="Schema" mandatory="false"/>
-        <parameter code="p_relation" expression="indexrelname = :p_relation" description="Table Name" mandatory="false"/>
+        <parameter code="p_schema" description="Schema" mandatory="false">
+            <expression>
+                <![CDATA[idstat.schemaname = :p_schema]]>
+            </expression>
+        </parameter>
+        <parameter code="p_relation" description="Table Name" mandatory="false">
+            <expression>
+                <![CDATA[indexrelname = :p_relation]]>
+            </expression>
+        </parameter>
     </parameters>
     <orders>
         <order description="Schema + Table" fields="1, 2"/>

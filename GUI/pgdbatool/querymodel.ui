@@ -257,6 +257,16 @@
              <string>Mandatory</string>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Sub Type</string>
+            </property>
+           </column>
           </widget>
          </item>
         </layout>

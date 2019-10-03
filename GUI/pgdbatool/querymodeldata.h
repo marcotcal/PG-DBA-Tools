@@ -12,8 +12,7 @@ class QueryParameter : public QObject
     Q_OBJECT
 
 public:
-    QueryParameter(QString code, QString description, QString expression,
-                   bool mandatory, QObject *parent = nullptr) :
+    QueryParameter(QString code, QString description, bool mandatory, QObject *parent = nullptr) :
         QObject(parent), code(code), description(description), mandatory(mandatory)
     {
 
@@ -22,12 +21,20 @@ public:
     QString getCode() { return code; }
     QString getDescription() { return description; }
     QString getExpression() { return expression; }
+    void setExpression(QString value) { expression = value; }
+    QString getType() { return param_type; }
+    void setType(QString value) { param_type = value; }
+    QString getSubType() { return param_sub_type; }
+    void setSubType(QString value) { param_sub_type = value; }
     bool getMandatory() { return mandatory; }
 
 private:
     QString code;
     QString description;
     QString expression;
+    QString param_type;
+    QString param_sub_type;
+
     bool mandatory;
 };
 

@@ -19,6 +19,9 @@ QueryModelData::~QueryModelData()
 
 void QueryModelData::readXML()
 {
+    bool is_reading_parameter = false;
+    QueryParameter *param;
+
     while(!reader.atEnd()) {
 
         while(reader.readNext()) {
@@ -26,10 +29,29 @@ void QueryModelData::readXML()
             if(reader.isStartDocument())
                 continue;
 
-            if (reader.isEndDocument())
+            if (reader.isEndDocument())                
                 break;
 
+            if (reader.isEndElement()) {
+                if (reader.name() == "parameter") {
+                    is_reading_parameter = false;
+                    param = NULL;
+                }
+            }
+
             if (reader.isStartElement()) {
+
+                if (is_reading_parameter) {
+                    if (reader.name() == "expression") {
+                         param->setExpression(reader.readElementText().trimmed());
+                    }
+                    if (reader.name() == "param_type") {
+                         param->setType(reader.readElementText().trimmed());
+                    }
+                    if (reader.name() == "param_sub_type") {
+                         param->setSubType(reader.readElementText().trimmed());
+                    }
+                }
 
                 if (reader.name() == "model") {
                     QXmlStreamAttributes attributes = reader.attributes();
@@ -47,17 +69,16 @@ void QueryModelData::readXML()
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString code;
                     QString description;
-                    QString expression;
                     QString mandatory;
                     if(attributes.hasAttribute("code"))
                          code = attributes.value("code").toString();
                     if(attributes.hasAttribute("description"))
-                         description = attributes.value("description").toString();
-                    if(attributes.hasAttribute("expression"))
-                         expression = attributes.value("expression").toString();
+                         description = attributes.value("description").toString();                    
                     if(attributes.hasAttribute("mandatory"))
                          mandatory = attributes.value("mandatory").toString();
-                    parameters.append(new QueryParameter(code, description, expression, (mandatory == "true")));
+                    param = new QueryParameter(code, description, (mandatory == "true"));
+                    parameters.append(param);
+                    is_reading_parameter = true;
                 } else if (reader.name() == "order") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString fields;
@@ -139,14 +160,16 @@ bool QueryModelData::saveModel(QString file_name)
             "  <!ELEMENT output_type (#PCDATA)>\n"
             "  <!ELEMENT menu_path (#PCDATA)>\n"
             "  <!ELEMENT parameters (parameter*)>\n"
-            "  <!ELEMENT parameter (widget?, str_options?, query_options?)>\n"
+            "  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>\n"
             "  <!ATTLIST parameter code CDATA \"\">\n"
-            "  <!ATTLIST parameter description CDATA \"\">\n"
-            "  <!ATTLIST parameter expression CDATA \"\">"
+            "  <!ATTLIST parameter description CDATA \"\">\n"            
             "  <!ATTLIST parameter mandatory (true|false) #REQUIRED>\n"
             "  <!ELEMENT widget (#PCDATA)>\n"
             "  <!ELEMENT str_options (#PCDATA)>\n"
-            "  <!ELEMENT query_options (#PCDATA)>\n"            
+            "  <!ELEMENT query_options (#PCDATA)>\n"
+            "  <!ELEMENT param_sub_type (#PCDATA)>"
+            "  <!ELEMENT param_type (#PCDATA)>"
+            "  <!ELEMENT expression (#PCDATA)>"
             "  <!ELEMENT orders (order*)>\n"
             "  <!ATTLIST order description CDATA \"\">\n"
             "  <!ATTLIST order fields CDATA \"\">\n"
@@ -170,11 +193,22 @@ bool QueryModelData::saveModel(QString file_name)
         xmlWriter.writeStartElement("parameter");
         xmlWriter.writeAttribute("","code", param->getCode());
         xmlWriter.writeAttribute("","description", param->getDescription());
-        xmlWriter.writeAttribute("","expression", param->getExpression());
         if (param->getMandatory())
             xmlWriter.writeAttribute("","mandatory", "true");
         else
             xmlWriter.writeAttribute("","mandatory", "false");
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("expression");
+        xmlWriter.writeCDATA(param->getExpression());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("param_type");
+        xmlWriter.writeCDATA(param->getType());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("param_sub_type");
+        xmlWriter.writeCDATA(param->getSubType());
         xmlWriter.writeEndElement();
     }
     xmlWriter.writeEndElement();
