@@ -15,11 +15,14 @@ class DlgParameters : public QDialog
 public:
     explicit DlgParameters(QueryModelData *data, QWidget *parent = nullptr);
     ~DlgParameters();
-   QString queryText();
+private slots:
+   void on_buttonBox_accepted();
+
 private:
     Ui::DlgParameters *ui;
     QueryModelData *data;
     void loadParameters();
+    void assignValues();
 };
 
 #endif // DLGPARAMETERS_H

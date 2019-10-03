@@ -197,7 +197,6 @@ bool QueryModelData::saveModel(QString file_name)
             xmlWriter.writeAttribute("","mandatory", "true");
         else
             xmlWriter.writeAttribute("","mandatory", "false");
-        xmlWriter.writeEndElement();
 
         xmlWriter.writeStartElement("expression");
         xmlWriter.writeCDATA(param->getExpression());
@@ -209,6 +208,8 @@ bool QueryModelData::saveModel(QString file_name)
 
         xmlWriter.writeStartElement("param_sub_type");
         xmlWriter.writeCDATA(param->getSubType());
+        xmlWriter.writeEndElement();
+
         xmlWriter.writeEndElement();
     }
     xmlWriter.writeEndElement();
@@ -284,11 +285,49 @@ void QueryModelData::clear()
     query_text = "";
 }
 
+QString QueryModelData::parseParameters(QString query)
+{
+    // remove the unused parameters
+    QString ret = query;
+    QString expr;
+    QStringList items;
+
+    foreach(QueryParameter *parameter, parameters) {
+
+        if (parameter->getValue().isNull()) {
+
+            ret.replace("[!" + parameter->getCode() + "!]", "");
+
+        } else {
+
+            expr = parameter->getExpression();
+            if (parameter->getType() == "Text") {
+                if (parameter->getSubType() == "Single") {
+                    expr.replace("?", "'"+parameter->getValue().toString()+"'");
+                } else if (parameter->getSubType() == "List") {
+                    items = parameter->getValue().toString().split(";");
+                    for(int i = 0; i < items.count(); i++)
+                        items[i] = "'"+items[i]+"'";
+                    expr.replace("?", "("+items.join(",")+")");
+                } else if (parameter->getSubType() == "Range") {
+                    // todo
+                }
+            }
+
+            ret.replace("[!" + parameter->getCode() + "!]", expr);
+        }
+
+    }
+
+    return ret;
+
+}
+
 void QueryModelData::execute(ResultOutput *output)
 {
     QMessageBox msg;
 
-    PGresult *res = PQexec(conn, query_text.toStdString().c_str());
+    PGresult *res = PQexec(conn, parseParameters(query_text).toStdString().c_str());
 
     output->cleanMessage();
 

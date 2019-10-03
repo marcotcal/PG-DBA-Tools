@@ -7,15 +7,14 @@
   <!ELEMENT output_type (#PCDATA)>
   <!ELEMENT menu_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
-  <!ELEMENT parameter (widget?, str_options?, query_options?)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
   <!ATTLIST parameter code CDATA "">
   <!ATTLIST parameter description CDATA "">
   <!ATTLIST parameter mandatory (true|false) #REQUIRED>
-  <!ATTLIST parameter expression CDATA "">
   <!ELEMENT widget (#PCDATA)>
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
-  <!ELEMENT orders (order*)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
   <!ATTLIST order description CDATA "">
   <!ATTLIST order fields CDATA "">
   <!ELEMENT columns (column*)>
@@ -26,14 +25,14 @@
 <model code="IDX0002" description="Useless Indexes">
     <parameters>
         <parameter code="p_schema" description="Schema" mandatory="false">
-            <expression>
-                <![CDATA[idstat.schemaname = :p_schema]]>
-            </expression>
+            <expression><![CDATA[AND idstat.schemaname IN ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[List]]></param_sub_type>
         </parameter>
         <parameter code="p_relation" description="Table Name" mandatory="false">
-            <expression>
-                <![CDATA[indexrelname = :p_relation]]>
-            </expression>
+            <expression><![CDATA[AND indexrelname = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
         </parameter>
     </parameters>
     <orders>
@@ -58,6 +57,6 @@ WHERE idstat.idx_scan < 200
 ORDER BY idstat.schemaname,
 	 idstat.relname,
 	 indexrelname;]]></query_text>
-   <output_type><![CDATA[Text With Separators]]></output_type>
-   <menu_path><![CDATA[/Statistics/Indexes/Useless Indexes]]></menu_path>
+    <output_type><![CDATA[Text With Separators]]></output_type>
+    <menu_path><![CDATA[/Statistics/Indexes/Useless Indexes]]></menu_path>
 </model>

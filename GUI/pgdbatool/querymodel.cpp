@@ -170,6 +170,8 @@ void QueryModel::dataToEditors()
 
 void QueryModel::editorsToData()
 {
+    QComboBox *combo;
+    QString text;
     data.setCode(ui->code->text());
     data.setDescription(ui->description->text());
     data.setQueryText(ui->sql_editor->text());
@@ -188,7 +190,6 @@ void QueryModel::editorsToData()
 
     for (int row = 0; row < ui->parameter_table->rowCount(); row++ )
     {
-        QComboBox *combo;
 
         QueryParameter *param = new QueryParameter(ui->parameter_table->item(row,0)->text(),
                                                    ui->parameter_table->item(row,1)->text(),
@@ -196,14 +197,16 @@ void QueryModel::editorsToData()
 
         param->setExpression(ui->parameter_table->item(row,2)->text());
 
-        combo = dynamic_cast<QComboBox*>(ui->parameter_table->cellWidget(row,3));
-        if (combo) {
-            param->setType(combo->itemText(combo->currentIndex()));
-        }
-
         combo = dynamic_cast<QComboBox*>(ui->parameter_table->cellWidget(row,4));
         if (combo) {
-            param->setSubType(combo->itemText(combo->currentIndex()));
+            text = combo->itemText(combo->currentIndex());
+            param->setType(text);
+        }
+
+        combo = dynamic_cast<QComboBox*>(ui->parameter_table->cellWidget(row,5));
+        if (combo) {
+            text = combo->itemText(combo->currentIndex());
+            param->setSubType(text);
         }
 
         data.getParameters().append(param);

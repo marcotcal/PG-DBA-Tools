@@ -18,15 +18,17 @@ public:
 
     }
     ~QueryParameter() { }
-    QString getCode() { return code; }
-    QString getDescription() { return description; }
-    QString getExpression() { return expression; }
+    QString &getCode() { return code; }
+    QString &getDescription() { return description; }
+    QString &getExpression() { return expression; }
     void setExpression(QString value) { expression = value; }
-    QString getType() { return param_type; }
+    QString &getType() { return param_type; }
     void setType(QString value) { param_type = value; }
-    QString getSubType() { return param_sub_type; }
+    QString &getSubType() { return param_sub_type; }
     void setSubType(QString value) { param_sub_type = value; }
-    bool getMandatory() { return mandatory; }
+    bool &getMandatory() { return mandatory; }
+    void setValue(QVariant value) { param_value = value; }
+    QVariant &getValue() { return param_value; }
 
 private:
     QString code;
@@ -34,7 +36,7 @@ private:
     QString expression;
     QString param_type;
     QString param_sub_type;
-
+    QVariant param_value;
     bool mandatory;
 };
 
@@ -124,6 +126,7 @@ private:
     ConnectionsData &connections;
     PGconn *conn;
     void readXML();
+    QString parseParameters(QString query);
 };
 
 #endif // QUERYMODELDATA_H

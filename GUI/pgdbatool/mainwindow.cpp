@@ -516,6 +516,7 @@ void MainWindow::executeModelResource(QString resource_name)
 {
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
+    data->clear();
     data->loadResource(resource_name);
 
     DlgParameters *param = new DlgParameters(data, this);
