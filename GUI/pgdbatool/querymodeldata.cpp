@@ -63,8 +63,8 @@ void QueryModelData::readXML()
                     query_text = reader.readElementText().trimmed();
                 } else if (reader.name() == "output_type") {
                     output_type = reader.readElementText().trimmed();
-                } else if (reader.name() == "menu_path") {
-                    menu_path = reader.readElementText().trimmed();
+                } else if (reader.name() == "model_path") {
+                    model_path = reader.readElementText().trimmed();
                 } else if (reader.name() == "parameter") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString code;
@@ -153,12 +153,12 @@ bool QueryModelData::saveModel(QString file_name)
     QFile file(file_name);
     QString DTD =
             "<!DOCTYPE model [\n"
-            "  <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>\n"
+            "  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>\n"
             "  <!ATTLIST model code CDATA \"\">\n"
             "  <!ATTLIST model description CDATA \"\">\n"
             "  <!ELEMENT query_text (#PCDATA)>\n"
             "  <!ELEMENT output_type (#PCDATA)>\n"
-            "  <!ELEMENT menu_path (#PCDATA)>\n"
+            "  <!ELEMENT model_path (#PCDATA)>\n"
             "  <!ELEMENT parameters (parameter*)>\n"
             "  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>\n"
             "  <!ATTLIST parameter code CDATA \"\">\n"
@@ -240,8 +240,8 @@ bool QueryModelData::saveModel(QString file_name)
     xmlWriter.writeCDATA(output_type);
     xmlWriter.writeEndElement();
 
-    xmlWriter.writeStartElement("menu_path");
-    xmlWriter.writeCDATA(menu_path);
+    xmlWriter.writeStartElement("model_path");
+    xmlWriter.writeCDATA(model_path);
     xmlWriter.writeEndElement();
 
     xmlWriter.writeEndElement();

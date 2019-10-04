@@ -87,7 +87,7 @@ void QueryModel::dataToEditors()
     ui->code->setText(data.getCode());
     ui->description->setText(data.getDescription());
     ui->sql_editor->setText(data.getQueryText());
-    ui->menu_path->setText(data.getMenuPath());
+    ui->model_path->setText(data.getModelPath());
 
     for(int i = 0; i < ui->output->count(); i++) {
         if (ui->output->itemText(i) == data.getOutputType()) {
@@ -177,7 +177,7 @@ void QueryModel::editorsToData()
     data.setCode(ui->code->text());
     data.setDescription(ui->description->text());
     data.setQueryText(ui->sql_editor->text());
-    data.setMenuPath(ui->menu_path->text());
+    data.setModelPath(ui->model_path->text());
     data.setOutputType(ui->output->currentText());
 
     qDeleteAll(data.getParameters());

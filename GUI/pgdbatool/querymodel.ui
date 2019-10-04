@@ -116,12 +116,12 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QLineEdit" name="menu_path"/>
+      <widget class="QLineEdit" name="model_path"/>
      </item>
      <item row="0" column="2">
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Menu Path</string>
+        <string>Model Path</string>
        </property>
       </widget>
      </item>
