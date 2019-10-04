@@ -487,17 +487,17 @@ void MainWindow::on_actionExecute_triggered()
         switch(ui->output_stack->currentIndex()) {
         case 0:
             if (ui->bt_txt->isChecked())
-                sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this));
+                sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this), ui->show_query->isChecked());
             else if (ui->bt_xml->isChecked())
-                sql->executeCurrent(new XMLTextOutput(ui->text_output, ui->message_output, this));
+                sql->executeCurrent(new XMLTextOutput(ui->text_output, ui->message_output, this), ui->show_query->isChecked());
             else if (ui->bt_json)
-                sql->executeCurrent(new JSONOutput(ui->text_output, ui->message_output, this));
+                sql->executeCurrent(new JSONOutput(ui->text_output, ui->message_output, this), ui->show_query->isChecked());
             break;
         case 1:
-            sql->executeCurrent(new GridOutput(ui->grid_output, ui->message_output, this));
+            sql->executeCurrent(new GridOutput(ui->grid_output, ui->message_output, this), ui->show_query->isChecked());
             break;
         case 2:
-            sql->executeCurrent(new HtmlOutput(ui->html_output, ui->message_output, this));
+            sql->executeCurrent(new HtmlOutput(ui->html_output, ui->message_output, this), ui->show_query->isChecked());
             break;
         }
     }

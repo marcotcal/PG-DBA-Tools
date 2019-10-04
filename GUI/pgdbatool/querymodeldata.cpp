@@ -335,14 +335,18 @@ void QueryModelData::execute(ResultOutput *output, bool show_query)
 
     case PGRES_EMPTY_QUERY:
         output->clearOutput();
-        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
+        output->generateStatusMessage(res);
         break;
     case PGRES_COMMAND_OK:
         output->clearOutput();
-        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
+        if (show_query)
+            output->generateStatusMessage(p_query+"\n");
+        output->generateStatusMessage(res);
         break;
     case PGRES_TUPLES_OK:
         output->clearOutput();
+        if (show_query)
+            output->generateStatusMessage(p_query+"\n");
         output->generateOutput(res);
         break;
     case PGRES_SINGLE_TUPLE:
@@ -360,17 +364,23 @@ void QueryModelData::execute(ResultOutput *output, bool show_query)
     case PGRES_BAD_RESPONSE:
         output->clearOutput();
         output->generateError(conn);
-        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
+        if (show_query)
+            output->generateStatusMessage(p_query+"\n");
+        output->generateStatusMessage(res);
         break;
     case PGRES_FATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
-        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
+        if (show_query)
+            output->generateStatusMessage(p_query+"\n");
+        output->generateStatusMessage(res);
         break;
     case PGRES_NONFATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
-        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
+        if (show_query)
+            output->generateStatusMessage(p_query+"\n");
+        output->generateStatusMessage(res);
         break;
     }
     PQclear(res);

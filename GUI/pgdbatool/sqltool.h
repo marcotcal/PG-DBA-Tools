@@ -64,7 +64,7 @@ public:
     void databaseDisconnect();
     bool transaction();
     void beginTransaction(QString command);
-    void executeCurrent(ResultOutput* output);
+    void executeCurrent(ResultOutput* output, bool show_query=false);
     void rollback();
     void commit();
     bool closeAllEditors();

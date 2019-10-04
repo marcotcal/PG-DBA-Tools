@@ -14,7 +14,6 @@ void HtmlOutput::generateOutput(PGresult *res)
     QList<QVariant> row;
     QList<QList<QVariant>> rows;
     QList<QString> fields;
-    cleanMessage();
     QWebEngineView *view = dynamic_cast<QWebEngineView *>(output);
     QString html = "";
 

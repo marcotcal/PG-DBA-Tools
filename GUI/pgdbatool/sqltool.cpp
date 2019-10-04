@@ -287,7 +287,7 @@ void SqlTool::beginTransaction(QString command) {
     in_transaction = true;
 }
 
-void SqlTool::executeCurrent(ResultOutput* output) {
+void SqlTool::executeCurrent(ResultOutput* output, bool show_query) {
 
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QMessageBox msg;
@@ -303,14 +303,20 @@ void SqlTool::executeCurrent(ResultOutput* output) {
 
     case PGRES_EMPTY_QUERY:
         output->clearOutput();
+        if (show_query)
+            output->generateStatusMessage(editor->text()+"\n");
         output->generateStatusMessage(res);
         break;
     case PGRES_COMMAND_OK:
         output->clearOutput();
+        if (show_query)
+            output->generateStatusMessage(editor->text()+"\n");
         output->generateStatusMessage(res);
         break;
     case PGRES_TUPLES_OK:    
         output->clearOutput();
+        if (show_query)
+            output->generateStatusMessage(editor->text()+"\n");
         output->generateOutput(res);
         break;
     case PGRES_SINGLE_TUPLE:
@@ -328,16 +334,22 @@ void SqlTool::executeCurrent(ResultOutput* output) {
     case PGRES_BAD_RESPONSE:
         output->clearOutput();
         output->generateError(conn);
+        if (show_query)
+            output->generateStatusMessage(editor->text()+"\n");
         output->generateStatusMessage(res);
         break;
     case PGRES_FATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
+        if (show_query)
+            output->generateStatusMessage(editor->text()+"\n");
         output->generateStatusMessage(res);
         break;
     case PGRES_NONFATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
+        if (show_query)
+            output->generateStatusMessage(editor->text()+"\n");
         output->generateStatusMessage(res);
         break;
     }

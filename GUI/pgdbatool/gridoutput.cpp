@@ -20,8 +20,6 @@ void GridOutput::generateOutput(PGresult *res)
 
     table = dynamic_cast<QTableWidget *>(output);
 
-    cleanMessage();
-
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
     messages->insertPlainText(QString("Number of columns returned by the last command: %1\n").arg(columns));
     table->setColumnCount(columns);

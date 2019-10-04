@@ -31,7 +31,6 @@ void SciTextOutput::generateOutput(PGresult *res)
     QList<QList<QVariant>> rows;
     QList<QString> fields;
     QList<int> max_field_lengths;
-    cleanMessage();
     QsciScintilla *editor = dynamic_cast<QsciScintilla* >(output);
 
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
