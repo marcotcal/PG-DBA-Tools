@@ -29,6 +29,7 @@
 #include "querymodeldata.h"
 #include "scitextoutput.h"
 #include "dlgparameters.h"
+#include "dlgexecutemodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -560,4 +561,9 @@ void MainWindow::on_actionWasted_Index_Space_triggered()
     executeModelResource(":/query_defs/query_models/wasted_index_space.xml");
 }
 
+void MainWindow::on_actionExecute_Saved_Model_triggered()
+{
+    DlgExecuteModel *dlg = new DlgExecuteModel(this);
 
+    dlg->exec();
+}

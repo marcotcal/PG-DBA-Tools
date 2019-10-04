@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE model [
-  <!ELEMENT model (query_text, parameters?, orders?, columns?)>
+  <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>
   <!ATTLIST model code CDATA "">
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT menu_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
-  <!ELEMENT parameter (widget?, str_options?, query_options?)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
   <!ATTLIST parameter code CDATA "">
   <!ATTLIST parameter description CDATA "">
   <!ATTLIST parameter mandatory (true|false) #REQUIRED>
   <!ELEMENT widget (#PCDATA)>
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
-  <!ELEMENT orders (order*)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
   <!ATTLIST order description CDATA "">
   <!ATTLIST order fields CDATA "">
   <!ELEMENT columns (column*)>
   <!ATTLIST order title CDATA "">
   <!ATTLIST order width CDATA "">
 ]>
+
 <model code="TST001" description="Test Model">
     <parameters>
-        <parameter code="p_class" description="Object Type" mandatory="true"/>
-        <parameter code="p_schema" description="Schema Name" mandatory="true"/>
+        <parameter code="p_class" description="Object Type" mandatory="true">
+            <expression><![CDATA[]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_schema" description="Schema Name" mandatory="true">
+            <expression><![CDATA[]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
     </parameters>
     <orders>
         <order description="Order 1" fields="field1, field2"/>
         <order description="Order 2" fields="field2"/>
     </orders>
     <columns>
-        <column title="Class" width="200"/>
-        <column title="Schema" width="200"/>
+        <column title="Class" fields="200"/>
+        <column title="Schema" fields="200"/>
     </columns>
-    <query_text>
-    <![CDATA[SELECT *
+    <query_text><![CDATA[SELECT *
 FROM test
-WHERE class = :p_class AND schema <= :p_schema
-    ]]>
-    </query_text>
+WHERE class = :p_class AND schema <= :p_schema]]></query_text>
+    <output_type><![CDATA[Text With Separators]]></output_type>
+    <menu_path><![CDATA[/index/test]]></menu_path>
 </model>
-
