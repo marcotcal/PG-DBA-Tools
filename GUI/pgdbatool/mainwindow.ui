@@ -72,6 +72,8 @@
     <addaction name="actionRollback_Transaction"/>
     <addaction name="actionCommit_Transaction"/>
     <addaction name="actionExecute"/>
+    <addaction name="separator"/>
+    <addaction name="actionExecute_Saved_Model"/>
    </widget>
    <widget class="QMenu" name="menuConnections">
     <property name="title">
@@ -708,6 +710,11 @@
   <action name="actionUseless_Indexes">
    <property name="text">
     <string>&amp;Useless Indexes</string>
+   </property>
+  </action>
+  <action name="actionExecute_Saved_Model">
+   <property name="text">
+    <string>Execute Saved Model</string>
    </property>
   </action>
  </widget>

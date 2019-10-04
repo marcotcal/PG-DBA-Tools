@@ -75,6 +75,8 @@ private slots:
     void on_actionUseless_Indexes_triggered();
     void on_actionWasted_Index_Space_triggered();
 
+    void on_actionExecute_Saved_Model_triggered();
+
 private:
     Ui::MainWindow *ui;
 
