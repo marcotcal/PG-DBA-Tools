@@ -530,7 +530,7 @@ void MainWindow::executeModelResource(QString resource_name)
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
 
-        data->execute(new HtmlOutput(editor, ui->message_output, this));
+        data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());
         
     }
 }

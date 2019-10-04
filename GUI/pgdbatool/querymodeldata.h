@@ -105,7 +105,7 @@ public:
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }    
     bool saveModel(QString file_name);
-    void execute(ResultOutput* output);
+    void execute(ResultOutput* output, bool show_query = false);
     void databaseConnect(int conn_number);
     void databaseDisconnect();
     void clear();

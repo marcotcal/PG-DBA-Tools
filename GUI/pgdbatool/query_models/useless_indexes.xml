@@ -30,15 +30,18 @@
             <param_sub_type><![CDATA[List]]></param_sub_type>
         </parameter>
         <parameter code="p_relation" description="Table Name" mandatory="false">
-            <expression><![CDATA[AND indexrelname = ?]]></expression>
+            <expression><![CDATA[AND indexrelname IN ?]]></expression>
             <param_type><![CDATA[Text]]></param_type>
-            <param_sub_type><![CDATA[Single]]></param_sub_type>
+            <param_sub_type><![CDATA[List]]></param_sub_type>
         </parameter>
     </parameters>
     <orders>
         <order description="Schema + Table" fields="1, 2"/>
     </orders>
-    <columns/>
+    <columns>
+        <column title="Schema" fields="100"/>
+        <column title="Relation" fields="100"/>
+    </columns>
     <query_text><![CDATA[SELECT idstat.schemaname AS schema,
        idstat.relname AS table_name,
        indexrelname AS index_name,

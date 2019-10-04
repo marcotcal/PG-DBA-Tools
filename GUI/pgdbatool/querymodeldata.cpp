@@ -323,11 +323,11 @@ QString QueryModelData::parseParameters(QString query)
 
 }
 
-void QueryModelData::execute(ResultOutput *output)
+void QueryModelData::execute(ResultOutput *output, bool show_query)
 {
     QMessageBox msg;
-
-    PGresult *res = PQexec(conn, parseParameters(query_text).toStdString().c_str());
+    QString p_query = parseParameters(query_text);
+    PGresult *res = PQexec(conn, p_query.toStdString().c_str());
 
     output->cleanMessage();
 
@@ -335,11 +335,11 @@ void QueryModelData::execute(ResultOutput *output)
 
     case PGRES_EMPTY_QUERY:
         output->clearOutput();
-        output->generateStatusMessage(res);
+        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
         break;
     case PGRES_COMMAND_OK:
         output->clearOutput();
-        output->generateStatusMessage(res);
+        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
         break;
     case PGRES_TUPLES_OK:
         output->clearOutput();
@@ -360,17 +360,17 @@ void QueryModelData::execute(ResultOutput *output)
     case PGRES_BAD_RESPONSE:
         output->clearOutput();
         output->generateError(conn);
-        output->generateStatusMessage(res);
+        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
         break;
     case PGRES_FATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
-        output->generateStatusMessage(res);
+        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
         break;
     case PGRES_NONFATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
-        output->generateStatusMessage(res);
+        output->generateStatusMessage(res, show_query ? p_query +"\n" : "");
         break;
     }
     PQclear(res);

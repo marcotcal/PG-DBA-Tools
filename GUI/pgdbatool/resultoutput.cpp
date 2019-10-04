@@ -23,6 +23,8 @@ void ResultOutput::generateError(PGconn *conn)
 void ResultOutput::generateStatusMessage(PGresult *res)
 {
     messages->moveCursor(QTextCursor::End);
+    if (query != "")
+        messages->insertPlainText(query);
     messages->insertPlainText(PQresStatus(PQresultStatus(res)));
 }
 

@@ -9,7 +9,7 @@
 QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QueryModel),
-    data(connections, parent),
+    data(connections),
     connections(connections)
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
@@ -61,7 +61,9 @@ bool QueryModel::openFile(QFile &file)
 {
     data.clear();
     if (data.loadFromFile(file)) {
+        file_name = QFileInfo(file).filePath();
         dataToEditors();
+        is_modified = false;
         return true;
     } else
         return false;
@@ -267,6 +269,7 @@ void QueryModel::saveFile()
     } else {
        editorsToData();
        data.saveModel(file_name);
+       is_modified = false;
     }
 }
 
@@ -496,7 +499,6 @@ void QueryModel::on_bt_test_query_clicked()
 bool QueryModel::canCloseOrReplace()
 {
     QMessageBox msgBox;
-    QString file_name;
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     QString path = settings.value("path_to_models", "").toString();
 
@@ -509,12 +511,20 @@ bool QueryModel::canCloseOrReplace()
 
         switch(ret) {
             case QMessageBox::Save:
-                file_name = QFileDialog::getSaveFileName(this, "Save Model File", path, "Model files (*.xml);;All files (*.*)");
                 if (file_name != "") {
-                    if (!data.saveModel(file_name))
+                    if (!data.saveModel(file_name)) {
                         return false;
+                    } else {
+                        return true;
+                    }
                 } else {
-                    return false;
+                    file_name = QFileDialog::getSaveFileName(this, "Save Model File", path, "Model files (*.xml);;All files (*.*)");
+                    if (file_name != "") {
+                        if (!data.saveModel(file_name))
+                            return false;
+                    } else {
+                        return false;
+                    }
                 }
                 break;
             case QMessageBox::Discard:
