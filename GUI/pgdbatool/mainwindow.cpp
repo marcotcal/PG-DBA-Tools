@@ -521,7 +521,7 @@ void MainWindow::executeModelResource(QString resource_name)
 
     DlgParameters *param = new DlgParameters(data, this);
 
-    if (param->exec()) {
+    if ((data->getParameters().count() == 0 && data->getOrders().count() == 0) || param->exec()) {
 
         new QListWidgetItem(data->getDescription(), ui->editor_list);
         QWebEngineView *editor = new QWebEngineView(ui->main_stack);

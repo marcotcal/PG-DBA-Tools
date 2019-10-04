@@ -146,6 +146,7 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionSave_As"/>
+   <addaction name="actionClose"/>
    <addaction name="separator"/>
    <addaction name="actionSQL_Tool"/>
    <addaction name="actionAdd_Editor"/>
@@ -609,7 +610,7 @@
   <action name="actionRollback_Transaction">
    <property name="icon">
     <iconset resource="pgdbatool.qrc">
-     <normaloff>:/icons/images/icons/icons8-cancel-40.png</normaloff>:/icons/images/icons/icons8-cancel-40.png</iconset>
+     <normaloff>:/icons/images/icons/icons8-delete-40.png</normaloff>:/icons/images/icons/icons8-delete-40.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Rollback Transaction</string>
@@ -662,6 +663,10 @@
    </property>
   </action>
   <action name="actionClose">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-cancel-40.png</normaloff>:/icons/images/icons/icons8-cancel-40.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Close</string>
    </property>
@@ -697,12 +702,12 @@
   </action>
   <action name="actionWasted_Index_Space">
    <property name="text">
-    <string>Wasted Index Space</string>
+    <string>&amp;Wasted Index Space</string>
    </property>
   </action>
   <action name="actionUseless_Indexes">
    <property name="text">
-    <string>Useless Indexes</string>
+    <string>&amp;Useless Indexes</string>
    </property>
   </action>
  </widget>
