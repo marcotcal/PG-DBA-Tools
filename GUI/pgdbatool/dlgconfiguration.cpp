@@ -37,7 +37,7 @@ void DlgConfiguration::setPathToSql(QString value)
 void DlgConfiguration::on_bt_open_path_models_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    "/home",
+                                                    QDir::homePath(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if (dir != "")
@@ -47,7 +47,7 @@ void DlgConfiguration::on_bt_open_path_models_clicked()
 void DlgConfiguration::on_bt_open_path_sql_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    "/home",
+                                                    QDir::homePath(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if (dir != "")
