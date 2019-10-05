@@ -521,14 +521,18 @@ void MainWindow::on_actionScan_Model_Directory_triggered()
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
     if (dir != "") {
+        ui->message_output->clear();
+        ui->message_output->moveCursor(QTextCursor::End);
         ModelScanner *scan = new ModelScanner(dir);
-        connect(scan, SIGNAL(finished), scan, SLOT(deleteLater));
+        connect(scan, &ModelScanner::finished, scan, &ModelScanner::deleteLater);
+        connect(scan, &ModelScanner::fileReaded, this, &MainWindow::do_fileReaded);
+        scan->start();
     }
 }
 
 void MainWindow::do_fileReaded(const QString &file_name)
 {
-
+    ui->message_output->insertPlainText(file_name+"\n");
 }
 
 void MainWindow::executeModelResource(QString resource_name)
