@@ -535,6 +535,13 @@ void MainWindow::do_fileReaded(const QString &file_name)
     ui->message_output->insertPlainText(file_name+"\n");
 }
 
+void MainWindow::on_actionExecute_Saved_Model_triggered()
+{
+    DlgExecuteModel *dlg = new DlgExecuteModel(this);
+
+    dlg->exec();
+}
+
 void MainWindow::executeModelResource(QString resource_name)
 {
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -582,9 +589,32 @@ void MainWindow::on_actionWasted_Index_Space_triggered()
     executeModelResource(":/query_defs/query_models/wasted_index_space.xml");
 }
 
-void MainWindow::on_actionExecute_Saved_Model_triggered()
+void MainWindow::on_actionDatabases_triggered()
 {
-    DlgExecuteModel *dlg = new DlgExecuteModel(this);
+    executeModelResource(":/query_defs/query_models/database_info.xml");
+}
 
-    dlg->exec();
+void MainWindow::on_actionDatabases_Statistics_triggered()
+{
+    executeModelResource(":/query_defs/query_models/database_statistics.xml");
+}
+
+void MainWindow::on_actionDatabase_Conflicts_triggered()
+{
+    executeModelResource(":/query_defs/query_models/database_conflicts.xml");
+}
+
+void MainWindow::on_actionCache_Hit_Ratio_triggered()
+{
+    executeModelResource(":/query_defs/query_models/database_cache_hit_ratio.xml");
+}
+
+void MainWindow::on_actionBlocking_Processes_triggered()
+{
+
+}
+
+void MainWindow::on_actionBlocking_Process_With_Applications_triggered()
+{
+
 }

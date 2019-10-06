@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE model [
-  <!ELEMENT model (query_text, parameters?, orders?, columns?)>
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
   <!ATTLIST model code CDATA "">
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
-  <!ELEMENT parameter (widget?, str_options?, query_options?)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
   <!ATTLIST parameter code CDATA "">
   <!ATTLIST parameter description CDATA "">
   <!ATTLIST parameter mandatory (true|false) #REQUIRED>
   <!ELEMENT widget (#PCDATA)>
   <!ELEMENT str_options (#PCDATA)>
   <!ELEMENT query_options (#PCDATA)>
-  <!ELEMENT orders (order*)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
   <!ATTLIST order description CDATA "">
   <!ATTLIST order fields CDATA "">
   <!ELEMENT columns (column*)>
@@ -22,9 +24,7 @@
 
 <model code="INDX0001" description="Index Sizes">
     <parameters/>
-    <orders>
-        <order description="Natural" fields="7 DESC, 1, 2"/>
-    </orders>
+    <orders/>
     <columns>
         <column title="Schema" fields="100"/>
         <column title="Index" fields="100"/>
@@ -55,5 +55,7 @@ WHERE relname NOT LIKE 'pg_%' AND
     relname NOT LIKE 'information%' AND
     relname NOT LIKE 'sql_%' AND
     relkind IN ('i')    
-ORDER BY 7 DESC, 1, 2    ]]></query_text>
+ORDER BY 7 DESC, 1, 2]]></query_text>
+    <output_type><![CDATA[Text With Separators]]></output_type>
+    <model_path><![CDATA[]]></model_path>
 </model>

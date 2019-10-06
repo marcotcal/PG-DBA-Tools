@@ -101,7 +101,7 @@
    </widget>
    <widget class="QMenu" name="menuStatitics">
     <property name="title">
-     <string>Statitics</string>
+     <string>Info/Statitics</string>
     </property>
     <widget class="QMenu" name="menuIndexes">
      <property name="title">
@@ -113,6 +113,30 @@
      <addaction name="actionUseless_Indexes"/>
      <addaction name="actionWasted_Index_Space"/>
     </widget>
+    <widget class="QMenu" name="menuDatabase">
+     <property name="title">
+      <string>Database</string>
+     </property>
+     <widget class="QMenu" name="menuAll_Databases">
+      <property name="title">
+       <string>All Databases</string>
+      </property>
+      <addaction name="actionDatabases"/>
+      <addaction name="actionDatabases_Statistics"/>
+      <addaction name="actionDatabase_Conflicts"/>
+      <addaction name="actionCache_Hit_Ratio"/>
+     </widget>
+     <widget class="QMenu" name="menuCurrent_Database">
+      <property name="title">
+       <string>Current Database</string>
+      </property>
+      <addaction name="actionBlocking_Processes"/>
+      <addaction name="actionBlocking_Process_With_Applications"/>
+     </widget>
+     <addaction name="menuAll_Databases"/>
+     <addaction name="menuCurrent_Database"/>
+    </widget>
+    <addaction name="menuDatabase"/>
     <addaction name="menuIndexes"/>
    </widget>
    <widget class="QMenu" name="menuStructure">
@@ -750,6 +774,36 @@
   <action name="actionScan_Model_Directory">
    <property name="text">
     <string>Scan Model Directory</string>
+   </property>
+  </action>
+  <action name="actionDatabases">
+   <property name="text">
+    <string>Databases</string>
+   </property>
+  </action>
+  <action name="actionDatabase_Conflicts">
+   <property name="text">
+    <string>Database Conflicts</string>
+   </property>
+  </action>
+  <action name="actionCache_Hit_Ratio">
+   <property name="text">
+    <string>Cache Hit Ratio</string>
+   </property>
+  </action>
+  <action name="actionDatabases_Statistics">
+   <property name="text">
+    <string>Databases Statistics</string>
+   </property>
+  </action>
+  <action name="actionBlocking_Processes">
+   <property name="text">
+    <string>Blocking Processes</string>
+   </property>
+  </action>
+  <action name="actionBlocking_Process_With_Applications">
+   <property name="text">
+    <string>Blocking Process With Applications</string>
    </property>
   </action>
  </widget>

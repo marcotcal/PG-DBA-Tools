@@ -121,5 +121,11 @@
         <file>query_models/stat_all_indexes.xml</file>
         <file>query_models/useless_indexes.xml</file>
         <file>query_models/wasted_index_space.xml</file>
+        <file>query_models/database_info.xml</file>
+        <file>query_models/database_statistics.xml</file>
+        <file>query_models/database_conflicts.xml</file>
+        <file>query_models/database_cache_hit_ratio.xml</file>
+        <file>query_models/database_blocking_processes.xml</file>
+        <file>query_models/database_blocking_processes_application.xml</file>
     </qresource>
 </RCC>
