@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE model [
-  <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
   <!ATTLIST model code CDATA "">
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
-  <!ELEMENT menu_path (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
   <!ATTLIST parameter code CDATA "">
@@ -40,12 +40,12 @@
         <order description="Order 2" fields="field2"/>
     </orders>
     <columns>
-        <column title="Class" fields="200"/>
-        <column title="Schema" fields="200"/>
+        <column title="Class" fields="100"/>
+        <column title="Schema" fields="100"/>
     </columns>
     <query_text><![CDATA[SELECT *
 FROM test
 WHERE class = :p_class AND schema <= :p_schema]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <menu_path><![CDATA[/index/test]]></menu_path>
+    <model_path><![CDATA[tests/Model]]></model_path>
 </model>

@@ -90,6 +90,8 @@
     </property>
     <addaction name="actionManage_Plugins"/>
     <addaction name="actionConfigurations"/>
+    <addaction name="separator"/>
+    <addaction name="actionScan_Model_Directory"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -743,6 +745,11 @@
   <action name="actionExecute_Saved_Model">
    <property name="text">
     <string>Execute Saved Model</string>
+   </property>
+  </action>
+  <action name="actionScan_Model_Directory">
+   <property name="text">
+    <string>Scan Model Directory</string>
    </property>
   </action>
  </widget>

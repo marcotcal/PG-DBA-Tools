@@ -30,6 +30,7 @@
 #include "scitextoutput.h"
 #include "dlgparameters.h"
 #include "dlgexecutemodel.h"
+#include "modelscanner.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -513,6 +514,27 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
     }
 }
 
+void MainWindow::on_actionScan_Model_Directory_triggered()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                 QDir::homePath(),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+    if (dir != "") {
+        ui->message_output->clear();
+        ui->message_output->moveCursor(QTextCursor::End);
+        ModelScanner *scan = new ModelScanner(dir);
+        connect(scan, &ModelScanner::finished, scan, &ModelScanner::deleteLater);
+        connect(scan, &ModelScanner::fileReaded, this, &MainWindow::do_fileReaded);
+        scan->start();
+    }
+}
+
+void MainWindow::do_fileReaded(const QString &file_name)
+{
+    ui->message_output->insertPlainText(file_name+"\n");
+}
+
 void MainWindow::executeModelResource(QString resource_name)
 {
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -529,8 +551,7 @@ void MainWindow::executeModelResource(QString resource_name)
         ui->main_stack->addWidget(editor);
         ui->main_stack->setCurrentWidget(editor);
         ui->editor_list->clearSelection();
-        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());        
         data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());
         
     }

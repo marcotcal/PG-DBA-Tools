@@ -74,8 +74,9 @@ private slots:
     void on_actionStat_All_Indexes_triggered();
     void on_actionUseless_Indexes_triggered();
     void on_actionWasted_Index_Space_triggered();
-
     void on_actionExecute_Saved_Model_triggered();
+    void on_actionScan_Model_Directory_triggered();
+    void do_fileReaded(const QString &file_name);
 
 private:
     Ui::MainWindow *ui;

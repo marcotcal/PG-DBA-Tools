@@ -43,7 +43,8 @@ SOURCES += \
     dlgtransaction.cpp \
     scitextoutput.cpp \
     dlgparameters.cpp \
-    dlgexecutemodel.cpp
+    dlgexecutemodel.cpp \
+    modelscanner.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -64,7 +65,8 @@ HEADERS += \
     dlgtransaction.h \
     scitextoutput.h \
     dlgparameters.h \
-    dlgexecutemodel.h
+    dlgexecutemodel.h \
+    modelscanner.h
 
 FORMS += \
     mainwindow.ui \
