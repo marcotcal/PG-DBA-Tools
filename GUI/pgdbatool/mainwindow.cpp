@@ -611,10 +611,10 @@ void MainWindow::on_actionCache_Hit_Ratio_triggered()
 
 void MainWindow::on_actionBlocking_Processes_triggered()
 {
-
+    executeModelResource(":/query_defs/query_models/database_blocking_processes.xml");
 }
 
 void MainWindow::on_actionBlocking_Process_With_Applications_triggered()
 {
-
+    executeModelResource(":/query_defs/query_models/database_blocking_processes_application.xml");
 }
