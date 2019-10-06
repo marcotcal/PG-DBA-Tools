@@ -118,11 +118,17 @@
      <string>Str&amp;ucture</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuUser_Models">
+    <property name="title">
+     <string>User Models</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSQL"/>
    <addaction name="menuConnections"/>
    <addaction name="menuStatitics"/>
    <addaction name="menuStructure"/>
+   <addaction name="menuUser_Models"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
