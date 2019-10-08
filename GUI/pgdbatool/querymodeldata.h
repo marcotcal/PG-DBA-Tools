@@ -103,7 +103,7 @@ public:
     QList <QueryOrder *> &getOrders() { return orders; }
     QList <QueryColumn *> &getColumns() { return columns; }
     bool getError() { return error; }
-    QString getErrorMessage() { return error_message; }    
+    QString getErrorMessage() { return error_message; }
     bool saveModel(QString file_name);
     void execute(ResultOutput* output, bool show_query = false);
     void databaseConnect(int conn_number);

@@ -20,7 +20,7 @@ QueryModelData::~QueryModelData()
 void QueryModelData::readXML()
 {
     bool is_reading_parameter = false;
-    QueryParameter *param;
+    QueryParameter *param = nullptr;
 
     while(!reader.atEnd()) {
 
@@ -35,7 +35,7 @@ void QueryModelData::readXML()
             if (reader.isEndElement()) {
                 if (reader.name() == "parameter") {
                     is_reading_parameter = false;
-                    param = NULL;
+                    param = nullptr;
                 }
             }
 
