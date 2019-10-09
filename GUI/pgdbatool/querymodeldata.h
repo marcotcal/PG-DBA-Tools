@@ -108,6 +108,7 @@ public:
     void execute(ResultOutput* output, bool show_query = false);
     void databaseConnect(int conn_number);
     void databaseDisconnect();
+    bool getConnected() { return connected; }
     void clear();
 
 private:

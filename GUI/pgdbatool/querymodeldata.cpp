@@ -258,8 +258,10 @@ void QueryModelData::databaseConnect(int conn_number) {
 
     if (PQstatus(conn) == CONNECTION_OK) {
         connected = true;
+        connections.getConnections().at(conn_number)->setInvalid(false);
         return;
     }
+    connections.getConnections().at(conn_number)->setInvalid(true);
     msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
     msg.exec();
     connected = false;

@@ -56,6 +56,7 @@ private:
     void editorsToConnection(int conn);
     void initializeNew();
     void loadList();    
+    bool testConnection();
     int current_row;
     Mode mode;
 };
