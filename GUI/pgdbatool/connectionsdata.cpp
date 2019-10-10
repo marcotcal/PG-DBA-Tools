@@ -6,7 +6,7 @@
 
 ConnectionElement::ConnectionElement(QObject *parent) : QObject (parent)
 {
-
+    invalid = false;
 }
 
 ConnectionElement::~ConnectionElement()

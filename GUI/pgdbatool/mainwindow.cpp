@@ -161,6 +161,7 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
 void MainWindow::setConnectionsList()
 {
     QListWidgetItem *item;
+    connections.sortByName();
     ui->connection_list->clear();
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
@@ -518,12 +519,12 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
         data->databaseDisconnect();
         if(!connections.getConnections().at(currentRow)->isInvalid()) {
             data->databaseConnect(currentRow);
-            /*
+
             if (!data->getConnected()) {
                 ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text() + " (Invalid)");
                 ui->connection_list->item(currentRow)->setForeground(Qt::red);
             }
-            */
+
         }
     }
 }
