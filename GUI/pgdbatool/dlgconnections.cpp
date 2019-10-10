@@ -83,12 +83,32 @@ void DlgConnections::editorsToConnection(int conn)
 {
     ConnectionElement *ele = connections.getConnections().at(conn);
     ele->setName(ui->connection_name->text());
-    ele->addParameter("host", ui->host->text());
+    if(!ui->host->text().isEmpty()) {
+        ele->addParameter("host", ui->host->text());
+    } else {
+        ele->addParameter("host", QVariant());
+    }
     ele->addParameter("port", ui->port->value());
-    ele->addParameter("user", ui->user_name->text());
-    ele->addParameter("password", ui->password->text());
-    ele->addParameter("dbname", ui->database->text());
-    ele->addParameter("service", ui->service->text());
+    if(!ui->user_name->text().isEmpty()) {
+        ele->addParameter("user", ui->user_name->text());
+    } else {
+        ele->addParameter("user", QVariant());
+    }
+    if (!ui->password->text().isEmpty()) {
+        ele->addParameter("password", ui->password->text());
+    } else {
+        ele->addParameter("password", QVariant());
+    }
+    if (!ui->database->text().isEmpty()) {
+        ele->addParameter("dbname", ui->database->text());
+    } else {
+        ele->addParameter("dbname", QVariant());
+    }
+    if (!ui->service->text().isEmpty()) {
+        ele->addParameter("service", ui->service->text());
+    } else {
+        ele->addParameter("service", QVariant());
+    }
 }
 
 void DlgConnections::initializeNew()
