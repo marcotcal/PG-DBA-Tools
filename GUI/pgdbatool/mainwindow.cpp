@@ -633,3 +633,8 @@ void MainWindow::on_actionBlocking_Process_With_Applications_triggered()
 {
     executeModelResource(":/query_defs/query_models/database_blocking_processes_application.xml");
 }
+
+void MainWindow::on_actionList_of_Tables_triggered()
+{
+    executeModelResource(":/query_defs/query_models/struct_list_of_tables.xml");
+}

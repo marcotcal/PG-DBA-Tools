@@ -90,6 +90,8 @@ private slots:
 
     void on_actionBlocking_Process_With_Applications_triggered();
 
+    void on_actionList_of_Tables_triggered();
+
 private:
     Ui::MainWindow *ui;
 

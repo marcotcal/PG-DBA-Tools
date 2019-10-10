@@ -143,6 +143,7 @@
     <property name="title">
      <string>Str&amp;ucture</string>
     </property>
+    <addaction name="actionList_of_Tables"/>
    </widget>
    <widget class="QMenu" name="menuUser_Models">
     <property name="title">
@@ -804,6 +805,11 @@
   <action name="actionBlocking_Process_With_Applications">
    <property name="text">
     <string>Blocking Process With Applications</string>
+   </property>
+  </action>
+  <action name="actionList_of_Tables">
+   <property name="text">
+    <string>List of Tables</string>
    </property>
   </action>
  </widget>

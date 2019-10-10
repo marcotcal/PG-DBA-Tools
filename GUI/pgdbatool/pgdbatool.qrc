@@ -127,5 +127,6 @@
         <file>query_models/database_cache_hit_ratio.xml</file>
         <file>query_models/database_blocking_processes.xml</file>
         <file>query_models/database_blocking_processes_application.xml</file>
+        <file>query_models/struct_list_of_tables.xml</file>
     </qresource>
 </RCC>
