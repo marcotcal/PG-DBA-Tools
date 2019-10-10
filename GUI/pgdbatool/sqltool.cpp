@@ -71,7 +71,8 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
     ui->connection_list->clear();
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
-        ui->connection_list->addItem(conn->name());
+        if (!conn->isInvalid())
+            ui->connection_list->addItem(conn->name());
     }
     default_path = settings.value("path_to_sql", "").toString();
 }
@@ -83,7 +84,7 @@ SqlTool::~SqlTool()
     delete ui;
 
     for (int i = 0; i < count; i++)
-      delete (editors.takeAt(0));
+        delete (editors.takeAt(0));
 
     if (is_connected)
         databaseDisconnect();

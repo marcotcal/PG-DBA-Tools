@@ -160,10 +160,17 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
 
 void MainWindow::setConnectionsList()
 {
+    QListWidgetItem *item;
+    connections.sortByName();
     ui->connection_list->clear();
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
-        new QListWidgetItem(conn->name(), ui->connection_list);
+        if (conn->isInvalid()) {
+            item = new QListWidgetItem(conn->name() + " (Invallid)", ui->connection_list);
+            item->setForeground(Qt::red);
+        } else {
+             item = new QListWidgetItem(conn->name(), ui->connection_list);
+        }
     }
     if (ui->connection_list->count() > 0)
         ui->connection_list->setCurrentRow(0);
@@ -510,7 +517,15 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
     if (currentRow != -1) {
         data->databaseDisconnect();
-        data->databaseConnect(currentRow);
+        if(!connections.getConnections().at(currentRow)->isInvalid()) {
+            data->databaseConnect(currentRow);
+
+            if (!data->getConnected()) {
+                ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text() + " (Invalid)");
+                ui->connection_list->item(currentRow)->setForeground(Qt::red);
+            }
+
+        }
     }
 }
 

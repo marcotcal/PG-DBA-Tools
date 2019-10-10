@@ -15,8 +15,11 @@ public:
     QMap<QString, QVariant> getParameters();
     QVariant getParameter(QString param);
     QString connectStr();
+    bool isInvalid() { return invalid; }
+    void setInvalid(bool value) { invalid = value; }
 private:    
-    QString connection_name;    
+    QString connection_name;
+    bool invalid;
     QMap<QString, QVariant> parameters;
 };
 

@@ -83,12 +83,32 @@ void DlgConnections::editorsToConnection(int conn)
 {
     ConnectionElement *ele = connections.getConnections().at(conn);
     ele->setName(ui->connection_name->text());
-    ele->addParameter("host", ui->host->text());
+    if(!ui->host->text().isEmpty()) {
+        ele->addParameter("host", ui->host->text());
+    } else {
+        ele->addParameter("host", QVariant());
+    }
     ele->addParameter("port", ui->port->value());
-    ele->addParameter("user", ui->user_name->text());
-    ele->addParameter("password", ui->password->text());
-    ele->addParameter("dbname", ui->database->text());
-    ele->addParameter("service", ui->service->text());
+    if(!ui->user_name->text().isEmpty()) {
+        ele->addParameter("user", ui->user_name->text());
+    } else {
+        ele->addParameter("user", QVariant());
+    }
+    if (!ui->password->text().isEmpty()) {
+        ele->addParameter("password", ui->password->text());
+    } else {
+        ele->addParameter("password", QVariant());
+    }
+    if (!ui->database->text().isEmpty()) {
+        ele->addParameter("dbname", ui->database->text());
+    } else {
+        ele->addParameter("dbname", QVariant());
+    }
+    if (!ui->service->text().isEmpty()) {
+        ele->addParameter("service", ui->service->text());
+    } else {
+        ele->addParameter("service", QVariant());
+    }
 }
 
 void DlgConnections::initializeNew()
@@ -109,6 +129,42 @@ void DlgConnections::loadList()
         ConnectionElement *conn = connections.getConnections().at(i);
         new QListWidgetItem(conn->name(), ui->connection_list);
     }
+}
+
+bool DlgConnections::testConnection()
+{
+    QMessageBox msg;
+    PGconn *conn;
+    QString conn_str = "";
+
+    if (!ui->host->text().isEmpty())
+        conn_str += "host="+ui->host->text();
+    if (!ui->database->text().isEmpty())
+        conn_str += " dbname="+ui->database->text();
+    if (!ui->user_name->text().isEmpty())
+        conn_str += " user="+ui->user_name->text();
+    if (!ui->password->text().isEmpty())
+        conn_str += " password="+ui->password->text();
+    if (ui->port->value() > 0)
+        conn_str += QString(" port=%1").arg(ui->port->value());
+    if (!ui->service->text().isEmpty())
+        conn_str += " service="+ui->service->text();
+
+    // TODO - Add the other parameters to the connection
+
+    conn = PQconnectdb(conn_str.toStdString().c_str());
+
+    if (PQstatus(conn) == CONNECTION_OK) {
+        PQfinish(conn);
+        connections.getConnections().at(current_row)->setInvalid(false);
+        msg.setText("Successful Connection");
+        msg.exec();
+        return true;
+    }
+    connections.getConnections().at(current_row)->setInvalid(true);
+    msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
+    msg.exec();
+    return false;
 }
 
 void DlgConnections::setEditingMode(Mode state)
@@ -167,7 +223,8 @@ void DlgConnections::on_bt_edit_clicked()
 void DlgConnections::on_bt_save_clicked()
 {
     if (mode == EDIT_MODE) {
-        editorsToConnection(current_row);        
+        editorsToConnection(current_row);
+        testConnection();
     } else {
         current_row = ui->connection_list->count();
         ConnectionElement *conn = connections.newConnection();
@@ -191,34 +248,5 @@ void DlgConnections::on_bt_cancel_clicked()
 
 void DlgConnections::on_bt_test_connetion_clicked()
 {
-    QMessageBox msg;
-    PGconn *conn;
-    QString conn_str = "";
-
-    if (!ui->host->text().isEmpty())
-        conn_str += "host="+ui->host->text();
-    if (!ui->database->text().isEmpty())
-        conn_str += " dbname="+ui->database->text();
-    if (!ui->user_name->text().isEmpty())
-        conn_str += " user="+ui->user_name->text();
-    if (!ui->password->text().isEmpty())
-        conn_str += " password="+ui->password->text();
-    if (ui->port->value() > 0)
-        conn_str += QString(" port=%1").arg(ui->port->value());
-    if (!ui->service->text().isEmpty())
-        conn_str += " service="+ui->service->text();
-
-    // TODO - Add the other parameters to the connection
-
-    conn = PQconnectdb(conn_str.toStdString().c_str());
-
-    if (PQstatus(conn) == CONNECTION_OK) {
-        PQfinish(conn);
-        msg.setText("Successful Connection");
-        msg.exec();
-        return;
-    }
-    msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
-    msg.exec();
-
+    testConnection();
 }

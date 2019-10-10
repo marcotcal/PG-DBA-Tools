@@ -20,7 +20,7 @@ QueryModelData::~QueryModelData()
 void QueryModelData::readXML()
 {
     bool is_reading_parameter = false;
-    QueryParameter *param;
+    QueryParameter *param = nullptr;
 
     while(!reader.atEnd()) {
 
@@ -35,7 +35,7 @@ void QueryModelData::readXML()
             if (reader.isEndElement()) {
                 if (reader.name() == "parameter") {
                     is_reading_parameter = false;
-                    param = NULL;
+                    param = nullptr;
                 }
             }
 
@@ -258,8 +258,10 @@ void QueryModelData::databaseConnect(int conn_number) {
 
     if (PQstatus(conn) == CONNECTION_OK) {
         connected = true;
+        connections.getConnections().at(conn_number)->setInvalid(false);
         return;
     }
+    connections.getConnections().at(conn_number)->setInvalid(true);
     msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
     msg.exec();
     connected = false;
