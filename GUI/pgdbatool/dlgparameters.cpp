@@ -48,7 +48,7 @@ void DlgParameters::loadParameters()
 
 void DlgParameters::assignValues()
 {
-    for (int i; i < ui->parameter_table->rowCount(); i++) {
+    for (int i = 0; i < ui->parameter_table->rowCount(); i++) {
         if (ui->parameter_table->item(i, 1)->text() != "") {
             data->getParameters().at(i)->setValue(ui->parameter_table->item(i, 1)->text());
         } else {

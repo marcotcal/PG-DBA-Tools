@@ -77,19 +77,12 @@ private slots:
     void on_actionExecute_Saved_Model_triggered();
     void on_actionScan_Model_Directory_triggered();
     void do_fileReaded(const QString &file_name);
-
     void on_actionDatabases_triggered();
-
     void on_actionDatabases_Statistics_triggered();
-
     void on_actionDatabase_Conflicts_triggered();
-
     void on_actionCache_Hit_Ratio_triggered();
-
     void on_actionBlocking_Processes_triggered();
-
     void on_actionBlocking_Process_With_Applications_triggered();
-
     void on_actionList_of_Tables_triggered();
 
 private:
