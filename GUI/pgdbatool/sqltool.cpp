@@ -74,6 +74,7 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
         ui->connection_list->addItem(conn->name());
     }
     default_path = settings.value("path_to_sql", "").toString();
+    group_name = "";
 }
 
 SqlTool::~SqlTool()
@@ -161,6 +162,21 @@ bool SqlTool::saveCurrentAs()
             }
         }
     }
+}
+
+bool SqlTool::saveGroup()
+{
+
+}
+
+bool SqlTool::saveGroupAs()
+{
+
+}
+
+bool SqlTool::restoreGroup()
+{
+
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {

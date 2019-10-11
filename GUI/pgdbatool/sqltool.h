@@ -71,6 +71,9 @@ public:
     bool openFileOnCurrent(QFile &file);
     bool saveCurrent();
     bool saveCurrentAs();
+    bool saveGroup();
+    bool saveGroupAs();
+    bool restoreGroup();
 private slots:
     void on_limit_result_clicked(bool checked);
 
@@ -82,6 +85,7 @@ private:
     ConnectionsData &connections;
     PGconn *conn;
     QString default_path;
+    QString group_name;
 
     void initializeEditor(EditorItem *editor);
 };
