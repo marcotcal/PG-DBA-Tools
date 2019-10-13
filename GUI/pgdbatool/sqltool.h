@@ -71,6 +71,8 @@ public:
     bool openFileOnCurrent(QFile &file);
     bool saveCurrent();
     bool saveCurrentAs();
+    void setGroupName(const QString &value) { group_name = value; }
+    QString &getGroupName() { return group_name; }
     bool saveGroup();
     bool saveGroupAs();
     bool restoreGroup();
@@ -88,6 +90,8 @@ private:
     QString group_name;
 
     void initializeEditor(EditorItem *editor);
+    bool saveToXML(QString file_name);
+    bool readFromXML(QString file_name);
 };
 
 #endif // SQLTOOL_H
