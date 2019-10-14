@@ -319,6 +319,7 @@ void MainWindow::on_actionSave_SQL_Tool_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         sql->saveGroup();
+        ui->editor_list->currentItem()->setText(sql->getName());
     }
 }
 
@@ -327,6 +328,7 @@ void MainWindow::on_actionSave_SQL_Tool_As_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         sql->saveGroupAs();
+        ui->editor_list->currentItem()->setText(sql->getName());
     }
 }
 
@@ -335,6 +337,7 @@ void MainWindow::on_actionOpen_SQL_Tool_Set_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         sql->restoreGroup();
+        ui->editor_list->currentItem()->setText(sql->getName());
     }
 }
 

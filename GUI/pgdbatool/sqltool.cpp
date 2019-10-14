@@ -196,6 +196,11 @@ bool SqlTool::restoreGroup()
     return false;
 }
 
+QString SqlTool::getName()
+{
+    return QFileInfo(group_name).baseName();;
+}
+
 void SqlTool::initializeEditor(EditorItem *editor) {
     PostgreSQLLexer *lex =new PostgreSQLLexer(this);
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -219,12 +224,89 @@ void SqlTool::initializeEditor(EditorItem *editor) {
 
 bool SqlTool::saveToXML(QString file_name)
 {
+    QFile file(file_name);
 
+    group_name = QFileInfo(file).baseName();
+
+    QString DTD =
+            "<!DOCTYPE query_set [\n"
+            "  <!ELEMENT query_set (queries)>\n"
+            "  <!ATTLIST query_set count CDATA \"\">\n"
+            "  <!ATTLIST query_set group_name CDATA \"\">\n"
+            "  <!ELEMENT queries (query*)>\n"
+            "  <!ELEMENT query (#PCDATA)>"
+            "  <!ATTLIST query name CDATA \"\">\n"
+            "]>\n";
+    file.open(QIODevice::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.writeStartDocument();
+    xmlWriter.writeDTD(DTD);
+
+    xmlWriter.writeStartElement("query_set");
+    xmlWriter.writeAttribute("","count", QString("%1").arg(editors.count()));
+    xmlWriter.writeAttribute("","group_name", group_name);
+    Q_FOREACH(EditorItem *editor, editors) {
+        xmlWriter.writeStartElement("query");
+        xmlWriter.writeAttribute("","name", QFileInfo(editor->getFileName()).baseName());
+        xmlWriter.writeCDATA(editor->text());
+        xmlWriter.writeEndElement();
+    }
+    xmlWriter.writeEndElement();
+
+    file.close();
+
+    return true;
 }
 
 bool SqlTool::readFromXML(QString file_name)
 {
+    QFile file(file_name);
+    QXmlStreamReader reader;
+    int count;
+    QString name;
+    QString query;
+    EditorItem *editor;
 
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return false;
+    }
+
+    reader.setDevice(&file);
+
+    while(!reader.atEnd()) {
+
+        while(reader.readNext()) {
+
+            if(reader.isStartDocument())
+                continue;
+
+            if (reader.isEndDocument())
+                break;
+
+            if (reader.isStartElement()) {
+
+                if (reader.name() == "query_set") {
+                    QXmlStreamAttributes attributes = reader.attributes();
+                    if(attributes.hasAttribute("count"))
+                         count = attributes.value("count").toInt();
+                    if(attributes.hasAttribute("name"))
+                         name = attributes.value("name").toString();
+                } else if (reader.name() == "query") {
+                    query = reader.readElementText().trimmed();
+                    editor = addEditor();
+                    editor->setText(query);
+                }
+
+            }
+
+        }
+
+    }
+
+    reader.clear();
+    return true;
 }
 
 EditorItem *SqlTool::addEditor() {
