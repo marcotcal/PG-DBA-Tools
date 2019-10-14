@@ -46,6 +46,9 @@ private slots:
     void on_actionSave_triggered();
     void on_actionSave_As_triggered();
     void on_actionSQL_Tool_triggered();
+    void on_actionSave_SQL_Tool_triggered();
+    void on_actionSave_SQL_Tool_As_triggered();
+    void on_actionOpen_SQL_Tool_Set_triggered();
     void on_actionManageConnections_triggered();
     void on_actionDatabase_to_Database_triggered();
     void on_actionAdd_Editor_triggered();

@@ -61,6 +61,9 @@
      <string>SQL</string>
     </property>
     <addaction name="actionSQL_Tool"/>
+    <addaction name="actionSave_SQL_Tool"/>
+    <addaction name="actionSave_SQL_Tool_As"/>
+    <addaction name="actionOpen_SQL_Tool_Set"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_Editor"/>
     <addaction name="actionClose_Editor"/>
@@ -810,6 +813,21 @@
   <action name="actionList_of_Tables">
    <property name="text">
     <string>List of Tables</string>
+   </property>
+  </action>
+  <action name="actionSave_SQL_Tool">
+   <property name="text">
+    <string>Save SQL Tool Set</string>
+   </property>
+  </action>
+  <action name="actionSave_SQL_Tool_As">
+   <property name="text">
+    <string>Save SQL Tool Set As...</string>
+   </property>
+  </action>
+  <action name="actionOpen_SQL_Tool_Set">
+   <property name="text">
+    <string>Open SQL Tool Set</string>
    </property>
   </action>
  </widget>

@@ -71,6 +71,11 @@ public:
     bool openFileOnCurrent(QFile &file);
     bool saveCurrent();
     bool saveCurrentAs();
+    void setGroupName(const QString &value) { group_name = value; }
+    QString &getGroupName() { return group_name; }
+    bool saveGroup();
+    bool saveGroupAs();
+    bool restoreGroup();
 private slots:
     void on_limit_result_clicked(bool checked);
 
@@ -82,8 +87,11 @@ private:
     ConnectionsData &connections;
     PGconn *conn;
     QString default_path;
+    QString group_name;
 
     void initializeEditor(EditorItem *editor);
+    bool saveToXML(QString file_name);
+    bool readFromXML(QString file_name);
 };
 
 #endif // SQLTOOL_H

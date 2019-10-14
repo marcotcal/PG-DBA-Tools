@@ -112,6 +112,9 @@ void MainWindow::disable_actions()
     ui->actionCommit_Transaction->setEnabled(false);
     ui->actionRollback_Transaction->setEnabled(false);
     ui->actionExecute->setEnabled(false);
+    ui->actionOpen_SQL_Tool_Set->setEnabled(false);
+    ui->actionSave_SQL_Tool->setEnabled(false);
+    ui->actionSave_SQL_Tool_As->setEnabled(false);
 }
 
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
@@ -120,6 +123,10 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
     ui->actionClose_Editor->setEnabled(true);
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
+
+    ui->actionOpen_SQL_Tool_Set->setEnabled(true);
+    ui->actionSave_SQL_Tool->setEnabled(true);
+    ui->actionSave_SQL_Tool_As->setEnabled(true);
 
     ui->actionConnect->setEnabled(!sql->connected());
     ui->actionDisconect->setEnabled(sql->connected());
@@ -305,6 +312,30 @@ void MainWindow::on_actionManageConnections_triggered()
     DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
     setConnectionsList();
+}
+
+void MainWindow::on_actionSave_SQL_Tool_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql) {
+        sql->saveGroup();
+    }
+}
+
+void MainWindow::on_actionSave_SQL_Tool_As_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql) {
+        sql->saveGroupAs();
+    }
+}
+
+void MainWindow::on_actionOpen_SQL_Tool_Set_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql) {
+        sql->restoreGroup();
+    }
 }
 
 void MainWindow::on_actionDatabase_to_Database_triggered()

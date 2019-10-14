@@ -75,6 +75,7 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
             ui->connection_list->addItem(conn->name());
     }
     default_path = settings.value("path_to_sql", "").toString();
+    group_name = "";
 }
 
 SqlTool::~SqlTool()
@@ -164,6 +165,37 @@ bool SqlTool::saveCurrentAs()
     }
 }
 
+bool SqlTool::saveGroup()
+{
+    if (group_name == "")
+        return saveGroupAs();
+    return saveToXML(group_name);
+}
+
+bool SqlTool::saveGroupAs()
+{
+    QString file_name;
+
+    file_name = QFileDialog::getSaveFileName(this, "Save Query Tool As", default_path, "Query Tool files (*.qtx);;All files (*.*)");
+
+    if (file_name != "") {
+        return saveToXML(file_name);
+    }
+    return false;
+}
+
+bool SqlTool::restoreGroup()
+{
+    QString file_name;
+
+    file_name = QFileDialog::getOpenFileName(this, "Open File", default_path, "Query Tool files (*.qtx);;All files (*.*))");
+
+    if (file_name != "")
+        return readFromXML(file_name);
+
+    return false;
+}
+
 void SqlTool::initializeEditor(EditorItem *editor) {
     PostgreSQLLexer *lex =new PostgreSQLLexer(this);
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -183,6 +215,16 @@ void SqlTool::initializeEditor(EditorItem *editor) {
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
     editor->setIsModified(false);
+}
+
+bool SqlTool::saveToXML(QString file_name)
+{
+
+}
+
+bool SqlTool::readFromXML(QString file_name)
+{
+
 }
 
 EditorItem *SqlTool::addEditor() {
