@@ -677,3 +677,33 @@ void MainWindow::on_actionSchemas_triggered()
 {
     executeModelResource(":/query_defs/query_models/struct_schemas.xml");
 }
+
+void MainWindow::on_actionTCP_Settings_triggered()
+{
+    executeModelResource(":/query_defs/query_models/tcp_settings.xml");
+}
+
+void MainWindow::on_actionAutovacuum_Settings_triggered()
+{
+    executeModelResource(":/query_defs/query_models/autovacuum_settings.xml");
+}
+
+void MainWindow::on_actionLog_Settings_triggered()
+{
+    executeModelResource(":/query_defs/query_models/log_settings.xml");
+}
+
+void MainWindow::on_actionLanguage_Settings_triggered()
+{
+    executeModelResource(":/query_defs/query_models/language_settings.xml");
+}
+
+void MainWindow::on_actionAll_Other_Settings_triggered()
+{
+    executeModelResource(":/query_defs/query_models/all_other_settings.xml");
+}
+
+void MainWindow::on_actionSSL_Settings_triggered()
+{
+    executeModelResource(":/query_defs/query_models/ssl_settings.xml");
+}

@@ -104,7 +104,7 @@
    </widget>
    <widget class="QMenu" name="menuStatitics">
     <property name="title">
-     <string>&amp;Info/Statitics</string>
+     <string>&amp;Info - Statitics</string>
     </property>
     <widget class="QMenu" name="menuIndexes">
      <property name="title">
@@ -139,8 +139,20 @@
      <addaction name="menuAll_Databases"/>
      <addaction name="menuCurrent_Database"/>
     </widget>
+    <widget class="QMenu" name="menuSettings">
+     <property name="title">
+      <string>Settings</string>
+     </property>
+     <addaction name="actionTCP_Settings"/>
+     <addaction name="actionAutovacuum_Settings"/>
+     <addaction name="actionLog_Settings"/>
+     <addaction name="actionLanguage_Settings"/>
+     <addaction name="actionSSL_Settings"/>
+     <addaction name="actionAll_Other_Settings"/>
+    </widget>
     <addaction name="menuDatabase"/>
     <addaction name="menuIndexes"/>
+    <addaction name="menuSettings"/>
    </widget>
    <widget class="QMenu" name="menuStructure">
     <property name="title">
@@ -834,6 +846,36 @@
   <action name="actionSchemas">
    <property name="text">
     <string>Schemas</string>
+   </property>
+  </action>
+  <action name="actionTCP_Settings">
+   <property name="text">
+    <string>TCP Settings</string>
+   </property>
+  </action>
+  <action name="actionAutovacuum_Settings">
+   <property name="text">
+    <string>Autovacuum And Vacuum Settings</string>
+   </property>
+  </action>
+  <action name="actionLog_Settings">
+   <property name="text">
+    <string>Log Settings</string>
+   </property>
+  </action>
+  <action name="actionLanguage_Settings">
+   <property name="text">
+    <string>Language Settings</string>
+   </property>
+  </action>
+  <action name="actionAll_Other_Settings">
+   <property name="text">
+    <string>All Other Settings</string>
+   </property>
+  </action>
+  <action name="actionSSL_Settings">
+   <property name="text">
+    <string>SSL Settings</string>
    </property>
   </action>
  </widget>

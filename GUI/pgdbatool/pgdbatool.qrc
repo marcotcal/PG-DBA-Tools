@@ -129,5 +129,11 @@
         <file>query_models/database_blocking_processes_application.xml</file>
         <file>query_models/struct_list_of_tables.xml</file>
         <file>query_models/struct_schemas.xml</file>
+        <file>query_models/tcp_settings.xml</file>
+        <file>query_models/autovacuum_settings.xml</file>
+        <file>query_models/log_settings.xml</file>
+        <file>query_models/language_settings.xml</file>
+        <file>query_models/all_other_settings.xml</file>
+        <file>query_models/ssl_settings.xml</file>
     </qresource>
 </RCC>

@@ -90,6 +90,18 @@ private slots:
 
     void on_actionSchemas_triggered();
 
+    void on_actionTCP_Settings_triggered();
+
+    void on_actionAutovacuum_Settings_triggered();
+
+    void on_actionLog_Settings_triggered();
+
+    void on_actionLanguage_Settings_triggered();
+
+    void on_actionAll_Other_Settings_triggered();
+
+    void on_actionSSL_Settings_triggered();
+
 private:
     Ui::MainWindow *ui;
 

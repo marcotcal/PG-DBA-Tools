@@ -22,12 +22,14 @@
   <!ATTLIST order width CDATA "">
 ]>
 
-<model code="SCHE-0001" description="Schemas">
+<model code="INFO-0007" description="Log Settings">
     <parameters/>
     <orders/>
     <columns/>
-    <query_text><![CDATA[SELECT schema_name, schema_owner 
-FROM information_schema.schemata]]></query_text>
+    <query_text><![CDATA[SELECT name, setting, short_desc
+FROM pg_settings
+WHERE name LIKE 'log%';
+]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[/Structure/Schemas]]></model_path>
+    <model_path><![CDATA[/Info - Statistics/Settings/Log Settings]]></model_path>
 </model>
