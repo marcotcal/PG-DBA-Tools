@@ -319,7 +319,7 @@ void MainWindow::on_actionSave_SQL_Tool_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         sql->saveGroup();
-        ui->editor_list->currentItem()->setText(sql->getName());
+        ui->editor_list->currentItem()->setText(sql->getGroupName());
     }
 }
 
@@ -328,7 +328,7 @@ void MainWindow::on_actionSave_SQL_Tool_As_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         sql->saveGroupAs();
-        ui->editor_list->currentItem()->setText(sql->getName());
+        ui->editor_list->currentItem()->setText(sql->getGroupName());
     }
 }
 
@@ -337,7 +337,7 @@ void MainWindow::on_actionOpen_SQL_Tool_Set_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         sql->restoreGroup();
-        ui->editor_list->currentItem()->setText(sql->getName());
+        ui->editor_list->currentItem()->setText(sql->getGroupName());
     }
 }
 
@@ -671,4 +671,9 @@ void MainWindow::on_actionBlocking_Process_With_Applications_triggered()
 void MainWindow::on_actionList_of_Tables_triggered()
 {
     executeModelResource(":/query_defs/query_models/struct_list_of_tables.xml");
+}
+
+void MainWindow::on_actionSchemas_triggered()
+{
+    executeModelResource(":/query_defs/query_models/struct_schemas.xml");
 }

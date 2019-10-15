@@ -128,5 +128,6 @@
         <file>query_models/database_blocking_processes.xml</file>
         <file>query_models/database_blocking_processes_application.xml</file>
         <file>query_models/struct_list_of_tables.xml</file>
+        <file>query_models/struct_schemas.xml</file>
     </qresource>
 </RCC>

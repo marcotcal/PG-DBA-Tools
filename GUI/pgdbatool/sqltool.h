@@ -71,7 +71,6 @@ public:
     bool openFileOnCurrent(QFile &file);
     bool saveCurrent();
     bool saveCurrentAs();
-    QString getName();
     void setGroupName(const QString &value) { group_name = value; }
     QString &getGroupName() { return group_name; }
     bool saveGroup();

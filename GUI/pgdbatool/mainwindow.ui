@@ -104,7 +104,7 @@
    </widget>
    <widget class="QMenu" name="menuStatitics">
     <property name="title">
-     <string>Info/Statitics</string>
+     <string>&amp;Info/Statitics</string>
     </property>
     <widget class="QMenu" name="menuIndexes">
      <property name="title">
@@ -118,11 +118,11 @@
     </widget>
     <widget class="QMenu" name="menuDatabase">
      <property name="title">
-      <string>Database</string>
+      <string>&amp;Database</string>
      </property>
      <widget class="QMenu" name="menuAll_Databases">
       <property name="title">
-       <string>All Databases</string>
+       <string>&amp;All Databases</string>
       </property>
       <addaction name="actionDatabases"/>
       <addaction name="actionDatabases_Statistics"/>
@@ -131,7 +131,7 @@
      </widget>
      <widget class="QMenu" name="menuCurrent_Database">
       <property name="title">
-       <string>Current Database</string>
+       <string>&amp;Current Database</string>
       </property>
       <addaction name="actionBlocking_Processes"/>
       <addaction name="actionBlocking_Process_With_Applications"/>
@@ -146,6 +146,7 @@
     <property name="title">
      <string>Str&amp;ucture</string>
     </property>
+    <addaction name="actionSchemas"/>
     <addaction name="actionList_of_Tables"/>
    </widget>
    <widget class="QMenu" name="menuUser_Models">
@@ -772,62 +773,67 @@
   </action>
   <action name="actionExecute_Saved_Model">
    <property name="text">
-    <string>Execute Saved Model</string>
+    <string>E&amp;xecute Saved Model</string>
    </property>
   </action>
   <action name="actionScan_Model_Directory">
    <property name="text">
-    <string>Scan Model Directory</string>
+    <string>&amp;Scan Model Directory</string>
    </property>
   </action>
   <action name="actionDatabases">
    <property name="text">
-    <string>Databases</string>
+    <string>&amp;Databases</string>
    </property>
   </action>
   <action name="actionDatabase_Conflicts">
    <property name="text">
-    <string>Database Conflicts</string>
+    <string>Data&amp;base Conflicts</string>
    </property>
   </action>
   <action name="actionCache_Hit_Ratio">
    <property name="text">
-    <string>Cache Hit Ratio</string>
+    <string>&amp;Cache Hit Ratio</string>
    </property>
   </action>
   <action name="actionDatabases_Statistics">
    <property name="text">
-    <string>Databases Statistics</string>
+    <string>Databases &amp;Statistics</string>
    </property>
   </action>
   <action name="actionBlocking_Processes">
    <property name="text">
-    <string>Blocking Processes</string>
+    <string>&amp;Blocking Processes</string>
    </property>
   </action>
   <action name="actionBlocking_Process_With_Applications">
    <property name="text">
-    <string>Blocking Process With Applications</string>
+    <string>Blocking &amp;Process With Applications</string>
    </property>
   </action>
   <action name="actionList_of_Tables">
    <property name="text">
-    <string>List of Tables</string>
+    <string>&amp;List of Tables</string>
    </property>
   </action>
   <action name="actionSave_SQL_Tool">
    <property name="text">
-    <string>Save SQL Tool Set</string>
+    <string>Sa&amp;ve SQL Tool Set</string>
    </property>
   </action>
   <action name="actionSave_SQL_Tool_As">
    <property name="text">
-    <string>Save SQL Tool Set As...</string>
+    <string>Save S&amp;QL Tool Set As...</string>
    </property>
   </action>
   <action name="actionOpen_SQL_Tool_Set">
    <property name="text">
-    <string>Open SQL Tool Set</string>
+    <string>O&amp;pen SQL Tool Set</string>
+   </property>
+  </action>
+  <action name="actionSchemas">
+   <property name="text">
+    <string>Schemas</string>
    </property>
   </action>
  </widget>

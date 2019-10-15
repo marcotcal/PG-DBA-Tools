@@ -190,15 +190,11 @@ bool SqlTool::restoreGroup()
 
     file_name = QFileDialog::getOpenFileName(this, "Open File", default_path, "Query Tool files (*.qtx);;All files (*.*))");
 
-    if (file_name != "")
+    if (file_name != "") {
+        closeAllEditors();
         return readFromXML(file_name);
-
+    }
     return false;
-}
-
-QString SqlTool::getName()
-{
-    return QFileInfo(group_name).baseName();;
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {
@@ -291,18 +287,20 @@ bool SqlTool::readFromXML(QString file_name)
                     QXmlStreamAttributes attributes = reader.attributes();
                     if(attributes.hasAttribute("count"))
                          count = attributes.value("count").toInt();
+                    if(attributes.hasAttribute("group_name"))
+                         group_name = attributes.value("group_name").toString();
+                } else if (reader.name() == "query") {
+                    QXmlStreamAttributes attributes = reader.attributes();
                     if(attributes.hasAttribute("name"))
                          name = attributes.value("name").toString();
-                } else if (reader.name() == "query") {
                     query = reader.readElementText().trimmed();
                     editor = addEditor();
                     editor->setText(query);
+                    editor->setModified(false);
+                    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(), name);
                 }
-
             }
-
         }
-
     }
 
     reader.clear();
