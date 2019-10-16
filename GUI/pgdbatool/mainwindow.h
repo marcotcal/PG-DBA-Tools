@@ -65,12 +65,7 @@ private slots:
     void on_actionConfigurations_triggered();
     void on_actionClose_triggered();
     void on_editor_list_currentRowChanged(int currentRow);
-    void on_bt_txt_clicked();
-    void on_bt_grid_clicked();
-    void on_bt_html_clicked();
     void on_actionExecute_triggered();
-    void on_bt_xml_clicked();
-    void on_bt_json_clicked();
     void on_actionIndexes_Sizes_triggered();
     void on_connection_list_currentRowChanged(int currentRow);
     void on_actionIndexes_Bloat_triggered();

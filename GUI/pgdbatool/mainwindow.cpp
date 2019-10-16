@@ -17,6 +17,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
+#include <QWebEngineView>
 #include "dlgmenunew.h"
 #include "dlgconnections.h"
 #include "dlgconfiguration.h"
@@ -32,18 +33,19 @@
 #include "dlgexecutemodel.h"
 #include "dlgexplain.h"
 #include "modelscanner.h"
+#include "outputset.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    ui->output_stack->addWidget(new OutputSet(ui->output_stack));
+    ui->output_stack->setCurrentIndex(1);
     readSettings();    
     disable_actions();
     data = new QueryModelData(connections, this);
     setConnectionsList();
-    ui->output_stack->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow()
@@ -83,6 +85,7 @@ void MainWindow::readSettings()
     const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
     path_to_sql = settings.value("path_to_sql", "").toString();
     path_to_models = settings.value("path_to_models", "").toString();
+    restoreState(settings.value("DOCK_LOCATIONS").toByteArray(),1);
     if (geometry.isEmpty()) {
         const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
         resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
@@ -100,6 +103,7 @@ void MainWindow::writeSettings()
     settings.setValue("geometry", saveGeometry());
     settings.setValue("path_to_models", path_to_models);
     settings.setValue("path_to_sql", path_to_sql);
+    settings.setValue("DOCK_LOCATIONS",this->saveState(1));
     connections.writeConnections();
 }
 
@@ -500,34 +504,9 @@ void MainWindow::on_editor_list_currentRowChanged(int currentRow)
     ui->main_stack->setCurrentIndex(currentRow);
 }
 
-void MainWindow::on_bt_txt_clicked()
-{
-    ui->output_stack->setCurrentIndex(0);
-
-}
-
-void MainWindow::on_bt_xml_clicked()
-{
-    ui->output_stack->setCurrentIndex(0);
-}
-
-void MainWindow::on_bt_json_clicked()
-{
-    ui->output_stack->setCurrentIndex(0);
-}
-
-void MainWindow::on_bt_grid_clicked()
-{
-    ui->output_stack->setCurrentIndex(1);
-}
-
-void MainWindow::on_bt_html_clicked()
-{
-    ui->output_stack->setCurrentIndex(2);
-}
-
 void MainWindow::on_actionExecute_triggered()
 {
+    /*
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
         switch(ui->output_stack->currentIndex()) {
@@ -547,7 +526,7 @@ void MainWindow::on_actionExecute_triggered()
             break;
         }
     }
-
+    */
 }
 
 void MainWindow::on_actionExplain_triggered()
