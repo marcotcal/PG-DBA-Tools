@@ -54,25 +54,31 @@ void PlainTextOutput::generateOutput(PGresult *res)
     }
     line_separator += "\n";
 
-    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
-    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("|");
-    for(int c = 0; c < fields.count(); c++) {
-        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(
-                    fields.at(c).leftJustified(max_field_lengths.at(c)) + "|");
-    }
-    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("\n");
-    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
-
-    for (int r = 0; r < rows.count(); r++) {
+    if (show_header) {
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
         dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("|");
-        for (int c = 0; c < rows.at(r).count(); c++) {
+        for(int c = 0; c < fields.count(); c++) {
             dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(
-                        rows.at(r).at(c).toString()
-                        .leftJustified(max_field_lengths.at(c)) + "|");
+                        fields.at(c).leftJustified(max_field_lengths.at(c)) + "|");
         }
         dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("\n");
     }
-    dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
+
+    if (show_border)
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
+
+    for (int r = 0; r < rows.count(); r++) {
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(show_border ? "|" : "");
+        for (int c = 0; c < rows.at(r).count(); c++) {
+            dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(
+                        rows.at(r).at(c).toString()
+                        .leftJustified(max_field_lengths.at(c)) + (show_border ? "|" : ""));
+        }
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText("\n");
+    }
+
+    if (show_border)
+        dynamic_cast<QPlainTextEdit *>(output)->insertPlainText(line_separator);
 
 }
 

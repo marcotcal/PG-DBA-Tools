@@ -44,7 +44,8 @@ SOURCES += \
     scitextoutput.cpp \
     dlgparameters.cpp \
     dlgexecutemodel.cpp \
-    modelscanner.cpp
+    modelscanner.cpp \
+    dlgexplain.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -66,7 +67,8 @@ HEADERS += \
     scitextoutput.h \
     dlgparameters.h \
     dlgexecutemodel.h \
-    modelscanner.h
+    modelscanner.h \
+    dlgexplain.h
 
 FORMS += \
     mainwindow.ui \
@@ -77,7 +79,8 @@ FORMS += \
     dlgconfiguration.ui \
     dlgtransaction.ui \
     dlgparameters.ui \
-    dlgexecutemodel.ui
+    dlgexecutemodel.ui \
+    dlgexplain.ui
 
 LIBS += -lqscintilla2_qt5
 

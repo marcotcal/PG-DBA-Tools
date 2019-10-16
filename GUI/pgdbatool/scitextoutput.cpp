@@ -71,26 +71,33 @@ void SciTextOutput::generateOutput(PGresult *res)
     }
     line_separator += "\n";
 
-    editor->append(line_separator);
-    editor->append("|");
-    for(int c = 0; c < fields.count(); c++) {
-        editor->append(
-                    fields.at(c).leftJustified(max_field_lengths.at(c)) + "|");
-    }
-    editor->append("\n");
-    editor->append(line_separator);
-
-    for (int r = 0; r < rows.count(); r++) {
+    if (show_header) {
+        editor->append(line_separator);
         editor->append("|");
-        for (int c = 0; c < rows.at(r).count(); c++) {
+        for(int c = 0; c < fields.count(); c++) {
             editor->append(
-                        rows.at(r).at(c).toString()
-                        .leftJustified(max_field_lengths.at(c)) + "|");
+                        fields.at(c).leftJustified(max_field_lengths.at(c)) + "|");
         }
         editor->append("\n");
     }
-    editor->append(line_separator);
 
+    if (show_border) {
+        editor->append(line_separator);
+    }
+
+    for (int r = 0; r < rows.count(); r++) {
+        editor->append(show_border ? "|" : " ");
+        for (int c = 0; c < rows.at(r).count(); c++) {
+            editor->append(
+                        rows.at(r).at(c).toString()
+                        .leftJustified(max_field_lengths.at(c)) + (show_border ? "|" : " "));
+        }
+        editor->append("\n");
+    }
+
+    if (show_border) {
+        editor->append(line_separator);
+    }
 }
 
 void SciTextOutput::clearOutput()

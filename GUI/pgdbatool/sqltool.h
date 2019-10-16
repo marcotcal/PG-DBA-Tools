@@ -65,6 +65,7 @@ public:
     bool transaction();
     void beginTransaction(QString command);
     void executeCurrent(ResultOutput* output, bool show_query=false);
+    void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
     void rollback();
     void commit();
     bool closeAllEditors();
@@ -73,6 +74,7 @@ public:
     bool saveCurrentAs();
     void setGroupName(const QString &value) { group_name = value; }
     QString &getGroupName() { return group_name; }
+    QString getCurrentEditorName();
     bool saveGroup();
     bool saveGroupAs();
     bool restoreGroup();

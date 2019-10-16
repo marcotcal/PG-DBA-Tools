@@ -30,6 +30,7 @@
 #include "scitextoutput.h"
 #include "dlgparameters.h"
 #include "dlgexecutemodel.h"
+#include "dlgexplain.h"
 #include "modelscanner.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -197,7 +198,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
         ui->main_stack->setCurrentWidget(sql);        
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-
+        sql->setGroupName(name);
         return sql;
     }
     return nullptr;
@@ -551,7 +552,28 @@ void MainWindow::on_actionExecute_triggered()
 
 void MainWindow::on_actionExplain_triggered()
 {
+    DlgExplain dlg;
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    SciTextOutput *output;
 
+    if (!sql)
+        return;
+
+    if (dlg.exec()) {
+        QString editor_name = "Explain: " + sql->getGroupName() + " - " + sql->getCurrentEditorName();
+        new QListWidgetItem(editor_name, ui->editor_list);
+        QsciScintilla *editor = new QsciScintilla(ui->main_stack);
+        editor->setReadOnly(true);
+        ui->main_stack->addWidget(editor);
+        ui->main_stack->setCurrentWidget(editor);
+        ui->editor_list->clearSelection();
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+        output = new SciTextOutput(editor, ui->message_output, this);
+        output->showBorder(false);
+        output->showHeader(false);
+        sql->executeCurrent(output, dlg.explain());
+    }
 }
 
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)
@@ -615,8 +637,7 @@ void MainWindow::executeModelResource(QString resource_name)
         ui->main_stack->setCurrentWidget(editor);
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());        
-        data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());
-        
+        data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());   
     }
 }
 

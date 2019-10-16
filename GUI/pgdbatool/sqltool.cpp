@@ -165,6 +165,11 @@ bool SqlTool::saveCurrentAs()
     }
 }
 
+QString SqlTool::getCurrentEditorName()
+{
+    return ui->editors_tabs->tabText(ui->editors_tabs->currentIndex()).replace("&","");
+}
+
 bool SqlTool::saveGroup()
 {
     if (group_name == "")
@@ -368,10 +373,12 @@ bool SqlTool::connected() {
 
 void SqlTool::databaseConnect() {
     QMessageBox msg;
+    PGresult *res;
     QString conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {
+        res = PQexec(conn, QString("SET application_name=\"PGDBATool - %1\"").arg(group_name).toStdString().c_str());
         ui->connection_list->setEnabled(false);
         ui->led_connected->setStyleSheet("background-color:#00FF00;border-radius:6;");
         is_connected = true;
@@ -410,15 +417,21 @@ void SqlTool::beginTransaction(QString command) {
     in_transaction = true;
 }
 
-void SqlTool::executeCurrent(ResultOutput* output, bool show_query) {
+void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
+{
+    executeCurrent(output, "", show_query);
+}
 
+void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_query)
+{
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QMessageBox msg;
+    QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();
 
     if (ui->limit_result->isChecked())
         output->setFetchLimit(ui->line_limit->value());
 
-    PGresult *res = PQexec(conn, editor->text().toStdString().c_str());
+    PGresult *res = PQexec(conn, query.toStdString().c_str());
 
     output->cleanMessage();
 

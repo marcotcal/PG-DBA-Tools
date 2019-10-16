@@ -211,6 +211,7 @@
    <addaction name="actionRollback_Transaction"/>
    <addaction name="actionCommit_Transaction"/>
    <addaction name="actionExecute"/>
+   <addaction name="actionExplain"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -881,6 +882,10 @@
    </property>
   </action>
   <action name="actionExplain">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-gears_question-48.png</normaloff>:/icons/images/icons/icons8-gears_question-48.png</iconset>
+   </property>
    <property name="text">
     <string>Explain</string>
    </property>

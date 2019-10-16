@@ -12,6 +12,8 @@ class ResultOutput : public QObject
 public:
     explicit ResultOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent = nullptr);
     ~ResultOutput();
+    void showHeader(bool value) { show_header = value; }
+    void showBorder(bool value) { show_border = value; }
     virtual void generateOutput(PGresult *res) = 0;
     virtual void generateError(PGconn *conn);
     virtual void generateStatusMessage(PGresult *res);
@@ -31,6 +33,8 @@ protected:
     PGconn *connection;
     QTextCursor message_cursor;
     int fetch_limit;
+    bool show_border;
+    bool show_header;
 
 private:
 
