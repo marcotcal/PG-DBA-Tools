@@ -61,6 +61,7 @@
      <string>SQL</string>
     </property>
     <addaction name="actionSQL_Tool"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_SQL_Tool"/>
     <addaction name="actionSave_SQL_Tool_As"/>
     <addaction name="actionOpen_SQL_Tool_Set"/>
@@ -75,6 +76,7 @@
     <addaction name="actionRollback_Transaction"/>
     <addaction name="actionCommit_Transaction"/>
     <addaction name="actionExecute"/>
+    <addaction name="actionExplain"/>
     <addaction name="separator"/>
     <addaction name="actionExecute_Saved_Model"/>
    </widget>
@@ -141,7 +143,7 @@
     </widget>
     <widget class="QMenu" name="menuSettings">
      <property name="title">
-      <string>Settings</string>
+      <string>&amp;Settings</string>
      </property>
      <addaction name="actionTCP_Settings"/>
      <addaction name="actionAutovacuum_Settings"/>
@@ -163,7 +165,7 @@
    </widget>
    <widget class="QMenu" name="menuUser_Models">
     <property name="title">
-     <string>User Models</string>
+     <string>Use&amp;r Models</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
@@ -845,37 +847,42 @@
   </action>
   <action name="actionSchemas">
    <property name="text">
-    <string>Schemas</string>
+    <string>&amp;Schemas</string>
    </property>
   </action>
   <action name="actionTCP_Settings">
    <property name="text">
-    <string>TCP Settings</string>
+    <string>&amp;TCP Settings</string>
    </property>
   </action>
   <action name="actionAutovacuum_Settings">
    <property name="text">
-    <string>Autovacuum And Vacuum Settings</string>
+    <string>&amp;Autovacuum And Vacuum Settings</string>
    </property>
   </action>
   <action name="actionLog_Settings">
    <property name="text">
-    <string>Log Settings</string>
+    <string>&amp;Log Settings</string>
    </property>
   </action>
   <action name="actionLanguage_Settings">
    <property name="text">
-    <string>Language Settings</string>
+    <string>La&amp;nguage Settings</string>
    </property>
   </action>
   <action name="actionAll_Other_Settings">
    <property name="text">
-    <string>All Other Settings</string>
+    <string>All &amp;Other Settings</string>
    </property>
   </action>
   <action name="actionSSL_Settings">
    <property name="text">
-    <string>SSL Settings</string>
+    <string>&amp;SSL Settings</string>
+   </property>
+  </action>
+  <action name="actionExplain">
+   <property name="text">
+    <string>Explain</string>
    </property>
   </action>
  </widget>

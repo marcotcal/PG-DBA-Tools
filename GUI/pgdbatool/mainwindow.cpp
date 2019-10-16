@@ -115,6 +115,7 @@ void MainWindow::disable_actions()
     ui->actionOpen_SQL_Tool_Set->setEnabled(false);
     ui->actionSave_SQL_Tool->setEnabled(false);
     ui->actionSave_SQL_Tool_As->setEnabled(false);
+    ui->actionExplain->setEnabled(false);
 }
 
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
@@ -132,6 +133,7 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
     ui->actionDisconect->setEnabled(sql->connected());
     // implicity transactions
     ui->actionExecute->setEnabled(sql->connected());
+    ui->actionExplain->setEnabled(sql->connected());
     if (sql->connected()) {
         ui->actionStart_Transaction->setEnabled(true);
         ui->actionCommit_Transaction->setEnabled(false);
@@ -547,6 +549,11 @@ void MainWindow::on_actionExecute_triggered()
 
 }
 
+void MainWindow::on_actionExplain_triggered()
+{
+
+}
+
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
     if (currentRow != -1) {
@@ -707,3 +714,4 @@ void MainWindow::on_actionSSL_Settings_triggered()
 {
     executeModelResource(":/query_defs/query_models/ssl_settings.xml");
 }
+

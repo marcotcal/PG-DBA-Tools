@@ -102,6 +102,8 @@ private slots:
 
     void on_actionSSL_Settings_triggered();
 
+    void on_actionExplain_triggered();
+
 private:
     Ui::MainWindow *ui;
 

@@ -46,6 +46,6 @@
     <query_text><![CDATA[SELECT *
 FROM test
 WHERE class = :p_class AND schema <= :p_schema]]></query_text>
-    <output_type><![CDATA[Text With Separators]]></output_type>
+    <output_type><![CDATA[Text Without Separators]]></output_type>
     <model_path><![CDATA[tests/Model]]></model_path>
 </model>
