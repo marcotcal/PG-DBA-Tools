@@ -40,8 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->output_stack->addWidget(new OutputSet(ui->output_stack));
-    ui->output_stack->setCurrentIndex(1);
+    //ui->output_stack->addWidget(new OutputSet(ui->output_stack));
+    //ui->output_stack->setCurrentIndex(1);
     readSettings();    
     disable_actions();
     data = new QueryModelData(connections, this);
@@ -203,6 +203,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
         sql->setGroupName(name);
+        ui->output_stack->addWidget(new OutputSet(ui->output_stack));
         return sql;
     }
     return nullptr;

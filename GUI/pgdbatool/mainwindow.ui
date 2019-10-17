@@ -277,9 +277,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QStackedWidget" name="output_stack">
-         <widget class="QWidget" name="dummy_page"/>
-        </widget>
+        <widget class="QStackedWidget" name="output_stack"/>
        </item>
       </layout>
      </item>
