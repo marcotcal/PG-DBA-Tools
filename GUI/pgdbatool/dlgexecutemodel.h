@@ -7,6 +7,18 @@ namespace Ui {
 class DlgExecuteModel;
 }
 
+class ModelItem : public QObject
+{
+
+    Q_OBJECT
+
+public:
+
+private:
+
+
+};
+
 class DlgExecuteModel : public QDialog
 {
     Q_OBJECT
@@ -17,6 +29,8 @@ public:
 
 private:
     Ui::DlgExecuteModel *ui;
+    void readModels();
+
 };
 
 #endif // DLGEXECUTEMODEL_H
