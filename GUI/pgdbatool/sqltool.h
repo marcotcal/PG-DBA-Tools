@@ -21,12 +21,13 @@
 #define SQLTOOL_H
 
 #include <QWidget>
-#include "resultoutput.h"
-#include "Qsci/qsciscintilla.h"
+#include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
-#include "connectionsdata.h"
 #include <libpq-fe.h>
+#include "connectionsdata.h"
+#include "resultoutput.h"
+#include "outputset.h"
 
 namespace Ui {
 class SqlTool;
@@ -64,6 +65,8 @@ public:
     void databaseDisconnect();
     bool transaction();
     void beginTransaction(QString command);
+    void setOutputSet(OutputSet *value) { output_set = value; }
+    OutputSet *getOutputSet() { return output_set; }
     void executeCurrent(ResultOutput* output, bool show_query=false);
     void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
     void rollback();
@@ -90,6 +93,7 @@ private:
     PGconn *conn;
     QString default_path;
     QString group_name;
+    OutputSet *output_set;
 
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);

@@ -40,8 +40,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //ui->output_stack->addWidget(new OutputSet(ui->output_stack));
-    //ui->output_stack->setCurrentIndex(1);
     readSettings();    
     disable_actions();
     data = new QueryModelData(connections, this);
@@ -193,18 +191,24 @@ void MainWindow::setConnectionsList()
 SqlTool *MainWindow::openNewSQLTool(QString name)
 {
     SqlTool *sql;
+    OutputSet *out;
 
     if (!name.isEmpty()) {
 
         new QListWidgetItem(name, ui->editor_list);
         sql = new SqlTool(connections, ui->main_stack);
         ui->main_stack->addWidget(sql);
-        ui->main_stack->setCurrentWidget(sql);        
+        ui->main_stack->setCurrentWidget(ui->main_stack);
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
         sql->setGroupName(name);
-        ui->output_stack->addWidget(new OutputSet(ui->output_stack));
+        out = new OutputSet(sql);
+        sql->setOutputSet(out);
+        ui->output_stack->addWidget(out);
+        ui->output_stack->setCurrentWidget(out);
+        ui->main_stack->setCurrentWidget(sql);
         return sql;
+
     }
     return nullptr;
 }
@@ -430,6 +434,7 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
     if (sql) {
         enable_sql_tool_actions(sql);
         enable_sql_transactions(sql);
+        ui->output_stack->setCurrentWidget(sql->getOutputSet());
     }
     if (model){
         enable_model_actions(model);
@@ -475,8 +480,12 @@ void MainWindow::on_actionClose_triggered()
     int row = ui->main_stack->currentIndex();
 
     if (sql) {
-        if(!sql->closeAllEditors())
+        if(!sql->closeAllEditors()) {
             return;
+        } else {
+            ui->output_stack->removeWidget(sql->getOutputSet());
+            sql->getOutputSet()->deleteLater();
+        }
     }
 
     if (model) {
@@ -507,27 +516,29 @@ void MainWindow::on_editor_list_currentRowChanged(int currentRow)
 
 void MainWindow::on_actionExecute_triggered()
 {
-    /*
+    OutputSet *out;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sql) {
-        switch(ui->output_stack->currentIndex()) {
-        case 0:
-            if (ui->bt_txt->isChecked())
-                sql->executeCurrent(new PlainTextOutput(ui->text_output, ui->message_output, this), ui->show_query->isChecked());
-            else if (ui->bt_xml->isChecked())
-                sql->executeCurrent(new XMLTextOutput(ui->text_output, ui->message_output, this), ui->show_query->isChecked());
-            else if (ui->bt_json)
-                sql->executeCurrent(new JSONOutput(ui->text_output, ui->message_output, this), ui->show_query->isChecked());
+        out  = sql->getOutputSet();
+        switch(out->getType()) {
+        case OutputSet::OP_TEXT:
+            sql->executeCurrent(new PlainTextOutput(out->getOutput(), ui->message_output, this), ui->show_query->isChecked());
             break;
-        case 1:
-            sql->executeCurrent(new GridOutput(ui->grid_output, ui->message_output, this), ui->show_query->isChecked());
+        case OutputSet::OP_XML:
+            sql->executeCurrent(new XMLTextOutput(out->getOutput(), ui->message_output, this), ui->show_query->isChecked());
             break;
-        case 2:
-            sql->executeCurrent(new HtmlOutput(ui->html_output, ui->message_output, this), ui->show_query->isChecked());
+        case OutputSet::OP_JSON:
+            sql->executeCurrent(new JSONOutput(out->getOutput(), ui->message_output, this), ui->show_query->isChecked());
+            break;
+        case OutputSet::OP_GRID:
+            sql->executeCurrent(new GridOutput(out->getOutput(), ui->message_output, this), ui->show_query->isChecked());
+            break;
+        case OutputSet::OP_HTML:
+            sql->executeCurrent(new HtmlOutput(out->getOutput(), ui->message_output, this), ui->show_query->isChecked());
             break;
         }
     }
-    */
+
 }
 
 void MainWindow::on_actionExplain_triggered()
