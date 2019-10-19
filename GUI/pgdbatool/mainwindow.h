@@ -82,21 +82,13 @@ private slots:
     void on_actionBlocking_Processes_triggered();
     void on_actionBlocking_Process_With_Applications_triggered();
     void on_actionList_of_Tables_triggered();
-
     void on_actionSchemas_triggered();
-
     void on_actionTCP_Settings_triggered();
-
     void on_actionAutovacuum_Settings_triggered();
-
     void on_actionLog_Settings_triggered();
-
     void on_actionLanguage_Settings_triggered();
-
     void on_actionAll_Other_Settings_triggered();
-
     void on_actionSSL_Settings_triggered();
-
     void on_actionExplain_triggered();
 
 private:
@@ -117,8 +109,7 @@ private:
     void setConnectionsList();
     SqlTool *openNewSQLTool(QString name);
     QueryModel *openNewQueryModel(QString name);
-
-    void executeModelResource(QString resource_name);
+    void executeModel(QString resource_name);
 };
 
 #endif // MAINWINDOW_H

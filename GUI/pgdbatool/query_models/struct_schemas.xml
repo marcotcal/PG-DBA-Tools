@@ -29,5 +29,5 @@
     <query_text><![CDATA[SELECT schema_name, schema_owner 
 FROM information_schema.schemata]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[/Structure/Schemas]]></model_path>
+    <model_path><![CDATA[/Structure]]></model_path>
 </model>

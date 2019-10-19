@@ -62,5 +62,5 @@ WHERE
     AND schemaname != 'information_schema'
     [!p_schema!]]]></query_text>
     <output_type><![CDATA[Html]]></output_type>
-    <model_path><![CDATA[/Structure/List of Tables]]></model_path>
+    <model_path><![CDATA[/Structure]]></model_path>
 </model>

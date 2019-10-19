@@ -606,12 +606,13 @@ void MainWindow::do_fileReaded(const QString &file_name)
 
 void MainWindow::on_actionExecute_Saved_Model_triggered()
 {
-    DlgExecuteModel *dlg = new DlgExecuteModel(this);
+    DlgExecuteModel dlg;
 
-    dlg->exec();
+    if (dlg.exec())
+        executeModel(dlg.selectedFileName());
 }
 
-void MainWindow::executeModelResource(QString resource_name)
+void MainWindow::executeModel(QString resource_name)
 {
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
@@ -634,96 +635,96 @@ void MainWindow::executeModelResource(QString resource_name)
 
 void MainWindow::on_actionIndexes_Sizes_triggered()
 {
-    executeModelResource(":/query_defs/query_models/index_sizes.xml");
+    executeModel(":/query_defs/query_models/index_sizes.xml");
 }
 
 void MainWindow::on_actionIndexes_Bloat_triggered()
 {
-    executeModelResource(":/query_defs/query_models/index_bloat.xml");
+    executeModel(":/query_defs/query_models/index_bloat.xml");
 }
 
 void MainWindow::on_actionStat_All_Indexes_triggered()
 {
-    executeModelResource(":/query_defs/query_models/stat_all_indexes.xml");
+    executeModel(":/query_defs/query_models/stat_all_indexes.xml");
 }
 
 void MainWindow::on_actionUseless_Indexes_triggered()
 {
-    executeModelResource(":/query_defs/query_models/useless_indexes.xml");
+    executeModel(":/query_defs/query_models/useless_indexes.xml");
 }
 
 void MainWindow::on_actionWasted_Index_Space_triggered()
 {
-    executeModelResource(":/query_defs/query_models/wasted_index_space.xml");
+    executeModel(":/query_defs/query_models/wasted_index_space.xml");
 }
 
 void MainWindow::on_actionDatabases_triggered()
 {
-    executeModelResource(":/query_defs/query_models/database_info.xml");
+    executeModel(":/query_defs/query_models/database_info.xml");
 }
 
 void MainWindow::on_actionDatabases_Statistics_triggered()
 {
-    executeModelResource(":/query_defs/query_models/database_statistics.xml");
+    executeModel(":/query_defs/query_models/database_statistics.xml");
 }
 
 void MainWindow::on_actionDatabase_Conflicts_triggered()
 {
-    executeModelResource(":/query_defs/query_models/database_conflicts.xml");
+    executeModel(":/query_defs/query_models/database_conflicts.xml");
 }
 
 void MainWindow::on_actionCache_Hit_Ratio_triggered()
 {
-    executeModelResource(":/query_defs/query_models/database_cache_hit_ratio.xml");
+    executeModel(":/query_defs/query_models/database_cache_hit_ratio.xml");
 }
 
 void MainWindow::on_actionBlocking_Processes_triggered()
 {
-    executeModelResource(":/query_defs/query_models/database_blocking_processes.xml");
+    executeModel(":/query_defs/query_models/database_blocking_processes.xml");
 }
 
 void MainWindow::on_actionBlocking_Process_With_Applications_triggered()
 {
-    executeModelResource(":/query_defs/query_models/database_blocking_processes_application.xml");
+    executeModel(":/query_defs/query_models/database_blocking_processes_application.xml");
 }
 
 void MainWindow::on_actionList_of_Tables_triggered()
 {
-    executeModelResource(":/query_defs/query_models/struct_list_of_tables.xml");
+    executeModel(":/query_defs/query_models/struct_list_of_tables.xml");
 }
 
 void MainWindow::on_actionSchemas_triggered()
 {
-    executeModelResource(":/query_defs/query_models/struct_schemas.xml");
+    executeModel(":/query_defs/query_models/struct_schemas.xml");
 }
 
 void MainWindow::on_actionTCP_Settings_triggered()
 {
-    executeModelResource(":/query_defs/query_models/tcp_settings.xml");
+    executeModel(":/query_defs/query_models/tcp_settings.xml");
 }
 
 void MainWindow::on_actionAutovacuum_Settings_triggered()
 {
-    executeModelResource(":/query_defs/query_models/autovacuum_settings.xml");
+    executeModel(":/query_defs/query_models/autovacuum_settings.xml");
 }
 
 void MainWindow::on_actionLog_Settings_triggered()
 {
-    executeModelResource(":/query_defs/query_models/log_settings.xml");
+    executeModel(":/query_defs/query_models/log_settings.xml");
 }
 
 void MainWindow::on_actionLanguage_Settings_triggered()
 {
-    executeModelResource(":/query_defs/query_models/language_settings.xml");
+    executeModel(":/query_defs/query_models/language_settings.xml");
 }
 
 void MainWindow::on_actionAll_Other_Settings_triggered()
 {
-    executeModelResource(":/query_defs/query_models/all_other_settings.xml");
+    executeModel(":/query_defs/query_models/all_other_settings.xml");
 }
 
 void MainWindow::on_actionSSL_Settings_triggered()
 {
-    executeModelResource(":/query_defs/query_models/ssl_settings.xml");
+    executeModel(":/query_defs/query_models/ssl_settings.xml");
 }
 

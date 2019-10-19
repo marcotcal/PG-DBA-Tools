@@ -36,5 +36,5 @@ WHERE name NOT LIKE 'tcp%' AND
       name NOT LIKE 'ssl_%'
 ORDER BY name]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[/Info - Statistics/Settings/All Other Settings]]></model_path>
+    <model_path><![CDATA[/Info - Statistics/Settings]]></model_path>
 </model>

@@ -32,5 +32,5 @@ WHERE name LIKE 'autovacuum%' OR
       name LIKE 'vacuum%'
 ORDER BY name       ]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[/Info - Statistics/Settings/Autovacuum Settings]]></model_path>
+    <model_path><![CDATA[/Info - Statistics/Settings]]></model_path>
 </model>

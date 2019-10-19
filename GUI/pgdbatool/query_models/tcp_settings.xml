@@ -30,5 +30,5 @@
 FROM pg_settings
 WHERE name LIKE 'tcp%';]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[/Info - Statistics/Settings/TCP Settings]]></model_path>
+    <model_path><![CDATA[/Info - Statistics/Settings]]></model_path>
 </model>
