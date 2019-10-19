@@ -47,6 +47,7 @@ protected:
 
 signals:
     void fileReaded(const QString &file_name);
+    void scanCompleted();
 
 private:
     QString path;

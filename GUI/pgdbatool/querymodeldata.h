@@ -6,6 +6,34 @@
 #include <connectionsdata.h>
 #include "resultoutput.h"
 
+class ModelItem : public QObject
+{
+
+    Q_OBJECT
+
+public:
+    ModelItem(QString code, QString description, QString menu_path,
+              QString file_name, QObject *parent=nullptr) :
+        QObject(parent),
+        code(code),
+        description(description),
+        menu_path(menu_path),
+        file_name(file_name)
+    {
+
+    }
+    QString getCode() { return code;}
+    QString getDescription() { return description; }
+    QString getMenuPath() { return menu_path; }
+    QString getFileName() { return file_name; }
+    QStringList getMenuParts() { return menu_path.split("/", QString::SkipEmptyParts); }
+private:
+    QString code;
+    QString description;
+    QString menu_path;
+    QString file_name;
+};
+
 class QueryParameter : public QObject
 {
 
@@ -110,6 +138,9 @@ public:
     void databaseDisconnect();
     bool getConnected() { return connected; }
     void clear();
+    void readModels();
+    QList<ModelItem *> &getItems() { return items; }
+
 
 private:
     QString code;
@@ -118,6 +149,7 @@ private:
     QList<QueryParameter *> parameters;
     QList<QueryOrder *> orders;
     QList<QueryColumn *> columns;
+    QList<ModelItem *> items;
     bool error;
     bool connected;
     QString error_message;
@@ -128,6 +160,7 @@ private:
     PGconn *conn;
     void readXML();
     QString parseParameters(QString query);
+
 };
 
 #endif // QUERYMODELDATA_H

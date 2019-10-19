@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();    
     disable_actions();
     data = new QueryModelData(connections, this);
+    data->readModels();
     setConnectionsList();
 }
 
@@ -578,7 +579,6 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
                 ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text() + " (Invalid)");
                 ui->connection_list->item(currentRow)->setForeground(Qt::red);
             }
-
         }
     }
 }
@@ -595,6 +595,7 @@ void MainWindow::on_actionScan_Model_Directory_triggered()
         ModelScanner *scan = new ModelScanner(dir);
         connect(scan, &ModelScanner::finished, scan, &ModelScanner::deleteLater);
         connect(scan, &ModelScanner::fileReaded, this, &MainWindow::do_fileReaded);
+        connect(scan, &ModelScanner::scanCompleted, this, &MainWindow::do_scanCompleted);
         scan->start();
     }
 }
@@ -604,9 +605,14 @@ void MainWindow::do_fileReaded(const QString &file_name)
     ui->message_output->insertPlainText(file_name+"\n");
 }
 
+void MainWindow::do_scanCompleted()
+{
+    data->readModels();
+}
+
 void MainWindow::on_actionExecute_Saved_Model_triggered()
 {
-    DlgExecuteModel dlg;
+    DlgExecuteModel dlg(data->getItems());
 
     if (dlg.exec())
         executeModel(dlg.selectedFileName());

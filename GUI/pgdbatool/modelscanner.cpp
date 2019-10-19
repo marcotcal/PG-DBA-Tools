@@ -18,6 +18,7 @@ void ModelScanner::run()
             emit fileReaded(file_name);
     }
     saveModelList();
+    emit scanCompleted();
 }
 
 bool ModelScanner::checkFile(const QString &file_name)

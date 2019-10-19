@@ -5,12 +5,12 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-DlgExecuteModel::DlgExecuteModel(QWidget *parent) :
+DlgExecuteModel::DlgExecuteModel(QList<ModelItem *> &items, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgExecuteModel)
+    ui(new Ui::DlgExecuteModel),
+    items(items)
 {
     ui->setupUi(this);
-    readModels();
     generateTree();
 }
 
@@ -26,67 +26,6 @@ QString DlgExecuteModel::selectedFileName()
     else {
         return "";
     }
-}
-
-void DlgExecuteModel::readModels()
-{
-    QFile file("models.xml");
-    QXmlStreamReader reader;
-    QString code;
-    QString description;
-    QString file_name;
-    QString model_path;
-
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return;
-    }
-
-    reader.setDevice(&file);
-
-    while(!reader.atEnd()) {
-
-        while(reader.readNext()) {
-
-            if(reader.isStartDocument())
-                continue;
-
-            if (reader.isEndDocument())
-                break;
-
-            if (reader.isEndElement()) {
-                if (reader.name() == "model") {
-
-                    items.append(new ModelItem(code, description, model_path, file_name, this));
-                    code = "";
-                    description = "";
-                    file_name = "";
-                    model_path = "";
-                }
-            }
-
-            if (reader.isStartElement()) {
-
-                if (reader.name() == "model") {
-                    QXmlStreamAttributes attributes = reader.attributes();
-                    if(attributes.hasAttribute("code"))
-                         code = attributes.value("code").toString();
-                    if(attributes.hasAttribute("description"))
-                         description = attributes.value("description").toString();
-
-                } else if (reader.name() == "model_path") {
-                    model_path = reader.readElementText().trimmed();
-                } else if (reader.name() == "file_name") {
-                    file_name = reader.readElementText().trimmed();
-                }
-
-            }
-        }
-    }
-
-   reader.clear();
-   file.close();
-
 }
 
 void DlgExecuteModel::generateTree()

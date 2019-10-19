@@ -57,5 +57,5 @@ WHERE relname NOT LIKE 'pg_%' AND
     relkind IN ('i')    
 ORDER BY 7 DESC, 1, 2]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[]]></model_path>
+    <model_path><![CDATA[Info - Statistics/Indexes]]></model_path>
 </model>
