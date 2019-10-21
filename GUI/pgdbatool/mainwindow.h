@@ -91,6 +91,7 @@ private slots:
     void on_actionAll_Other_Settings_triggered();
     void on_actionSSL_Settings_triggered();
     void on_actionExplain_triggered();
+    void executeModel(QString resource_name);
 
 private:
     Ui::MainWindow *ui;
@@ -110,7 +111,7 @@ private:
     void setConnectionsList();
     SqlTool *openNewSQLTool(QString name);
     QueryModel *openNewQueryModel(QString name);
-    void executeModel(QString resource_name);
+    void loadCustomMenus();
 };
 
 #endif // MAINWINDOW_H

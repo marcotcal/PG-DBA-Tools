@@ -22,14 +22,13 @@
   <!ATTLIST order width CDATA "">
 ]>
 
-<model code="INFO-0008" description="Lnaguage Settings">
+<model code="INFO-0008" description="Language Settings">
     <parameters/>
     <orders/>
     <columns/>
     <query_text><![CDATA[SELECT name, setting, short_desc
 FROM pg_settings
-WHERE name LIKE 'lc_%';
-]]></query_text>
+WHERE name LIKE 'lc_%';]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>
     <model_path><![CDATA[/Info - Statistics/Settings]]></model_path>
 </model>

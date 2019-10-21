@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     disable_actions();
     data = new QueryModelData(connections, this);
     data->readModels();
+    loadCustomMenus();
     setConnectionsList();
 }
 
@@ -637,6 +638,45 @@ void MainWindow::executeModel(QString resource_name)
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());        
         data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());   
     }
+}
+
+void MainWindow::loadCustomMenus()
+{
+    QMenu *root = ui->menuUser_Models;
+    QMenu *menu_element;
+    QMenu *next_element;
+    QAction *child;
+    QSignalMapper *mapper = new QSignalMapper(this);
+
+    foreach(ModelItem *item, data->getItems()) {
+        menu_element = root;
+        QStringList parts = item->getMenuParts();
+        for(int i = 0; i < parts.count(); i++ ) {
+            next_element = nullptr;
+            foreach(child, menu_element->actions()) {
+                if (child->menu()) {
+                    if (child->menu()->title() == parts.at(i)) {
+                        next_element = child->menu();
+                        menu_element->addMenu(next_element);
+                        menu_element = next_element;
+                    }
+                }
+            }
+            if (!next_element) {
+                next_element = new QMenu(item->getMenuParts().at(i));
+                menu_element->addMenu(next_element);
+                menu_element = next_element;
+            }
+            if(i == parts.count() - 1) {
+                child = new QAction(item->getDescription());
+                connect(child, SIGNAL(triggered()), mapper, SLOT(map()));
+                mapper->setMapping(child, item->getFileName());
+                menu_element->addAction(child);
+            }
+        }
+    }
+
+    connect(mapper, SIGNAL(mapped(QString)), this, SLOT(executeModel(QString)));
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()
