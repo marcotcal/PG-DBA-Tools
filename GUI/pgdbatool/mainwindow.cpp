@@ -587,7 +587,7 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 void MainWindow::on_actionScan_Model_Directory_triggered()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                 QDir::homePath(),
+                                                 path_to_models,
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
     if (dir != "") {

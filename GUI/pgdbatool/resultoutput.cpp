@@ -24,8 +24,9 @@ void ResultOutput::generateError(PGconn *conn)
 
 void ResultOutput::generateStatusMessage(PGresult *res)
 {
+    QString msg(PQresStatus(PQresultStatus(res)));
     messages->moveCursor(QTextCursor::End);
-    messages->insertPlainText(PQresStatus(PQresultStatus(res)));
+    messages->insertPlainText(msg+"\n");
 }
 
 void ResultOutput::generateStatusMessage(QString msg)

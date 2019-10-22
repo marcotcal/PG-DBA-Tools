@@ -341,6 +341,9 @@
    <property name="text">
     <string>&amp;Exit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
   <action name="actionNew">
    <property name="icon">
@@ -349,6 +352,9 @@
    </property>
    <property name="text">
     <string>&amp;New...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionOpen">
@@ -359,6 +365,9 @@
    <property name="text">
     <string>&amp;Open</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionSave">
    <property name="icon">
@@ -368,6 +377,9 @@
    <property name="text">
     <string>&amp;Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionSave_As">
    <property name="icon">
@@ -376,6 +388,9 @@
    </property>
    <property name="text">
     <string>Sa&amp;ve As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionSQL_Tool">
@@ -394,6 +409,9 @@
    </property>
    <property name="text">
     <string>&amp;Manage Connections</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
    </property>
   </action>
   <action name="actionDatabase_to_Database">
@@ -449,6 +467,9 @@
    <property name="text">
     <string>Start Tra&amp;nsaction</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
+   </property>
   </action>
   <action name="actionRollback_Transaction">
    <property name="icon">
@@ -458,6 +479,9 @@
    <property name="text">
     <string>&amp;Rollback Transaction</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
   </action>
   <action name="actionCommit_Transaction">
    <property name="icon">
@@ -466,6 +490,9 @@
    </property>
    <property name="text">
     <string>Co&amp;mmit Transaction</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
    </property>
   </action>
   <action name="actionManage_Plugins">
@@ -490,6 +517,9 @@
    <property name="text">
     <string>C&amp;onnect</string>
    </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
   </action>
   <action name="actionDisconect">
    <property name="icon">
@@ -498,6 +528,9 @@
    </property>
    <property name="text">
     <string>&amp;Disconect</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
    </property>
   </action>
   <action name="actionConfigurations">
@@ -513,6 +546,9 @@
    <property name="text">
     <string>&amp;Close</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="actionExecute">
    <property name="icon">
@@ -521,6 +557,9 @@
    </property>
    <property name="text">
     <string>&amp;Execute</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
    </property>
   </action>
   <action name="actionIndexes_Sizes">
@@ -655,6 +694,9 @@
    </property>
    <property name="text">
     <string>Explain</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
    </property>
   </action>
  </widget>

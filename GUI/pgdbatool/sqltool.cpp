@@ -312,6 +312,13 @@ bool SqlTool::readFromXML(QString file_name)
     return true;
 }
 
+void SqlTool::noticeProcessor(void *arg, const char *message)
+{
+    ResultOutput *output = static_cast<ResultOutput *>(arg);
+    QString msg(message);
+    output->generateStatusMessage(msg);
+}
+
 EditorItem *SqlTool::addEditor() {
 
     QString new_sufix = QString("%1").arg(ui->editors_tabs->count()+1);
@@ -373,12 +380,11 @@ bool SqlTool::connected() {
 
 void SqlTool::databaseConnect() {
     QMessageBox msg;
-    PGresult *res;
     QString conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {
-        res = PQexec(conn, QString("SET application_name=\"PGDBATool - %1\"").arg(group_name).toStdString().c_str());
+        PQexec(conn, QString("SET application_name=\"PGDBATool - %1\"").arg(group_name).toStdString().c_str());
         ui->connection_list->setEnabled(false);
         ui->led_connected->setStyleSheet("background-color:#00FF00;border-radius:6;");
         is_connected = true;
@@ -431,9 +437,11 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
     if (ui->limit_result->isChecked())
         output->setFetchLimit(ui->line_limit->value());
 
-    PGresult *res = PQexec(conn, query.toStdString().c_str());
+    PQsetNoticeProcessor(conn, this->noticeProcessor, output);
 
     output->cleanMessage();
+
+    PGresult *res = PQexec(conn, query.toStdString().c_str());
 
     switch(PQresultStatus(res)) {
 
