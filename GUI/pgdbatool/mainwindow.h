@@ -93,6 +93,10 @@ private slots:
     void on_actionExplain_triggered();
     void executeModel(QString resource_name);
 
+signals:
+
+    void clean_custom_menu();
+
 private:
     Ui::MainWindow *ui;
 

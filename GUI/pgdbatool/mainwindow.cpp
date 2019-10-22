@@ -591,6 +591,9 @@ void MainWindow::on_actionScan_Model_Directory_triggered()
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
     if (dir != "") {
+        // order the custom menus to commit suicide :)
+        emit clean_custom_menu();
+
         ui->message_output->clear();
         ui->message_output->moveCursor(QTextCursor::End);
         ModelScanner *scan = new ModelScanner(dir);
@@ -609,6 +612,7 @@ void MainWindow::do_fileReaded(const QString &file_name)
 void MainWindow::do_scanCompleted()
 {
     data->readModels();
+    loadCustomMenus();
 }
 
 void MainWindow::on_actionExecute_Saved_Model_triggered()
@@ -657,7 +661,7 @@ void MainWindow::loadCustomMenus()
                 if (child->menu()) {
                     if (child->menu()->title() == parts.at(i)) {
                         next_element = child->menu();
-                        menu_element->addMenu(next_element);
+                        menu_element->addMenu(next_element);                       
                         menu_element = next_element;
                     }
                 }
@@ -665,11 +669,13 @@ void MainWindow::loadCustomMenus()
             if (!next_element) {
                 next_element = new QMenu(item->getMenuParts().at(i));
                 menu_element->addMenu(next_element);
+                connect(this, SIGNAL(clean_custom_menu()), next_element, SLOT(deleteLater()));
                 menu_element = next_element;
             }
             if(i == parts.count() - 1) {
                 child = new QAction(item->getDescription());
                 connect(child, SIGNAL(triggered()), mapper, SLOT(map()));
+                connect(this, SIGNAL(clean_custom_menu()), child, SLOT(deleteLater()));
                 mapper->setMapping(child, item->getFileName());
                 menu_element->addAction(child);
             }
