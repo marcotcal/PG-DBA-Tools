@@ -26,6 +26,7 @@
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
+#include "queryexecutor.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     connect(this, SIGNAL(textChanged()), this, SLOT(setAsModified()));
@@ -76,6 +77,7 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
     }
     default_path = settings.value("path_to_sql", "").toString();
     group_name = "";
+    query_running = false;
 }
 
 SqlTool::~SqlTool()
@@ -434,6 +436,8 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
     QMessageBox msg;
     QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();
 
+    this->output = output;
+
     if (ui->limit_result->isChecked())
         output->setFetchLimit(ui->line_limit->value());
 
@@ -441,63 +445,19 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
 
     output->cleanMessage();
 
-    PGresult *res = PQexec(conn, query.toStdString().c_str());
+    if (show_query)
+        output->generateStatusMessage(query+"\n");
 
-    switch(PQresultStatus(res)) {
+    // execute query
 
-    case PGRES_EMPTY_QUERY:
-        output->clearOutput();
-        if (show_query)
-            output->generateStatusMessage(editor->text()+"\n");
-        output->generateStatusMessage(res);
-        break;
-    case PGRES_COMMAND_OK:
-        output->clearOutput();
-        if (show_query)
-            output->generateStatusMessage(editor->text()+"\n");
-        output->generateStatusMessage(res);
-        break;
-    case PGRES_TUPLES_OK:    
-        output->clearOutput();
-        if (show_query)
-            output->generateStatusMessage(editor->text()+"\n");
-        output->generateOutput(res);
-        break;
-    case PGRES_SINGLE_TUPLE:
+    query_running = true;
+    ui->editors_tabs->setEnabled(false);
 
-        break;
-    case PGRES_COPY_IN:
-
-        break;
-    case PGRES_COPY_OUT:
-
-        break;
-    case PGRES_COPY_BOTH:
-
-        break;
-    case PGRES_BAD_RESPONSE:
-        output->clearOutput();
-        output->generateError(conn);
-        if (show_query)
-            output->generateStatusMessage(editor->text()+"\n");
-        output->generateStatusMessage(res);
-        break;
-    case PGRES_FATAL_ERROR:
-        output->clearOutput();
-        output->generateError(conn);
-        if (show_query)
-            output->generateStatusMessage(editor->text()+"\n");
-        output->generateStatusMessage(res);
-        break;
-    case PGRES_NONFATAL_ERROR:
-        output->clearOutput();
-        output->generateError(conn);
-        if (show_query)
-            output->generateStatusMessage(editor->text()+"\n");
-        output->generateStatusMessage(res);
-        break;
-    }
-    PQclear(res);
+    QueryExecutor *executor = new QueryExecutor(conn, query);
+    connect(executor, SIGNAL(finished), executor, SLOT(deleteLater));
+    connect(executor, SIGNAL(query_ended(PGresult *)), this, SLOT(do_query_ended(PGresult *)));
+    executor->start();
+    emit beginExecution(this);
 }
 
 void SqlTool::rollback() {
@@ -536,4 +496,55 @@ void SqlTool::commit() {
 void SqlTool::on_limit_result_clicked(bool checked)
 {
     ui->line_limit->setEnabled(checked);
+}
+
+void SqlTool::do_query_ended(PGresult *res)
+{    
+    switch(PQresultStatus(res)) {
+
+    case PGRES_EMPTY_QUERY:
+        output->clearOutput();
+        output->generateStatusMessage(res);
+        break;
+    case PGRES_COMMAND_OK:
+        output->clearOutput();
+        output->generateStatusMessage(res);
+        break;
+    case PGRES_TUPLES_OK:
+        output->clearOutput();
+        output->generateOutput(res);
+        break;
+    case PGRES_SINGLE_TUPLE:
+
+        break;
+    case PGRES_COPY_IN:
+
+        break;
+    case PGRES_COPY_OUT:
+
+        break;
+    case PGRES_COPY_BOTH:
+
+        break;
+    case PGRES_BAD_RESPONSE:
+        output->clearOutput();
+        output->generateError(conn);
+        output->generateStatusMessage(res);
+        break;
+    case PGRES_FATAL_ERROR:
+        output->clearOutput();
+        output->generateError(conn);
+        output->generateStatusMessage(res);
+        break;
+    case PGRES_NONFATAL_ERROR:
+        output->clearOutput();
+        output->generateError(conn);
+        output->generateStatusMessage(res);
+        break;
+    }
+
+    PQclear(res);
+    query_running = false;
+    ui->editors_tabs->setEnabled(true);
+    emit endExecution(this);
 }

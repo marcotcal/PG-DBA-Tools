@@ -81,8 +81,14 @@ public:
     bool saveGroup();
     bool saveGroupAs();
     bool restoreGroup();
+    bool isRunning() { return query_running; }
 private slots:
     void on_limit_result_clicked(bool checked);
+    void do_query_ended(PGresult *res);
+
+signals:
+    void beginExecution(SqlTool *sender);
+    void endExecution(SqlTool *sender);
 
 private:
     Ui::SqlTool *ui;
@@ -94,6 +100,8 @@ private:
     QString default_path;
     QString group_name;
     OutputSet *output_set;
+    ResultOutput *output;
+    bool query_running;
 
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);

@@ -46,7 +46,8 @@ SOURCES += \
     dlgexecutemodel.cpp \
     modelscanner.cpp \
     dlgexplain.cpp \
-    outputset.cpp
+    outputset.cpp \
+    queryexecutor.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -70,7 +71,8 @@ HEADERS += \
     dlgexecutemodel.h \
     modelscanner.h \
     dlgexplain.h \
-    outputset.h
+    outputset.h \
+    queryexecutor.h
 
 FORMS += \
     mainwindow.ui \

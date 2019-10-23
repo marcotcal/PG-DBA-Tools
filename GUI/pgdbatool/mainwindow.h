@@ -92,9 +92,10 @@ private slots:
     void on_actionSSL_Settings_triggered();
     void on_actionExplain_triggered();
     void executeModel(QString resource_name);
+    void do_beginExecuteQuery(SqlTool *sender);
+    void do_endExecuteQuery(SqlTool *sender);
 
 signals:
-
     void clean_custom_menu();
 
 private:

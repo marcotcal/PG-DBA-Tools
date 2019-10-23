@@ -209,6 +209,8 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
         ui->output_stack->addWidget(out);
         ui->output_stack->setCurrentWidget(out);
         ui->main_stack->setCurrentWidget(sql);
+        connect(sql, SIGNAL(beginExecution(QueryTool *)), this, SLOT(do_beginExecuteQuery(QueryTool*)));
+        connect(sql, SIGNAL(endExecution(QueryTool *)), this, SLOT(do_endExecuteQuery(QueryTool*)));
         return sql;
 
     }
@@ -641,6 +643,24 @@ void MainWindow::executeModel(QString resource_name)
         ui->editor_list->clearSelection();
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());        
         data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());   
+    }
+}
+
+void MainWindow::do_beginExecuteQuery(SqlTool *sender)
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sender == sql) {
+        ui->actionCommit_Transaction->setEnabled(false);
+        ui->actionRollback_Transaction->setEnabled(false);
+    }
+}
+
+void MainWindow::do_endExecuteQuery(SqlTool *sender)
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sender == sql) {
+        ui->actionCommit_Transaction->setEnabled(true);
+        ui->actionRollback_Transaction->setEnabled(true);
     }
 }
 
