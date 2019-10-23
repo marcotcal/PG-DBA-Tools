@@ -323,6 +323,9 @@ QString QueryModelData::parseParameters(QString query)
 
     }
 
+    if (order_by != "")
+        ret.replace("[!ORDER_BY!]", order_by);
+
     return ret;
 
 }

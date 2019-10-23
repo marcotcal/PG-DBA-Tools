@@ -39,11 +39,10 @@ void DlgParameters::loadParameters()
             ui->parameter_table->setItem(i, 0, item);
             ui->parameter_table->setItem(i, 1, new QTableWidgetItem(""));
         }
-        ui->parameter_table->setCurrentCell(0, 1);
-
-        for(int i = 0; i < data->getOrders().count(); i++)
-            ui->cb_order->addItem(data->getOrders().at(i)->getDescription());
+        ui->parameter_table->setCurrentCell(0, 1);        
     }
+    for(int i = 0; i < data->getOrders().count(); i++)
+        ui->cb_order->addItem(data->getOrders().at(i)->getDescription());
 }
 
 void DlgParameters::assignValues()
@@ -55,6 +54,10 @@ void DlgParameters::assignValues()
             data->getParameters().at(i)->setValue(QVariant());
         }
     }
+    if (data->getOrders().count() > 0)
+        data->setOrderBy(" ORDER BY " + data->getOrders().at(ui->cb_order->currentIndex())->getFields());
+    else
+        data->setOrderBy("");
 }
 
 void DlgParameters::on_buttonBox_accepted()

@@ -130,6 +130,7 @@ public:
     QList <QueryParameter *> &getParameters() { return parameters; }
     QList <QueryOrder *> &getOrders() { return orders; }
     QList <QueryColumn *> &getColumns() { return columns; }
+    void setOrderBy(QString value) { order_by = value; }
     bool getError() { return error; }
     QString getErrorMessage() { return error_message; }
     bool saveModel(QString file_name);
@@ -152,6 +153,7 @@ private:
     QList<ModelItem *> items;
     bool error;
     bool connected;
+    QString order_by;
     QString error_message;
     QString model_path;
     QString output_type;
@@ -159,8 +161,7 @@ private:
     ConnectionsData &connections;
     PGconn *conn;
     void readXML();
-    QString parseParameters(QString query);
-
+    QString parseParameters(QString query);   
 };
 
 #endif // QUERYMODELDATA_H
