@@ -47,5 +47,5 @@
 FROM test
 WHERE class = :p_class AND schema <= :p_schema]]></query_text>
     <output_type><![CDATA[Text Without Separators]]></output_type>
-    <model_path><![CDATA[tests]]></model_path>
+    <model_path><![CDATA[]]></model_path>
 </model>
