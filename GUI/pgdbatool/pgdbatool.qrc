@@ -137,5 +137,8 @@
         <file>query_models/language_settings.xml</file>
         <file>query_models/all_other_settings.xml</file>
         <file>query_models/ssl_settings.xml</file>
+        <file>query_models/all_functions.xml</file>
+        <file>query_models/trigger_functions.xml</file>
+        <file>query_models/normal_functions.xml</file>
     </qresource>
 </RCC>

@@ -328,13 +328,6 @@ bool SqlTool::readFromXML(QString file_name)
     return true;
 }
 
-void SqlTool::noticeProcessor(void *arg, const char *message)
-{
-    ResultOutput *output = static_cast<ResultOutput *>(arg);
-    QString msg(message);
-    output->generateStatusMessage(msg);
-}
-
 EditorItem *SqlTool::addEditor() {
 
     QString new_sufix = QString("%1").arg(ui->editors_tabs->count()+1);
@@ -455,8 +448,6 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
     if (ui->limit_result->isChecked())
         output->setFetchLimit(ui->line_limit->value());
 
-    PQsetNoticeProcessor(conn, this->noticeProcessor, output);
-
     output->cleanMessage();
 
     if (show_query)
@@ -470,6 +461,8 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
     QueryExecutor *executor = new QueryExecutor(conn, query);
     connect(executor, SIGNAL(finished), executor, SLOT(deleteLater));
     connect(executor, SIGNAL(query_ended(PGresult *)), this, SLOT(do_query_ended(PGresult *)));
+    connect(executor, SIGNAL(generate_notice(QString)), output, SLOT(generateStatusMessage(QString)));
+
     executor->start();
     emit beginExecution(this);
 }

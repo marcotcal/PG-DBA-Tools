@@ -20,10 +20,14 @@ protected:
 
 signals:
     void query_ended(PGresult *res);
+    void generate_notice(QString msg);
 
 private:
     PGconn *conn;
     QString query;
+    QString last_notice;
+    static QueryExecutor *instance;
+    static void noticeProcessor(void *arg, const char *message);
 };
 
 #endif // QUERYEXECUTOR_H

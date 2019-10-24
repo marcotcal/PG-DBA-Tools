@@ -97,6 +97,12 @@ private slots:
 
     void on_actionCancel_Current_Query_triggered();
 
+    void on_actionNormal_Functions_triggered();
+
+    void on_actionTrigger_Functions_By_Schema_triggered();
+
+    void on_actionAll_Functions_By_Schema_triggered();
+
 signals:
     void clean_custom_menu();
 

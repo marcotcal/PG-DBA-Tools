@@ -829,3 +829,17 @@ void MainWindow::on_actionSSL_Settings_triggered()
     executeModel(":/query_defs/query_models/ssl_settings.xml");
 }
 
+void MainWindow::on_actionNormal_Functions_triggered()
+{
+    executeModel(":/query_defs/query_models/normal_functions.xml");
+}
+
+void MainWindow::on_actionTrigger_Functions_By_Schema_triggered()
+{
+    executeModel(":/query_defs/query_models/trigger_functions.xml");
+}
+
+void MainWindow::on_actionAll_Functions_By_Schema_triggered()
+{
+    executeModel(":/query_defs/query_models/all_functions.xml");
+}

@@ -107,9 +107,7 @@ private:
 
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);
-    bool readFromXML(QString file_name);
-
-    static void noticeProcessor(void *arg, const char *message);
+    bool readFromXML(QString file_name);    
 };
 
 #endif // SQLTOOL_H

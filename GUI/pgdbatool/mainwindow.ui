@@ -161,8 +161,17 @@
     <property name="title">
      <string>Str&amp;ucture</string>
     </property>
+    <widget class="QMenu" name="menuFunctions">
+     <property name="title">
+      <string>Functions</string>
+     </property>
+     <addaction name="actionNormal_Functions"/>
+     <addaction name="actionTrigger_Functions_By_Schema"/>
+     <addaction name="actionAll_Functions_By_Schema"/>
+    </widget>
     <addaction name="actionSchemas"/>
     <addaction name="actionList_of_Tables"/>
+    <addaction name="menuFunctions"/>
    </widget>
    <widget class="QMenu" name="menuUser_Models">
     <property name="title">
@@ -707,7 +716,22 @@
      <normaloff>:/icons/images/icons/icons8-stop_query-48.png</normaloff>:/icons/images/icons/icons8-stop_query-48.png</iconset>
    </property>
    <property name="text">
-    <string>Cancel Current Query</string>
+    <string>Cancel C&amp;urrent Query</string>
+   </property>
+  </action>
+  <action name="actionNormal_Functions">
+   <property name="text">
+    <string>Normal Functions By Schema</string>
+   </property>
+  </action>
+  <action name="actionTrigger_Functions_By_Schema">
+   <property name="text">
+    <string>Trigger Functions By Schema</string>
+   </property>
+  </action>
+  <action name="actionAll_Functions_By_Schema">
+   <property name="text">
+    <string>All Functions By Schema</string>
    </property>
   </action>
  </widget>
