@@ -95,6 +95,8 @@ private slots:
     void do_beginExecuteQuery(SqlTool *sender);
     void do_endExecuteQuery(SqlTool *sender);
 
+    void on_actionCancel_Current_Query_triggered();
+
 signals:
     void clean_custom_menu();
 

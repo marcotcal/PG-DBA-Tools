@@ -121,6 +121,9 @@ void MainWindow::disable_actions()
     ui->actionSave_SQL_Tool->setEnabled(false);
     ui->actionSave_SQL_Tool_As->setEnabled(false);
     ui->actionExplain->setEnabled(false);
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconect->setEnabled(false);
+    ui->actionCancel_Current_Query->setEnabled(false);
 }
 
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
@@ -134,13 +137,16 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
     ui->actionSave_SQL_Tool->setEnabled(true);
     ui->actionSave_SQL_Tool_As->setEnabled(true);
 
-    ui->actionConnect->setEnabled(!sql->connected());
-    ui->actionDisconect->setEnabled(sql->connected());
+    ui->actionConnect->setEnabled(!sql->connected() && !sql->isRunning());
+    ui->actionDisconect->setEnabled(sql->connected() && !sql->isRunning());
     // implicity transactions
-    ui->actionExecute->setEnabled(sql->connected());
-    ui->actionExplain->setEnabled(sql->connected());
+    ui->actionExecute->setEnabled(sql->connected()  && !sql->isRunning());
+    ui->actionExplain->setEnabled(sql->connected()  && !sql->isRunning());
+
+    ui->actionCancel_Current_Query->setEnabled(sql->isRunning());
+
     if (sql->connected()) {
-        ui->actionStart_Transaction->setEnabled(true);
+        ui->actionStart_Transaction->setEnabled(!sql->isRunning());
         ui->actionCommit_Transaction->setEnabled(false);
         ui->actionRollback_Transaction->setEnabled(false);     
     } else {
@@ -162,12 +168,13 @@ void MainWindow::enable_model_actions(QueryModel *model)
 void MainWindow::enable_sql_transactions(SqlTool *sql) {
     if (!sql->connected())
         return;
-    ui->actionStart_Transaction->setEnabled(!sql->transaction());
-    ui->actionCommit_Transaction->setEnabled(sql->transaction());
-    ui->actionRollback_Transaction->setEnabled(sql->transaction());
+    ui->actionStart_Transaction->setEnabled(!sql->transaction() && !sql->isRunning());
+    ui->actionCommit_Transaction->setEnabled(sql->transaction() && !sql->isRunning());
+    ui->actionRollback_Transaction->setEnabled(sql->transaction() && !sql->isRunning());
     // suport implicit transactions
     //ui->actionExecute->setEnabled(sql->transaction());
-    ui->actionExecute->setEnabled(sql->connected());
+    ui->actionExecute->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionExplain->setEnabled(sql->connected() && !sql->isRunning());
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
 }
@@ -201,16 +208,16 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
         sql = new SqlTool(connections, ui->main_stack);
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(ui->main_stack);
-        ui->editor_list->clearSelection();
-        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+        ui->editor_list->clearSelection();        
         sql->setGroupName(name);
         out = new OutputSet(sql);
         sql->setOutputSet(out);
         ui->output_stack->addWidget(out);
         ui->output_stack->setCurrentWidget(out);
         ui->main_stack->setCurrentWidget(sql);
-        connect(sql, SIGNAL(beginExecution(QueryTool *)), this, SLOT(do_beginExecuteQuery(QueryTool*)));
-        connect(sql, SIGNAL(endExecution(QueryTool *)), this, SLOT(do_endExecuteQuery(QueryTool*)));
+        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+        connect(sql, SIGNAL(beginExecution(SqlTool *)), this, SLOT(do_beginExecuteQuery(SqlTool*)));
+        connect(sql, SIGNAL(endExecution(SqlTool *)), this, SLOT(do_endExecuteQuery(SqlTool*)));
         return sql;
 
     }
@@ -571,6 +578,13 @@ void MainWindow::on_actionExplain_triggered()
     }
 }
 
+void MainWindow::on_actionCancel_Current_Query_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if (sql)
+        sql->cancelCurrentQuery();
+}
+
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
     if (currentRow != -1) {
@@ -650,8 +664,14 @@ void MainWindow::do_beginExecuteQuery(SqlTool *sender)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sender == sql) {
+        ui->actionStart_Transaction->setEnabled(false);
         ui->actionCommit_Transaction->setEnabled(false);
         ui->actionRollback_Transaction->setEnabled(false);
+        ui->actionExecute->setEnabled(false);
+        ui->actionExplain->setEnabled(false);
+        ui->actionConnect->setEnabled(false);
+        ui->actionDisconect->setEnabled(false);
+        ui->actionCancel_Current_Query->setEnabled(true);
     }
 }
 
@@ -659,8 +679,17 @@ void MainWindow::do_endExecuteQuery(SqlTool *sender)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sender == sql) {
-        ui->actionCommit_Transaction->setEnabled(true);
-        ui->actionRollback_Transaction->setEnabled(true);
+        if (sql->transaction()) {
+            ui->actionCommit_Transaction->setEnabled(true);
+            ui->actionRollback_Transaction->setEnabled(true);
+        } else {
+            ui->actionStart_Transaction->setEnabled(true);
+        }
+        ui->actionExecute->setEnabled(true);
+        ui->actionExplain->setEnabled(true);
+        ui->actionConnect->setEnabled(true);
+        ui->actionDisconect->setEnabled(true);
+        ui->actionCancel_Current_Query->setEnabled(false);
     }
 }
 

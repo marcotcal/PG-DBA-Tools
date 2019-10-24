@@ -83,6 +83,8 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
 SqlTool::~SqlTool()
 {
     int count = editors.count();
+    if (query_running)
+        cancelCurrentQuery();
 
     delete ui;
 
@@ -141,7 +143,7 @@ bool SqlTool::saveCurrent()
                     editor->setModified(false);
                     return true;
                 }
-            } else {
+            } else {                
                 return saveCurrentAs();
             }
         }
@@ -202,6 +204,18 @@ bool SqlTool::restoreGroup()
         return readFromXML(file_name);
     }
     return false;
+}
+
+void SqlTool::cancelCurrentQuery()
+{
+    PGcancel *cancel = PQgetCancel(conn);
+    char error[256];
+    QMessageBox msg;
+
+    if (!PQcancel(cancel, error, 256)) {
+        msg.setText(QString("Cancel failed: %1").arg(error));
+        msg.exec();
+    }
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {

@@ -82,6 +82,8 @@ public:
     bool saveGroupAs();
     bool restoreGroup();
     bool isRunning() { return query_running; }
+    void cancelCurrentQuery();
+
 private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);

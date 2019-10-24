@@ -77,6 +77,7 @@
     <addaction name="actionCommit_Transaction"/>
     <addaction name="actionExecute"/>
     <addaction name="actionExplain"/>
+    <addaction name="actionCancel_Current_Query"/>
     <addaction name="separator"/>
     <addaction name="actionExecute_Saved_Model"/>
    </widget>
@@ -212,6 +213,7 @@
    <addaction name="actionCommit_Transaction"/>
    <addaction name="actionExecute"/>
    <addaction name="actionExplain"/>
+   <addaction name="actionCancel_Current_Query"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -693,10 +695,19 @@
      <normaloff>:/icons/images/icons/icons8-gears_question-48.png</normaloff>:/icons/images/icons/icons8-gears_question-48.png</iconset>
    </property>
    <property name="text">
-    <string>Explain</string>
+    <string>Exp&amp;lain</string>
    </property>
    <property name="shortcut">
     <string>F7</string>
+   </property>
+  </action>
+  <action name="actionCancel_Current_Query">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-stop_query-48.png</normaloff>:/icons/images/icons/icons8-stop_query-48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cancel Current Query</string>
    </property>
   </action>
  </widget>

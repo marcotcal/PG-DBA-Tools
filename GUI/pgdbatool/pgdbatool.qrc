@@ -114,6 +114,7 @@
         <file>images/icons/json-file.png</file>
         <file>images/icons/html.png</file>
         <file>images/icons/icons8-gears_question-48.png</file>
+        <file>images/icons/icons8-stop_query-48.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>
