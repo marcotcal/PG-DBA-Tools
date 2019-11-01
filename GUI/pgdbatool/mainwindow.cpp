@@ -843,3 +843,8 @@ void MainWindow::on_actionAll_Functions_By_Schema_triggered()
 {
     executeModel(":/query_defs/query_models/all_functions.xml");
 }
+
+void MainWindow::on_actionList_of_Views_triggered()
+{
+    executeModel(":/query_defs/query_models/struct_list_of_views.xml");
+}

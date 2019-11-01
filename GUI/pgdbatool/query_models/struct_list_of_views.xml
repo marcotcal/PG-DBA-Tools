@@ -22,51 +22,32 @@
   <!ATTLIST order width CDATA "">
 ]>
 
-<model code="ESTR-0001" description="List of Tables">
+<model code="STR-0007" description="List of views ">
     <parameters>
         <parameter code="p_schema" description="Schema (List)" mandatory="false">
             <expression><![CDATA[AND schemaname IN ?]]></expression>
             <param_type><![CDATA[Text]]></param_type>
             <param_sub_type><![CDATA[List]]></param_sub_type>
         </parameter>
-        <parameter code="p_name" description="Name " mandatory="false">
-            <expression><![CDATA[AND tablename ilike ?]]></expression>
+        <parameter code="p_name" description="View Name" mandatory="false">
+            <expression><![CDATA[AND viewname ilike ?]]></expression>
             <param_type><![CDATA[Text]]></param_type>
             <param_sub_type><![CDATA[Single]]></param_sub_type>
         </parameter>
     </parameters>
     <orders>
-        <order description="Schema + Table" fields="1,2"/>
+        <order description="Schema + Name" fields="schemaname, viewname"/>
     </orders>
     <columns/>
-    <query_text><![CDATA[SELECT
-    schemaname, 
-    tablename, 
-    tableowner, 
-    tablespace,
-    CASE hasindexes
-        WHEN true THEN 'Yes'
-        ELSE 'No'
-    END AS hasindexes,   
-    CASE hasrules
-        WHEN true THEN 'Yes'
-        ELSE 'No'
-    END AS hasrules, 
-    CASE hastriggers
-        WHEN true THEN 'Yes'
-        ELSE 'No'
-    END AS hastriggers,
-    CASE rowsecurity
-        WHEN true THEN 'Yes'
-        ELSE 'No'
-    END AS rowsecurity
-FROM
-    pg_catalog.pg_tables
-WHERE
-    schemaname != 'pg_catalog'
-    AND schemaname != 'information_schema'
-    [!p_schema!]
-    [!p_name!]]]></query_text>
-    <output_type><![CDATA[Html]]></output_type>
-    <model_path><![CDATA[/Structure]]></model_path>
+    <query_text><![CDATA[SELECT 
+    schemaname,  
+    viewname, 
+    viewowner, 
+    definition
+FROM pg_catalog.pg_views
+WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+      [!p_schema!]
+      [!p_name!]]]></query_text>
+    <output_type><![CDATA[Text With Separators]]></output_type>
+    <model_path><![CDATA[]]></model_path>
 </model>

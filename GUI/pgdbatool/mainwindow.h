@@ -103,6 +103,8 @@ private slots:
 
     void on_actionAll_Functions_By_Schema_triggered();
 
+    void on_actionList_of_Views_triggered();
+
 signals:
     void clean_custom_menu();
 

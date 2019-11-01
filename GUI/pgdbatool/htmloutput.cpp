@@ -61,7 +61,11 @@ void HtmlOutput::generateOutput(PGresult *res)
     for (int r = 0; r < rows.count(); r++) {
         html += "<tr>";
         for (int c = 0; c < rows.at(r).count(); c++) {
-            html += "<td>" + rows.at(r).at(c).toString() + "</td>";
+            html += "<td>" + rows.at(r).at(c).toString()
+                                .replace("\n","<br>")
+                                .replace(" ","&nbsp;")
+                                .replace("\t","&nbsp;&nbsp;&nbsp;&nbsp;") +
+                    "</td>";
         }
         html += "</tr>";
     }
