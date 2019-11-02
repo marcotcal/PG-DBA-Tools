@@ -29,12 +29,7 @@
 #include "queryexecutor.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
-    connect(this, SIGNAL(textChanged()), this, SLOT(setAsModified()));
     file_name = "";
-}
-
-void EditorItem::setIsModified(bool value) {
-    is_modified = value;
 }
 
 void EditorItem::setFileName(QString value)
@@ -45,14 +40,6 @@ void EditorItem::setFileName(QString value)
 const QString &EditorItem::getFileName() const
 {
     return file_name;
-}
-
-void EditorItem::setAsModified() {
-    is_modified = true;
-}
-
-bool EditorItem::getIsModified() {
-    return is_modified;
 }
 
 EditorItem::~EditorItem() {
@@ -122,25 +109,25 @@ bool SqlTool::openFileOnCurrent(QFile &file)
     QTextStream in(&file);
     editor->setFileName(file.fileName());
     editor->setText(in.readAll());
-    editor->setIsModified(false);
-
+    editor->setModified(false);
     ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(),
                                            QFileInfo(file).baseName());
 
     return true;
 }
 
-bool SqlTool::saveCurrent()
+bool SqlTool::saveCurrent(bool force)
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
-        if (editor->isModified()) {
+        if (editor->isModified() || force) {
             if (editor->getFileName() != "") {
                 QFile destination(editor->getFileName());
                 if(destination.open(QIODevice::WriteOnly)) {
                     QTextStream ts(&destination);
                     ts << editor->text();
                     editor->setModified(false);
+                    ui->editors_tabs->setTabText(ui->editors_tabs->currentIndex(),QFileInfo(editor->getFileName()).baseName());
                     return true;
                 }
             } else {                
@@ -159,14 +146,10 @@ bool SqlTool::saveCurrentAs()
         file_name = QFileDialog::getSaveFileName(this, "Save SQL File", default_path, "sql files (*.sql);;All files (*.*)");
         if (file_name != "") {
             editor->setFileName(file_name);
-            QFile destination(file_name);
-            if(destination.open(QIODevice::WriteOnly)) {
-                QTextStream ts(&destination);
-                ts << editor->text();
-                editor->setModified(false);
-            }
+            return saveCurrent(true); // cannot set modifyed to true at QsciScintilla class
         }
     }
+    return false;
 }
 
 QString SqlTool::getCurrentEditorName()
@@ -236,7 +219,7 @@ void SqlTool::initializeEditor(EditorItem *editor) {
     editor->setLexer(lex);
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
-    editor->setIsModified(false);
+    editor->setModified(false);
 }
 
 bool SqlTool::saveToXML(QString file_name)
@@ -318,6 +301,8 @@ bool SqlTool::readFromXML(QString file_name)
                     editor = addEditor();
                     editor->setText(query);
                     editor->setModified(false);
+                    if(name == "")
+                        name = QString("SQL %1").arg(ui->editors_tabs->currentIndex() + 1 );
                     ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(), name);
                 }
             }
@@ -348,7 +333,7 @@ bool SqlTool::closeCurrentEditor() {
     QMessageBox msgBox;
     QString file_name;
 
-    if (editor->getIsModified()) {
+    if (editor->isModified()) {
         msgBox.setText(QString("The document %1 has been modified.").arg(editor->objectName()));
         msgBox.setInformativeText("Do you want to save your changes?");
         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);

@@ -40,14 +40,10 @@ class EditorItem : public QsciScintilla  {
 public:
     explicit EditorItem(QWidget *parent = nullptr);
     ~EditorItem();
-    bool getIsModified();
-    void setIsModified(bool value);
     void setFileName(QString value);
     const QString &getFileName() const;
-private slots:
-    void setAsModified();
+
 private:
-    bool is_modified;
     QString file_name;
 };
 
@@ -73,7 +69,7 @@ public:
     void commit();
     bool closeAllEditors();
     bool openFileOnCurrent(QFile &file);
-    bool saveCurrent();
+    bool saveCurrent(bool force=false);
     bool saveCurrentAs();
     void setGroupName(const QString &value) { group_name = value; }
     QString &getGroupName() { return group_name; }
