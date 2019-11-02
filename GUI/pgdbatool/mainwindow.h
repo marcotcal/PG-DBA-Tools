@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
 protected:
 
@@ -94,15 +94,10 @@ private slots:
     void executeModel(QString resource_name);
     void do_beginExecuteQuery(SqlTool *sender);
     void do_endExecuteQuery(SqlTool *sender);
-
     void on_actionCancel_Current_Query_triggered();
-
     void on_actionNormal_Functions_triggered();
-
     void on_actionTrigger_Functions_By_Schema_triggered();
-
     void on_actionAll_Functions_By_Schema_triggered();
-
     void on_actionList_of_Views_triggered();
 
 signals:
@@ -115,6 +110,7 @@ private:
     QueryModelData *data;
     QString path_to_sql;
     QString path_to_models;
+    QString last_path_to_sql;
 
     bool maybeSave();
     void readSettings();

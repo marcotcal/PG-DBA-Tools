@@ -84,6 +84,7 @@ void MainWindow::readSettings()
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     const QByteArray geometry = settings.value("geometry", QByteArray()).toByteArray();
     path_to_sql = settings.value("path_to_sql", "").toString();
+    last_path_to_sql = path_to_sql;
     path_to_models = settings.value("path_to_models", "").toString();
     restoreState(settings.value("DOCK_LOCATIONS").toByteArray(),1);
     if (geometry.isEmpty()) {
@@ -274,8 +275,9 @@ void MainWindow::on_actionOpen_triggered()
     QString file_name;
     QFile file;
 
+
     if (sql) {
-        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql, "SQL files (*.sql);;All files (*.*))");
+        file_name = QFileDialog::getOpenFileName(this, "Open File", last_path_to_sql, "SQL files (*.sql);;All files (*.*))");
         if (file_name != "") {
             file.setFileName(file_name);
             sql->openFileOnCurrent(file);            
@@ -289,15 +291,17 @@ void MainWindow::on_actionOpen_triggered()
             ui->editor_list->currentItem()->setText(QFileInfo(file).baseName());
         }
     } else {
-        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_sql,
+        file_name = QFileDialog::getOpenFileName(this, "Open File", last_path_to_sql,
                                                  "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
         if (file_name != "") {
             QFile file(file_name);
-            if (QFileInfo(file).suffix().toLower() == "sql") {
+            QFileInfo info(file_name);
+            last_path_to_sql = info.path();
+            if (info.suffix().toLower() == "sql") {
                     sql = openNewSQLTool(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
                     sql->openFileOnCurrent(file);
             } else {
-                model = openNewQueryModel(QFileInfo(file).baseName());
+                model = openNewQueryModel(info.baseName());
                 model->openFile(file);
             }
          }
