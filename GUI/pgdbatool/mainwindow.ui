@@ -76,7 +76,6 @@
     <addaction name="actionRollback_Transaction"/>
     <addaction name="actionCommit_Transaction"/>
     <addaction name="actionExecute"/>
-    <addaction name="actionExplain"/>
     <addaction name="actionCancel_Current_Query"/>
     <addaction name="separator"/>
     <addaction name="actionExecute_Saved_Model"/>
@@ -179,9 +178,53 @@
      <string>Use&amp;r Models</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuOptimizations">
+    <property name="title">
+     <string>Optimizations</string>
+    </property>
+    <widget class="QMenu" name="menuPlanner_Method_Configuration">
+     <property name="title">
+      <string>Planner Method Configuration</string>
+     </property>
+     <addaction name="actionEnable_Bitmap_Scan"/>
+     <addaction name="actionEnable_Hash_Aggregations"/>
+     <addaction name="actionEnable_Hash_Joins"/>
+     <addaction name="actionEnable_Index_Scan"/>
+     <addaction name="actionEnable_Index_Only_Scan"/>
+     <addaction name="actionEnable_Materialization"/>
+     <addaction name="actionEnable_Nested_Loops"/>
+     <addaction name="actionEnable_Sequential_Scan"/>
+     <addaction name="actionEnable_Sort_Steps"/>
+     <addaction name="actionEnable_TID_Scan"/>
+    </widget>
+    <widget class="QMenu" name="menuGenetic_Query_Optimization">
+     <property name="title">
+      <string>Genetic Query Optimization</string>
+     </property>
+     <addaction name="actionEnable_Genetic_Query_Optimization"/>
+     <addaction name="actionGenetic_Query_Optimization_Threshold"/>
+    </widget>
+    <widget class="QMenu" name="menuParallelism">
+     <property name="title">
+      <string>Parallelism</string>
+     </property>
+     <addaction name="actionMax_Parallel_Workers"/>
+     <addaction name="actionMax_Parallel_Workers_Per_Gather"/>
+     <addaction name="actionMin_Parallel_Table_Scan_Size"/>
+     <addaction name="actionMax_Worker_Processor"/>
+     <addaction name="actionSet_Parallel_Tuple_Cost"/>
+    </widget>
+    <action name=""/>
+    <addaction name="actionExplain"/>
+    <addaction name="separator"/>
+    <addaction name="menuPlanner_Method_Configuration"/>
+    <addaction name="menuGenetic_Query_Optimization"/>
+    <addaction name="menuParallelism"/>
+   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuSQL"/>
    <addaction name="menuConnections"/>
+   <addaction name="menuSQL"/>
+   <addaction name="menuOptimizations"/>
    <addaction name="menuStatitics"/>
    <addaction name="menuStructure"/>
    <addaction name="menuUser_Models"/>
@@ -738,6 +781,124 @@
   <action name="actionList_of_Views">
    <property name="text">
     <string>List of Views</string>
+   </property>
+  </action>
+  <action name="actionEnable_Bitmap_Scan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Bitmap Scan</string>
+   </property>
+  </action>
+  <action name="actionEnable_Hash_Aggregations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Hash Aggregations</string>
+   </property>
+  </action>
+  <action name="actionEnable_Hash_Joins">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Hash Joins</string>
+   </property>
+  </action>
+  <action name="actionEnable_Index_Scan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Index Scan</string>
+   </property>
+  </action>
+  <action name="actionEnable_Index_Only_Scan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Index Only Scan</string>
+   </property>
+  </action>
+  <action name="actionEnable_Materialization">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Materialization</string>
+   </property>
+  </action>
+  <action name="actionEnable_Nested_Loops">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Nested Loops</string>
+   </property>
+  </action>
+  <action name="actionEnable_Sequential_Scan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Sequential Scan</string>
+   </property>
+  </action>
+  <action name="actionEnable_Sort_Steps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Sort Steps</string>
+   </property>
+  </action>
+  <action name="actionEnable_TID_Scan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable TID Scan</string>
+   </property>
+  </action>
+  <action name="actionEnable_Genetic_Query_Optimization">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Genetic Query Optimization</string>
+   </property>
+  </action>
+  <action name="actionGenetic_Query_Optimization_Threshold">
+   <property name="text">
+    <string>Set Genetic Query Optimization Threshold</string>
+   </property>
+  </action>
+  <action name="actionMax_Parallel_Workers_Per_Gather">
+   <property name="text">
+    <string>Set Max Parallel Workers Per Gather</string>
+   </property>
+  </action>
+  <action name="actionMin_Parallel_Table_Scan_Size">
+   <property name="text">
+    <string>Set Min Parallel Table Scan Size</string>
+   </property>
+  </action>
+  <action name="actionMax_Worker_Processor">
+   <property name="text">
+    <string>Set Max Worker Processor</string>
+   </property>
+  </action>
+  <action name="actionMax_Parallel_Workers">
+   <property name="text">
+    <string>Set Max Parallel Workers</string>
+   </property>
+  </action>
+  <action name="actionSet_Parallel_Tuple_Cost">
+   <property name="text">
+    <string>Set Parallel Tuple Cost</string>
    </property>
   </action>
  </widget>
