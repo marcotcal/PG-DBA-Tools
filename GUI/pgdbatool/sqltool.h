@@ -84,6 +84,8 @@ private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);
 
+    void on_ck_use_alternate_user_clicked(bool checked);
+
 signals:
     void beginExecution(SqlTool *sender);
     void endExecution(SqlTool *sender);

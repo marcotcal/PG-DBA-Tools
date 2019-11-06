@@ -540,3 +540,9 @@ void SqlTool::do_query_ended(PGresult *res)
     ui->editors_tabs->setEnabled(true);
     emit endExecution(this);
 }
+
+void SqlTool::on_ck_use_alternate_user_clicked(bool checked)
+{
+    ui->cb_users->setEnabled(checked);
+    ui->ed_password->setEnabled(checked);
+}
