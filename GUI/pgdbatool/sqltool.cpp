@@ -374,7 +374,13 @@ bool SqlTool::connected() {
 
 void SqlTool::databaseConnect() {
     QMessageBox msg;
-    QString conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
+    QString conn_str;
+    if (!ui->ck_use_alternate_user->isChecked()) {
+        conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
+    } else {
+        conn_str = connections.getConnections().at(ui->connection_list->currentIndex())
+                ->connectStr(ui->ed_user->text(), ui->ed_password->text());
+    }
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {
@@ -382,6 +388,10 @@ void SqlTool::databaseConnect() {
         ui->connection_list->setEnabled(false);
         ui->led_connected->setStyleSheet("background-color:#00FF00;border-radius:6;");
         is_connected = true;
+        ui->ck_use_alternate_user->setEnabled(false);
+        ui->ed_user->setEnabled(false);
+        ui->ed_password->setEnabled(false);
+        ui->lb_password->setEnabled(false);
         return;
     }
     msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
@@ -394,6 +404,13 @@ void SqlTool::databaseDisconnect() {
     ui->connection_list->setEnabled(true);
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
+
+    ui->ck_use_alternate_user->setEnabled(true);
+    if (ui->ck_use_alternate_user->isChecked()) {
+        ui->ed_user->setEnabled(true);
+        ui->ed_password->setEnabled(true);
+        ui->lb_password->setEnabled(true);
+    }
     is_connected = false;
 }
 
@@ -543,6 +560,11 @@ void SqlTool::do_query_ended(PGresult *res)
 
 void SqlTool::on_ck_use_alternate_user_clicked(bool checked)
 {
-    ui->cb_users->setEnabled(checked);
+    ui->ed_user->setEnabled(checked);
     ui->ed_password->setEnabled(checked);
+    ui->lb_password->setEnabled(checked);
+    if (!checked) {
+        ui->ed_user->setText("");
+        ui->ed_password->setText("");
+    }
 }

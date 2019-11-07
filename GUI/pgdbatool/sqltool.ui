@@ -107,7 +107,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="cb_users">
+       <widget class="QLineEdit" name="ed_user">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -115,6 +115,9 @@
       </item>
       <item>
        <widget class="QLabel" name="lb_password">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Password</string>
         </property>

@@ -39,14 +39,24 @@ QVariant ConnectionElement::getParameter(QString param)
     return parameters[param];
 }
 
-QString ConnectionElement::connectStr()
+QString ConnectionElement::connectStr(QString alternate_user, QString alternate_password)
 {        
     QMap<QString, QVariant>::iterator i;
     QString cr = "";
 
     for(i = parameters.begin(); i != parameters.end(); ++i) {
-        if (!i.value().isNull())
+        if (!i.value().isNull()) {
+            if (i.key() == "user" && alternate_user != "") {
+                cr += "user=" + alternate_user + " ";
+                continue;
+            } else {
+                if (i.key() == "password" && alternate_password != "") {
+                    cr += "password=" + alternate_password + " ";
+                    continue;
+                }
+            }
             cr += i.key() + "=" + i.value().toString() + " ";
+        }
     }
     return cr;
 }
