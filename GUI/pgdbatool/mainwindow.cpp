@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     data->readModels();
     loadCustomMenus();
     setConnectionsList();
+    ui->actionClose->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -454,6 +455,8 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
     if (model){
         enable_model_actions(model);
     }
+
+    ui->actionClose->setEnabled(arg1 != -1);
 }
 
 void MainWindow::on_actionConnect_triggered()
