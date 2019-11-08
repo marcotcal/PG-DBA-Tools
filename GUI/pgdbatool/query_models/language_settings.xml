@@ -26,7 +26,7 @@
     <parameters/>
     <orders/>
     <columns/>
-    <query_text><![CDATA[SELECT name, setting, short_desc
+    <query_text><![CDATA[SELECT name, setting, boot_val as default_val, short_desc
 FROM pg_settings
 WHERE name LIKE 'lc_%';]]></query_text>
     <output_type><![CDATA[Text With Separators]]></output_type>

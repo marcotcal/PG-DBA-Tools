@@ -14,7 +14,7 @@ public:
     void addParameter(QString param, QVariant value);
     QMap<QString, QVariant> getParameters();
     QVariant getParameter(QString param);
-    QString connectStr();
+    QString connectStr(QString alternate_user="", QString alternate_password="");
     bool isInvalid() { return invalid; }
     void setInvalid(bool value) { invalid = value; }
 private:    
