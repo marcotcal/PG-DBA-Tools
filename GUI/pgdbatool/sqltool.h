@@ -90,6 +90,25 @@ signals:
 
 private:
     Ui::SqlTool *ui;
+    enum {
+        st_name,
+        st_setting,
+        st_unit,
+        st_category,
+        st_short_desc,
+        st_extra_desc,
+        st_context,
+        st_vartype,
+        st_source,
+        st_min_val,
+        st_max_val,
+        st_enumvals,
+        st_boot_val,
+        st_reset_val,
+        st_sourcefile,
+        st_sourceline,
+        st_pending_restart
+    };
     QList<EditorItem*> editors;
     bool in_transaction;
     bool is_connected;
@@ -100,10 +119,13 @@ private:
     OutputSet *output_set;
     ResultOutput *output;
     bool query_running;
+    QMap<QString, QList<QVariant>> settings;
 
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);
-    bool readFromXML(QString file_name);    
+    bool readFromXML(QString file_name);
+    void readSettings();
+    QVariant getSetting(QString setting, int field);
 };
 
 #endif // SQLTOOL_H
