@@ -182,13 +182,13 @@
     <property name="title">
      <string>Optimizations</string>
     </property>
-    <action name=""/>
     <addaction name="actionExplain"/>
     <addaction name="separator"/>
     <addaction name="actionPlanner_Method_Settings"/>
     <addaction name="actionGenetic_Query_Optimization_Settings"/>
     <addaction name="actionPallelism_Settings"/>
-    <addaction name="actionOther_Planner_Settings"/>
+    <addaction name="actionWorkers_Settings"/>
+    <addaction name="actionOther_Planner_Related_Settings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuConnections"/>
@@ -767,9 +767,14 @@
     <string>Pallelism Settings</string>
    </property>
   </action>
-  <action name="actionOther_Planner_Settings">
+  <action name="actionOther_Planner_Related_Settings">
    <property name="text">
-    <string>Other Planner Settings</string>
+    <string>Other Planner Related Settings</string>
+   </property>
+  </action>
+  <action name="actionWorkers_Settings">
+   <property name="text">
+    <string>Workers Settings</string>
    </property>
   </action>
  </widget>
