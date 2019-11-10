@@ -72,3 +72,4 @@ int DlgWorkers::getParallelWorkers()
 {
     return ui->sp_parallel_workers->value();
 }
+
