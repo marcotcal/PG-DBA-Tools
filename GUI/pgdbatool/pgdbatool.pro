@@ -47,7 +47,8 @@ SOURCES += \
     modelscanner.cpp \
     dlgexplain.cpp \
     outputset.cpp \
-    queryexecutor.cpp
+    queryexecutor.cpp \
+    dlgotherplanningsettings.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -72,7 +73,8 @@ HEADERS += \
     modelscanner.h \
     dlgexplain.h \
     outputset.h \
-    queryexecutor.h
+    queryexecutor.h \
+    dlgotherplanningsettings.h
 
 FORMS += \
     mainwindow.ui \
@@ -85,7 +87,8 @@ FORMS += \
     dlgparameters.ui \
     dlgexecutemodel.ui \
     dlgexplain.ui \
-    outputset.ui
+    outputset.ui \
+    dlgotherplanningsettings.ui
 
 LIBS += -lqscintilla2_qt5
 
