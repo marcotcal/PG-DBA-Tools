@@ -27,6 +27,11 @@
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
 #include "queryexecutor.h"
+#include "dlgplanmethods.h"
+#include "dlggqoconfig.h"
+#include "dlgparallelsettings.h"
+#include "dlgworkers.h"
+#include "dlgotherplanningsettings.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";
@@ -198,6 +203,51 @@ void SqlTool::cancelCurrentQuery()
     if (!PQcancel(cancel, error, 256)) {
         msg.setText(QString("Cancel failed: %1").arg(error));
         msg.exec();
+    }
+}
+
+void SqlTool::plannerMethodSettings()
+{
+    DlgPlanMethods dlg;
+
+    if(dlg.exec()) {
+
+    }
+}
+
+void SqlTool::geneticQueryOptimizationsSettings()
+{
+    DlgGQOConfig dlg;
+
+    if(dlg.exec()) {
+
+    }
+}
+
+void SqlTool::parallelismSettings()
+{
+    DlgParallelSettings dlg;
+
+    if(dlg.exec()) {
+
+    }
+}
+
+void SqlTool::workersSettings()
+{
+    DlgWorkers dlg;
+
+    if(dlg.exec()) {
+
+    }
+}
+
+void SqlTool::otherPlanningSettings()
+{
+    DlgOtherPlanningSettings dlg;
+
+    if(dlg.exec()) {
+
     }
 }
 

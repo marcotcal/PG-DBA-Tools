@@ -771,27 +771,41 @@ void MainWindow::loadCustomMenus()
 
 void MainWindow::on_actionPlanner_Method_Settings_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
 
+    if (sql)
+        sql->plannerMethodSettings();
 }
 
 void MainWindow::on_actionGenetic_Query_Optimization_Settings_triggered()
 {
-
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql)
+        sql->geneticQueryOptimizationsSettings();
 }
 
 void MainWindow::on_actionPallelism_Settings_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
 
+    if(sql)
+        sql->parallelismSettings();
 }
 
 void MainWindow::on_actionOther_Planner_Related_Settings_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
 
+    if(sql)
+        sql->otherPlanningSettings();
 }
 
 void MainWindow::on_actionWorkers_Settings_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
 
+    if(sql)
+        sql->workersSettings();
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()

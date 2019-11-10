@@ -79,7 +79,11 @@ public:
     bool restoreGroup();
     bool isRunning() { return query_running; }
     void cancelCurrentQuery();
-
+    void plannerMethodSettings();
+    void geneticQueryOptimizationsSettings();
+    void parallelismSettings();
+    void workersSettings();
+    void otherPlanningSettings();
 private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);
