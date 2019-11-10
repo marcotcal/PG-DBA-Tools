@@ -89,9 +89,16 @@ private slots:
     void on_actionLog_Settings_triggered();
     void on_actionLanguage_Settings_triggered();
     void on_actionAll_Other_Settings_triggered();
-    void on_actionSSL_Settings_triggered();
+    void on_actionSSL_Settings_triggered();    
+
     void on_actionExplain_triggered();
     void executeModel(QString resource_name);
+    void on_actionPlanner_Method_Settings_triggered();
+    void on_actionGenetic_Query_Optimization_Settings_triggered();
+    void on_actionPallelism_Settings_triggered();
+    void on_actionOther_Planner_Related_Settings_triggered();
+    void on_actionWorkers_Settings_triggered();
+
     void do_beginExecuteQuery(SqlTool *sender);
     void do_endExecuteQuery(SqlTool *sender);
     void on_actionCancel_Current_Query_triggered();

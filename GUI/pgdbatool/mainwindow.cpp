@@ -126,6 +126,11 @@ void MainWindow::disable_actions()
     ui->actionConnect->setEnabled(false);
     ui->actionDisconect->setEnabled(false);
     ui->actionCancel_Current_Query->setEnabled(false);
+    ui->actionPlanner_Method_Settings->setEnabled(false);
+    ui->actionGenetic_Query_Optimization_Settings->setEnabled(false);
+    ui->actionPallelism_Settings->setEnabled(false);
+    ui->actionOther_Planner_Related_Settings->setEnabled(false);
+    ui->actionWorkers_Settings->setEnabled(false);
 }
 
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
@@ -144,6 +149,11 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
     // implicity transactions
     ui->actionExecute->setEnabled(sql->connected()  && !sql->isRunning());
     ui->actionExplain->setEnabled(sql->connected()  && !sql->isRunning());
+    ui->actionPlanner_Method_Settings->setEnabled(sql->connected()  && !sql->isRunning());
+    ui->actionGenetic_Query_Optimization_Settings->setEnabled(sql->connected()  && !sql->isRunning());
+    ui->actionPallelism_Settings->setEnabled(sql->connected()  && !sql->isRunning());
+    ui->actionOther_Planner_Related_Settings->setEnabled(sql->connected()  && !sql->isRunning());
+    ui->actionWorkers_Settings->setEnabled(sql->connected()  && !sql->isRunning());
 
     ui->actionCancel_Current_Query->setEnabled(sql->isRunning());
 
@@ -177,6 +187,13 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
     //ui->actionExecute->setEnabled(sql->transaction());
     ui->actionExecute->setEnabled(sql->connected() && !sql->isRunning());
     ui->actionExplain->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionCancel_Current_Query->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionPlanner_Method_Settings->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionGenetic_Query_Optimization_Settings->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionPallelism_Settings->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionOther_Planner_Related_Settings->setEnabled(sql->connected() && !sql->isRunning());
+    ui->actionWorkers_Settings->setEnabled(sql->connected() && !sql->isRunning());
+
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
 }
@@ -676,6 +693,12 @@ void MainWindow::do_beginExecuteQuery(SqlTool *sender)
         ui->actionRollback_Transaction->setEnabled(false);
         ui->actionExecute->setEnabled(false);
         ui->actionExplain->setEnabled(false);
+        ui->actionCancel_Current_Query->setEnabled(false);
+        ui->actionPlanner_Method_Settings->setEnabled(false);
+        ui->actionGenetic_Query_Optimization_Settings->setEnabled(false);
+        ui->actionPallelism_Settings->setEnabled(false);
+        ui->actionOther_Planner_Related_Settings->setEnabled(false);
+        ui->actionWorkers_Settings->setEnabled(false);
         ui->actionConnect->setEnabled(false);
         ui->actionDisconect->setEnabled(false);
         ui->actionCancel_Current_Query->setEnabled(true);
@@ -694,6 +717,11 @@ void MainWindow::do_endExecuteQuery(SqlTool *sender)
         }
         ui->actionExecute->setEnabled(true);
         ui->actionExplain->setEnabled(true);
+        ui->actionPlanner_Method_Settings->setEnabled(true);
+        ui->actionGenetic_Query_Optimization_Settings->setEnabled(true);
+        ui->actionPallelism_Settings->setEnabled(true);
+        ui->actionOther_Planner_Related_Settings->setEnabled(true);
+        ui->actionWorkers_Settings->setEnabled(true);
         ui->actionConnect->setEnabled(true);
         ui->actionDisconect->setEnabled(true);
         ui->actionCancel_Current_Query->setEnabled(false);
@@ -739,6 +767,31 @@ void MainWindow::loadCustomMenus()
     }
 
     connect(mapper, SIGNAL(mapped(QString)), this, SLOT(executeModel(QString)));
+}
+
+void MainWindow::on_actionPlanner_Method_Settings_triggered()
+{
+
+}
+
+void MainWindow::on_actionGenetic_Query_Optimization_Settings_triggered()
+{
+
+}
+
+void MainWindow::on_actionPallelism_Settings_triggered()
+{
+
+}
+
+void MainWindow::on_actionOther_Planner_Related_Settings_triggered()
+{
+
+}
+
+void MainWindow::on_actionWorkers_Settings_triggered()
+{
+
 }
 
 void MainWindow::on_actionIndexes_Sizes_triggered()
