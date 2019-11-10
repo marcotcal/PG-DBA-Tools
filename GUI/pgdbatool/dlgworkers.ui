@@ -19,6 +19,9 @@
      <property name="labelAlignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
+     <property name="verticalSpacing">
+      <number>2</number>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="minimumSize">
@@ -33,7 +36,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QSpinBox" name="spinBox">
+      <widget class="QSpinBox" name="sp_work_mem">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -50,7 +53,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="spinBox_2">
+      <widget class="QSpinBox" name="sp_maintenance_work_mem">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -67,7 +70,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="spinBox_3">
+      <widget class="QSpinBox" name="sp_efective_io_concurrency">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -84,7 +87,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="spinBox_4">
+      <widget class="QSpinBox" name="sp_max_work_process">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -101,7 +104,7 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QSpinBox" name="spinBox_5">
+      <widget class="QSpinBox" name="sp_max_parallel_workers_per_gather">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -118,7 +121,7 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QSpinBox" name="spinBox_6">
+      <widget class="QSpinBox" name="sp_parallel_workers">
        <property name="minimumSize">
         <size>
          <width>80</width>
