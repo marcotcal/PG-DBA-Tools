@@ -48,7 +48,8 @@ SOURCES += \
     dlgexplain.cpp \
     outputset.cpp \
     queryexecutor.cpp \
-    dlgplanmethods.cpp
+    dlgplanmethods.cpp \
+    dlggqoconfig.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -74,7 +75,8 @@ HEADERS += \
     dlgexplain.h \
     outputset.h \
     queryexecutor.h \
-    dlgplanmethods.h
+    dlgplanmethods.h \
+    dlggqoconfig.h
 
 FORMS += \
     mainwindow.ui \
@@ -88,7 +90,8 @@ FORMS += \
     dlgexecutemodel.ui \
     dlgexplain.ui \
     outputset.ui \
-    dlgplanmethods.ui
+    dlgplanmethods.ui \
+    dlggqoconfig.ui
 
 LIBS += -lqscintilla2_qt5
 
