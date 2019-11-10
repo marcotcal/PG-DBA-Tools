@@ -111,7 +111,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Sequential Pege Cost</string>
+         <string>Sequential Page Cost</string>
         </property>
        </widget>
       </item>
