@@ -14,15 +14,16 @@ class DlgPlanMethods : public QDialog
 public:
     enum {
         PL_BITMAP_SCAN = 1,
-        PL_HASH_AGGREGATIONS = 3,
-        PL_HASH_JOINS = 7,
-        PL_INDEX_SCAN = 15,
-        PL_INDEX_ONLY_SCAN = 31,
-        PL_MATERIALIZATION = 63,
-        PL_NESTED_LOOPS = 127,
-        PL_SEQUENTIAL_SCAN = 255,
-        PL_SORT_STEPS = 511,
-        PL_TDI_SCAN = 1023
+        PL_HASH_AGGREGATIONS = 2,
+        PL_HASH_JOINS = 4,
+        PL_INDEX_SCAN = 8,
+        PL_INDEX_ONLY_SCAN = 16,
+        PL_MATERIALIZATION = 32,
+        PL_NESTED_LOOPS = 64,
+        PL_SEQUENTIAL_SCAN = 128,
+        PL_SORT_STEPS = 256,
+        PL_TDI_SCAN = 512,
+        PL_GATHER_MERGE = 1024
     };
     explicit DlgPlanMethods(QWidget *parent = nullptr);
     ~DlgPlanMethods();

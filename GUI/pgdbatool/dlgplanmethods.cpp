@@ -25,6 +25,7 @@ void DlgPlanMethods::setPlanFlags(int flags)
     ui->ck_sequential_scan->setChecked((flags & PL_SEQUENTIAL_SCAN) == PL_SEQUENTIAL_SCAN);
     ui->ck_sort_steps->setChecked((flags & PL_SORT_STEPS) == PL_SORT_STEPS);
     ui->ck_tdi_scan->setChecked((flags & PL_TDI_SCAN) == PL_TDI_SCAN);
+    ui->ck_tdi_scan->setChecked((flags & PL_GATHER_MERGE) == PL_GATHER_MERGE);
 }
 
 void DlgPlanMethods::setSequentialPageCost(double cost)
@@ -66,6 +67,7 @@ int DlgPlanMethods::getPlanFlags()
     flags += ui->ck_sequential_scan->isChecked() ? PL_SEQUENTIAL_SCAN : 0;
     flags += ui->ck_sort_steps->isChecked() ? PL_SORT_STEPS : 0;
     flags += ui->ck_tdi_scan->isChecked() ? PL_TDI_SCAN : 0;
+    flags += ui->ck_gather_merge->isChecked() ? PL_GATHER_MERGE : 0;
 
     return flags;
 }

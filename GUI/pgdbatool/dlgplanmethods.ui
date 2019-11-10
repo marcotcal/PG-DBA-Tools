@@ -90,6 +90,13 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="ck_gather_merge">
+        <property name="text">
+         <string>Enable Gather Merge</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

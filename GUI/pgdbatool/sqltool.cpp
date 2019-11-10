@@ -209,6 +209,37 @@ void SqlTool::cancelCurrentQuery()
 void SqlTool::plannerMethodSettings()
 {
     DlgPlanMethods dlg;
+    int flags = 0;
+
+    flags +=
+        getSetting("enable_tidscan", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_TDI_SCAN : 0;
+    flags +=
+        getSetting("enable_hashjoin", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_HASH_JOINS : 0;
+    flags +=
+        getSetting("enable_indexscan", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_INDEX_SCAN : 0;
+    flags +=
+        getSetting("enable_sort", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_SORT_STEPS : 0;
+    flags +=
+        getSetting("enable_nestloop", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_NESTED_LOOPS : 0;
+    flags +=
+        getSetting("enable_indexonlyscan", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_INDEX_ONLY_SCAN: 0;
+    flags +=
+        getSetting("enable_bitmapscan", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_MATERIALIZATION : 0;
+    flags +=
+        getSetting("enable_seqscan", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_SEQUENTIAL_SCAN : 0;
+    flags +=
+        getSetting("enable_hashagg", st_setting)
+            .toString() == "on" ? DlgPlanMethods::PL_HASH_AGGREGATIONS : 0;
+
+    dlg.setPlanFlags(flags);
 
     if(dlg.exec()) {
 
