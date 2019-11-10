@@ -51,7 +51,8 @@ SOURCES += \
     dlgplanmethods.cpp \
     dlggqoconfig.cpp \
     dlgparallelsettings.cpp \
-    dlgworkers.cpp
+    dlgworkers.cpp \
+    dlgotherplanningsettings.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -80,7 +81,8 @@ HEADERS += \
     dlgplanmethods.h \
     dlggqoconfig.h \
     dlgparallelsettings.h \
-    dlgworkers.h
+    dlgworkers.h \
+    dlgotherplanningsettings.h
 
 FORMS += \
     mainwindow.ui \
@@ -97,7 +99,8 @@ FORMS += \
     dlgplanmethods.ui \
     dlggqoconfig.ui \
     dlgparallelsettings.ui \
-    dlgworkers.ui
+    dlgworkers.ui \
+    dlgotherplanningsettings.ui
 
 LIBS += -lqscintilla2_qt5
 
