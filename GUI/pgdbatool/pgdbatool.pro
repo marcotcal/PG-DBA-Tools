@@ -50,7 +50,8 @@ SOURCES += \
     queryexecutor.cpp \
     dlgplanmethods.cpp \
     dlggqoconfig.cpp \
-    dlgparallelsettings.cpp
+    dlgparallelsettings.cpp \
+    dlgworkers.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -78,7 +79,8 @@ HEADERS += \
     queryexecutor.h \
     dlgplanmethods.h \
     dlggqoconfig.h \
-    dlgparallelsettings.h
+    dlgparallelsettings.h \
+    dlgworkers.h
 
 FORMS += \
     mainwindow.ui \
@@ -94,8 +96,8 @@ FORMS += \
     outputset.ui \
     dlgplanmethods.ui \
     dlggqoconfig.ui \
-    dlgparallelsettings.ui
-
+    dlgparallelsettings.ui \
+    dlgworkers.ui
 
 LIBS += -lqscintilla2_qt5
 
