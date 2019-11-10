@@ -15,6 +15,18 @@ public:
     explicit DlgParallelSettings(QWidget *parent = nullptr);
     ~DlgParallelSettings();
 
+    void setForceParallelMode(bool force);
+    void setParallelSetupCost(double cost);
+    void setParallelTupleCost(double cost);
+    void setMinimumParallelTableScanSize(int size);
+    void setParallelIndexScanSize(int size);
+
+    bool getForceParallelMode();
+    double getParallelSetupCost();
+    double getParallelTupleCost();
+    int getMinimumParallelTableScanSize();
+    int getParallelIndexScanSize();
+
 private:
     Ui::DlgParallelSettings *ui;
 };
