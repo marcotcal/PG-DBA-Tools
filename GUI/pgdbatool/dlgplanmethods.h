@@ -23,20 +23,24 @@ public:
         PL_SEQUENTIAL_SCAN = 128,
         PL_SORT_STEPS = 256,
         PL_TDI_SCAN = 512,
-        PL_GATHER_MERGE = 1024
+        PL_GATHER_MERGE = 1024,
+        PL_MERGE_JOIN = 2048
     };
     explicit DlgPlanMethods(QWidget *parent = nullptr);
     ~DlgPlanMethods();
     void setPlanFlags(int flags);
+    void setDisableFlags(int flags);
     void setSequentialPageCost(double cost);
     void setRandomPageCost(double cost);
     void setTupleCost(double cost);
+    void setIndexTupleCost(double cost);
     void setOperatorCost(double cost);
     void setEfectiveCashSize(int size);
     int getPlanFlags();
     double getSequetialPageCost();
     double getRandomPageCost();
     double getTupleCost();
+    double getIndexTupleCost();
     double getOperatorCost();
     int getEfectivenessCashSize();
 private:
