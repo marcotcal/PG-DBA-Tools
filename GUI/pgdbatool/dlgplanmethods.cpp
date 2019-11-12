@@ -27,6 +27,7 @@ void DlgPlanMethods::setPlanFlags(int flags)
     ui->ck_tdi_scan->setChecked((flags & PL_TDI_SCAN) == PL_TDI_SCAN);
     ui->ck_gather_merge->setChecked((flags & PL_GATHER_MERGE) == PL_GATHER_MERGE);
     ui->ck_merge_join->setChecked((flags & PL_MERGE_JOIN) == PL_MERGE_JOIN);
+
 }
 
 void DlgPlanMethods::setDisableFlags(int flags)
@@ -72,7 +73,27 @@ void DlgPlanMethods::setOperatorCost(double cost)
 
 void DlgPlanMethods::setEfectiveCashSize(int size)
 {
-    ui->sp_efective_cache_size->setValue(size);
+    int value = 0;
+    int unit = 0;
+    int max = 0;
+
+    if (size <= 128000) {
+        value = size * 8 / 1024;
+        unit = 0;
+        max = 1000;
+    } else if (size <= 131072000) {
+        value = size * 8 / 1024 / 1024;
+        unit = 1;
+        max = 1000;
+    } else {
+        value = size * 8 / 1024 / 1024 / 1024;
+        unit = 2;
+        max = 16;
+    }
+
+    ui->cb_unit->setCurrentIndex(unit);
+    ui->sp_efective_cache_size->setMaximum(max);
+    ui->sp_efective_cache_size->setValue(value);
 }
 
 int DlgPlanMethods::getPlanFlags()
@@ -122,5 +143,24 @@ double DlgPlanMethods::getOperatorCost()
 
 int DlgPlanMethods::getEfectivenessCashSize()
 {
-    return ui->sp_efective_cache_size->value();
+    switch(ui->cb_unit->currentIndex()) {
+    case 0:
+        return ui->sp_efective_cache_size->value() / 8 * 1024;
+    case 1:
+        return ui->sp_efective_cache_size->value() / 8 * 1024 * 1024;
+    default:
+        return ui->sp_efective_cache_size->value() / 8 * 1024 * 1024 * 1024;
+    }
+}
+
+void DlgPlanMethods::on_cb_unit_currentIndexChanged(int index)
+{
+    switch(index) {
+    case 0:
+    case 1:
+        ui->sp_efective_cache_size->setMaximum(1000);
+        break;
+    default:
+        ui->sp_efective_cache_size->setMaximum(16);
+    }
 }

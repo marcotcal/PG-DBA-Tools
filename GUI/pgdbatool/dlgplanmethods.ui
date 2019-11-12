@@ -112,25 +112,29 @@
      <property name="title">
       <string>Planner Cost Constants</string>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="labelAlignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="minimumSize">
+     <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0,0">
+      <item row="5" column="3">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>200</width>
-          <height>0</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
+       </spacer>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Sequential Page Cost</string>
+         <string>CPU Tuple Cost</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="sp_seq_page_cost">
+      <item row="4" column="1">
+       <widget class="QDoubleSpinBox" name="sp_operator_cost">
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -149,39 +153,6 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="sp_random_page_cost">
-        <property name="minimumSize">
-         <size>
-          <width>80</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="decimals">
-         <number>4</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>CPU Tuple Cost</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="sp_cpu_tuple_cost">
-        <property name="minimumSize">
-         <size>
-          <width>80</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="decimals">
-         <number>4</number>
-        </property>
-       </widget>
-      </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
@@ -189,13 +160,16 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QSpinBox" name="sp_efective_cache_size">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
         <property name="minimumSize">
          <size>
-          <width>80</width>
+          <width>200</width>
           <height>0</height>
          </size>
+        </property>
+        <property name="text">
+         <string>Sequential Page Cost</string>
         </property>
        </widget>
       </item>
@@ -206,10 +180,29 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>CPU Operator Cost</string>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="sp_seq_page_cost">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="sp_random_page_cost">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>4</number>
         </property>
        </widget>
       </item>
@@ -226,8 +219,21 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="sp_operator_cost">
+      <item row="5" column="1">
+       <widget class="QSpinBox" name="sp_efective_cache_size">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="sp_cpu_tuple_cost">
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -236,6 +242,32 @@
         </property>
         <property name="decimals">
          <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QComboBox" name="cb_unit">
+        <item>
+         <property name="text">
+          <string>Mb</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Gb</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Tb</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>CPU Operator Cost</string>
         </property>
        </widget>
       </item>

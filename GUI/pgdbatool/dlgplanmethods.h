@@ -43,6 +43,10 @@ public:
     double getIndexTupleCost();
     double getOperatorCost();
     int getEfectivenessCashSize();
+
+private slots:
+    void on_cb_unit_currentIndexChanged(int index);
+
 private:
     Ui::DlgPlanMethods *ui;
 };

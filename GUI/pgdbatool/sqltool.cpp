@@ -212,6 +212,7 @@ void SqlTool::plannerMethodSettings()
     int flags = 0;
     int flags_disable = 0;
     QVariant setting;
+    QString sql = "";
 
     setting = getSetting("enable_bitmapscan", st_setting);
     if (setting.isValid())
@@ -295,7 +296,76 @@ void SqlTool::plannerMethodSettings()
     dlg.setRandomPageCost(getSetting("random_page_cost", st_setting).toDouble());
     dlg.setIndexTupleCost(getSetting("cpu_index_tuple_cost", st_setting).toDouble());
     dlg.setEfectiveCashSize(getSetting("effective_cache_size", st_setting).toInt());
+
     if(dlg.exec()) {
+
+        flags = dlg.getPlanFlags();
+
+        if ((flags & DlgPlanMethods::PL_BITMAP_SCAN) == DlgPlanMethods::PL_BITMAP_SCAN) {
+            sql += "SET enable_bitmapscan = on;\n";
+        } else {
+            sql += "SET enable_bitmapscan = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_TDI_SCAN) == DlgPlanMethods::PL_TDI_SCAN) {
+            sql += "SET enable_tidscan = on;\n";
+        } else {
+            sql += "SET enable_tidscan = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_HASH_JOINS) == DlgPlanMethods::PL_HASH_JOINS) {
+            sql += "SET enable_hashjoin = on;\n";
+        } else {
+            sql += "SET enable_hashjoin = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_INDEX_SCAN) == DlgPlanMethods::PL_INDEX_SCAN) {
+            sql += "SET enable_indexscan = on;\n";
+        } else {
+            sql += "SET enable_indexscan = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_SORT_STEPS) == DlgPlanMethods::PL_SORT_STEPS) {
+            sql += "SET enable_sort = on;\n";
+        } else {
+            sql += "SET enable_sort = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_NESTED_LOOPS) == DlgPlanMethods::PL_NESTED_LOOPS) {
+            sql += "SET enable_nestloop = on;\n";
+        } else {
+            sql += "SET enable_nestloop = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_MATERIALIZATION) == DlgPlanMethods::PL_MATERIALIZATION) {
+            sql += "SET enable_material = on;\n";
+        } else {
+            sql += "SET enable_material = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_SEQUENTIAL_SCAN) == DlgPlanMethods::PL_SEQUENTIAL_SCAN) {
+            sql += "SET enable_seqscan = on;\n";
+        } else {
+            sql += "SET enable_seqscan = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_HASH_AGGREGATIONS) == DlgPlanMethods::PL_HASH_AGGREGATIONS) {
+            sql += "SET enable_hashagg = on;\n";
+        } else {
+            sql += "SET enable_hashagg = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_GATHER_MERGE) == DlgPlanMethods::PL_GATHER_MERGE) {
+            sql += "SET enable_gathermerge = on;\n";
+        } else {
+            sql += "SET enable_gathermerge = off;\n";
+        }
+
+        if ((flags & DlgPlanMethods::PL_MERGE_JOIN) == DlgPlanMethods::PL_MERGE_JOIN) {
+            sql += "SET enable_mergejoin = on;\n";
+        } else {
+            sql += "SET enable_mergejoin = off;\n";
+        }
 
     }
 }
