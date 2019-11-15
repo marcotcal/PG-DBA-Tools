@@ -70,6 +70,7 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
     default_path = settings.value("path_to_sql", "").toString();
     group_name = "";
     query_running = false;
+    conn_settings = nullptr;
 }
 
 SqlTool::~SqlTool()
@@ -208,164 +209,10 @@ void SqlTool::cancelCurrentQuery()
 
 void SqlTool::plannerMethodSettings()
 {
-    DlgPlanMethods dlg;
-    int flags = 0;
-    int flags_disable = 0;
-    QVariant setting;
-    QString sql = "";
-
-    setting = getSetting("enable_bitmapscan", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_BITMAP_SCAN : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_BITMAP_SCAN;
-
-    setting = getSetting("enable_tidscan", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_TDI_SCAN : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_TDI_SCAN;
-
-    setting = getSetting("enable_hashjoin", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_HASH_JOINS : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_HASH_JOINS;
-
-    setting = getSetting("enable_indexscan", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_INDEX_SCAN : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_INDEX_SCAN;
-
-    setting = getSetting("enable_sort", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_SORT_STEPS : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_SORT_STEPS;
-
-    setting = getSetting("enable_nestloop", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_NESTED_LOOPS : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_NESTED_LOOPS;
-
-    setting = getSetting("enable_indexonlyscan", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_INDEX_ONLY_SCAN: 0;
-    else
-        flags_disable += DlgPlanMethods::PL_INDEX_ONLY_SCAN;
-
-    setting = getSetting("enable_material", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_MATERIALIZATION : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_MATERIALIZATION;
-
-    setting = getSetting("enable_seqscan", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_SEQUENTIAL_SCAN : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_SEQUENTIAL_SCAN;
-
-    setting = getSetting("enable_hashagg", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_HASH_AGGREGATIONS : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_HASH_AGGREGATIONS;
-
-    setting = getSetting("enable_gathermerge", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_GATHER_MERGE : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_GATHER_MERGE;
-
-    setting = getSetting("enable_mergejoin", st_setting);
-    if (setting.isValid())
-        flags += setting.toString() == "on" ? DlgPlanMethods::PL_MERGE_JOIN : 0;
-    else
-        flags_disable += DlgPlanMethods::PL_MERGE_JOIN;
-
-    dlg.setPlanFlags(flags);
-    dlg.setDisableFlags(flags_disable);
-
-    dlg.setTupleCost(getSetting("cpu_tuple_cost", st_setting).toDouble());
-    dlg.setSequentialPageCost(getSetting("seq_page_cost", st_setting).toDouble());
-    dlg.setRandomPageCost(getSetting("random_page_cost", st_setting).toDouble());
-    dlg.setOperatorCost(getSetting("cpu_operator_cost", st_setting).toDouble());
-    dlg.setRandomPageCost(getSetting("random_page_cost", st_setting).toDouble());
-    dlg.setIndexTupleCost(getSetting("cpu_index_tuple_cost", st_setting).toDouble());
-    dlg.setEfectiveCashSize(getSetting("effective_cache_size", st_setting).toInt());
+    DlgPlanMethods dlg(conn_settings);
 
     if(dlg.exec()) {
 
-        flags = dlg.getPlanFlags();
-
-        if ((flags & DlgPlanMethods::PL_BITMAP_SCAN) == DlgPlanMethods::PL_BITMAP_SCAN) {
-            sql += "SET enable_bitmapscan = on;\n";
-        } else {
-            sql += "SET enable_bitmapscan = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_TDI_SCAN) == DlgPlanMethods::PL_TDI_SCAN) {
-            sql += "SET enable_tidscan = on;\n";
-        } else {
-            sql += "SET enable_tidscan = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_HASH_JOINS) == DlgPlanMethods::PL_HASH_JOINS) {
-            sql += "SET enable_hashjoin = on;\n";
-        } else {
-            sql += "SET enable_hashjoin = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_INDEX_SCAN) == DlgPlanMethods::PL_INDEX_SCAN) {
-            sql += "SET enable_indexscan = on;\n";
-        } else {
-            sql += "SET enable_indexscan = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_SORT_STEPS) == DlgPlanMethods::PL_SORT_STEPS) {
-            sql += "SET enable_sort = on;\n";
-        } else {
-            sql += "SET enable_sort = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_NESTED_LOOPS) == DlgPlanMethods::PL_NESTED_LOOPS) {
-            sql += "SET enable_nestloop = on;\n";
-        } else {
-            sql += "SET enable_nestloop = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_MATERIALIZATION) == DlgPlanMethods::PL_MATERIALIZATION) {
-            sql += "SET enable_material = on;\n";
-        } else {
-            sql += "SET enable_material = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_SEQUENTIAL_SCAN) == DlgPlanMethods::PL_SEQUENTIAL_SCAN) {
-            sql += "SET enable_seqscan = on;\n";
-        } else {
-            sql += "SET enable_seqscan = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_HASH_AGGREGATIONS) == DlgPlanMethods::PL_HASH_AGGREGATIONS) {
-            sql += "SET enable_hashagg = on;\n";
-        } else {
-            sql += "SET enable_hashagg = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_GATHER_MERGE) == DlgPlanMethods::PL_GATHER_MERGE) {
-            sql += "SET enable_gathermerge = on;\n";
-        } else {
-            sql += "SET enable_gathermerge = off;\n";
-        }
-
-        if ((flags & DlgPlanMethods::PL_MERGE_JOIN) == DlgPlanMethods::PL_MERGE_JOIN) {
-            sql += "SET enable_mergejoin = on;\n";
-        } else {
-            sql += "SET enable_mergejoin = off;\n";
-        }
 
     }
 }
@@ -518,61 +365,6 @@ bool SqlTool::readFromXML(QString file_name)
     return true;
 }
 
-void SqlTool::readSettings()
-{
-    char const *sql = "SELECT "
-                      "  name, "
-                      "  setting, "
-                      "  unit, "
-                      "  category, "
-                      "  short_desc, "
-                      "  extra_desc, "
-                      "  context, "
-                      "  vartype, "
-                      "  source, "
-                      "  min_val, "
-                      "  max_val, "
-                      "  enumvals, "
-                      "  boot_val, "
-                      "  reset_val, "
-                      "  sourcefile, "
-                      "  sourceline, "
-                      "  pending_restart "
-                      "FROM pg_catalog.pg_settings ";
-    int tuples;
-    int columns;
-    QList<QVariant> row;
-
-    PGresult *res = PQexec(conn, sql);
-    tuples = PQntuples(res);
-    columns = PQnfields(res);
-
-    if (PQresultStatus(res) == PGRES_TUPLES_OK) {
-
-        for (int i = 0; i < tuples; i++)
-        {
-            row.clear();
-            for (int j = 0; j < columns; j++) {
-                QVariant value = QString::fromStdString(PQgetvalue(res, i, j));
-                row.append(value);
-            }
-            settings[row.at(st_name).toString()] = row;
-        }
-    }
-
-    PQclear(res);
-    return;
-}
-
-QVariant SqlTool::getSetting(QString setting, int field)
-{
-    if (settings.contains(setting)) {
-        return settings[setting][field];
-    } else {
-        return QVariant();
-    }
-}
-
 EditorItem *SqlTool::addEditor() {
 
     QString new_sufix = QString("%1").arg(ui->editors_tabs->count()+1);
@@ -654,7 +446,7 @@ void SqlTool::databaseConnect() {
         ui->ed_password->setEnabled(false);
         ui->lb_password->setEnabled(false);
 
-        readSettings();
+        conn_settings = new ConnectionSettings(conn, this);
 
         return;
     }
@@ -664,7 +456,7 @@ void SqlTool::databaseConnect() {
 
 void SqlTool::databaseDisconnect() {
 
-    settings.clear();
+    delete conn_settings;
     PQfinish(conn);
     ui->connection_list->setEnabled(true);
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");

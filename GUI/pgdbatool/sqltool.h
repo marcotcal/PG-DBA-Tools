@@ -28,6 +28,7 @@
 #include "connectionsdata.h"
 #include "resultoutput.h"
 #include "outputset.h"
+#include "connectionsettings.h"
 
 namespace Ui {
 class SqlTool;
@@ -125,13 +126,12 @@ private:
     OutputSet *output_set;
     ResultOutput *output;
     bool query_running;
-    QMap<QString, QList<QVariant>> settings;
+    ConnectionSettings *conn_settings;
 
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);
     bool readFromXML(QString file_name);
-    void readSettings();
-    QVariant getSetting(QString setting, int field);
+
 };
 
 #endif // SQLTOOL_H

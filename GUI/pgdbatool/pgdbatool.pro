@@ -52,7 +52,8 @@ SOURCES += \
     dlggqoconfig.cpp \
     dlgparallelsettings.cpp \
     dlgworkers.cpp \
-    dlgotherplanningsettings.cpp
+    dlgotherplanningsettings.cpp \
+    connectionsettings.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -82,7 +83,8 @@ HEADERS += \
     dlggqoconfig.h \
     dlgparallelsettings.h \
     dlgworkers.h \
-    dlgotherplanningsettings.h
+    dlgotherplanningsettings.h \
+    connectionsettings.h
 
 FORMS += \
     mainwindow.ui \
