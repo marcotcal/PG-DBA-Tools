@@ -16,6 +16,18 @@ QVariant ConnectionSettings::getSetting(QString setting, int field)
     }
 }
 
+bool ConnectionSettings::compareSetting(QString setting, QVariant value)
+{
+    if (!settings.contains(setting)) {
+        return false;
+    } else {
+        if (value == settings[setting][st_setting])
+            return true;
+        else
+            return false;
+    }
+}
+
 void ConnectionSettings::readSettings()
 {
     char const *sql = "SELECT "

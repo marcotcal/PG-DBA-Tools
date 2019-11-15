@@ -20,6 +20,8 @@ public:
 private slots:
     void on_cb_unit_currentIndexChanged(int index);
 
+    void on_buttonBox_accepted();
+
 private:
     Ui::DlgPlanMethods *ui;
     ConnectionSettings *conn_settings;
