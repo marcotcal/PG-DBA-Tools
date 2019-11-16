@@ -22,6 +22,8 @@ void DlgPlanMethods::initialize()
     int effect = 0;
     int unit = 0;
     int max = 0;
+    int min = 0;
+    int steps = 0;
 
     value = conn_settings->getSetting("enable_bitmapscan");
     if (value.isValid())
@@ -116,26 +118,36 @@ void DlgPlanMethods::initialize()
         // kB
         effect = value.toInt() * 8;
         unit = 0;
+        min = 8;
         max = 1000;
+        steps = 8;
     } else if (value.toInt() < 131072) {
         // MB
         effect = value.toInt() * 8 / 1024;
         unit = 1;
+        min = 0;
         max = 1000;
+        steps = 1;
     } else if (value.toInt() < 134217728) {
         // GB
         effect = value.toInt() * 8 / 1024 / 1024;
         unit = 2;
+        min = 0;
         max = 1000;
+        steps = 1;
     } else {
         // TB
         effect = value.toInt() * 8 / 1024 / 1024 / 1024;
         unit = 3;
+        min = 0;
         max = 16;
+        steps = 1;
     }
 
     ui->cb_unit->setCurrentIndex(unit);
     ui->sp_efective_cache_size->setMaximum(max);
+    ui->sp_efective_cache_size->setMinimum(min);
+    ui->sp_efective_cache_size->setSingleStep(steps);
     ui->sp_efective_cache_size->setValue(effect);
 
 }
@@ -144,11 +156,24 @@ void DlgPlanMethods::on_cb_unit_currentIndexChanged(int index)
 {
     switch(index) {
     case 0:
+        ui->sp_efective_cache_size->setMaximum(1000);
+        ui->sp_efective_cache_size->setMinimum(8);
+        ui->sp_efective_cache_size->setSingleStep(8);
+        break;
     case 1:
         ui->sp_efective_cache_size->setMaximum(1000);
+        ui->sp_efective_cache_size->setMinimum(0);
+        ui->sp_efective_cache_size->setSingleStep(1);
+        break;
+    case 2:
+        ui->sp_efective_cache_size->setMaximum(1000);
+        ui->sp_efective_cache_size->setMinimum(0);
+        ui->sp_efective_cache_size->setSingleStep(1);
         break;
     default:
+        ui->sp_efective_cache_size->setMinimum(0);
         ui->sp_efective_cache_size->setMaximum(16);
+        ui->sp_efective_cache_size->setSingleStep(1);
     }
 }
 
@@ -172,7 +197,7 @@ void DlgPlanMethods::on_buttonBox_accepted()
         conn_settings->alterSetting("enable_indexonlyscan",
                                     ui->ck_index_only_scan->isChecked() ? "on" : "off");
         conn_settings->alterSetting("enable_material",
-                                    ui->ck_sequential_scan->isChecked() ? "on" : "off");
+                                    ui->ck_materialization->isChecked() ? "on" : "off");
         conn_settings->alterSetting("enable_seqscan",
                                     ui->ck_sequential_scan->isChecked() ? "on" : "off");
         conn_settings->alterSetting("enable_hashagg",
@@ -189,7 +214,7 @@ void DlgPlanMethods::on_buttonBox_accepted()
         conn_settings->alterSetting("cpu_index_tuple_cost", ui->sp_cpu_index_tuple_cost->value());
         switch (ui->cb_unit->currentIndex()) {
         case 0:
-            conn_settings->alterSetting("effective_cache_size", QString("%1").arg(ui->sp_efective_cache_size->value()));
+            conn_settings->alterSetting("effective_cache_size", QString("%1").arg(ui->sp_efective_cache_size->value() / 8));
             break;
         case 1:
             conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("MB"));
@@ -206,5 +231,21 @@ void DlgPlanMethods::on_buttonBox_accepted()
     } catch(SettingsException &e) {
         msg.setText(e.getMessage());
         msg.exec();
+    }
+}
+
+void DlgPlanMethods::on_sp_efective_cache_size_editingFinished()
+{
+    int val;
+
+    if (ui->cb_unit->currentIndex() == 0) {
+
+        val = ui->sp_efective_cache_size->value();
+
+        if (val % 8 != 0) {
+
+            ui->sp_efective_cache_size->setValue(val - (val % 8) + 8);
+
+        }
     }
 }

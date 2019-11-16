@@ -144,6 +144,9 @@
         <property name="decimals">
          <number>4</number>
         </property>
+        <property name="singleStep">
+         <double>0.000100000000000</double>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -191,6 +194,9 @@
         <property name="decimals">
          <number>4</number>
         </property>
+        <property name="singleStep">
+         <double>0.000100000000000</double>
+        </property>
        </widget>
       </item>
       <item row="1" column="1">
@@ -204,6 +210,9 @@
         <property name="decimals">
          <number>4</number>
         </property>
+        <property name="singleStep">
+         <double>0.000100000000000</double>
+        </property>
        </widget>
       </item>
       <item row="3" column="1">
@@ -216,6 +225,9 @@
         </property>
         <property name="decimals">
          <number>4</number>
+        </property>
+        <property name="singleStep">
+         <double>0.000100000000000</double>
         </property>
        </widget>
       </item>
@@ -242,6 +254,9 @@
         </property>
         <property name="decimals">
          <number>4</number>
+        </property>
+        <property name="singleStep">
+         <double>0.000100000000000</double>
         </property>
        </widget>
       </item>

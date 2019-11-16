@@ -2,6 +2,7 @@
 #define DLGGQOCONFIG_H
 
 #include <QDialog>
+#include "connectionsettings.h"
 
 namespace Ui {
 class DlgGQOConfig;
@@ -12,27 +13,16 @@ class DlgGQOConfig : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgGQOConfig(QWidget *parent = nullptr);
+    explicit DlgGQOConfig(ConnectionSettings *conn_settings, QWidget *parent = nullptr);
     ~DlgGQOConfig();
 
-    void setEnableGEQO(bool enable);
-    void setThreshold(int value);
-    void setEffort(int value);
-    void setPoolSize(int value);
-    void setGenerations(int value);
-    void setSelectionBias(double value);
-    void setSeed(double seed);
-
-    bool getEnableGEQO();
-    int getThreshold();
-    int getEffort();
-    int getPoolSize();
-    int getGenerations();
-    double getSelectionBias();
-    double getSeed();
+private slots:
+    void on_buttonBox_accepted();
 
 private:
     Ui::DlgGQOConfig *ui;
+    ConnectionSettings *conn_settings;
+    void initialize();
 };
 
 #endif // DLGGQOCONFIG_H

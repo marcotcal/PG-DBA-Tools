@@ -2,6 +2,7 @@
 #define DLGPARALLELSETTINGS_H
 
 #include <QDialog>
+#include "connectionsettings.h"
 
 namespace Ui {
 class DlgParallelSettings;
@@ -12,23 +13,16 @@ class DlgParallelSettings : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgParallelSettings(QWidget *parent = nullptr);
+    explicit DlgParallelSettings(ConnectionSettings *conn_settings, QWidget *parent = nullptr);
     ~DlgParallelSettings();
 
-    void setForceParallelMode(bool force);
-    void setParallelSetupCost(double cost);
-    void setParallelTupleCost(double cost);
-    void setMinimumParallelTableScanSize(int size);
-    void setParallelIndexScanSize(int size);
-
-    bool getForceParallelMode();
-    double getParallelSetupCost();
-    double getParallelTupleCost();
-    int getMinimumParallelTableScanSize();
-    int getParallelIndexScanSize();
+private slots:
+    void on_buttonBox_accepted();
 
 private:
     Ui::DlgParallelSettings *ui;
+    ConnectionSettings *conn_settings;
+    void initialize();
 };
 
 #endif // DLGPARALLELSETTINGS_H

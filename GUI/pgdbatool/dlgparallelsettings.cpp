@@ -1,9 +1,11 @@
 #include "dlgparallelsettings.h"
 #include "ui_dlgparallelsettings.h"
+#include <QMessageBox>
 
-DlgParallelSettings::DlgParallelSettings(QWidget *parent) :
+DlgParallelSettings::DlgParallelSettings(ConnectionSettings *conn_settings, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgParallelSettings)
+    ui(new Ui::DlgParallelSettings),
+    conn_settings(conn_settings)
 {
     ui->setupUi(this);
 }
@@ -13,52 +15,44 @@ DlgParallelSettings::~DlgParallelSettings()
     delete ui;
 }
 
-void DlgParallelSettings::setForceParallelMode(bool force)
+void DlgParallelSettings::initialize()
 {
-    ui->ck_force_parallel_mode->setChecked(force);
+    QVariant value;
+
+    value = conn_settings->getSetting("force_parallel_mode");
+    if (value.isValid())
+        ui->ck_force_parallel_mode->setChecked(value == "on");
+    else
+        ui->ck_force_parallel_mode->setEnabled(false);
+
+    value = conn_settings->getSetting("parallel_setup_cost");
+    ui->sp_parallel_setup_cost->setValue(value.toDouble());
+
+    value = conn_settings->getSetting("parallel_tuple_cost");
+    ui->sp_parallel_tuple_cost->setValue(value.toDouble());
+
+    value = conn_settings->getSetting("min_parallel_table_scan_size");
+    ui->sp_min_parallel_scan_size->setValue(value.toInt());
+
+    value = conn_settings->getSetting("min_parallel_index_scan_size");
+    ui->sp_min_parallel_index_scan_size->setValue(value.toInt());
 }
 
-void DlgParallelSettings::setParallelSetupCost(double cost)
+void DlgParallelSettings::on_buttonBox_accepted()
 {
-    ui->sp_parallel_setup_cost->setValue(cost);
-}
+    QMessageBox msg;
 
-void DlgParallelSettings::setParallelTupleCost(double cost)
-{
-    ui->sp_parallel_tuple_cost->setValue(cost);
-}
+    try {
+        conn_settings->alterSetting("force_parallel_mode",
+                                    ui->ck_force_parallel_mode->isChecked() ? "on" : "off");
 
-void DlgParallelSettings::setMinimumParallelTableScanSize(int size)
-{
-    ui->sp_min_parallel_scan_size->setValue(size);
-}
+        conn_settings->alterSetting("parallel_setup_cost", ui->sp_parallel_setup_cost->value());
+        conn_settings->alterSetting("parallel_tuple_cost", ui->sp_parallel_tuple_cost->value());
+        conn_settings->alterSetting("min_parallel_table_scan_size", ui->sp_min_parallel_scan_size->value());
+        conn_settings->alterSetting("min_parallel_index_scan_size", ui->sp_min_parallel_index_scan_size->value());
 
-void DlgParallelSettings::setParallelIndexScanSize(int size)
-{
-    ui->sp_min_parallel_index_scan_size->setValue(size);
-}
-
-bool DlgParallelSettings::getForceParallelMode()
-{
-    return ui->ck_force_parallel_mode->isChecked();
-}
-
-double DlgParallelSettings::getParallelSetupCost()
-{
-    return ui->sp_parallel_setup_cost->value();
-}
-
-double DlgParallelSettings::getParallelTupleCost()
-{
-    ui->sp_parallel_tuple_cost->value();
-}
-
-int DlgParallelSettings::getMinimumParallelTableScanSize()
-{
-    ui->sp_min_parallel_scan_size->value();
-}
-
-int DlgParallelSettings::getParallelIndexScanSize()
-{
-    ui->sp_min_parallel_index_scan_size->value();
+    } catch(SettingsException &e) {
+        msg.setText(e.getMessage());
+        msg.exec();
+    }
 }

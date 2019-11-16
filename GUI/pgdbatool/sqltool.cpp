@@ -219,7 +219,7 @@ void SqlTool::plannerMethodSettings()
 
 void SqlTool::geneticQueryOptimizationsSettings()
 {
-    DlgGQOConfig dlg;
+    DlgGQOConfig dlg(conn_settings);
 
     if(dlg.exec()) {
 
@@ -228,7 +228,7 @@ void SqlTool::geneticQueryOptimizationsSettings()
 
 void SqlTool::parallelismSettings()
 {
-    DlgParallelSettings dlg;
+    DlgParallelSettings dlg(conn_settings);
 
     if(dlg.exec()) {
 
