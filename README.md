@@ -3,8 +3,9 @@ A graphical tool for managing Postgresql servers
 
 This tool is based on Melvin Davidson queries found on postgres-general mailing list.
 I found it on https://github.com/JohnArchieMckown/PostgreSQL-DBA-tools (you can find
-the originals here), I made some modifications on the queries and divided it on 
-diferent folders by category.
+the originals here), I made some modifications on the queries to adapt then to the newer versions and divided then on 
+diferent folders by category. 
+Some new queres were added to adapt the tool to the new versions of PostgreSQL
 
 The intent is to help on DBA tasks for PostgreSQL
 
