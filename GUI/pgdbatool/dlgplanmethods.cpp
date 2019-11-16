@@ -1,5 +1,6 @@
 #include "dlgplanmethods.h"
 #include "ui_dlgplanmethods.h"
+#include <QMessageBox>
 
 DlgPlanMethods::DlgPlanMethods(ConnectionSettings *conn_settings, QWidget *parent) :
     QDialog(parent),
@@ -106,25 +107,30 @@ void DlgPlanMethods::initialize()
     value = conn_settings->getSetting("cpu_operator_cost");
     ui->sp_operator_cost->setValue(value.toDouble());
 
-    value = conn_settings->getSetting("random_page_cost");
-    ui->sp_random_page_cost->setValue(value.toDouble());
-
     value = conn_settings->getSetting("cpu_index_tuple_cost");
     ui->sp_cpu_index_tuple_cost->setValue(value.toDouble());
 
     value = conn_settings->getSetting("effective_cache_size");
 
-    if (value.toInt() <= 128000) {
-        effect = value.toInt() * 8 / 1024;
+    if (value.toInt() < 128) {
+        // kB
+        effect = value.toInt() * 8;
         unit = 0;
         max = 1000;
-    } else if (value.toInt() <= 131072000) {
-        effect = value.toInt() * 8 / 1024 / 1024;
+    } else if (value.toInt() < 131072) {
+        // MB
+        effect = value.toInt() * 8 / 1024;
         unit = 1;
         max = 1000;
-    } else {
-        effect = value.toInt() * 8 / 1024 / 1024 / 1024;
+    } else if (value.toInt() < 134217728) {
+        // GB
+        effect = value.toInt() * 8 / 1024 / 1024;
         unit = 2;
+        max = 1000;
+    } else {
+        // TB
+        effect = value.toInt() * 8 / 1024 / 1024 / 1024;
+        unit = 3;
         max = 16;
     }
 
@@ -148,64 +154,57 @@ void DlgPlanMethods::on_cb_unit_currentIndexChanged(int index)
 
 void DlgPlanMethods::on_buttonBox_accepted()
 {
-    if (conn_settings->compareSetting("enable_bitmapscan",
-                                      ui->ck_bitmap_scan->isChecked() ? "on" : "off")) {
+    QMessageBox msg;
+
+    try {
+        conn_settings->alterSetting("enable_bitmapscan",
+                                    ui->ck_bitmap_scan->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_tidscan",
+                                    ui->ck_tdi_scan->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_hashjoin",
+                                    ui->ck_hash_joins->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_indexscan",
+                                    ui->ck_index_scan->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_sort",
+                                    ui->ck_sort_steps->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_nestloop",
+                                    ui->ck_nested_loops->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_indexonlyscan",
+                                    ui->ck_index_only_scan->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_material",
+                                    ui->ck_sequential_scan->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_seqscan",
+                                    ui->ck_sequential_scan->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_hashagg",
+                                    ui->ck_hash_aggregations->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_gathermerge",
+                                    ui->ck_gather_merge->isChecked() ? "on" : "off");
+        conn_settings->alterSetting("enable_mergejoin",
+                                    ui->ck_merge_join->isChecked() ? "on" : "off");
+
+        conn_settings->alterSetting("cpu_tuple_cost", ui->sp_cpu_tuple_cost->value());
+        conn_settings->alterSetting("seq_page_cost", ui->sp_seq_page_cost->value());
+        conn_settings->alterSetting("random_page_cost", ui->sp_random_page_cost->value());
+        conn_settings->alterSetting("cpu_operator_cost", ui->sp_operator_cost->value());
+        conn_settings->alterSetting("cpu_index_tuple_cost", ui->sp_cpu_index_tuple_cost->value());
+        switch (ui->cb_unit->currentIndex()) {
+        case 0:
+            conn_settings->alterSetting("effective_cache_size", QString("%1").arg(ui->sp_efective_cache_size->value()));
+            break;
+        case 1:
+            conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("MB"));
+            break;
+        case 2:
+            conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("GB"));
+            break;
+        case 3:
+            conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("TB"));
+            break;
+        }
 
 
-    }
-    if (conn_settings->compareSetting("enable_tidscan",
-                                      ui->ck_tdi_scan->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_hashjoin",
-                                      ui->ck_hash_joins->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_indexscan",
-                                      ui->ck_index_scan->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_sort",
-                                      ui->ck_sort_steps->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_nestloop",
-                                      ui->ck_nested_loops->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_indexonlyscan",
-                                      ui->ck_index_only_scan->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_material",
-                                      ui->ck_sequential_scan->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_seqscan",
-                                      ui->ck_sequential_scan->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_hashagg",
-                                      ui->ck_hash_aggregations->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_gathermerge",
-                                      ui->ck_gather_merge->isChecked() ? "on" : "off")) {
-
-
-    }
-    if (conn_settings->compareSetting("enable_mergejoin",
-                                      ui->ck_merge_join->isChecked() ? "on" : "off")) {
-
-
+    } catch(SettingsException &e) {
+        msg.setText(e.getMessage());
+        msg.exec();
     }
 }

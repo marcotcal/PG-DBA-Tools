@@ -249,17 +249,22 @@
        <widget class="QComboBox" name="cb_unit">
         <item>
          <property name="text">
-          <string>Mb</string>
+          <string>kB</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Gb</string>
+          <string>MB</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Tb</string>
+          <string>GB</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TB</string>
          </property>
         </item>
        </widget>

@@ -1,4 +1,4 @@
-#ifndef CONNECTIONSETTINGS_H
+﻿#ifndef CONNECTIONSETTINGS_H
 #define CONNECTIONSETTINGS_H
 
 #include <QObject>
@@ -6,6 +6,7 @@
 #include <QList>
 #include <QVariant>
 #include <libpq-fe.h>
+#include <QException>
 
 class ConnectionSettings : public QObject
 {
@@ -37,13 +38,26 @@ public:
     ConnectionSettings(PGconn *conn, QObject *parent = nullptr);
     QVariant getSetting(QString setting, int field=st_setting);
     bool compareSetting(QString setting, QVariant value);
-
+    void alterSetting(QString setting, QVariant value);
 private:
     QMap<QString, QList<QVariant>> settings;
     QList<QString> columns;
     PGconn *conn;
 
     void readSettings();
+};
+
+class SettingsException : public QException
+{
+public:
+    SettingsException(QString const &message) : message(message) {}
+    SettingsException *clone() const override;
+    void raise() const override;
+    QString getMessage() {
+        return message;
+    }
+private:
+    QString message;
 };
 
 #endif // CONNECTIONSETTINGS_H

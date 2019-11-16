@@ -28,6 +28,20 @@ bool ConnectionSettings::compareSetting(QString setting, QVariant value)
     }
 }
 
+void ConnectionSettings::alterSetting(QString setting, QVariant value)
+{
+    if (!settings.contains(setting) || value == settings[setting][st_setting]) {
+        return;
+    }
+    PGresult *res = PQexec(conn, QString("SET %1 = %2").arg(setting).arg(value.toString()).toStdString().c_str());
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        PQclear(res);
+        throw SettingsException(QString("SET command failed: %1").arg(PQerrorMessage(conn)));
+    }
+    settings[setting][st_setting] = value;
+}
+
 void ConnectionSettings::readSettings()
 {
     char const *sql = "SELECT "
@@ -78,4 +92,12 @@ void ConnectionSettings::readSettings()
 
     PQclear(res);
     return;
+}
+
+SettingsException *SettingsException::clone() const {
+    return new SettingsException(*this);
+}
+
+void SettingsException::raise() const {
+    throw *this;
 }
