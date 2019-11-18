@@ -38,14 +38,24 @@ void DlgParallelSettings::initialize()
     ui->sp_parallel_tuple_cost->setValue(value.toDouble());
 
     value = conn_settings->getSetting("min_parallel_table_scan_size");
-    ui->sp_min_parallel_scan_size->setMaximum(
-                conn_settings->getSetting("min_parallel_table_scan_size", ConnectionSettings::st_max_val).toInt());
-    ui->sp_min_parallel_scan_size->setValue(value.toInt());
+    if (value.isValid())
+        ui->me_min_parallel_scan_size->setValue(value.toLongLong());
+    else
+        ui->me_min_parallel_scan_size->setEnabled(false);
 
     value = conn_settings->getSetting("min_parallel_index_scan_size");
-    ui->sp_min_parallel_index_scan_size->setMaximum(
-                conn_settings->getSetting("min_parallel_index_scan_size", ConnectionSettings::st_max_val).toInt());
-    ui->sp_min_parallel_index_scan_size->setValue(value.toInt());
+
+    if (value.isValid())
+        ui->me_min_parallel_index_size->setValue(value.toLongLong());
+    else
+        ui->me_min_parallel_index_size->setEnabled(false);
+
+    value = conn_settings->getSetting("min_parallel_relation_size");
+
+    if (value.isValid())
+        ui->me_min_parallel_relation_size->setValue(value.toLongLong());
+    else
+        ui->me_min_parallel_relation_size->setEnabled(false);
 }
 
 void DlgParallelSettings::on_buttonBox_accepted()
@@ -58,8 +68,9 @@ void DlgParallelSettings::on_buttonBox_accepted()
 
         conn_settings->alterSetting("parallel_setup_cost", ui->sp_parallel_setup_cost->value());
         conn_settings->alterSetting("parallel_tuple_cost", ui->sp_parallel_tuple_cost->value());
-        conn_settings->alterSetting("min_parallel_table_scan_size", ui->sp_min_parallel_scan_size->value());
-        conn_settings->alterSetting("min_parallel_index_scan_size", ui->sp_min_parallel_index_scan_size->value());
+        conn_settings->alterSetting("min_parallel_table_scan_size", ui->me_min_parallel_scan_size->getValue());
+        conn_settings->alterSetting("min_parallel_index_scan_size", ui->me_min_parallel_index_size->getValue());
+        conn_settings->alterSetting("min_parallel_relation_size", ui->me_min_parallel_relation_size->getValue());
 
     } catch(SettingsException &e) {
         msg.setText(e.getMessage());

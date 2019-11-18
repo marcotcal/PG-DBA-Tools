@@ -35,27 +35,10 @@ public:
         st_pending_restart
     };
 
-    enum mem_unit_size {
-        MS_KB = 0,
-        MS_MB = 1,
-        MS_GB = 2,
-        MS_TB = 3
-    };
-
-    struct mem_params {
-        long size;
-        mem_unit_size unit;
-        int min;
-        int max;
-        int step;
-    };
-
     ConnectionSettings(PGconn *conn, QObject *parent = nullptr);
     QVariant getSetting(QString setting, int field=st_setting);
     bool compareSetting(QString setting, QVariant value);
     void alterSetting(QString setting, QVariant value);
-    void alterMemSizeSetting(QString setting, int size, int unit);
-    mem_params getMemParams(long size) const;
 
 private:
     QMap<QString, QList<QVariant>> settings;

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>482</width>
-    <height>259</height>
+    <height>267</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,6 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <property name="verticalSpacing">
-      <number>2</number>
-     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="minimumSize">
@@ -70,38 +67,20 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="sp_min_parallel_scan_size">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
+      <widget class="MemoryEditor" name="me_min_parallel_scan_size" native="true"/>
      </item>
      <item row="2" column="2">
-      <widget class="QComboBox" name="comboBox">
-       <item>
-        <property name="text">
-         <string>kB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>MB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>GB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>TB</string>
-        </property>
-       </item>
-      </widget>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>108</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_4">
@@ -111,14 +90,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="sp_min_parallel_index_scan_size">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
+      <widget class="MemoryEditor" name="me_min_parallel_index_size" native="true"/>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_5">
@@ -134,69 +106,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>108</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item row="4" column="1">
-      <widget class="QSpinBox" name="spinBox"/>
-     </item>
-     <item row="4" column="2">
-      <widget class="QComboBox" name="comboBox_3">
-       <item>
-        <property name="text">
-         <string>kB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>MB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>GB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>TB</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QComboBox" name="comboBox_2">
-       <item>
-        <property name="text">
-         <string>kB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>MB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>GB</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>TB</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="MemoryEditor" name="me_min_parallel_relation_size" native="true"/>
      </item>
     </layout>
    </item>
@@ -225,6 +136,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MemoryEditor</class>
+   <extends>QWidget</extends>
+   <header>memoryeditor.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

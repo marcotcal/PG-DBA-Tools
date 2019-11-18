@@ -114,38 +114,8 @@ void DlgPlanMethods::initialize()
 
     value = conn_settings->getSetting("effective_cache_size");
 
-    const ConnectionSettings::mem_params params = conn_settings->getMemParams(value.toLongLong());
-    ui->cb_unit->setCurrentIndex(params.unit);
-    ui->sp_efective_cache_size->setMaximum(params.max);
-    ui->sp_efective_cache_size->setMinimum(params.min);
-    ui->sp_efective_cache_size->setSingleStep(params.step);
-    ui->sp_efective_cache_size->setValue(static_cast<int>(params.size));
+    ui->me_effective_cache_size->setValue(value.toLongLong());
 
-}
-
-void DlgPlanMethods::on_cb_unit_currentIndexChanged(int index)
-{
-    switch(index) {
-    case 0:
-        ui->sp_efective_cache_size->setMaximum(1000);
-        ui->sp_efective_cache_size->setMinimum(8);
-        ui->sp_efective_cache_size->setSingleStep(8);
-        break;
-    case 1:
-        ui->sp_efective_cache_size->setMaximum(1000);
-        ui->sp_efective_cache_size->setMinimum(0);
-        ui->sp_efective_cache_size->setSingleStep(1);
-        break;
-    case 2:
-        ui->sp_efective_cache_size->setMaximum(1000);
-        ui->sp_efective_cache_size->setMinimum(0);
-        ui->sp_efective_cache_size->setSingleStep(1);
-        break;
-    default:
-        ui->sp_efective_cache_size->setMinimum(0);
-        ui->sp_efective_cache_size->setMaximum(15);
-        ui->sp_efective_cache_size->setSingleStep(1);
-    }
 }
 
 void DlgPlanMethods::on_buttonBox_accepted()
@@ -184,8 +154,7 @@ void DlgPlanMethods::on_buttonBox_accepted()
         conn_settings->alterSetting("cpu_operator_cost", ui->sp_operator_cost->value());
         conn_settings->alterSetting("cpu_index_tuple_cost", ui->sp_cpu_index_tuple_cost->value());
 
-        conn_settings->alterMemSizeSetting("effective_cache_size", ui->sp_efective_cache_size->value(),
-                                    ui->cb_unit->currentIndex());
+        conn_settings->alterSetting("effective_cache_size", ui->me_effective_cache_size->getValue());
 
 
     } catch(SettingsException &e) {
@@ -194,18 +163,3 @@ void DlgPlanMethods::on_buttonBox_accepted()
     }
 }
 
-void DlgPlanMethods::on_sp_efective_cache_size_editingFinished()
-{
-    int val;
-
-    if (ui->cb_unit->currentIndex() == 0) {
-
-        val = ui->sp_efective_cache_size->value();
-
-        if (val % 8 != 0) {
-
-            ui->sp_efective_cache_size->setValue(val - (val % 8) + 8);
-
-        }
-    }
-}

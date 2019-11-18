@@ -18,9 +18,7 @@ public:
     ~DlgPlanMethods();
 
 private slots:
-    void on_cb_unit_currentIndexChanged(int index);
     void on_buttonBox_accepted();
-    void on_sp_efective_cache_size_editingFinished();
 
 private:
     Ui::DlgPlanMethods *ui;
