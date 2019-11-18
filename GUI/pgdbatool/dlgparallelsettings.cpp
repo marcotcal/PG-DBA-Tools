@@ -8,6 +8,7 @@ DlgParallelSettings::DlgParallelSettings(ConnectionSettings *conn_settings, QWid
     conn_settings(conn_settings)
 {
     ui->setupUi(this);
+    initialize();
 }
 
 DlgParallelSettings::~DlgParallelSettings()
@@ -25,16 +26,25 @@ void DlgParallelSettings::initialize()
     else
         ui->ck_force_parallel_mode->setEnabled(false);
 
-    value = conn_settings->getSetting("parallel_setup_cost");
+    value = conn_settings->getSetting("parallel_setup_cost");    
+    ui->sp_parallel_setup_cost->setMaximum(
+                conn_settings->getSetting("parallel_setup_cost", ConnectionSettings::st_max_val).toDouble());
     ui->sp_parallel_setup_cost->setValue(value.toDouble());
 
     value = conn_settings->getSetting("parallel_tuple_cost");
+    ui->sp_parallel_tuple_cost->setMaximum(
+                conn_settings->getSetting("parallel_tuple_cost", ConnectionSettings::st_max_val).toDouble());
+    ui->sp_parallel_tuple_cost->setSingleStep(0.01);
     ui->sp_parallel_tuple_cost->setValue(value.toDouble());
 
     value = conn_settings->getSetting("min_parallel_table_scan_size");
+    ui->sp_min_parallel_scan_size->setMaximum(
+                conn_settings->getSetting("min_parallel_table_scan_size", ConnectionSettings::st_max_val).toInt());
     ui->sp_min_parallel_scan_size->setValue(value.toInt());
 
     value = conn_settings->getSetting("min_parallel_index_scan_size");
+    ui->sp_min_parallel_index_scan_size->setMaximum(
+                conn_settings->getSetting("min_parallel_index_scan_size", ConnectionSettings::st_max_val).toInt());
     ui->sp_min_parallel_index_scan_size->setValue(value.toInt());
 }
 

@@ -19,7 +19,7 @@ DlgPlanMethods::~DlgPlanMethods()
 void DlgPlanMethods::initialize()
 {
     QVariant value;
-    int effect = 0;
+    long effect = 0;
     int unit = 0;
     int max = 0;
     int min = 0;
@@ -114,41 +114,12 @@ void DlgPlanMethods::initialize()
 
     value = conn_settings->getSetting("effective_cache_size");
 
-    if (value.toInt() < 128) {
-        // kB
-        effect = value.toInt() * 8;
-        unit = 0;
-        min = 8;
-        max = 1000;
-        steps = 8;
-    } else if (value.toInt() < 131072) {
-        // MB
-        effect = value.toInt() * 8 / 1024;
-        unit = 1;
-        min = 0;
-        max = 1000;
-        steps = 1;
-    } else if (value.toInt() < 134217728) {
-        // GB
-        effect = value.toInt() * 8 / 1024 / 1024;
-        unit = 2;
-        min = 0;
-        max = 1000;
-        steps = 1;
-    } else {
-        // TB
-        effect = value.toInt() * 8 / 1024 / 1024 / 1024;
-        unit = 3;
-        min = 0;
-        max = 16;
-        steps = 1;
-    }
-
-    ui->cb_unit->setCurrentIndex(unit);
-    ui->sp_efective_cache_size->setMaximum(max);
-    ui->sp_efective_cache_size->setMinimum(min);
-    ui->sp_efective_cache_size->setSingleStep(steps);
-    ui->sp_efective_cache_size->setValue(effect);
+    const ConnectionSettings::mem_params params = conn_settings->getMemParams(value.toLongLong());
+    ui->cb_unit->setCurrentIndex(params.unit);
+    ui->sp_efective_cache_size->setMaximum(params.max);
+    ui->sp_efective_cache_size->setMinimum(params.min);
+    ui->sp_efective_cache_size->setSingleStep(params.step);
+    ui->sp_efective_cache_size->setValue(static_cast<int>(params.size));
 
 }
 
@@ -172,7 +143,7 @@ void DlgPlanMethods::on_cb_unit_currentIndexChanged(int index)
         break;
     default:
         ui->sp_efective_cache_size->setMinimum(0);
-        ui->sp_efective_cache_size->setMaximum(16);
+        ui->sp_efective_cache_size->setMaximum(15);
         ui->sp_efective_cache_size->setSingleStep(1);
     }
 }
@@ -212,20 +183,9 @@ void DlgPlanMethods::on_buttonBox_accepted()
         conn_settings->alterSetting("random_page_cost", ui->sp_random_page_cost->value());
         conn_settings->alterSetting("cpu_operator_cost", ui->sp_operator_cost->value());
         conn_settings->alterSetting("cpu_index_tuple_cost", ui->sp_cpu_index_tuple_cost->value());
-        switch (ui->cb_unit->currentIndex()) {
-        case 0:
-            conn_settings->alterSetting("effective_cache_size", QString("%1").arg(ui->sp_efective_cache_size->value() / 8));
-            break;
-        case 1:
-            conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("MB"));
-            break;
-        case 2:
-            conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("GB"));
-            break;
-        case 3:
-            conn_settings->alterSetting("effective_cache_size", QString("'%1%2'").arg(ui->sp_efective_cache_size->value()).arg("TB"));
-            break;
-        }
+
+        conn_settings->alterMemSizeSetting("effective_cache_size", ui->sp_efective_cache_size->value(),
+                                    ui->cb_unit->currentIndex());
 
 
     } catch(SettingsException &e) {
