@@ -1,0 +1,23 @@
+#
+# PGDBATools Project Settings
+#
+
+
+project_name "<name>"
+
+team "devel1 devel2 devel3"
+
+status "active"
+
+actual_sprint "0"
+
+local_connection "<name>_local"
+
+staging_connection "<name>_staging"
+
+production_connection "<name>_production"
+
+
+
+
+
