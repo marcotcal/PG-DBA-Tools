@@ -53,7 +53,8 @@ SOURCES += \
     dlgparallelsettings.cpp \
     dlgworkers.cpp \
     dlgotherplanningsettings.cpp \
-    connectionsettings.cpp
+    connectionsettings.cpp \
+    memoryeditor.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -84,7 +85,8 @@ HEADERS += \
     dlgparallelsettings.h \
     dlgworkers.h \
     dlgotherplanningsettings.h \
-    connectionsettings.h
+    connectionsettings.h \
+    memoryeditor.h
 
 FORMS += \
     mainwindow.ui \
@@ -102,7 +104,8 @@ FORMS += \
     dlggqoconfig.ui \
     dlgparallelsettings.ui \
     dlgworkers.ui \
-    dlgotherplanningsettings.ui
+    dlgotherplanningsettings.ui \
+    memoryeditor.ui
 
 LIBS += -lqscintilla2_qt5
 

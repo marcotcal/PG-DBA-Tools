@@ -43,52 +43,6 @@ void ConnectionSettings::alterSetting(QString setting, QVariant value)
     settings[setting][st_setting] = value;
 }
 
-void ConnectionSettings::alterMemSizeSetting(QString setting, int size, int unit)
-{
-    int mem_size;
-
-    mem_size = static_cast<int>(floor( static_cast<double>(size) / 8 * pow(1024, unit)));
-
-    alterSetting(setting, mem_size);
-}
-
-ConnectionSettings::mem_params ConnectionSettings::getMemParams(long size) const
-{
-    mem_params params;
-
-    if (size < 128) {
-        // kB
-        params.size = size * 8;
-        params.unit = MS_KB;
-        params.min = 8;
-        params.max = 1000;
-        params.step = 8;
-    } else if (size < 131072) {
-        // MB
-        params.size = size * 8 / 1024;
-        params.unit = MS_MB;
-        params.min = 0;
-        params.max = 1000;
-        params.step = 1;
-    } else if (size < 134217728) {
-        // GB
-        params.size = static_cast<long>(size * 8 / pow(1024,2));
-        params.unit = MS_GB;
-        params.min = 0;
-        params.max = 1000;
-        params.step = 1;
-    } else {
-        // TB
-        params.size = static_cast<long>(size * 8 / pow(1024,3));;
-        params.unit = MS_TB;
-        params.min = 0;
-        params.max = 15;
-        params.step = 1;
-    }
-
-    return params;
-}
-
 void ConnectionSettings::readSettings()
 {
     char const *sql = "SELECT "
