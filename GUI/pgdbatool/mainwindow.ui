@@ -190,8 +190,19 @@
     <addaction name="actionWorkers_Settings"/>
     <addaction name="actionOther_Planner_Related_Settings"/>
    </widget>
+   <widget class="QMenu" name="menuProjects">
+    <property name="title">
+     <string>Projects</string>
+    </property>
+    <addaction name="actionNew_Project"/>
+    <addaction name="actionOpen_Project"/>
+    <addaction name="actionClose_Project"/>
+    <addaction name="separator"/>
+    <addaction name="actionProject_Options"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuConnections"/>
+   <addaction name="menuProjects"/>
    <addaction name="menuSQL"/>
    <addaction name="menuOptimizations"/>
    <addaction name="menuStatitics"/>
@@ -775,6 +786,26 @@
   <action name="actionWorkers_Settings">
    <property name="text">
     <string>Workers Settings</string>
+   </property>
+  </action>
+  <action name="actionNew_Project">
+   <property name="text">
+    <string>New Project...</string>
+   </property>
+  </action>
+  <action name="actionOpen_Project">
+   <property name="text">
+    <string>Open Project...</string>
+   </property>
+  </action>
+  <action name="actionClose_Project">
+   <property name="text">
+    <string>Close Project</string>
+   </property>
+  </action>
+  <action name="actionProject_Options">
+   <property name="text">
+    <string>Project Options...</string>
    </property>
   </action>
  </widget>
