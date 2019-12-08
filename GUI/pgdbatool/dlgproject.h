@@ -15,8 +15,10 @@ public:
     explicit DlgProject(QWidget *parent = nullptr);
     ~DlgProject();
 
+    void createProject();
 private:
     Ui::DlgProject *ui;
+    void createSkeleton(QString dir);
 };
 
 #endif // DLGPROJECT_H

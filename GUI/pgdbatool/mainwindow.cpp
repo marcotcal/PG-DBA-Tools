@@ -34,6 +34,7 @@
 #include "dlgexplain.h"
 #include "modelscanner.h"
 #include "outputset.h"
+#include "dlgproject.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -921,4 +922,11 @@ void MainWindow::on_actionAll_Functions_By_Schema_triggered()
 void MainWindow::on_actionList_of_Views_triggered()
 {
     executeModel(":/query_defs/query_models/struct_list_of_views.xml");
+}
+
+void MainWindow::on_actionNew_Project_triggered()
+{
+    DlgProject prj;
+
+    prj.createProject();
 }
