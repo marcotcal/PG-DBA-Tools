@@ -109,3 +109,4 @@ void DlgProject::on_bt_project_path_clicked()
         ui->ed_models_dir->setText(dir+"/query_models");
     }
 }
+
