@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE connections [
-  <!ELEMENT connections (connection*)>  
+  <!ELEMENT connections (connection*)>
   <!ELEMENT connection (host,dbname,port?,user?,password?)>
+  <!ATTLIST connection id CDATA "">
   <!ATTLIST connection name CDATA "">
   <!ELEMENT host (#PCDATA)>
   <!ELEMENT dbname (#PCDATA)>
@@ -11,37 +12,17 @@
 ]>
 <connections>
     <connection name="Local">
-        <host>
-            127.0.0.1
-        </host>
-        <dbname>
-            postgres
-        </dbname>
-        <port>
-            5432
-        </port>
-        <user>
-            username
-        </user>
-        <password>
-            ********
-        </password>
+        <host>127.0.0.1</host>
+        <dbname>postgres</dbname>
+        <port>5432</port>
+        <user>username</user>
+        <password>********</password>
     </connection>
     <connection name="Qvaliz">
-        <host>
-            apps.qvaliz.pt
-        </host>
-        <dbname>
-            postgres
-        </dbname>
-        <port>
-            5432
-        </port>
-        <user>
-            username
-        </user>
-        <password>
-            ********
-        </password>
+        <host>apps.qvaliz.pt</host>
+        <dbname>postgres</dbname>
+        <port>5432</port>
+        <user>username</user>
+        <password>********</password>
     </connection>
 </connections>

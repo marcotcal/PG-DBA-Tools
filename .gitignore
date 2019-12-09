@@ -1,6 +1,8 @@
-**/build-pgdbatool-Desktop-Debug
-**/build-pgdbatool-Desktop-Release
-**/pgdbatool.pro.user*
+**/build-*-Debug
+**/build-*-Release
+**/build/
+**/libs/
+**/*.pro.user*
 **/ui_*.h
 **/moc_*.cpp
 **/moc_*.h
