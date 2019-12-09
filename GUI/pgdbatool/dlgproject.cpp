@@ -6,11 +6,15 @@
 #include <QIODevice>
 #include <QTextStream>
 
-DlgProject::DlgProject(QWidget *parent) :
+DlgProject::DlgProject(ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgProject)
+    ui(new Ui::DlgProject),
+    connections(conn)
 {
     ui->setupUi(this);
+    loadConnections(ui->cb_development_connection);
+    loadConnections(ui->cb_staging_connection);
+    loadConnections(ui->cb_production_connection);
 }
 
 DlgProject::~DlgProject()
@@ -20,48 +24,38 @@ DlgProject::~DlgProject()
 
 void DlgProject::createProject()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    QDir::homePath(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-    if (dir != "")
+
+    // create skeleton
+    createSkeleton(ui->ed_project_path->text());
+
+    QString config = "# PGDBA Tools Config File\n\n";
+    QString file_name = ui->ed_project_path->text() + "/config/config.txt";
+
+    config += QString("project_name=%1\n").
+            arg(ui->ed_project_name->text());
+    config += QString("development_connection=%1\n").
+            arg(ui->cb_development_connection->itemText(
+                    ui->cb_development_connection->currentIndex()));
+    config += QString("staging_connection=%1\n").
+            arg(ui->cb_staging_connection->itemText(
+                    ui->cb_staging_connection->currentIndex()));
+    config += QString("prodution_connection=%1\n").
+            arg(ui->cb_production_connection->itemText(
+                    ui->cb_production_connection->currentIndex()));
+    config += QString("query_dir=%1\n").
+            arg(ui->ed_query_dir->text());
+    config += QString("models_dir=%1\n").
+            arg(ui->ed_models_dir->text());
+
+
+    QFile file(file_name);
+
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        // create skeleton
-        createSkeleton(dir);
-        if (exec())
-        {
-            QString config = "# PGDBA Tools Config File\n\n";
-            QString file_name = dir + "/config/config.txt";
-
-            config += QString("project_name=%1\n").
-                    arg(ui->ed_project_name->text());
-            config += QString("development_connection=%1\n").
-                    arg(ui->cb_development_connection->itemText(
-                            ui->cb_development_connection->currentIndex()));
-            config += QString("staging_connection=%1\n").
-                    arg(ui->cb_staging_connection->itemText(
-                            ui->cb_staging_connection->currentIndex()));
-            config += QString("prodution_connection=%1\n").
-                    arg(ui->cb_production_connection->itemText(
-                            ui->cb_production_connection->currentIndex()));
-            config += QString("query_dir=%1\n").
-                    arg(ui->ed_query_dir->text());
-            config += QString("models_dir=%1\n").
-                    arg(ui->ed_models_dir->text());
-
-
-            QFile file(file_name);
-            if(file.open(QIODevice::WriteOnly | QIODevice::Text))
-            {
-              QTextStream stream(&file);
-
-              stream << config;
-
-              file.close();
-            }
-        }
+        QTextStream stream(&file);
+        stream << config;
+        file.close();
     }
-
 }
 
 void DlgProject::createSkeleton(QString dir)
@@ -90,4 +84,28 @@ void DlgProject::createSkeleton(QString dir)
     project_dir.mkpath("scripts/production/run");
 
     project_dir.mkdir("config");
+}
+
+void DlgProject::loadConnections(QComboBox *combo)
+{
+    connections.sortByName();
+    combo->clear();
+    combo->addItem("");
+    for (int i = 0; i < connections.getConnections().count(); i++) {
+        ConnectionElement *conn = connections.getConnections().at(i);
+        combo->addItem(conn->name());
+    }
+}
+
+void DlgProject::on_bt_project_path_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                    QDir::homePath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if (dir != "") {
+        ui->ed_project_path->setText(dir);
+        ui->ed_query_dir->setText(dir+"/query_utils");
+        ui->ed_models_dir->setText(dir+"/query_models");
+    }
 }

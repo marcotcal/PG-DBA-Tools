@@ -16,48 +16,39 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="4" column="2">
-      <widget class="QToolButton" name="toolButton_2">
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pgdbatool.qrc">
-         <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Production Connection</string>
-       </property>
-      </widget>
-     </item>
      <item row="6" column="1">
-      <widget class="QTextEdit" name="ed_description"/>
-     </item>
-     <item row="5" column="1">
       <widget class="QLineEdit" name="ed_models_dir"/>
      </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="cb_production_connection"/>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_8">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Description</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        <string>Staging Connection</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="ed_query_dir"/>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Query Directory</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Project Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Local Connection</string>
+       </property>
+      </widget>
      </item>
      <item row="5" column="2">
-      <widget class="QToolButton" name="toolButton_3">
+      <widget class="QToolButton" name="bt_query_directory">
        <property name="text">
         <string>...</string>
        </property>
@@ -68,48 +59,78 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Query Directory</string>
+        <string>Production Connection</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_4">
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Staging Connection</string>
+        <string>Description</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="6" column="2">
+      <widget class="QToolButton" name="bt_models_directory">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="pgdbatool.qrc">
+         <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
       <widget class="QComboBox" name="cb_staging_connection"/>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Local Connection</string>
-       </property>
-      </widget>
+     <item row="7" column="1">
+      <widget class="QTextEdit" name="ed_description"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Models Directory</string>
        </property>
       </widget>
      </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="cb_development_connection"/>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="cb_production_connection"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="ed_project_name"/>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="ed_query_dir"/>
+     </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Project Name</string>
+        <string>Project Path</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="cb_development_connection"/>
+     <item row="0" column="2">
+      <widget class="QToolButton" name="bt_project_path">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="pgdbatool.qrc">
+         <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
+       </property>
+      </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="ed_project_name"/>
+      <widget class="QLineEdit" name="ed_project_path"/>
      </item>
     </layout>
    </item>

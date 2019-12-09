@@ -7,3 +7,5 @@
 **/moc_*.cpp
 **/moc_*.h
 **/moc_*.o
+**/Makefile
+**/.qmake.stash
