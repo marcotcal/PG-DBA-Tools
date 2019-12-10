@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QIODevice>
 #include <QTextStream>
+#include <QMessageBox>
 
 DlgProject::DlgProject(ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
@@ -26,7 +27,7 @@ void DlgProject::createProject()
 {
 
     // create skeleton
-    createSkeleton(ui->ed_project_path->text());
+    createSkeleton();
 
     QString config = "# PGDBA Tools Config File\n\n";
     QString file_name = ui->ed_project_path->text() + "/config/config.txt";
@@ -58,9 +59,9 @@ void DlgProject::createProject()
     }
 }
 
-void DlgProject::createSkeleton(QString dir)
+void DlgProject::createSkeleton()
 {
-    QDir project_dir(dir);
+    QDir project_dir(ui->ed_project_path->text());
 
     project_dir.mkdir("config");
 
@@ -110,3 +111,70 @@ void DlgProject::on_bt_project_path_clicked()
     }
 }
 
+void DlgProject::done(int res)
+{
+    QString pdir = ui->ed_project_path->text();
+    QString qdir = ui->ed_query_dir->text();
+    QString mdir = ui->ed_models_dir->text();
+    QDir project_dir(pdir);
+    QDir query_dir(qdir);
+    QDir model_dir(mdir);
+    QMessageBox msgBox;
+
+    if (res == QDialog::Accepted)
+    {
+        if (pdir.trimmed() == "") {
+            msgBox.setText("The project path must be informed.");
+            msgBox.exec();
+            ui->ed_project_path->setFocus();
+            return;
+        }
+
+        if (!project_dir.exists()) {
+            msgBox.setText("The project path does not exists.");
+            msgBox.exec();
+            ui->ed_project_path->setFocus();
+            return;
+        }
+
+        if (qdir.trimmed() == "") {
+            msgBox.setText("The query path must be informed.");
+            msgBox.exec();
+            ui->ed_query_dir->setFocus();
+            return;
+        }
+
+        if (!query_dir.exists()) {
+            msgBox.setText("The query path does not exists.");
+            msgBox.exec();
+            ui->ed_query_dir->setFocus();
+            return;
+        }
+
+        if (mdir.trimmed() == "") {
+            msgBox.setText("The models path must be informed.");
+            msgBox.exec();
+            ui->ed_models_dir->setFocus();
+            return;
+        }
+
+        if (!model_dir.exists()) {
+            msgBox.setText("The models path does not exists.");
+            msgBox.exec();
+            ui->ed_models_dir->setFocus();
+            return;
+        }
+
+        if (ui->ed_project_name->text() == "") {
+            msgBox.setText("The project name must be informed.");
+            msgBox.exec();
+            ui->ed_project_name->setFocus();
+            return;
+        }
+
+        createProject();
+
+    }
+
+    QDialog::done(res);
+}

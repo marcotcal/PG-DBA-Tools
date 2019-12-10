@@ -159,6 +159,19 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>ed_project_path</tabstop>
+  <tabstop>bt_project_path</tabstop>
+  <tabstop>ed_project_name</tabstop>
+  <tabstop>cb_development_connection</tabstop>
+  <tabstop>cb_staging_connection</tabstop>
+  <tabstop>cb_production_connection</tabstop>
+  <tabstop>ed_query_dir</tabstop>
+  <tabstop>bt_query_directory</tabstop>
+  <tabstop>ed_models_dir</tabstop>
+  <tabstop>bt_models_directory</tabstop>
+  <tabstop>ed_description</tabstop>
+ </tabstops>
  <resources>
   <include location="pgdbatool.qrc"/>
  </resources>

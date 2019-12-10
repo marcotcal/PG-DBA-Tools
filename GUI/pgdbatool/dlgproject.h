@@ -19,14 +19,17 @@ public:
     ~DlgProject();
 
     void createProject();
+
 private slots:
     void on_bt_project_path_clicked();
+
+    virtual void done(int res);
 
 private:
     Ui::DlgProject *ui;
     ConnectionsData &connections;
 
-    void createSkeleton(QString dir);
+    void createSkeleton();
     void loadConnections(QComboBox *combo);
 
 };
