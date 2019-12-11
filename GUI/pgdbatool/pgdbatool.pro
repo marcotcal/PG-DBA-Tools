@@ -64,7 +64,8 @@ SOURCES += \
     dlgotherplanningsettings.cpp \
     connectionsettings.cpp \
     memoryeditor.cpp \
-    dlgproject.cpp
+    dlgproject.cpp \
+    projectdata.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -97,7 +98,8 @@ HEADERS += \
     dlgotherplanningsettings.h \
     connectionsettings.h \
     memoryeditor.h \
-    dlgproject.h
+    dlgproject.h \
+    projectdata.h
 
 FORMS += \
     mainwindow.ui \

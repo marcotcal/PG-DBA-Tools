@@ -926,7 +926,7 @@ void MainWindow::on_actionList_of_Views_triggered()
 
 void MainWindow::on_actionNew_Project_triggered()
 {
-    DlgProject prj;
+    DlgProject prj(connections);
 
-    prj.createProject();
+    prj.exec();
 }

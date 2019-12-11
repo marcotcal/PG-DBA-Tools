@@ -121,6 +121,9 @@ private:
     QString path_to_models;
     QString last_path_to_sql;
 
+    QString project_path;
+    QString project_name;
+
     bool maybeSave();
     void readSettings();
     void writeSettings();
