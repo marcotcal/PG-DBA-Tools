@@ -7,10 +7,11 @@
 #include <QTextStream>
 #include <QMessageBox>
 
-DlgProject::DlgProject(ConnectionsData &conn, QWidget *parent) :
+DlgProject::DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DlgProject),
-    connections(conn)
+    connections(conn),
+    project(project)
 {
     ui->setupUi(this);
     loadConnections(ui->cb_development_connection);
@@ -28,35 +29,19 @@ void DlgProject::createProject()
 
     // create skeleton
     createSkeleton();
+    project.setProjectPath(ui->ed_project_path->text());
+    project.setProjectName(ui->ed_project_name->text());
+    project.setDevelopment(ui->cb_development_connection->itemText(
+                               ui->cb_development_connection->currentIndex()));
+    project.setStaging(ui->cb_staging_connection->itemText(
+                           ui->cb_staging_connection->currentIndex()));
+    project.setProduction(ui->cb_production_connection->itemText(
+                              ui->cb_production_connection->currentIndex()));
+    project.setQueryPath(ui->ed_query_dir->text());
+    project.setModelPath(ui->ed_models_dir->text());
+    project.setDescription(ui->ed_description->toPlainText());
 
-    QString config = "# PGDBA Tools Config File\n\n";
-    QString file_name = ui->ed_project_path->text() + "/config/config.txt";
-
-    config += QString("project_name=%1\n").
-            arg(ui->ed_project_name->text());
-    config += QString("development_connection=%1\n").
-            arg(ui->cb_development_connection->itemText(
-                    ui->cb_development_connection->currentIndex()));
-    config += QString("staging_connection=%1\n").
-            arg(ui->cb_staging_connection->itemText(
-                    ui->cb_staging_connection->currentIndex()));
-    config += QString("prodution_connection=%1\n").
-            arg(ui->cb_production_connection->itemText(
-                    ui->cb_production_connection->currentIndex()));
-    config += QString("query_dir=%1\n").
-            arg(ui->ed_query_dir->text());
-    config += QString("models_dir=%1\n").
-            arg(ui->ed_models_dir->text());
-
-
-    QFile file(file_name);
-
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QTextStream stream(&file);
-        stream << config;
-        file.close();
-    }
+    project.writeConfig();
 }
 
 void DlgProject::createSkeleton()

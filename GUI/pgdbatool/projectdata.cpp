@@ -1,4 +1,6 @@
 #include "projectdata.h"
+#include <QFile>
+#include <QXmlStreamWriter>
 
 ProjectData::ProjectData(QObject *parent) : QObject(parent)
 {
@@ -87,10 +89,76 @@ void ProjectData::setDescription(const QString &value)
 
 void ProjectData::writeConfig()
 {
+    QFile file(project_path + "/config/config.xml");
+    QString DTD =
+        "<!DOCTYPE project [\n"
+        "  <!ELEMENT config (project_path,project_name,development,staging,production,query_path,model_path,description)>\n"
+        "  <!ELEMENT project_name (#PCDATA)>\n"
+        "  <!ELEMENT project_path (#PCDATA)>\n"
+        "  <!ELEMENT development (#PCDATA)>\n"
+        "  <!ELEMENT staging (#PCDATA)>\n"
+        "  <!ELEMENT production (#PCDATA)>\n"
+        "  <!ELEMENT query_path (#PCDATA)>\n"
+        "  <!ELEMENT model_path (#PCDATA)>\n"
+        "  <!ELEMENT description (#PCDATA)>\n"
+        "]>";
 
+    file.open(QIODevice::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.writeStartDocument();
+    xmlWriter.writeDTD(DTD);
+
+    xmlWriter.writeStartElement("config");
+
+    xmlWriter.writeStartElement("project_path");
+    xmlWriter.writeCDATA(project_path);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("project_name");
+    xmlWriter.writeCharacters(project_name);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("development");
+    xmlWriter.writeCharacters(development);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("staging");
+    xmlWriter.writeCharacters(staging);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("production");
+    xmlWriter.writeCharacters(production);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("query_path");
+    xmlWriter.writeCDATA(query_path);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("model_path");
+    xmlWriter.writeCDATA(model_path);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("description");
+    xmlWriter.writeCDATA(description);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeEndElement();
+    file.close();
 }
 
 void ProjectData::readConfig()
 {
+    QString config_file;
+    if (project_path == "")
+        return;
+
+    config_file = project_path + "/config/config.xml";
+
+
+
+
 
 }

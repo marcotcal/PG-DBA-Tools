@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class ProjectData : QObject
+class ProjectData : public QObject
 {
     Q_OBJECT
 public:
