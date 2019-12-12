@@ -149,16 +149,58 @@ void ProjectData::writeConfig()
     file.close();
 }
 
-void ProjectData::readConfig()
+bool ProjectData::readConfig()
 {
     QString config_file;
     if (project_path == "")
-        return;
+        return false;
 
     config_file = project_path + "/config/config.xml";
 
+    QFile file(config_file);
+    QXmlStreamReader reader;
 
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return false;
+    }
 
+    reader.setDevice(&file);
 
+    while(!reader.atEnd()) {
+
+        while(reader.readNext()) {
+
+            if(reader.isStartDocument())
+                continue;
+
+            if (reader.isEndDocument())
+                break;
+
+            if (reader.isStartElement()) {
+
+                if (reader.name() == "project_name") {
+                    project_name = reader.readElementText().trimmed();
+                } else if (reader.name() == "project_path") {
+                    project_path = reader.readElementText().trimmed();
+                } else if (reader.name() == "query_path") {
+                    query_path = reader.readElementText().trimmed();
+                }  else if (reader.name() == "model_path") {
+                    model_path = reader.readElementText().trimmed();
+                } else if (reader.name() == "description") {
+                    description = reader.readElementText().trimmed();
+                } else if (reader.name() == "development") {
+                    development = reader.readElementText().trimmed();
+                } else if (reader.name() == "staging") {
+                    staging = reader.readElementText().trimmed();
+                } else if (reader.name() == "production") {
+                    production = reader.readElementText().trimmed();
+                }
+            }
+        }
+    }
+
+    reader.clear();
+    return true;
 
 }

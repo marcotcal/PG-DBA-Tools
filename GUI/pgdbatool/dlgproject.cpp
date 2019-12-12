@@ -14,9 +14,10 @@ DlgProject::DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *par
     project(project)
 {
     ui->setupUi(this);
+
     loadConnections(ui->cb_development_connection);
     loadConnections(ui->cb_staging_connection);
-    loadConnections(ui->cb_production_connection);
+    loadConnections(ui->cb_production_connection);    
 }
 
 DlgProject::~DlgProject()
@@ -24,11 +25,46 @@ DlgProject::~DlgProject()
     delete ui;
 }
 
+int DlgProject::projectAdd()
+{
+    return exec();
+}
+
+int DlgProject::projectEdit()
+{
+    int index;
+
+    if (project.getProjectName() != "") {
+
+        ui->ed_project_name->setText(project.getProjectName());
+        ui->ed_project_path->setText(project.getProjectPath());
+        ui->ed_project_path->setEnabled(false);
+        ui->ed_query_dir->setText(project.getQueryPath());
+        ui->ed_models_dir->setText(project.getModelPath());
+        ui->ed_description->setPlainText(project.getDescription());
+        index = ui->cb_development_connection->findText(project.getDevelopment());
+        if ( index != -1 ) {
+           ui->cb_development_connection->setCurrentIndex(index);
+        }
+        index = ui->cb_staging_connection->findText(project.getStaging());
+        if ( index != -1 ) {
+           ui->cb_staging_connection->setCurrentIndex(index);
+        }
+        index = ui->cb_production_connection->findText(project.getProduction());
+        if ( index != -1 ) {
+           ui->cb_production_connection->setCurrentIndex(index);
+        }
+
+        return exec();
+
+    } else {
+        return QDialog::Rejected;
+    }
+
+}
+
 void DlgProject::createProject()
 {
-
-    // create skeleton
-    createSkeleton();
     project.setProjectPath(ui->ed_project_path->text());
     project.setProjectName(ui->ed_project_name->text());
     project.setDevelopment(ui->cb_development_connection->itemText(
@@ -121,6 +157,9 @@ void DlgProject::done(int res)
             ui->ed_project_path->setFocus();
             return;
         }
+
+        // create skeleton
+        createSkeleton();
 
         if (qdir.trimmed() == "") {
             msgBox.setText("The query path must be informed.");

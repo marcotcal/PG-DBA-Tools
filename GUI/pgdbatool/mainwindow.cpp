@@ -936,7 +936,16 @@ void MainWindow::on_actionNew_Project_triggered()
 {
     DlgProject prj(project, connections);
 
-    if (prj.exec()) {
+    if (prj.projectAdd()) {
+        setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
+    }
+}
+
+void MainWindow::on_actionProject_Options_triggered()
+{
+    DlgProject prj(project, connections);
+
+    if (prj.projectEdit()) {
         setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
     }
 }

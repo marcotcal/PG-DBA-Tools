@@ -19,18 +19,25 @@ public:
     explicit DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *parent = nullptr);
     ~DlgProject();
 
-    void createProject();
+    int projectAdd();
+    int projectEdit();
 
 private slots:
     void on_bt_project_path_clicked();
 
     virtual void done(int res);
 
+private slots:
+
+    // hide exec slot
+    virtual int exec() {return QDialog::exec(); }
+
 private:
     Ui::DlgProject *ui;
     ConnectionsData &connections;
     ProjectData &project;
 
+    void createProject();
     void createSkeleton();
     void loadConnections(QComboBox *combo);
 

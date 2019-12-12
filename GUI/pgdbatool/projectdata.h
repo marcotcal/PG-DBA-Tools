@@ -2,6 +2,7 @@
 #define PROJECTDATA_H
 
 #include <QObject>
+#include "connectionsdata.h"
 
 class ProjectData : public QObject
 {
@@ -34,9 +35,11 @@ public:
     void setDescription(const QString &value);
 
     void writeConfig();
-    void readConfig();
+    bool readConfig();
 
 private:
+
+    ConnectionsData connections;
     QString project_path;
     QString project_name;
     QString query_path;
