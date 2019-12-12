@@ -112,6 +112,10 @@ private slots:
 
     void on_actionProject_Options_triggered();
 
+    void on_actionClose_Project_triggered();
+
+    void on_actionOpen_Project_triggered();
+
 signals:
     void clean_custom_menu();
 

@@ -87,6 +87,28 @@ void ProjectData::setDescription(const QString &value)
     description = value;
 }
 
+bool ProjectData::loadConnections()
+{
+    if (project_name != "") {
+
+        connections.readConnections(project_path + "/config");
+        return true;
+    }
+
+    return false;
+}
+
+bool ProjectData::saveConnections()
+{
+    if (project_name != "") {
+
+        connections.writeConnections(project_path + "/config");
+        return true;
+    }
+
+    return true;
+}
+
 void ProjectData::writeConfig()
 {
     QFile file(project_path + "/config/config.xml");

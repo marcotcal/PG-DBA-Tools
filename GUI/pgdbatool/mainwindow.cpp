@@ -91,10 +91,18 @@ void MainWindow::readSettings()
 
     project.setProjectPath(settings.value("project_path", "").toString());
     project.readConfig();
-    if (project.getProjectName() != "")
+
+    if (project.getProjectName() != "") {
+
         setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
-    else
+        project.loadConnections();
+
+    } else {
+
         setWindowTitle("PostgreSQL DBA Tool");
+
+    }
+
     restoreState(settings.value("DOCK_LOCATIONS").toByteArray(),1);
     if (geometry.isEmpty()) {
         const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
@@ -104,7 +112,9 @@ void MainWindow::readSettings()
     } else {
         restoreGeometry(geometry);
     }
+
     connections.readConnections();
+
 }
 
 void MainWindow::writeSettings()
@@ -115,6 +125,11 @@ void MainWindow::writeSettings()
     settings.setValue("path_to_sql", path_to_sql);
     settings.setValue("DOCK_LOCATIONS",this->saveState(1));
     settings.setValue("project_path", project.getProjectPath());
+    if(project.getProjectName() != "") {
+
+        project.saveConnections();
+        project.writeConfig();
+    }
     connections.writeConnections();
 }
 
@@ -948,4 +963,14 @@ void MainWindow::on_actionProject_Options_triggered()
     if (prj.projectEdit()) {
         setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
     }
+}
+
+void MainWindow::on_actionClose_Project_triggered()
+{
+
+}
+
+void MainWindow::on_actionOpen_Project_triggered()
+{
+
 }

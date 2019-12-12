@@ -6,6 +6,7 @@
 #include <QIODevice>
 #include <QTextStream>
 #include <QMessageBox>
+#include "dlgconnections.h"
 
 DlgProject::DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
@@ -15,9 +16,9 @@ DlgProject::DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *par
 {
     ui->setupUi(this);
 
-    loadConnections(ui->cb_development_connection);
-    loadConnections(ui->cb_staging_connection);
-    loadConnections(ui->cb_production_connection);    
+    loadCombo(ui->cb_development_connection);
+    loadCombo(ui->cb_staging_connection);
+    loadCombo(ui->cb_production_connection);
 }
 
 DlgProject::~DlgProject()
@@ -77,7 +78,6 @@ void DlgProject::createProject()
     project.setModelPath(ui->ed_models_dir->text());
     project.setDescription(ui->ed_description->toPlainText());
 
-    project.writeConfig();
 }
 
 void DlgProject::createSkeleton()
@@ -108,13 +108,13 @@ void DlgProject::createSkeleton()
     project_dir.mkdir("config");
 }
 
-void DlgProject::loadConnections(QComboBox *combo)
+void DlgProject::loadCombo(QComboBox *combo)
 {
-    connections.sortByName();
+    project.getConnnections().sortByName();
     combo->clear();
     combo->addItem("");
-    for (int i = 0; i < connections.getConnections().count(); i++) {
-        ConnectionElement *conn = connections.getConnections().at(i);
+    for (int i = 0; i < project.getConnnections().getConnections().count(); i++) {
+        ConnectionElement *conn = project.getConnnections().getConnections().at(i);
         combo->addItem(conn->name());
     }
 }
@@ -201,4 +201,25 @@ void DlgProject::done(int res)
     }
 
     QDialog::done(res);
+}
+
+void DlgProject::on_bt_connections_clicked()
+{
+    int index = -1;
+    DlgConnections dlg(project.getConnnections());
+    dlg.exec();
+    loadCombo(ui->cb_development_connection);
+    loadCombo(ui->cb_staging_connection);
+    loadCombo(ui->cb_production_connection);
+    if ( index != -1 ) {
+       ui->cb_development_connection->setCurrentIndex(index);
+    }
+    index = ui->cb_staging_connection->findText(project.getStaging());
+    if ( index != -1 ) {
+       ui->cb_staging_connection->setCurrentIndex(index);
+    }
+    index = ui->cb_production_connection->findText(project.getProduction());
+    if ( index != -1 ) {
+       ui->cb_production_connection->setCurrentIndex(index);
+    }
 }

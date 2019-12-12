@@ -32,6 +32,8 @@ private slots:
     // hide exec slot
     virtual int exec() {return QDialog::exec(); }
 
+    void on_bt_connections_clicked();
+
 private:
     Ui::DlgProject *ui;
     ConnectionsData &connections;
@@ -39,7 +41,7 @@ private:
 
     void createProject();
     void createSkeleton();
-    void loadConnections(QComboBox *combo);
+    void loadCombo(QComboBox *combo);
 
 };
 

@@ -34,6 +34,11 @@ public:
     QString getDescription() const;
     void setDescription(const QString &value);
 
+    ConnectionsData &getConnnections() { return connections; }
+
+    bool loadConnections();
+    bool saveConnections();
+
     void writeConfig();
     bool readConfig();
 
