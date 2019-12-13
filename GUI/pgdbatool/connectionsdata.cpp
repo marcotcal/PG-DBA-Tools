@@ -61,6 +61,11 @@ QString ConnectionElement::connectStr(QString alternate_user, QString alternate_
     return cr;
 }
 
+void ConnectionElement::openSSHTunnel()
+{
+
+}
+
 ConnectionsData::ConnectionsData()
 {
 

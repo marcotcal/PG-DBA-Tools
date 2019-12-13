@@ -21,6 +21,8 @@ private:
     QString connection_name;
     bool invalid;
     QMap<QString, QVariant> parameters;
+
+    void openSSHTunnel();
 };
 
 class ConnectionsData
