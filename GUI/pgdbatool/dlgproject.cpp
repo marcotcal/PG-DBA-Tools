@@ -6,16 +6,19 @@
 #include <QIODevice>
 #include <QTextStream>
 #include <QMessageBox>
+#include "dlgconnections.h"
 
-DlgProject::DlgProject(ConnectionsData &conn, QWidget *parent) :
+DlgProject::DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DlgProject),
-    connections(conn)
+    connections(conn),
+    project(project)
 {
     ui->setupUi(this);
-    loadConnections(ui->cb_development_connection);
-    loadConnections(ui->cb_staging_connection);
-    loadConnections(ui->cb_production_connection);
+
+    loadCombo(ui->cb_development_connection);
+    loadCombo(ui->cb_staging_connection);
+    loadCombo(ui->cb_production_connection);
 }
 
 DlgProject::~DlgProject()
@@ -23,40 +26,58 @@ DlgProject::~DlgProject()
     delete ui;
 }
 
+int DlgProject::projectAdd()
+{
+    return exec();
+}
+
+int DlgProject::projectEdit()
+{
+    int index;
+
+    if (project.getProjectName() != "") {
+
+        ui->ed_project_name->setText(project.getProjectName());
+        ui->ed_project_path->setText(project.getProjectPath());
+        ui->ed_project_path->setEnabled(false);
+        ui->ed_query_dir->setText(project.getQueryPath());
+        ui->ed_models_dir->setText(project.getModelPath());
+        ui->ed_description->setPlainText(project.getDescription());
+        index = ui->cb_development_connection->findText(project.getDevelopment());
+        if ( index != -1 ) {
+           ui->cb_development_connection->setCurrentIndex(index);
+        }
+        index = ui->cb_staging_connection->findText(project.getStaging());
+        if ( index != -1 ) {
+           ui->cb_staging_connection->setCurrentIndex(index);
+        }
+        index = ui->cb_production_connection->findText(project.getProduction());
+        if ( index != -1 ) {
+           ui->cb_production_connection->setCurrentIndex(index);
+        }
+
+        return exec();
+
+    } else {
+        return QDialog::Rejected;
+    }
+
+}
+
 void DlgProject::createProject()
 {
+    project.setProjectPath(ui->ed_project_path->text());
+    project.setProjectName(ui->ed_project_name->text());
+    project.setDevelopment(ui->cb_development_connection->itemText(
+                               ui->cb_development_connection->currentIndex()));
+    project.setStaging(ui->cb_staging_connection->itemText(
+                           ui->cb_staging_connection->currentIndex()));
+    project.setProduction(ui->cb_production_connection->itemText(
+                              ui->cb_production_connection->currentIndex()));
+    project.setQueryPath(ui->ed_query_dir->text());
+    project.setModelPath(ui->ed_models_dir->text());
+    project.setDescription(ui->ed_description->toPlainText());
 
-    // create skeleton
-    createSkeleton();
-
-    QString config = "# PGDBA Tools Config File\n\n";
-    QString file_name = ui->ed_project_path->text() + "/config/config.txt";
-
-    config += QString("project_name=%1\n").
-            arg(ui->ed_project_name->text());
-    config += QString("development_connection=%1\n").
-            arg(ui->cb_development_connection->itemText(
-                    ui->cb_development_connection->currentIndex()));
-    config += QString("staging_connection=%1\n").
-            arg(ui->cb_staging_connection->itemText(
-                    ui->cb_staging_connection->currentIndex()));
-    config += QString("prodution_connection=%1\n").
-            arg(ui->cb_production_connection->itemText(
-                    ui->cb_production_connection->currentIndex()));
-    config += QString("query_dir=%1\n").
-            arg(ui->ed_query_dir->text());
-    config += QString("models_dir=%1\n").
-            arg(ui->ed_models_dir->text());
-
-
-    QFile file(file_name);
-
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QTextStream stream(&file);
-        stream << config;
-        file.close();
-    }
 }
 
 void DlgProject::createSkeleton()
@@ -87,13 +108,13 @@ void DlgProject::createSkeleton()
     project_dir.mkdir("config");
 }
 
-void DlgProject::loadConnections(QComboBox *combo)
+void DlgProject::loadCombo(QComboBox *combo)
 {
-    connections.sortByName();
+    project.getConnnections().sortByName();
     combo->clear();
     combo->addItem("");
-    for (int i = 0; i < connections.getConnections().count(); i++) {
-        ConnectionElement *conn = connections.getConnections().at(i);
+    for (int i = 0; i < project.getConnnections().getConnections().count(); i++) {
+        ConnectionElement *conn = project.getConnnections().getConnections().at(i);
         combo->addItem(conn->name());
     }
 }
@@ -137,6 +158,9 @@ void DlgProject::done(int res)
             return;
         }
 
+        // create skeleton
+        createSkeleton();
+
         if (qdir.trimmed() == "") {
             msgBox.setText("The query path must be informed.");
             msgBox.exec();
@@ -177,4 +201,25 @@ void DlgProject::done(int res)
     }
 
     QDialog::done(res);
+}
+
+void DlgProject::on_bt_connections_clicked()
+{
+    int index = -1;
+    DlgConnections dlg(project.getConnnections());
+    dlg.exec();
+    loadCombo(ui->cb_development_connection);
+    loadCombo(ui->cb_staging_connection);
+    loadCombo(ui->cb_production_connection);
+    if ( index != -1 ) {
+       ui->cb_development_connection->setCurrentIndex(index);
+    }
+    index = ui->cb_staging_connection->findText(project.getStaging());
+    if ( index != -1 ) {
+       ui->cb_staging_connection->setCurrentIndex(index);
+    }
+    index = ui->cb_production_connection->findText(project.getProduction());
+    if ( index != -1 ) {
+       ui->cb_production_connection->setCurrentIndex(index);
+    }
 }

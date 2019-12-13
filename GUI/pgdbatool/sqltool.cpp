@@ -315,7 +315,6 @@ bool SqlTool::readFromXML(QString file_name)
 {
     QFile file(file_name);
     QXmlStreamReader reader;
-    int count;
     QString name;
     QString query;
     EditorItem *editor;
@@ -341,8 +340,8 @@ bool SqlTool::readFromXML(QString file_name)
 
                 if (reader.name() == "query_set") {
                     QXmlStreamAttributes attributes = reader.attributes();
-                    if(attributes.hasAttribute("count"))
-                         count = attributes.value("count").toInt();
+                    //if(attributes.hasAttribute("count"))
+                    //     count = attributes.value("count").toInt();
                     if(attributes.hasAttribute("group_name"))
                          group_name = attributes.value("group_name").toString();
                 } else if (reader.name() == "query") {

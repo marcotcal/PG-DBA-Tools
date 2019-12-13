@@ -22,6 +22,7 @@
 #include "sqltool.h"
 #include "querymodel.h"
 #include "connectionsdata.h"
+#include "projectdata.h"
 
 namespace Ui {
 class MainWindow;
@@ -109,6 +110,12 @@ private slots:
 
     void on_actionNew_Project_triggered();
 
+    void on_actionProject_Options_triggered();
+
+    void on_actionClose_Project_triggered();
+
+    void on_actionOpen_Project_triggered();
+
 signals:
     void clean_custom_menu();
 
@@ -116,13 +123,12 @@ private:
     Ui::MainWindow *ui;
 
     ConnectionsData connections;
+    ProjectData project;
+
     QueryModelData *data;
     QString path_to_sql;
     QString path_to_models;
     QString last_path_to_sql;
-
-    QString project_path;
-    QString project_name;
 
     bool maybeSave();
     void readSettings();

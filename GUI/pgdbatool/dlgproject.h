@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QComboBox>
 #include "connectionsdata.h"
+#include "projectdata.h"
 
 namespace Ui {
 class DlgProject;
@@ -15,22 +16,32 @@ class DlgProject : public QDialog
 
 public:
 
-    explicit DlgProject(ConnectionsData &conn, QWidget *parent = nullptr);
+    explicit DlgProject(ProjectData &project, ConnectionsData &conn, QWidget *parent = nullptr);
     ~DlgProject();
 
-    void createProject();
+    int projectAdd();
+    int projectEdit();
 
 private slots:
     void on_bt_project_path_clicked();
 
     virtual void done(int res);
 
+private slots:
+
+    // hide exec slot
+    virtual int exec() {return QDialog::exec(); }
+
+    void on_bt_connections_clicked();
+
 private:
     Ui::DlgProject *ui;
     ConnectionsData &connections;
+    ProjectData &project;
 
+    void createProject();
     void createSkeleton();
-    void loadConnections(QComboBox *combo);
+    void loadCombo(QComboBox *combo);
 
 };
 

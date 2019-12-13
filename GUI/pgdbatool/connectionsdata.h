@@ -21,6 +21,8 @@ private:
     QString connection_name;
     bool invalid;
     QMap<QString, QVariant> parameters;
+
+    void openSSHTunnel();
 };
 
 class ConnectionsData
@@ -28,8 +30,8 @@ class ConnectionsData
 public:
     ConnectionsData();
     ~ConnectionsData();
-    bool readConnections();
-    void writeConnections();
+    bool readConnections(QString path=".");
+    void writeConnections(QString path=".");
     QList<ConnectionElement *> &getConnections();
     ConnectionElement *newConnection();
     void sortByName();    

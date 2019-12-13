@@ -61,6 +61,11 @@ QString ConnectionElement::connectStr(QString alternate_user, QString alternate_
     return cr;
 }
 
+void ConnectionElement::openSSHTunnel()
+{
+
+}
+
 ConnectionsData::ConnectionsData()
 {
 
@@ -71,10 +76,10 @@ ConnectionsData::~ConnectionsData()
 
 }
 
-bool ConnectionsData::readConnections()
+bool ConnectionsData::readConnections(QString path)
 {
     // Open a file for reading
-    QFile file("connections.xml");
+    QFile file(QString("%1/connections.xml").arg(path));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         std::cout << "Failed to open the file for reading.";
@@ -106,9 +111,9 @@ bool ConnectionsData::readConnections()
     return true;
 }
 
-void ConnectionsData::writeConnections()
+void ConnectionsData::writeConnections(QString path)
 {
-    QFile file("connections.xml");
+    QFile file(QString("%1/connections.xml").arg(path));
     QString DTD =
         "<!DOCTYPE connections [\n"
         "  <!ELEMENT connections (connection*)>\n"

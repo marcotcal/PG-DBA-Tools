@@ -65,7 +65,8 @@ SOURCES += \
     connectionsettings.cpp \
     memoryeditor.cpp \
     dlgproject.cpp \
-    projectdata.cpp
+    projectdata.cpp \
+    sshconnector.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -99,7 +100,8 @@ HEADERS += \
     connectionsettings.h \
     memoryeditor.h \
     dlgproject.h \
-    projectdata.h
+    projectdata.h \
+    sshconnector.h
 
 FORMS += \
     mainwindow.ui \
@@ -124,7 +126,7 @@ FORMS += \
 LIBS += -lqscintilla2_qt5
 
 unix:INCLUDEPATH += /usr/include/pgsql
-unix:LIBS += -lpq -lpgcommon -lpgport -lssl -lcrypto -lgssapi_krb5 -lz -lrt -lcrypt -ldl -lm
+unix:LIBS += -lpq -lpgcommon -lpgport -lssl -lcrypto -lgssapi_krb5 -lz -lrt -lcrypt -ldl -lm -lssh2
 
 RESOURCES += \
     pgdbatool.qrc
