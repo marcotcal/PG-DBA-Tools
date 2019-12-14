@@ -2,33 +2,70 @@
 #define SSHCONNECTOR_H
 
 #include <libssh2.h>
+#include <QObject>
+#include <QThread>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
 
-class SSHConnector
+#include <fcntl.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <netdb.h>
+#include <errno.h>
+
+class SSHConnector: public QThread
 {
 
 public:
 
-    enum {
+    enum
+    {
         AUTH_NONE = 0,
         AUTH_PASSWORD,
-        AUTH_PUBLICKEY
+        AUTH_KEYBOARD_INTERACTIVE,
+        AUTH_PUBLICKEY = 4
     };
 
-    SSHConnector(char *host, char *username, char *passwd,
-                 char *privkey, char *pubkey);
+    SSHConnector(QObject *parent = nullptr) : QThread (parent)
+    {
 
-    int forwardTunnel(int remote_port, int local_port);
+    }
+
+    SSHConnector(const QString &tunnel_host, const QString &remode_dest_host, uint16_t remote_dest_port,
+                 const QString &username, const QString &passwd,
+                 const QString &privkey, const QString &pubkey, uint16_t tunnel_port, QObject *parent = nullptr);
+
+    bool tunnelInitialize();
+
+    QString getHostIP() const;
 
 private:
-    char *server_ip;
-    char *username;
-    char *password;
-    char *private_key;
-    char *public_key;
+    QString tunnel_host;
+    QString remote_dest_host;
+    unsigned int remote_dest_port;
+    QString username;
+    QString password;
+    QString private_key;
+    QString public_key;
+    uint16_t tunnel_port;
 
-    LIBSSH2_LISTENER *listener;
-    LIBSSH2_SESSION *session;
-    LIBSSH2_CHANNEL *channel;
+
+    QString host_ip;
+    QStringList error_log;
+
+    int m_listensock, m_sock;
+    struct sockaddr_in m_sin;
+
+    struct _LIBSSH2_SESSION *session;
+
+    bool ResolveDNS(const QString &host, QStringList &ip_addresses);
+
 };
 
 #endif // SSHCONNECTOR_H

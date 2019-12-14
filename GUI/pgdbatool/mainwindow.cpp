@@ -35,6 +35,7 @@
 #include "modelscanner.h"
 #include "outputset.h"
 #include "dlgproject.h"
+#include "sshconnector.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -972,5 +973,13 @@ void MainWindow::on_actionClose_Project_triggered()
 
 void MainWindow::on_actionOpen_Project_triggered()
 {
+    SSHConnector conn("pgdbatools.org","localhost", 5432, "","","","", 5433);
+    QStringList ips;
 
+    conn.tunnelInitialize();
+
+    QMessageBox msgBox;
+
+    msgBox.setText(conn.getHostIP());
+    msgBox.exec();
 }
