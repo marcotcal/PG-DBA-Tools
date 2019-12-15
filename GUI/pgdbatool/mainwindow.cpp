@@ -973,7 +973,7 @@ void MainWindow::on_actionClose_Project_triggered()
 
 void MainWindow::on_actionOpen_Project_triggered()
 {
-    SSHConnector conn("pgdbatools.org","localhost", 5432, "","","","", 5433);
+    SSHConnector conn("pgdbatools.org", 22, "127.0.0.1", 5433, "localhost", 5432, "marcotc", "", "~/.ssh/id_rsa", "~/.ssh/id_rsa.pub");
     QStringList ips;
 
     conn.tunnelInitialize();

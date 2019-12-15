@@ -37,9 +37,10 @@ public:
 
     }
 
-    SSHConnector(const QString &tunnel_host, const QString &remode_dest_host, uint16_t remote_dest_port,
+    SSHConnector(const QString &tunnel_host, uint16_t ssh_port, const QString &local_listen_ip, uint16_t local_listen_port,
+                 const QString &remote_dest_host, uint16_t remote_dest_port,
                  const QString &username, const QString &passwd,
-                 const QString &privkey, const QString &pubkey, uint16_t tunnel_port, QObject *parent = nullptr);
+                 const QString &privkey, const QString &pubkey, QObject *parent = nullptr);
 
     bool tunnelInitialize();
 
@@ -47,24 +48,27 @@ public:
 
 private:
     QString tunnel_host;
+
+    uint16_t ssh_port;
+
+    QString local_listen_ip;
+    uint16_t local_listen_port;
+
     QString remote_dest_host;
-    unsigned int remote_dest_port;
+    uint16_t remote_dest_port;
+
     QString username;
     QString password;
     QString private_key;
     QString public_key;
-    uint16_t tunnel_port;
 
+    QString server_ip;
+    QString error;
 
-    QString host_ip;
-    QStringList error_log;
+    LIBSSH2_SESSION *session;
+    LIBSSH2_CHANNEL *channel = nullptr;
 
-    int m_listensock, m_sock;
-    struct sockaddr_in m_sin;
-
-    struct _LIBSSH2_SESSION *session;
-
-    bool ResolveDNS(const QString &host, QStringList &ip_addresses);
+    bool HostNameToIP(const QString &host, QStringList &ip_addresses);
 
 };
 
