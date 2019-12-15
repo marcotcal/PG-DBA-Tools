@@ -32,7 +32,7 @@ bool SSHConnector::tunnelInitialize()
     int rc, i, auth = AUTH_NONE;
     struct sockaddr_in sin;
     socklen_t sinlen;
-    const char *fingerprint;
+    const char *fprint;
     char *userauthlist;
     int sockopt, sock = -1;
     int listensock = -1, forwardsock = -1;
@@ -85,7 +85,26 @@ bool SSHConnector::tunnelInitialize()
         return false;
     }
 
-    fingerprint = libssh2_hostkey_hash(session, LIBSSH2_HOSTKEY_HASH_SHA1);
+    fprint = libssh2_hostkey_hash(session, LIBSSH2_HOSTKEY_HASH_SHA1);
+
+    for(i = 0; i < 20; i++)
+        fingerprint +=  QString().sprintf("%02X ", static_cast<unsigned char>(fprint[i]));
+
+    userauthlist = libssh2_userauth_list(session, username.toStdString().c_str(), strlen(username.toStdString().c_str()));
+
+    // Ignore Keyboard interactive method
+
+    if(strstr(userauthlist, "password"))
+        auth |= AUTH_PASSWORD;
+
+    if(strstr(userauthlist, "publickey"))
+        auth |= AUTH_PUBLICKEY;
+
+    if ((auth & AUTH_PASSWORD ) && !password.isEmpty())
+        auth = AUTH_PASSWORD;
+
+
+
 
     return true;
 }
@@ -93,6 +112,11 @@ bool SSHConnector::tunnelInitialize()
 QString SSHConnector::getHostIP() const
 {
     return server_ip;
+}
+
+QString SSHConnector::getFingerprint() const
+{
+    return fingerprint;
 }
 
 

@@ -46,6 +46,8 @@ public:
 
     QString getHostIP() const;
 
+    QString getFingerprint() const;
+
 private:
     QString tunnel_host;
 
@@ -64,6 +66,8 @@ private:
 
     QString server_ip;
     QString error;
+
+    QString fingerprint;
 
     LIBSSH2_SESSION *session;
     LIBSSH2_CHANNEL *channel = nullptr;

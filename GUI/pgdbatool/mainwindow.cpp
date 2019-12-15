@@ -980,6 +980,6 @@ void MainWindow::on_actionOpen_Project_triggered()
 
     QMessageBox msgBox;
 
-    msgBox.setText(conn.getHostIP());
+    msgBox.setText(conn.getFingerprint());
     msgBox.exec();
 }
