@@ -37,6 +37,8 @@ bool SSHConnector::tunnelInitialize()
     int sockopt, sock = -1;
     int listensock = -1, forwardsock = -1;
 
+    QString msg;
+
     if (!HostNameToIP(tunnel_host, ips)) {
         return false;
     }
@@ -100,8 +102,69 @@ bool SSHConnector::tunnelInitialize()
     if(strstr(userauthlist, "publickey"))
         auth |= AUTH_PUBLICKEY;
 
-    if ((auth & AUTH_PASSWORD ) && !password.isEmpty())
+    if((auth & AUTH_PUBLICKEY) && !public_key.isEmpty())
+                auth = AUTH_PUBLICKEY;
+    else if ((auth & AUTH_PASSWORD ) && !password.isEmpty())
         auth = AUTH_PASSWORD;
+
+    if(auth & AUTH_PASSWORD) {
+
+        if(libssh2_userauth_password(session, username.toStdString().c_str(), password.toStdString().c_str())) {
+            error = "Authentication by password failed.";
+            return false;
+        }
+
+    } else if(auth & AUTH_PUBLICKEY) {
+
+        if(libssh2_userauth_publickey_fromfile(session, username.toStdString().c_str(),
+                                               public_key.toStdString().c_str(), private_key.toStdString().c_str(),
+                                               password.toStdString().c_str())) {
+            error = "Authentication by public key failed.";
+            return false;
+        }
+
+    } else {
+
+        error = "No supported authentication methods found.";
+        return false;
+
+    }
+
+    listensock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    if(listensock == -1) {
+        error = "Listen Socket error";
+        return false;
+    }
+
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(local_listen_port);
+    sin.sin_addr.s_addr = inet_addr(local_listen_ip.toStdString().c_str());
+
+    if(INADDR_NONE == sin.sin_addr.s_addr) {
+        error = "inet_addr";
+        return false;
+    }
+
+    sockopt = 1;
+
+    setsockopt(listensock, SOL_SOCKET, SO_REUSEADDR, &sockopt,
+               sizeof(sockopt));
+    sinlen = sizeof(sin);
+
+    if(-1 == bind(listensock, (struct sockaddr *)&sin, sinlen)) {
+        error = "bind";
+        return false;
+    }
+
+    if(-1 == listen(listensock, 2)) {
+        error = "listen";
+        return false;
+    }
+
+
+    msg = QString("Waiting for TCP connection on %1, %2").arg(inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
+
 
 
 
