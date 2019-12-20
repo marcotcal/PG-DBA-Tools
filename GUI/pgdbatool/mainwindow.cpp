@@ -135,8 +135,9 @@ void MainWindow::writeSettings()
 
         project.saveConnections();
         project.writeConfig();
-    }
-    connections.writeConnections();
+
+    } else
+        connections.writeConnections();
 }
 
 void MainWindow::disable_actions()
@@ -965,7 +966,15 @@ void MainWindow::on_actionNew_Project_triggered()
     DlgProject prj(project, connections);
 
     if (prj.projectAdd()) {
+
+        connections.clear();
         setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
+        connections.readConnections(project.getProjectPath() + "/config");
+        path_to_sql = project.getQueryPath();
+        last_path_to_sql = path_to_sql;
+        path_to_models = project.getModelPath();
+        setConnectionsList();
+
     }
 }
 
@@ -985,12 +994,20 @@ void MainWindow::on_actionClose_Project_triggered()
     if (!maybeSave())
         return;
 
+    // Save Connections and config
+    project.saveConnections();
+    project.writeConfig();
+
     project.clean();
     connections.clear();
+
+    // read default connections
     connections.readConnections();
     setConnectionsList();
+
     last_path_to_sql = path_to_sql;
     path_to_models = settings.value("path_to_models", "").toString();
+
     setWindowTitle("PostgreSQL DBA Tool");
 }
 
@@ -1003,6 +1020,12 @@ void MainWindow::on_actionOpen_Project_triggered()
     if (!dir.isEmpty()) {
 
         if (QFileInfo(dir+"/config/config.xml").exists()) {
+
+            // Save connections and setings from the opened project if it is the case.
+            if(project.getProjectName() != "") {
+                project.saveConnections();
+                project.writeConfig();
+            }
 
             project.setProjectPath(dir);
             project.readConfig();

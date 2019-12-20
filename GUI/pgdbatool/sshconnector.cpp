@@ -162,12 +162,7 @@ bool SSHConnector::tunnelInitialize()
         return false;
     }
 
-
     msg = QString("Waiting for TCP connection on %1, %2").arg(inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
-
-
-
-
 
     return true;
 }
