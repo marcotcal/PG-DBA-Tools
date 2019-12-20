@@ -51,10 +51,11 @@ EditorItem::~EditorItem() {
 
 }
 
-SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
+SqlTool::SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SqlTool),
-    connections(connections)
+    connections(connections),
+    project(project)
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     ui->setupUi(this);
@@ -67,7 +68,11 @@ SqlTool::SqlTool(ConnectionsData &connections, QWidget *parent) :
         if (!conn->isInvalid())
             ui->connection_list->addItem(conn->name());
     }
-    default_path = settings.value("path_to_sql", "").toString();
+    if(project.getProjectName().isNull()) {
+        default_path = settings.value("path_to_sql", "").toString();
+    } else {
+        default_path = project.getProjectPath() + "/scripts/development/review";
+    }
     group_name = "";
     query_running = false;
     conn_settings = nullptr;

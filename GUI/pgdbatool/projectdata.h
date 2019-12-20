@@ -39,6 +39,8 @@ public:
     bool loadConnections();
     bool saveConnections();
 
+    void clean();
+
     void writeConfig();
     bool readConfig();
 

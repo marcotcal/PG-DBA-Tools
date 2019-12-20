@@ -73,7 +73,7 @@ ConnectionsData::ConnectionsData()
 
 ConnectionsData::~ConnectionsData()
 {
-
+    clear();
 }
 
 bool ConnectionsData::readConnections(QString path)
@@ -188,4 +188,10 @@ void ConnectionsData::sortByName()
 {
     std::sort(connections.begin(), connections.end(),
               [](ConnectionElement *a, ConnectionElement *b) -> bool { return a->name() < b->name(); });
+}
+
+void ConnectionsData::clear()
+{
+    while (!connections.isEmpty())
+        delete connections.takeFirst();
 }

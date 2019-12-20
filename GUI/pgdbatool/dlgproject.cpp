@@ -40,6 +40,7 @@ int DlgProject::projectEdit()
         ui->ed_project_name->setText(project.getProjectName());
         ui->ed_project_path->setText(project.getProjectPath());
         ui->ed_project_path->setEnabled(false);
+        ui->bt_project_path->setEnabled(false);
         ui->ed_query_dir->setText(project.getQueryPath());
         ui->ed_models_dir->setText(project.getModelPath());
         ui->ed_description->setPlainText(project.getDescription());

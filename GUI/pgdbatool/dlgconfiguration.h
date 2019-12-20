@@ -12,7 +12,7 @@ class DlgConfiguration : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgConfiguration(QWidget *parent = nullptr);
+    explicit DlgConfiguration(bool ready_only = false, QWidget *parent = nullptr);
     ~DlgConfiguration();
     QString getPathToModels();
     QString getPathToSql();

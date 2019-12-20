@@ -109,6 +109,18 @@ bool ProjectData::saveConnections()
     return true;
 }
 
+void ProjectData::clean()
+{
+    project_path = "";
+    project_name = "";
+    query_path = "";
+    model_path = "";
+    development = "";
+    staging = "";
+    production = "";
+    description = "";
+}
+
 void ProjectData::writeConfig()
 {
     QFile file(project_path + "/config/config.xml");

@@ -35,6 +35,7 @@ public:
     QList<ConnectionElement *> &getConnections();
     ConnectionElement *newConnection();
     void sortByName();    
+    void clear();
 private:
     QList<ConnectionElement *> connections;
 };

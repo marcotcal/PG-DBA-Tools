@@ -29,6 +29,7 @@
 #include "resultoutput.h"
 #include "outputset.h"
 #include "connectionsettings.h"
+#include "projectdata.h"
 
 namespace Ui {
 class SqlTool;
@@ -53,7 +54,7 @@ class SqlTool : public QWidget
     Q_OBJECT
 
 public:
-    explicit SqlTool(ConnectionsData &connections, QWidget *parent = nullptr);
+    explicit SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *parent = nullptr);
     ~SqlTool();
     EditorItem *addEditor();
     bool closeCurrentEditor();
@@ -120,6 +121,7 @@ private:
     bool in_transaction;
     bool is_connected;
     ConnectionsData &connections;
+    ProjectData &project;
     PGconn *conn;
     QString default_path;
     QString group_name;

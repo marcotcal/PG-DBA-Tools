@@ -114,8 +114,13 @@ void MainWindow::readSettings()
         restoreGeometry(geometry);
     }
 
-    connections.readConnections();
-
+    if (!project.getProjectPath().isEmpty()) {
+        connections.readConnections(project.getProjectPath() + "/config");
+        path_to_sql = project.getQueryPath();
+        last_path_to_sql = path_to_sql;
+        path_to_models = project.getModelPath();
+    } else
+        connections.readConnections();
 }
 
 void MainWindow::writeSettings()
@@ -249,7 +254,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
     if (!name.isEmpty()) {
 
         new QListWidgetItem(name, ui->editor_list);
-        sql = new SqlTool(connections, ui->main_stack);
+        sql = new SqlTool(connections, project, ui->main_stack);
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(ui->main_stack);
         ui->editor_list->clearSelection();        
@@ -317,10 +322,17 @@ void MainWindow::on_actionOpen_triggered()
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
     QString file_name;
     QFile file;
-
+    QString query_path;
 
     if (sql) {
-        file_name = QFileDialog::getOpenFileName(this, "Open File", last_path_to_sql, "SQL files (*.sql);;All files (*.*))");
+
+        if (project.getProjectPath().isNull()) {
+            query_path = last_path_to_sql;
+        } else {
+            query_path = project.getProjectPath() + "/scripts/development/review";
+        }
+
+        file_name = QFileDialog::getOpenFileName(this, "Open File", query_path, "SQL files (*.sql);;All files (*.*))");
         if (file_name != "") {
             file.setFileName(file_name);
             sql->openFileOnCurrent(file);            
@@ -523,7 +535,7 @@ void MainWindow::on_actionDisconect_triggered()
 
 void MainWindow::on_actionConfigurations_triggered()
 {
-    DlgConfiguration *conf = new DlgConfiguration(this);
+    DlgConfiguration *conf = new DlgConfiguration(!project.getProjectName().isNull(), this);
     conf->setPathToSql(path_to_sql);
     conf->setPathToModels(path_to_models);
     if (conf->exec()) {
@@ -968,18 +980,40 @@ void MainWindow::on_actionProject_Options_triggered()
 
 void MainWindow::on_actionClose_Project_triggered()
 {
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
 
+    if (!maybeSave())
+        return;
+
+    project.clean();
+    connections.clear();
+    connections.readConnections();
+    setConnectionsList();
+    last_path_to_sql = path_to_sql;
+    path_to_models = settings.value("path_to_models", "").toString();
+    setWindowTitle("PostgreSQL DBA Tool");
 }
 
 void MainWindow::on_actionOpen_Project_triggered()
 {
-    SSHConnector conn("pgdbatools.org", 22, "127.0.0.1", 5433, "localhost", 5432, "marcotc", "", "~/.ssh/id_rsa", "~/.ssh/id_rsa.pub");
-    QStringList ips;
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Project Directory"),
+                                                    QDir::homePath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty()) {
 
-    conn.tunnelInitialize();
+        if (QFileInfo(dir+"/config/config.xml").exists()) {
 
-    QMessageBox msgBox;
+            project.setProjectPath(dir);
+            project.readConfig();
+            connections.clear();
+            setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
+            connections.readConnections(project.getProjectPath() + "/config");
+            path_to_sql = project.getQueryPath();
+            last_path_to_sql = path_to_sql;
+            path_to_models = project.getModelPath();
+            setConnectionsList();
+        }
 
-    msgBox.setText(conn.getFingerprint());
-    msgBox.exec();
+    }
 }

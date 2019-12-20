@@ -2,11 +2,18 @@
 #include "ui_dlgconfiguration.h"
 #include <QFileDialog>
 
-DlgConfiguration::DlgConfiguration(QWidget *parent) :
+DlgConfiguration::DlgConfiguration(bool ready_only, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DlgConfiguration)
 {
     ui->setupUi(this);
+
+    if (ready_only) {
+        ui->path_to_sql->setEnabled(false);
+        ui->path_to_query_models->setEnabled(false);
+        ui->bt_open_path_sql->setEnabled(false);
+        ui->bt_open_path_models->setEnabled(false);
+    }
 }
 
 DlgConfiguration::~DlgConfiguration()
