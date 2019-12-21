@@ -18,6 +18,7 @@
 #include "ui_mainwindow.h"
 #include <QtWidgets>
 #include <QWebEngineView>
+#include <QMenu>
 #include "dlgmenunew.h"
 #include "dlgconnections.h"
 #include "dlgconfiguration.h"
@@ -49,6 +50,13 @@ MainWindow::MainWindow(QWidget *parent) :
     loadCustomMenus();
     setConnectionsList();
     ui->actionClose->setEnabled(false);
+    connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
+}
+
+void MainWindow::projectMenuOpen()
+{
+    ui->actionClose_Project->setEnabled(!project.getProjectName().isEmpty());
+    ui->actionProject_Options->setEnabled(!project.getProjectName().isEmpty());
 }
 
 MainWindow::~MainWindow()
@@ -131,13 +139,6 @@ void MainWindow::writeSettings()
     settings.setValue("path_to_sql", path_to_sql);
     settings.setValue("DOCK_LOCATIONS",this->saveState(1));
     settings.setValue("project_path", project.getProjectPath());
-    if(project.getProjectName() != "") {
-
-        project.saveConnections();
-        project.writeConfig();
-
-    } else
-        connections.writeConnections();
 }
 
 void MainWindow::disable_actions()
@@ -394,6 +395,7 @@ void MainWindow::on_actionManageConnections_triggered()
 {
     DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
+
     setConnectionsList();
 }
 
@@ -967,6 +969,9 @@ void MainWindow::on_actionNew_Project_triggered()
 
     if (prj.projectAdd()) {
 
+        project.saveConnections();
+        project.writeConfig();
+
         connections.clear();
         setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
         connections.readConnections(project.getProjectPath() + "/config");
@@ -983,7 +988,18 @@ void MainWindow::on_actionProject_Options_triggered()
     DlgProject prj(project, connections);
 
     if (prj.projectEdit()) {
+
+        project.saveConnections();
+        project.writeConfig();
+
+        connections.clear();
+
         setWindowTitle("PostgreSQL DBA Tool - " + project.getProjectName());
+        connections.readConnections(project.getProjectPath() + "/config");
+        path_to_sql = project.getQueryPath();
+        last_path_to_sql = path_to_sql;
+        path_to_models = project.getModelPath();
+        setConnectionsList();
     }
 }
 

@@ -109,12 +109,11 @@ private slots:
     void on_actionList_of_Views_triggered();
 
     void on_actionNew_Project_triggered();
-
     void on_actionProject_Options_triggered();
-
     void on_actionClose_Project_triggered();
-
     void on_actionOpen_Project_triggered();
+
+    void projectMenuOpen();
 
 signals:
     void clean_custom_menu();
