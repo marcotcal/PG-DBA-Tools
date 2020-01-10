@@ -29,7 +29,7 @@ class QueryModel : public QWidget
     Q_OBJECT
 
 public:
-    explicit QueryModel(ConnectionsData &connections, QWidget *parent = nullptr);
+    explicit QueryModel(ConnectionsData &connections, ProjectData &project, QWidget *parent = nullptr);
     ~QueryModel();
     void saveFile();
     void saveFileAs();
@@ -55,6 +55,7 @@ private slots:
 
 private:
     Ui::QueryModel *ui;
+    ProjectData &project;
     QueryModelData data;
     void dataToEditors();
     void editorsToData();

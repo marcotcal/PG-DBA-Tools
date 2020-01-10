@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QXmlStreamReader>
+#include "projectdata.h"
 
 class ModelListItem : public QObject
 {
@@ -40,7 +41,7 @@ class ModelScanner : public QThread
     Q_OBJECT
 
 public:
-    ModelScanner(QString path, QObject *parent=nullptr);
+    ModelScanner(QString path, ProjectData &project, QObject *parent=nullptr);
 
 protected:
     void run() override;
@@ -56,6 +57,7 @@ private:
 
     bool checkFile(const QString &file_name);
     void saveModelList();
+    ProjectData &project;
 
 };
 

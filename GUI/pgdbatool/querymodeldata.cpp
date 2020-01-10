@@ -3,9 +3,10 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
-QueryModelData::QueryModelData(ConnectionsData &connections, QObject *parent) :
+QueryModelData::QueryModelData(ConnectionsData &connections, ProjectData &project, QObject *parent) :
     QObject(parent),
-    connections(connections)
+    connections(connections),
+    project(project)
 {
     error = false;
     connected = false;
@@ -395,12 +396,20 @@ void QueryModelData::execute(ResultOutput *output, bool show_query)
 
 void QueryModelData::readModels()
 {
-    QFile file("models.xml");
+    QString model_file_name;
+    QFile file;
     QXmlStreamReader reader;
     QString code;
     QString description;
     QString file_name;
     QString model_path;
+
+    if (project.getProjectName() == "")
+        model_file_name = "models.xml";
+    else
+        model_file_name = QString("%1/config/models.xml").arg(project.getProjectPath());
+
+    file.setFileName(model_file_name);
 
     while(!items.isEmpty())
         delete items.takeFirst();

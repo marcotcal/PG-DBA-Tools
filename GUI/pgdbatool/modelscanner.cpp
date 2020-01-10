@@ -1,9 +1,10 @@
 #include "modelscanner.h"
 #include <QDirIterator>
 
-ModelScanner::ModelScanner(QString path, QObject *parent) :
-    QThread(parent),
-    path(path)
+ModelScanner::ModelScanner(QString path, ProjectData &project, QObject *parent) :
+    QThread(parent),    
+    path(path),
+    project(project)
 {
 
 }
@@ -85,9 +86,16 @@ void ModelScanner::saveModelList()
             "  <!ATTLIST model description CDATA \"\">\n"
             "  <!ELEMENT file_name (#PCDATA)>\n"
             "  <!ELEMENT model_path (#PCDATA)>\n"
-            "]>\n";
+            "]>\n";    
+    QString project_name = project.getProjectName();
+    QString file_name;
 
-    QFile file("models.xml");
+    if (project_name == "")
+        file_name = "models.xml";
+    else
+        file_name = QString("%1/config/models.xml").arg(project.getProjectPath());
+
+    QFile file(file_name);
 
     file.open(QIODevice::WriteOnly);
     QXmlStreamWriter xmlWriter(&file);

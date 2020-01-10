@@ -6,10 +6,11 @@
 #include <QTextStream>
 #include <QMessageBox>
 
-QueryModel::QueryModel(ConnectionsData &connections, QWidget *parent) :
+QueryModel::QueryModel(ConnectionsData &connections, ProjectData &project, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QueryModel),
-    data(connections),
+    project(project),
+    data(connections, project),
     connections(connections)
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());

@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     readSettings();    
     disable_actions();
-    data = new QueryModelData(connections, this);
+    data = new QueryModelData(connections, project, this);
     data->readModels();
     loadCustomMenus();
     setConnectionsList();
@@ -282,7 +282,7 @@ QueryModel *MainWindow::openNewQueryModel(QString name)
     if (!name.isEmpty()) {
 
         new QListWidgetItem(name, ui->editor_list);
-        qmod = new QueryModel(connections, ui->main_stack);
+        qmod = new QueryModel(connections, project, ui->main_stack);
         ui->main_stack->addWidget(qmod);
         ui->main_stack->setCurrentWidget(qmod);        
         ui->editor_list->clearSelection();
@@ -676,7 +676,7 @@ void MainWindow::on_actionScan_Model_Directory_triggered()
 
         ui->message_output->clear();
         ui->message_output->moveCursor(QTextCursor::End);
-        ModelScanner *scan = new ModelScanner(dir);
+        ModelScanner *scan = new ModelScanner(dir, project);
         connect(scan, &ModelScanner::finished, scan, &ModelScanner::deleteLater);
         connect(scan, &ModelScanner::fileReaded, this, &MainWindow::do_fileReaded);
         connect(scan, &ModelScanner::scanCompleted, this, &MainWindow::do_scanCompleted);

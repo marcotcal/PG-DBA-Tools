@@ -5,6 +5,7 @@
 #include <QXmlStreamReader>
 #include <connectionsdata.h>
 #include "resultoutput.h"
+#include "projectdata.h"
 
 class ModelItem : public QObject
 {
@@ -113,7 +114,7 @@ class QueryModelData : public QObject
     Q_OBJECT
 
 public:
-    explicit QueryModelData(ConnectionsData &connections, QObject *parent = nullptr);
+    explicit QueryModelData(ConnectionsData &connections, ProjectData &project, QObject *parent = nullptr);
     ~QueryModelData();
     bool loadResource(QString resource);
     bool loadFromFile(QFile &file);
@@ -159,6 +160,7 @@ private:
     QString output_type;
     QXmlStreamReader reader;
     ConnectionsData &connections;
+    ProjectData &project;
     PGconn *conn;
     void readXML();
     QString parseParameters(QString query);   
