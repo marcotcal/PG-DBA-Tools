@@ -189,7 +189,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "at authorization before begin binary bit blob "
             "boolean both breadth by call cascade cascaded case "
             "cast catalog char character check class clob close "
-            "collate collation column commit completion connect "
+            "collate collation column conflict commit completion connect "
             "connection constraint constraints constructor "
             "continue corresponding create cross cube current "
             "current_date current_path current_role current_time "
@@ -198,16 +198,16 @@ const char *PostgreSQLLexer::keywords(int set) const
             "deferrable deferred delete depth deref desc "
             "describe descriptor destroy destructor "
             "deterministic dictionary diagnostics disconnect "
-            "distinct domain double drop dynamic each else end "
+            "distinct domain double drop dynamic each else elsif end "
             "end-exec equals escape every except exception exec "
-            "execute external false fetch first float for "
+            "execute external exists false fetch first float for "
             "foreign found from free full function general get "
             "global go goto grant group grouping having host "
             "hour identity if ignore immediate in indicator "
             "initialize initially inner inout input insert int "
             "integer intersect interval into is isolation "
             "iterate join key language large last lateral "
-            "leading left less level like limit local localtime "
+            "leading left less level like limit local localtime leakproof "
             "localtimestamp locator map match minute modifies "
             "modify module month names national natural nchar "
             "nclob new next no none not null numeric object of "
@@ -231,7 +231,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "view when whenever where with without work write "
             "year zone replace do index simple setof cost volatile "
             "raise notice debug loop owner immutable ilike search_path "
-            "inherits oids tablespace type returning ";
+            "inherits oids tablespace type returning nothing";
 
     if (set == 3)
         return
