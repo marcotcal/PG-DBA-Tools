@@ -139,6 +139,10 @@ void MainWindow::writeSettings()
     settings.setValue("path_to_sql", path_to_sql);
     settings.setValue("DOCK_LOCATIONS",this->saveState(1));
     settings.setValue("project_path", project.getProjectPath());
+    if (project.getProjectName() != "")
+        connections.writeConnections(project.getProjectPath()+"/config");
+    else
+        connections.writeConnections();
 }
 
 void MainWindow::disable_actions()
