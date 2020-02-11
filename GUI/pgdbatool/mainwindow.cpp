@@ -655,6 +655,7 @@ void MainWindow::on_actionCancel_Current_Query_triggered()
 
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
+    /*
     if (currentRow != -1) {
         data->databaseDisconnect();
         if(!connections.getConnections().at(currentRow)->isInvalid()) {
@@ -666,6 +667,7 @@ void MainWindow::on_connection_list_currentRowChanged(int currentRow)
             }
         }
     }
+    */
 }
 
 void MainWindow::on_actionScan_Model_Directory_triggered()

@@ -669,7 +669,7 @@
   </action>
   <action name="actionList_of_Tables">
    <property name="text">
-    <string>&amp;List of Tables</string>
+    <string>&amp;List of Tables By Schema</string>
    </property>
   </action>
   <action name="actionSave_SQL_Tool">
@@ -760,7 +760,7 @@
   </action>
   <action name="actionList_of_Views">
    <property name="text">
-    <string>List of Views</string>
+    <string>List of Views By Schema</string>
    </property>
   </action>
   <action name="actionPlanner_Method_Settings">
