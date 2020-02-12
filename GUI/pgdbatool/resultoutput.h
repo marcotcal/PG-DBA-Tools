@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QPlainTextEdit>
 #include <libpq-fe.h>
+#include <QList>
+#include <QMap>
 
 class ResultOutput : public QObject
 {
@@ -18,6 +20,7 @@ public:
     virtual void clearOutput() = 0;
     void cleanMessage();
     void setFetchLimit(int value);
+    QMap<QString, QVariant> &getInformationMap() { return information_map; }
 
 signals:
 
@@ -37,6 +40,7 @@ protected:
     int fetch_limit;
     bool show_border;
     bool show_header;
+    QMap<QString, QVariant> information_map;
 
 private:
 

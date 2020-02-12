@@ -51,6 +51,20 @@ void HtmlOutput::generateOutput(PGresult *res)
             "}"
             "</style>";
 
+    html += "<table cellpadding='5' style='font-family:\"Courier New\", Courier, monospace; font-size:80%' border='1'>";
+
+    html += "  <tr>";
+    html += "    <th>";
+    html += "       Database";
+    html += "    </th>";
+    html += "    <td>";
+    html += "       teste_db";
+    html += "    </td>";
+    html += "  </tr>";
+
+    html += "</table>";
+    html += "<br>";
+
     html += "<table cellpadding='5' style='font-family:\"Courier New\", Courier, monospace; font-size:80%' border='1'><tr>";
 
     for(int c = 0; c < fields.count(); c++) {

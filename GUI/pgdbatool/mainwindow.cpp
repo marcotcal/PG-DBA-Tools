@@ -712,21 +712,45 @@ void MainWindow::on_actionExecute_Saved_Model_triggered()
 void MainWindow::executeModel(QString resource_name)
 {
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    int currentRow;
 
     data->clear();
     data->loadResource(resource_name);
+    currentRow = ui->connection_list->currentRow();
 
     DlgParameters *param = new DlgParameters(data, this);
 
     if ((data->getParameters().count() == 0 && data->getOrders().count() == 0) || param->exec()) {
 
-        new QListWidgetItem(data->getDescription(), ui->editor_list);
-        QWebEngineView *editor = new QWebEngineView(ui->main_stack);
-        ui->main_stack->addWidget(editor);
-        ui->main_stack->setCurrentWidget(editor);
-        ui->editor_list->clearSelection();
-        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());        
-        data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());   
+        if (currentRow != -1) {
+            data->databaseDisconnect();
+            if(!connections.getConnections().at(currentRow)->isInvalid()) {
+                data->databaseConnect(currentRow);
+
+                if (!data->getConnected()) {
+
+                    ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text() + " (Invalid)");
+                    ui->connection_list->item(currentRow)->setForeground(Qt::red);
+
+                } else {
+
+                    ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text());
+                    ui->connection_list->item(currentRow)->setForeground(Qt::black);
+
+                    new QListWidgetItem(data->getDescription(), ui->editor_list);
+                    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
+                    ui->main_stack->addWidget(editor);
+                    ui->main_stack->setCurrentWidget(editor);
+                    ui->editor_list->clearSelection();
+                    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+                    data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());
+
+                    data->databaseDisconnect();
+
+                }
+            }
+        }
+
     }
 }
 
