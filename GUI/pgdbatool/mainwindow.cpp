@@ -743,7 +743,16 @@ void MainWindow::executeModel(QString resource_name)
                     ui->main_stack->setCurrentWidget(editor);
                     ui->editor_list->clearSelection();
                     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-                    data->execute(new HtmlOutput(editor, ui->message_output, this), ui->show_query->isChecked());
+                    HtmlOutput *list = new HtmlOutput(editor, ui->message_output, this);
+
+                    list->getInformationMap()["Maintenance Connection"] = ui->connection_list->item(currentRow)->text();
+
+                    foreach(QueryParameter *param, data->getParameters()) {
+
+                        list->getInformationMap()["Param: " + param->getDescription()] = param->getValue();
+                    }
+
+                    data->execute(list, ui->show_query->isChecked());
 
                     data->databaseDisconnect();
 

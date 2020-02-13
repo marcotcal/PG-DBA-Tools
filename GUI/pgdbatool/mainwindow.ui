@@ -199,6 +199,8 @@
     <addaction name="actionClose_Project"/>
     <addaction name="separator"/>
     <addaction name="actionProject_Options"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_New_SQL_Script"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuConnections"/>
@@ -251,7 +253,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="windowTitle">
-    <string>&amp;Connections</string>
+    <string>&amp;Maintenance Connections</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -806,6 +808,11 @@
   <action name="actionProject_Options">
    <property name="text">
     <string>Project Options...</string>
+   </property>
+  </action>
+  <action name="actionCreate_New_SQL_Script">
+   <property name="text">
+    <string>Create New SQL Script</string>
    </property>
   </action>
  </widget>

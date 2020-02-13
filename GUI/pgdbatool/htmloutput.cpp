@@ -51,19 +51,30 @@ void HtmlOutput::generateOutput(PGresult *res)
             "}"
             "</style>";
 
-    html += "<table cellpadding='5' style='font-family:\"Courier New\", Courier, monospace; font-size:80%' border='1'>";
+    QMap<QString, QVariant>::iterator it = getInformationMap().begin();
 
-    html += "  <tr>";
-    html += "    <th>";
-    html += "       Database";
-    html += "    </th>";
-    html += "    <td>";
-    html += "       teste_db";
-    html += "    </td>";
-    html += "  </tr>";
+    if (getInformationMap().begin() != getInformationMap().end()) {
+        html += "<table cellpadding='5' style='font-family:\"Courier New\", Courier, monospace; font-size:80%' border='1'>";
+        html += "  <tr>";
+    }
 
-    html += "</table>";
-    html += "<br>";
+    while(it != getInformationMap().end()) {
+
+        html += "    <th align='left'>";
+        html += it.key();
+        html += "    </th>";
+        html += "    <td>";
+        html += it.value().toString();
+        html += "    </td>";
+        html += "  </tr>";
+
+        ++it;
+    }
+
+    if (getInformationMap().begin() != getInformationMap().end()) {
+        html += "</table>";
+        html += "<br>";
+    }
 
     html += "<table cellpadding='5' style='font-family:\"Courier New\", Courier, monospace; font-size:80%' border='1'><tr>";
 
