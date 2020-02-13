@@ -37,6 +37,7 @@
 #include "outputset.h"
 #include "dlgproject.h"
 #include "sshconnector.h"
+#include "dlgcreatescript.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -1094,4 +1095,11 @@ void MainWindow::on_actionOpen_Project_triggered()
         }
 
     }
+}
+
+void MainWindow::on_actionCreate_New_SQL_Script_triggered()
+{
+    DlgCreateScript dlg;
+
+    dlg.exec();
 }

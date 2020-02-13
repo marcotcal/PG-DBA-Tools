@@ -66,7 +66,8 @@ SOURCES += \
     memoryeditor.cpp \
     dlgproject.cpp \
     projectdata.cpp \
-    sshconnector.cpp
+    sshconnector.cpp \
+    dlgcreatescript.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -101,7 +102,8 @@ HEADERS += \
     memoryeditor.h \
     dlgproject.h \
     projectdata.h \
-    sshconnector.h
+    sshconnector.h \
+    dlgcreatescript.h
 
 FORMS += \
     mainwindow.ui \
@@ -121,7 +123,8 @@ FORMS += \
     dlgworkers.ui \
     dlgotherplanningsettings.ui \
     memoryeditor.ui \
-    dlgproject.ui
+    dlgproject.ui \
+    dlgcreatescript.ui
 
 LIBS += -lqscintilla2_qt5
 

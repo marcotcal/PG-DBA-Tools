@@ -115,6 +115,8 @@ private slots:
 
     void projectMenuOpen();
 
+    void on_actionCreate_New_SQL_Script_triggered();
+
 signals:
     void clean_custom_menu();
 
