@@ -98,6 +98,8 @@ void MainWindow::readSettings()
     path_to_sql = settings.value("path_to_sql", "").toString();
     last_path_to_sql = path_to_sql;
     path_to_models = settings.value("path_to_models", "").toString();
+    cfg_options = settings.value("config_options", (1+2+4)).toInt();
+    cfg_task_prefix = settings.value("config_task_prefix", "").toString();
 
     project.setProjectPath(settings.value("project_path", "").toString());
     project.readConfig();
@@ -140,6 +142,8 @@ void MainWindow::writeSettings()
     settings.setValue("path_to_sql", path_to_sql);
     settings.setValue("DOCK_LOCATIONS",this->saveState(1));
     settings.setValue("project_path", project.getProjectPath());
+    settings.setValue("config_options", cfg_options);
+    settings.setValue("config_task_prefix", cfg_task_prefix);
     if (project.getProjectName() != "")
         connections.writeConnections(project.getProjectPath()+"/config");
     else
@@ -546,9 +550,13 @@ void MainWindow::on_actionConfigurations_triggered()
     DlgConfiguration *conf = new DlgConfiguration(!project.getProjectName().isNull(), this);
     conf->setPathToSql(path_to_sql);
     conf->setPathToModels(path_to_models);
+    conf->setOptions(cfg_options);
+    conf->setTaskPrefix(cfg_task_prefix);
     if (conf->exec()) {
         path_to_sql = conf->getPathToSql();
         path_to_models = conf->getPathToModels();
+        cfg_options = conf->getOptions();
+        cfg_task_prefix = conf->getTaskPrefix();
     }
 }
 

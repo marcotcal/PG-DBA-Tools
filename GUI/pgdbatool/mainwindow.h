@@ -130,6 +130,8 @@ private:
     QString path_to_sql;
     QString path_to_models;
     QString last_path_to_sql;
+    int cfg_options;
+    QString cfg_task_prefix;
 
     bool maybeSave();
     void readSettings();
