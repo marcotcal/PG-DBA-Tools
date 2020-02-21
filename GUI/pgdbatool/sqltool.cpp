@@ -22,6 +22,8 @@
 #include <QTextStream>
 #include <QFileInfo>
 #include <QFile>
+#include <QMenu>
+#include <QAction>
 #include <QFontDatabase>
 #include "sqltool.h"
 #include "ui_sqltool.h"
@@ -45,6 +47,31 @@ void EditorItem::setFileName(QString value)
 const QString &EditorItem::getFileName() const
 {
     return file_name;
+}
+
+void EditorItem::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu *menu = createStandardContextMenu();
+    QAction *action;
+    //QMenu *menu = new QMenu();
+    menu->addSeparator();
+    action = menu->addAction(tr("Reserved Word to Uppercase"));
+
+    connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+
+    menu->exec(event->globalPos());
+    delete menu;
+}
+
+void EditorItem::on_reserved_word_uppercase_triggered()
+{
+    QString text;
+    if (hasSelectedText()) {
+        text = selectedText();
+        // TODO - Inplement reserved word change
+        text = text.toUpper();
+        replaceSelectedText(text);
+    }
 }
 
 EditorItem::~EditorItem() {
@@ -277,6 +304,7 @@ void SqlTool::initializeEditor(EditorItem *editor) {
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
     editor->setModified(false);
+
 }
 
 bool SqlTool::saveToXML(QString file_name)

@@ -44,6 +44,11 @@ public:
     ~EditorItem();
     void setFileName(QString value);
     const QString &getFileName() const;
+    void contextMenuEvent(QContextMenuEvent *event);
+
+public slots:
+
+    void on_reserved_word_uppercase_triggered();
 
 private:
     QString file_name;
