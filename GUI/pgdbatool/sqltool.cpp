@@ -25,6 +25,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QFontDatabase>
+#include <QTextEdit>
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
@@ -56,9 +57,20 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     //QMenu *menu = new QMenu();
     menu->addSeparator();
     action = menu->addAction(tr("Reserved Word to Uppercase"));
-
     connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
+    action = menu->addAction(tr("Cut"));
+    action->setShortcut(Qt::CTRL+'x');
+    if (selectedText().isEmpty())
+        action->setEnabled(false);
+
+    action = menu->addAction(tr("Copy"));
+    action->setShortcut(Qt::CTRL+'c');
+    action->setEnabled(hasSelectedText());
+
+    action = menu->addAction(tr("Paste"));
+    action->setShortcut(Qt::CTRL+'v');
+    action->setEnabled(true); // TODO check can paste
     menu->exec(event->globalPos());
     delete menu;
 }
