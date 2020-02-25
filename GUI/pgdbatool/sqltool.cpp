@@ -26,6 +26,8 @@
 #include <QAction>
 #include <QFontDatabase>
 #include <QTextEdit>
+#include <QClipboard>
+#include <QMimeData>
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
@@ -52,25 +54,56 @@ const QString &EditorItem::getFileName() const
 
 void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 {
-    QMenu *menu = createStandardContextMenu();
+    //QMenu *menu = createStandardContextMenu();
     QAction *action;
-    //QMenu *menu = new QMenu();
+    const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    QMenu *menu = new QMenu();
+
+    action = menu->addAction(tr("Undo"));
+    action->setShortcut(Qt::CTRL+'z');
+    connect(action, SIGNAL(triggered()), this, SLOT(undo()));
+    action->setEnabled(isUndoAvailable());
+
+    action = menu->addAction(tr("Redo"));
+    action->setShortcut(Qt::CTRL+'y');
+    connect(action, SIGNAL(triggered()), this, SLOT(redo()));
+    action->setEnabled(isRedoAvailable());
+
     menu->addSeparator();
-    action = menu->addAction(tr("Reserved Word to Uppercase"));
-    connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
     action = menu->addAction(tr("Cut"));
     action->setShortcut(Qt::CTRL+'x');
+    connect(action, SIGNAL(triggered()), this, SLOT(cut()));
     if (selectedText().isEmpty())
         action->setEnabled(false);
 
     action = menu->addAction(tr("Copy"));
     action->setShortcut(Qt::CTRL+'c');
+    connect(action, SIGNAL(triggered()), this, SLOT(copy()));
     action->setEnabled(hasSelectedText());
 
     action = menu->addAction(tr("Paste"));
     action->setShortcut(Qt::CTRL+'v');
-    action->setEnabled(true); // TODO check can paste
+    connect(action, SIGNAL(triggered()), this, SLOT(paste()));
+    action->setEnabled((mimeData->hasHtml() || mimeData->hasText()));
+
+    action = menu->addAction(tr("Delete"));
+    action->setEnabled(hasSelectedText());
+    connect(action, SIGNAL(triggered()), this, SLOT(on_delete_selection_triggered()));
+
+    menu->addSeparator();
+
+    action = menu->addAction(tr("Select All"));
+    action->setShortcut(Qt::CTRL+'a');
+    action->setEnabled(!text().isEmpty());
+
+    menu->addSeparator();
+    action = menu->addAction(tr("Reserved Word to Uppercase"));
+    action->setEnabled(hasSelectedText());
+    connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+
     menu->exec(event->globalPos());
     delete menu;
 }
@@ -83,6 +116,13 @@ void EditorItem::on_reserved_word_uppercase_triggered()
         // TODO - Inplement reserved word change
         text = text.toUpper();
         replaceSelectedText(text);
+    }
+}
+
+void EditorItem::on_delete_selection_triggered()
+{
+    if (hasSelectedText()) {
+        replaceSelectedText("");
     }
 }
 
