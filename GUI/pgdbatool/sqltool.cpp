@@ -55,11 +55,10 @@ const QString &EditorItem::getFileName() const
 void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 {
     //QMenu *menu = createStandardContextMenu();
+    QMenu *menu = new QMenu();
     QAction *action;
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
-
-    QMenu *menu = new QMenu();
 
     action = menu->addAction(tr("Undo"));
     action->setShortcut(Qt::CTRL+'z');
@@ -97,6 +96,7 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
     action = menu->addAction(tr("Select All"));
     action->setShortcut(Qt::CTRL+'a');
+    connect(action, SIGNAL(triggered()), this, SLOT(selectAll()));
     action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
