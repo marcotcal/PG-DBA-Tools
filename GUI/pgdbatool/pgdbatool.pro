@@ -125,11 +125,12 @@ FORMS += \
 
 LIBS += -lqscintilla2_qt5
 
+# Include postgres lib
 unix:INCLUDEPATH += $$system(pg_config --includedir)
-
 unix:LIBS += -L$$system(pg_config --libdir)
 unix:LIBS += $$system(pg_config --libs) -lpq
 
+#include libssh2
 unix:LIBS += -lssh2
 
 RESOURCES += \
