@@ -125,8 +125,12 @@ FORMS += \
 
 LIBS += -lqscintilla2_qt5
 
-unix:INCLUDEPATH += /usr/include/pgsql
-unix:LIBS += -lpq -lpgcommon -lpgport -lssl -lcrypto -lgssapi_krb5 -lz -lrt -lcrypt -ldl -lm -lssh2
+unix:INCLUDEPATH += $$system(pg_config --includedir)
+
+unix:LIBS += -L$$system(pg_config --libdir)
+unix:LIBS += $$system(pg_config --libs) -lpq
+
+unix:LIBS += -lssh2
 
 RESOURCES += \
     pgdbatool.qrc
