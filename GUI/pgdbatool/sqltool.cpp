@@ -37,6 +37,7 @@
 #include "dlgparallelsettings.h"
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
+#include "frmfindtext.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";
@@ -59,6 +60,13 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     QAction *action;
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
+
+    action = menu->addAction(tr("Find..."));
+    action->setShortcut(Qt::CTRL+'f');
+    connect(action, SIGNAL(triggered()), this, SLOT(on_find_triggered()));
+    action->setEnabled(!text().isEmpty());
+
+    menu->addSeparator();
 
     action = menu->addAction(tr("Undo"));
     action->setShortcut(Qt::CTRL+'z');
@@ -124,6 +132,18 @@ void EditorItem::on_delete_selection_triggered()
     if (hasSelectedText()) {
         replaceSelectedText("");
     }
+}
+
+void EditorItem::on_find_triggered()
+{
+    FrmFindText *frm = new FrmFindText();
+    Qt::WindowFlags flags;
+    flags = frm->windowFlags();
+
+    flags |= Qt::WindowStaysOnTopHint;
+
+    frm->setWindowFlags( flags );
+    frm->show();
 }
 
 EditorItem::~EditorItem() {
