@@ -49,6 +49,7 @@ public:
 public slots:
 
     void on_reserved_word_uppercase_triggered();
+    void on_delete_selection_triggered();
 
 private:
     QString file_name;
