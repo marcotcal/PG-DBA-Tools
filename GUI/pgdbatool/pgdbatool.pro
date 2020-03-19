@@ -67,7 +67,8 @@ SOURCES += \
     dlgproject.cpp \
     projectdata.cpp \
     sshconnector.cpp \
-    dlgcreatescript.cpp
+    dlgcreatescript.cpp \
+    frmfindtext.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -103,7 +104,8 @@ HEADERS += \
     dlgproject.h \
     projectdata.h \
     sshconnector.h \
-    dlgcreatescript.h
+    dlgcreatescript.h \
+    frmfindtext.h
 
 FORMS += \
     mainwindow.ui \
@@ -124,7 +126,8 @@ FORMS += \
     dlgotherplanningsettings.ui \
     memoryeditor.ui \
     dlgproject.ui \
-    dlgcreatescript.ui
+    dlgcreatescript.ui \
+    frmfindtext.ui
 
 LIBS += -lqscintilla2_qt5
 

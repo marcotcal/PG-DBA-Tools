@@ -30,6 +30,7 @@
 #include "outputset.h"
 #include "connectionsettings.h"
 #include "projectdata.h"
+#include "frmfindtext.h"
 
 namespace Ui {
 class SqlTool;
@@ -50,9 +51,11 @@ public slots:
 
     void on_reserved_word_uppercase_triggered();
     void on_delete_selection_triggered();
+    void on_find_triggered();
 
 private:
     QString file_name;
+    FrmFindText *frm_find;
 };
 
 class SqlTool : public QWidget
