@@ -126,6 +126,10 @@ private slots:
     void on_actionDelete_triggered();
     void on_actionSelect_All_triggered();
 
+    void on_actionFind_triggered();
+
+    void on_actionFind_Next_triggered();
+
 signals:
     void clean_custom_menu();
 

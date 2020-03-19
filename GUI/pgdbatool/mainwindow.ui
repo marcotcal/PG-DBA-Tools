@@ -837,10 +837,16 @@
    <property name="text">
     <string>Find</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
   </action>
   <action name="actionFind_Next">
    <property name="text">
     <string>Find Next</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
    </property>
   </action>
   <action name="actionUndo">

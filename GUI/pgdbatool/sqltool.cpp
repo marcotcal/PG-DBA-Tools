@@ -490,7 +490,7 @@ void SqlTool::findFirst()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
-
+        editor->on_find_triggered();
     }
 }
 

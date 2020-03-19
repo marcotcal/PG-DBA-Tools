@@ -1198,3 +1198,19 @@ void MainWindow::on_actionSelect_All_triggered()
         sql->selectAll();
     }
 }
+
+void MainWindow::on_actionFind_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->findFirst();
+    }
+}
+
+void MainWindow::on_actionFind_Next_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->findNext();
+    }
+}
