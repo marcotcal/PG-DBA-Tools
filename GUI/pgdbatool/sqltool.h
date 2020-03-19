@@ -92,6 +92,30 @@ public:
     void parallelismSettings();
     void workersSettings();
     void otherPlanningSettings();
+
+    // Methods related to menu edit
+    // All this methods will get info from the active editor
+
+    bool isRedoAvailable();
+    bool isUndoAvailable();
+    bool isCutAvailable();
+    bool isCopyAvailable();
+    bool isPasteAvailabe();
+    bool isDeleteAvailable();
+    bool isSelectAllAvailable();
+    bool isFindAvailable();
+    bool isFindNextAvailable();
+
+    void redo();
+    void undo();
+    void cut();
+    void copy();
+    void paste();
+    void deleteText();
+    void selectAll();
+    void findFirst();
+    void findNext();
+
 private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);

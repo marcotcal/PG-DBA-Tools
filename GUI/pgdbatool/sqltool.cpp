@@ -75,8 +75,7 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     action = menu->addAction(tr("Cut"));
     action->setShortcut(Qt::CTRL+'x');
     connect(action, SIGNAL(triggered()), this, SLOT(cut()));
-    if (selectedText().isEmpty())
-        action->setEnabled(false);
+    action->setEnabled(hasSelectedText());
 
     action = menu->addAction(tr("Copy"));
     action->setShortcut(Qt::CTRL+'c');
@@ -333,6 +332,152 @@ void SqlTool::otherPlanningSettings()
     DlgOtherPlanningSettings dlg;
 
     if(dlg.exec()) {
+
+    }
+}
+
+bool SqlTool::isRedoAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return editor->isRedoAvailable();
+    }
+}
+
+bool SqlTool::isUndoAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return editor->isUndoAvailable();
+    }
+}
+
+bool SqlTool::isCutAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return editor->hasSelectedText();
+    }
+}
+
+bool SqlTool::isCopyAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return editor->hasSelectedText();
+    }
+}
+
+bool SqlTool::isPasteAvailabe()
+{
+    const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return (mimeData->hasHtml() || mimeData->hasText());
+    }
+}
+
+bool SqlTool::isDeleteAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return editor->hasSelectedText();
+    }
+}
+
+bool SqlTool::isSelectAllAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return !editor->text().isEmpty();
+    }
+}
+
+bool SqlTool::isFindAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        return !editor->text().isEmpty();
+    }
+}
+
+bool SqlTool::isFindNextAvailable()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+
+    }
+}
+
+void SqlTool::redo()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->redo();
+    }
+}
+
+void SqlTool::undo()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->undo();
+    }
+}
+
+void SqlTool::cut()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->cut();
+    }
+}
+
+void SqlTool::copy()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->copy();
+    }
+}
+
+void SqlTool::paste()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->paste();
+    }
+}
+
+void SqlTool::deleteText()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->replaceSelectedText("");
+    }
+}
+
+void SqlTool::selectAll()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+        editor->selectAll();
+    }
+}
+
+void SqlTool::findFirst()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+
+    }
+}
+
+void SqlTool::findNext()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
 
     }
 }
