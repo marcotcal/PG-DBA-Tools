@@ -7,12 +7,14 @@ namespace Ui {
 class FrmFindText;
 }
 
+class EditorItem;
+
 class FrmFindText : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit FrmFindText(QWidget *parent = nullptr);
+    explicit FrmFindText(EditorItem *editor);
     ~FrmFindText();
 
 private slots:
@@ -22,6 +24,7 @@ private slots:
 
 private:
     Ui::FrmFindText *ui;
+    EditorItem *editor;
 };
 
 #endif // FRMFINDTEXT_H

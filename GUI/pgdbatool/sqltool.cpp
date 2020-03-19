@@ -37,10 +37,16 @@
 #include "dlgparallelsettings.h"
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
-#include "frmfindtext.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";
+    frm_find = new FrmFindText(this);
+
+    Qt::WindowFlags flags;
+    flags = frm_find->windowFlags();
+    flags |= Qt::WindowStaysOnTopHint;
+
+    frm_find->setWindowFlags( flags );
 }
 
 void EditorItem::setFileName(QString value)
@@ -136,18 +142,12 @@ void EditorItem::on_delete_selection_triggered()
 
 void EditorItem::on_find_triggered()
 {
-    FrmFindText *frm = new FrmFindText();
-    Qt::WindowFlags flags;
-    flags = frm->windowFlags();
 
-    flags |= Qt::WindowStaysOnTopHint;
-
-    frm->setWindowFlags( flags );
-    frm->show();
+    frm_find->show();
 }
 
 EditorItem::~EditorItem() {
-
+    delete frm_find;
 }
 
 SqlTool::SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *parent) :
