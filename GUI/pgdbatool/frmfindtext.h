@@ -22,6 +22,8 @@ private slots:
 
     void on_bt_close_clicked();
 
+    void on_cursor_position_toggled(bool checked);
+
 private:
     Ui::FrmFindText *ui;
     EditorItem *editor;
