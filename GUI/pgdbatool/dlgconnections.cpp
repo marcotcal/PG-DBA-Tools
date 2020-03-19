@@ -27,6 +27,7 @@ DlgConnections::DlgConnections(ConnectionsData &conn, QWidget *parent) :
     connections(conn)
 {
     ui->setupUi(this);
+    current_row = -1;
     ui->configurations->setCurrentIndex(0);
     connections.sortByName();
     loadList();
@@ -156,12 +157,14 @@ bool DlgConnections::testConnection()
 
     if (PQstatus(conn) == CONNECTION_OK) {
         PQfinish(conn);
-        connections.getConnections().at(current_row)->setInvalid(false);
+        if (current_row != -1)
+            connections.getConnections().at(current_row)->setInvalid(false);
         msg.setText("Successful Connection");
         msg.exec();
         return true;
     }
-    connections.getConnections().at(current_row)->setInvalid(true);
+    if (current_row != -1)
+        connections.getConnections().at(current_row)->setInvalid(true);
     msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
     msg.exec();
     return false;

@@ -512,7 +512,15 @@ void SqlTool::databaseConnect() {
     QMessageBox msg;
     QString conn_str;
     if (!ui->ck_use_alternate_user->isChecked()) {
-        conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
+
+        if (ui->connection_list->currentIndex() != -1)
+            conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
+        else {
+            msg.setText("No connection available. Please create a connection.");
+            msg.exec();
+            return;
+        }
+
     } else {
         conn_str = connections.getConnections().at(ui->connection_list->currentIndex())
                 ->connectStr(ui->ed_user->text(), ui->ed_password->text());
