@@ -52,12 +52,42 @@ MainWindow::MainWindow(QWidget *parent) :
     setConnectionsList();
     ui->actionClose->setEnabled(false);
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
+    connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
 }
 
 void MainWindow::projectMenuOpen()
 {
     ui->actionClose_Project->setEnabled(!project.getProjectName().isEmpty());
     ui->actionProject_Options->setEnabled(!project.getProjectName().isEmpty());
+}
+
+void MainWindow::editMenuOpen()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+
+    if (sql) {
+        // edit menu
+        ui->actionFind->setEnabled(sql->isFindAvailable());
+        ui->actionFind_Next->setEnabled(sql->isFindNextAvailable());
+        ui->actionCut->setEnabled(sql->isCutAvailable());
+        ui->actionCopy->setEnabled(sql->isCopyAvailable());
+        ui->actionPaste->setEnabled(sql->isPasteAvailabe());
+        ui->actionUndo->setEnabled(sql->isUndoAvailable());
+        ui->actionRedo->setEnabled(sql->isRedoAvailable());
+        ui->actionDelete->setEnabled(sql->isDeleteAvailable());
+        ui->actionSelect_All->setEnabled(sql->isSelectAllAvailable());
+        // end of edit menu
+    } else {
+        ui->actionFind->setEnabled(false);
+        ui->actionFind_Next->setEnabled(false);
+        ui->actionCut->setEnabled(false);
+        ui->actionCopy->setEnabled(false);
+        ui->actionPaste->setEnabled(false);
+        ui->actionUndo->setEnabled(false);
+        ui->actionRedo->setEnabled(false);
+        ui->actionDelete->setEnabled(false);
+        ui->actionSelect_All->setEnabled(false);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -171,11 +201,12 @@ void MainWindow::disable_actions()
     ui->actionGenetic_Query_Optimization_Settings->setEnabled(false);
     ui->actionPallelism_Settings->setEnabled(false);
     ui->actionOther_Planner_Related_Settings->setEnabled(false);
-    ui->actionWorkers_Settings->setEnabled(false);
+    ui->actionWorkers_Settings->setEnabled(false);    
 }
 
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
 {    
+
     ui->actionAdd_Editor->setEnabled(true);
     ui->actionClose_Editor->setEnabled(true);
     ui->actionSave->setEnabled(true);
@@ -1110,4 +1141,60 @@ void MainWindow::on_actionCreate_New_SQL_Script_triggered()
     DlgCreateScript dlg;
 
     dlg.exec();
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->undo();
+    }
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->redo();
+    }
+}
+
+void MainWindow::on_actionCut_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->cut();
+    }
+}
+
+void MainWindow::on_actionCopy_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->copy();
+    }
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->paste();
+    }
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->deleteText();
+    }
+}
+
+void MainWindow::on_actionSelect_All_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->selectAll();
+    }
 }
