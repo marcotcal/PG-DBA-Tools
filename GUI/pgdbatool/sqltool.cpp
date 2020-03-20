@@ -39,14 +39,7 @@
 #include "dlgotherplanningsettings.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
-    file_name = "";
-    frm_find = new FrmFindText(this);
-
-    Qt::WindowFlags flags;
-    flags = frm_find->windowFlags();
-    flags |= Qt::WindowStaysOnTopHint;
-
-    frm_find->setWindowFlags( flags );
+    file_name = "";    
 }
 
 void EditorItem::setFileName(QString value)
@@ -141,8 +134,7 @@ void EditorItem::on_delete_selection_triggered()
 
 void EditorItem::on_find_triggered()
 {
-
-    frm_find->show();
+    emit findRequest(this);
 }
 
 EditorItem::~EditorItem() {
@@ -174,6 +166,7 @@ SqlTool::SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *pa
     group_name = "";
     query_running = false;
     conn_settings = nullptr;
+    ui->find_panel->hide();
 }
 
 SqlTool::~SqlTool()
@@ -490,7 +483,8 @@ void SqlTool::findFirst()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
-        editor->on_find_triggered();
+        ui->find_panel->show();
+        //editor->on_find_triggered();
     }
 }
 
@@ -626,6 +620,7 @@ EditorItem *SqlTool::addEditor() {
     ui->editors_tabs->addTab(editor, "SQL "+new_sufix);
     ui->editors_tabs->setCurrentIndex(ui->editors_tabs->count()-1);
     editor->setFocus();
+    connect(editor, SIGNAL(findRequest(EditorItem*)), this, SLOT(on_find_request(EditorItem*)));
     return editor;
 }
 
@@ -881,4 +876,49 @@ void SqlTool::on_ck_use_alternate_user_clicked(bool checked)
         ui->ed_user->setText("");
         ui->ed_password->setText("");
     }
+}
+
+void SqlTool::on_from_cursor_toggled(bool checked)
+{
+      ui->lb_from_line->setEnabled(!checked);
+      ui->from_line->setEnabled(!checked);
+}
+
+void SqlTool::on_find_forward_clicked()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+
+        editor->findFirst(ui->text_to_find->text(),
+                          ui->regular_expression->isChecked(),
+                          ui->case_sensitive->isChecked(),
+                          ui->whole_word->isChecked(),
+                          ui->warp_around->isChecked(),
+                          true,
+                          ui->from_cursor ? -1 : ui->from_line->value(),
+                          0,
+                          true, // text found will be always visible
+                          ui->posix_regular_expression->isChecked());
+
+    }
+}
+
+void SqlTool::on_findb_backward_clicked()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    if (editor) {
+
+    }
+}
+
+void SqlTool::on_find_request(EditorItem *editor)
+{
+    if (editor) {
+        ui->find_panel->show();
+    }
+}
+
+void SqlTool::on_close_find_clicked()
+{
+    ui->find_panel->hide();
 }

@@ -53,6 +53,10 @@ public slots:
     void on_delete_selection_triggered();
     void on_find_triggered();
 
+signals:
+
+    void findRequest(EditorItem *editor);
+
 private:
     QString file_name;
     FrmFindText *frm_find;
@@ -122,8 +126,13 @@ public:
 private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);
-
     void on_ck_use_alternate_user_clicked(bool checked);
+    void on_from_cursor_toggled(bool checked);
+    void on_find_forward_clicked();
+    void on_findb_backward_clicked();
+    void on_find_request(EditorItem *editor);
+
+    void on_close_find_clicked();
 
 signals:
     void beginExecution(SqlTool *sender);
