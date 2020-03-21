@@ -36,7 +36,11 @@
 #include "modelscanner.h"
 #include "outputset.h"
 #include "dlgproject.h"
+
+#ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
+#endif
+
 #include "dlgcreatescript.h"
 
 MainWindow::MainWindow(QWidget *parent) :

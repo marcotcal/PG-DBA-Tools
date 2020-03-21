@@ -33,6 +33,11 @@ DlgConnections::DlgConnections(ConnectionsData &conn, QWidget *parent) :
     loadList();
     if (ui->connection_list->count() > 0)
         ui->connection_list->setCurrentRow(0);
+
+#ifndef USE_SSH_TUNNELS
+    delete ui->tb_ssh_tunnel;
+#endif
+
 }
 
 DlgConnections::~DlgConnections()
