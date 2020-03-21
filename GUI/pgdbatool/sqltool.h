@@ -129,10 +129,15 @@ private slots:
     void on_ck_use_alternate_user_clicked(bool checked);
     void on_from_cursor_toggled(bool checked);
     void on_find_forward_clicked();
-    void on_findb_backward_clicked();
+    void on_find_backward_clicked();
     void on_find_request(EditorItem *editor);
 
     void on_close_find_clicked();
+    void on_modify_find_control();
+
+    void on_text_to_find_textChanged(const QString &arg1);
+
+    void on_from_line_valueChanged(const QString &arg1);
 
 signals:
     void beginExecution(SqlTool *sender);
@@ -171,6 +176,10 @@ private:
     ResultOutput *output;
     bool query_running;
     ConnectionSettings *conn_settings;
+
+    bool use_find_next;
+    bool last_forward;
+    bool last_backward;
 
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);

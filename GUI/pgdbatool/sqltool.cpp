@@ -163,10 +163,24 @@ SqlTool::SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *pa
     } else {
         default_path = project.getProjectPath() + "/scripts/development/review";
     }
+
     group_name = "";
     query_running = false;
     conn_settings = nullptr;
     ui->find_panel->hide();
+
+    use_find_next = true;
+    last_backward = true;
+    last_forward = true;
+
+    //connect(ui->text_to_find, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
+    //connect(ui->from_line, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
+    connect(ui->from_cursor, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+    connect(ui->case_sensitive, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+    connect(ui->regular_expression, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+    connect(ui->posix_regular_expression, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+    connect(ui->whole_word, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+    connect(ui->warp_around, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
 }
 
 SqlTool::~SqlTool()
@@ -483,8 +497,8 @@ void SqlTool::findFirst()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
-        ui->find_panel->show();
-        //editor->on_find_triggered();
+        ui->text_to_find->setFocus();
+        ui->find_panel->show();        
     }
 }
 
@@ -886,27 +900,76 @@ void SqlTool::on_from_cursor_toggled(bool checked)
 
 void SqlTool::on_find_forward_clicked()
 {
+    QMessageBox msg;
+    bool success;
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
 
-        editor->findFirst(ui->text_to_find->text(),
-                          ui->regular_expression->isChecked(),
-                          ui->case_sensitive->isChecked(),
-                          ui->whole_word->isChecked(),
-                          ui->warp_around->isChecked(),
-                          true,
-                          ui->from_cursor ? -1 : ui->from_line->value(),
-                          0,
-                          true, // text found will be always visible
-                          ui->posix_regular_expression->isChecked());
+        if (last_backward) {
+            use_find_next = false;
+        }
+
+        last_forward = true;
+        last_backward = false;
+
+        if (!use_find_next) {
+            use_find_next = true;
+            success = editor->findFirst(ui->text_to_find->text(),
+                              ui->regular_expression->isChecked(),
+                              ui->case_sensitive->isChecked(),
+                              ui->whole_word->isChecked(),
+                              ui->warp_around->isChecked(),
+                              true,
+                              -1,
+                              -1,
+                              true, // text found will be always visible
+                              ui->posix_regular_expression->isChecked());
+        } else {
+            success = editor->findNext();
+        }
+
+        if (!success) {
+            msg.setText(QString("There are no more occurrencies of <%1>").arg(ui->text_to_find->text()));
+            msg.exec();
+        }
 
     }
 }
 
-void SqlTool::on_findb_backward_clicked()
+void SqlTool::on_find_backward_clicked()
 {
+    QMessageBox msg;
+    bool success;
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
+
+        if (last_forward)
+            use_find_next = false;
+
+        last_forward = false;
+        last_backward = true;
+
+        if (!use_find_next) {
+            use_find_next = true;
+            ui->text_to_find->setModified(false);
+            success = editor->findFirst(ui->text_to_find->text(),
+                              ui->regular_expression->isChecked(),
+                              ui->case_sensitive->isChecked(),
+                              ui->whole_word->isChecked(),
+                              ui->warp_around->isChecked(),
+                              false,
+                              -1,
+                              -1,
+                              true, // text found will be always visible
+                              ui->posix_regular_expression->isChecked());
+        } else {
+            success = editor->findNext();
+        }
+
+        if (!success) {
+            msg.setText(QString("There are no more occurrencies of <%1>").arg(ui->text_to_find->text()));
+            msg.exec();
+        }
 
     }
 }
@@ -915,10 +978,26 @@ void SqlTool::on_find_request(EditorItem *editor)
 {
     if (editor) {
         ui->find_panel->show();
+        ui->text_to_find->setFocus();
     }
 }
 
 void SqlTool::on_close_find_clicked()
 {
     ui->find_panel->hide();
+}
+
+void SqlTool::on_modify_find_control()
+{
+    use_find_next = false;
+}
+
+void SqlTool::on_text_to_find_textChanged(const QString &arg1)
+{
+    use_find_next = false;
+}
+
+void SqlTool::on_from_line_valueChanged(const QString &arg1)
+{
+    use_find_next = false;
 }
