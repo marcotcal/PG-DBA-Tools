@@ -1,6 +1,8 @@
 #ifndef SSHCONNECTOR_H
 #define SSHCONNECTOR_H
 
+#ifdef USE_SSH_TUNNELS
+
 #include <libssh2.h>
 #include <QObject>
 #include <QThread>
@@ -75,5 +77,7 @@ private:
     bool HostNameToIP(const QString &host, QStringList &ip_addresses);
 
 };
+
+#endif // # USE_SSH_TUNNELS
 
 #endif // SSHCONNECTOR_H

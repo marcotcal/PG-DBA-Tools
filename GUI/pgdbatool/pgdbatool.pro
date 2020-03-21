@@ -27,6 +27,16 @@ CONFIG(release, debug|release) {
     DESTDIR = ../build/release
 }
 
+win32-* {
+    TUNNELS=FALSE
+} else {
+    TUNNELS=TRUE
+}
+
+contains(TUNNELS, TRUE) {
+    DEFINES += USE_SSH_TUNNELS
+}
+
 OBJECTS_DIR = $$DESTDIR/.obj
 MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc
@@ -66,7 +76,6 @@ SOURCES += \
     memoryeditor.cpp \
     dlgproject.cpp \
     projectdata.cpp \
-    sshconnector.cpp \
     dlgcreatescript.cpp \
     frmfindtext.cpp
 
@@ -103,7 +112,6 @@ HEADERS += \
     memoryeditor.h \
     dlgproject.h \
     projectdata.h \
-    sshconnector.h \
     dlgcreatescript.h \
     frmfindtext.h
 
@@ -129,6 +137,12 @@ FORMS += \
     dlgcreatescript.ui \
     frmfindtext.ui
 
+contains(TUNNELS, TRUE) {
+    SOURCES += sshconnector.cpp
+    HEADERS += sshconnector.h
+}
+
+
 LIBS += -lqscintilla2_qt5
 
 # Include postgres lib
@@ -137,7 +151,9 @@ unix:LIBS += -L$$system(pg_config --libdir)
 unix:LIBS += $$system(pg_config --libs) -lpq
 
 #include libssh2
-unix:LIBS += -lssh2
+contains(TUNNELS, TRUE) {
+    unix:LIBS += -lssh2
+}
 
 RESOURCES += \
     pgdbatool.qrc
@@ -145,3 +161,9 @@ RESOURCES += \
 DISTFILES += \
     connections.xml \
     modelo.xml
+
+contains(TUNNELS, TRUE) {
+    message("compiled using ssh tunneling")
+} else {
+    message("compiled without using ssh tunneling")
+}

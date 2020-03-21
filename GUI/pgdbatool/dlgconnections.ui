@@ -471,7 +471,7 @@
            </widget>
            <widget class="QWidget" name="tb_ssh_tunnel">
             <attribute name="title">
-             <string>SSl Tunnel</string>
+             <string>SSL Tunnel</string>
             </attribute>
             <layout class="QFormLayout" name="formLayout_4">
              <property name="verticalSpacing">

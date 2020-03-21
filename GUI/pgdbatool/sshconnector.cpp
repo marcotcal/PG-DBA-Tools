@@ -4,6 +4,7 @@
 #define INADDR_NONE (in_addr_t)-1
 #endif
 
+#ifdef USE_SSH_TUNNELS
 
 SSHConnector::SSHConnector(const QString &tunnel_host, uint16_t ssh_port, const QString &local_listen_ip, uint16_t local_listen_port,
                            const QString &remote_dest_host, uint16_t remote_dest_port,
@@ -225,6 +226,7 @@ bool SSHConnector::HostNameToIP(const QString &host, QStringList &ip_addresses)
 
 }
 
+#endif
 
 
 
