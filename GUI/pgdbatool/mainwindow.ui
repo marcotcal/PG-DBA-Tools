@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1085</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -573,7 +573,7 @@
     <string>C&amp;onnect</string>
    </property>
    <property name="shortcut">
-    <string>F3</string>
+    <string>F2</string>
    </property>
   </action>
   <action name="actionDisconect">

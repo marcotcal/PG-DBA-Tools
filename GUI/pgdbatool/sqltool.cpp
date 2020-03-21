@@ -138,7 +138,7 @@ void EditorItem::on_find_triggered()
 }
 
 EditorItem::~EditorItem() {
-    delete frm_find;
+
 }
 
 SqlTool::SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *parent) :
@@ -433,7 +433,7 @@ bool SqlTool::isFindNextAvailable()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
-
+        return use_find_next;
     }
 }
 
@@ -506,7 +506,7 @@ void SqlTool::findNext()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     if (editor) {
-
+        editor->findNext();
     }
 }
 
