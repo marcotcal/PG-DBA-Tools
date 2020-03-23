@@ -141,11 +141,12 @@ EditorItem::~EditorItem() {
 
 }
 
-SqlTool::SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *parent) :
+SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &project, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SqlTool),
-    connections(connections),
-    project(project)
+    connections(connections), 
+    project(project),
+    sel_connection(sel_connection)
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     ui->setupUi(this);
@@ -1000,4 +1001,14 @@ void SqlTool::on_text_to_find_textChanged(const QString &arg1)
 void SqlTool::on_from_line_valueChanged(const QString &arg1)
 {
     use_find_next = false;
+}
+
+void SqlTool::loadDatabaseList(int sel_connection)
+{
+    QString sql =
+            "SELECT db.datname "
+            "FROM pg_database db "
+            "ORDER BY db.datname ";
+
+
 }

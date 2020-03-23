@@ -300,7 +300,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
     if (!name.isEmpty()) {
 
         new QListWidgetItem(name, ui->editor_list);
-        sql = new SqlTool(connections, project, ui->main_stack);
+        sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(ui->main_stack);
         ui->editor_list->clearSelection();        

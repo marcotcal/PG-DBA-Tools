@@ -38,7 +38,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Connection</string>
+         <string>Database</string>
         </property>
        </widget>
       </item>
@@ -249,7 +249,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="11">
+              <item row="0" column="10">
                <widget class="QToolButton" name="close_find">
                 <property name="text">
                  <string>...</string>
@@ -266,7 +266,14 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="4">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Text to Search</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <property name="spacing">
                  <number>0</number>
@@ -313,17 +320,7 @@
                 </item>
                </layout>
               </item>
-              <item row="0" column="8">
-               <widget class="QLabel" name="lb_from_line">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>From Line</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="7">
+              <item row="0" column="6">
                <widget class="QCheckBox" name="from_cursor">
                 <property name="text">
                  <string>From Cursor</string>
@@ -333,14 +330,17 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_2">
+              <item row="0" column="7">
+               <widget class="QLabel" name="lb_from_line">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
-                 <string>Text to Search</string>
+                 <string>From Line</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="9">
+              <item row="0" column="8">
                <widget class="QSpinBox" name="from_line">
                 <property name="enabled">
                  <bool>false</bool>
@@ -353,7 +353,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="10">
+              <item row="0" column="9">
                <spacer name="horizontalSpacer_2">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
