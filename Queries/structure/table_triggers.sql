@@ -1,4 +1,4 @@
-﻿/*
+/*
 SELECT n.nspname as schema,
        c.relname as table,
        t.tgname as trigger,
