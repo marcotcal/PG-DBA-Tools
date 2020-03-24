@@ -155,11 +155,13 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     is_connected = false;
     ui->connection_list->clear();
     loadDatabaseList(sel_connection);
+    /*
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
         if (!conn->isInvalid())
             ui->connection_list->addItem(conn->name());
     }
+    */
     if(project.getProjectName().isNull()) {
         default_path = settings.value("path_to_sql", "").toString();
     } else {
@@ -379,6 +381,7 @@ bool SqlTool::isUndoAvailable()
     if (editor) {
         return editor->isUndoAvailable();
     }
+    return false;
 }
 
 bool SqlTool::isCutAvailable()
@@ -387,6 +390,7 @@ bool SqlTool::isCutAvailable()
     if (editor) {
         return editor->hasSelectedText();
     }
+    return false;
 }
 
 bool SqlTool::isCopyAvailable()
@@ -395,6 +399,7 @@ bool SqlTool::isCopyAvailable()
     if (editor) {
         return editor->hasSelectedText();
     }
+    return false;
 }
 
 bool SqlTool::isPasteAvailabe()
@@ -405,6 +410,7 @@ bool SqlTool::isPasteAvailabe()
     if (editor) {
         return (mimeData->hasHtml() || mimeData->hasText());
     }
+    return false;
 }
 
 bool SqlTool::isDeleteAvailable()
@@ -413,6 +419,7 @@ bool SqlTool::isDeleteAvailable()
     if (editor) {
         return editor->hasSelectedText();
     }
+    return false;
 }
 
 bool SqlTool::isSelectAllAvailable()
@@ -421,6 +428,7 @@ bool SqlTool::isSelectAllAvailable()
     if (editor) {
         return !editor->text().isEmpty();
     }
+    return false;
 }
 
 bool SqlTool::isFindAvailable()
@@ -429,6 +437,7 @@ bool SqlTool::isFindAvailable()
     if (editor) {
         return !editor->text().isEmpty();
     }
+    return false;
 }
 
 bool SqlTool::isFindNextAvailable()
@@ -437,6 +446,7 @@ bool SqlTool::isFindNextAvailable()
     if (editor) {
         return use_find_next;
     }
+    return false;
 }
 
 void SqlTool::redo()
@@ -687,10 +697,14 @@ bool SqlTool::connected() {
 void SqlTool::databaseConnect() {
     QMessageBox msg;
     QString conn_str;
+    QString database_name;
+
+    database_name = ui->connection_list->itemText(ui->connection_list->currentIndex());
+
     if (!ui->ck_use_alternate_user->isChecked()) {
 
-        if (ui->connection_list->currentIndex() != -1)
-            conn_str = connections.getConnections().at(ui->connection_list->currentIndex())->connectStr();
+        if (sel_connection != -1)
+            conn_str = connections.getConnections().at(sel_connection)->connectStr("", "", database_name);
         else {
             msg.setText("No connection available. Please create a connection.");
             msg.exec();
@@ -698,8 +712,8 @@ void SqlTool::databaseConnect() {
         }
 
     } else {
-        conn_str = connections.getConnections().at(ui->connection_list->currentIndex())
-                ->connectStr(ui->ed_user->text(), ui->ed_password->text());
+        conn_str = connections.getConnections().at(sel_connection)
+                ->connectStr(ui->ed_user->text(), ui->ed_password->text(), database_name);
     }
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
@@ -1006,15 +1020,43 @@ void SqlTool::on_from_line_valueChanged(const QString &arg1)
 
 void SqlTool::loadDatabaseList(int sel_connection)
 {
+    QMessageBox msg;
     QString conn_str;
-    QString sql =
+    int tuples;
+    const char *sql =
             "SELECT db.datname "
             "FROM pg_database db "
             "ORDER BY db.datname ";
+    PGconn *conn;
 
     if (sel_connection != -1) {
         conn_str = connections.getConnections().at(sel_connection)->connectStr();
 
+        conn = PQconnectdb(conn_str.toStdString().c_str());
+
+        if (PQstatus(conn) == CONNECTION_OK) {
+            PGresult *res = PQexec(conn, sql);
+
+            if (PQresultStatus(res) != PGRES_TUPLES_OK)
+            {
+                msg.setText(QString("Read Database: %1").arg(PQerrorMessage(conn)));
+                msg.exec();
+                PQclear(res);
+                PQfinish(conn);
+                return;
+            }
+
+            tuples = PQntuples(res);
+
+            ui->connection_list->clear();
+
+            for (int i = 0; i < tuples; i++)
+                ui->connection_list->addItem(QString::fromStdString(PQgetvalue(res, i, 0)));
+
+            PQclear(res);
+            PQfinish(conn);
+
+        }
     }
 
 }
