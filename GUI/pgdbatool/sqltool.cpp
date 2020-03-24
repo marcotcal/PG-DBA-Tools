@@ -154,6 +154,7 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     in_transaction = false;
     is_connected = false;
     ui->connection_list->clear();
+    loadDatabaseList(sel_connection);
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
         if (!conn->isInvalid())
@@ -1005,10 +1006,15 @@ void SqlTool::on_from_line_valueChanged(const QString &arg1)
 
 void SqlTool::loadDatabaseList(int sel_connection)
 {
+    QString conn_str;
     QString sql =
             "SELECT db.datname "
             "FROM pg_database db "
             "ORDER BY db.datname ";
 
+    if (sel_connection != -1) {
+        conn_str = connections.getConnections().at(sel_connection)->connectStr();
+
+    }
 
 }
