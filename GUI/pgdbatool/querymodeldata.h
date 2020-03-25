@@ -128,6 +128,8 @@ public:
     void setModelPath(QString value) { model_path = value; }
     QString getOutputType() { return output_type; }
     void setOutputType(QString value) { output_type = value; }
+    bool getDatabaseRequest() { return database_request; }
+    void setDatabaseRequest(bool value) { database_request = value; }
     QList <QueryParameter *> &getParameters() { return parameters; }
     QList <QueryOrder *> &getOrders() { return orders; }
     QList <QueryColumn *> &getColumns() { return columns; }
@@ -158,6 +160,7 @@ private:
     QString error_message;
     QString model_path;
     QString output_type;
+    bool database_request;
     QXmlStreamReader reader;
     ConnectionsData &connections;
     ProjectData &project;

@@ -781,7 +781,6 @@ void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
 void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_query)
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
-    QMessageBox msg;
     QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();
 
     this->output = output;

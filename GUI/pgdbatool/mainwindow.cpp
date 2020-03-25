@@ -764,7 +764,7 @@ void MainWindow::executeModel(QString resource_name)
 
     DlgParameters *param = new DlgParameters(data, this);
 
-    if ((data->getParameters().count() == 0 && data->getOrders().count() == 0) || param->exec()) {
+    if ((data->getParameters().count() == 0 && data->getDatabaseRequest() && data->getOrders().count() == 0) || param->exec()) {
 
         if (currentRow != -1) {
             data->databaseDisconnect();

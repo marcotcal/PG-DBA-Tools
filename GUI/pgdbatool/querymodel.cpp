@@ -90,6 +90,8 @@ void QueryModel::dataToEditors()
     ui->sql_editor->setText(data.getQueryText());
     ui->model_path->setText(data.getModelPath());
 
+    ui->database_request->setChecked(data.getDatabaseRequest());
+
     for(int i = 0; i < ui->output->count(); i++) {
         if (ui->output->itemText(i) == data.getOutputType()) {
             ui->output->setCurrentIndex(i);
@@ -180,6 +182,7 @@ void QueryModel::editorsToData()
     data.setQueryText(ui->sql_editor->text());
     data.setModelPath(ui->model_path->text());
     data.setOutputType(ui->output->currentText());
+    data.setDatabaseRequest(ui->database_request->isChecked());
 
     qDeleteAll(data.getParameters());
     data.getParameters().clear();

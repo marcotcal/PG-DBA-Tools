@@ -5,6 +5,7 @@
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
   <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
@@ -67,6 +68,7 @@ WHERE
     AND schemaname != 'information_schema'
     [!p_schema!]
     [!p_name!]]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Html]]></output_type>
     <model_path><![CDATA[/Structure]]></model_path>
 </model>
