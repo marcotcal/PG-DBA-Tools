@@ -261,10 +261,11 @@ bool QueryModelData::saveModel(QString file_name)
     return true;
 }
 
-void QueryModelData::databaseConnect(int conn_number) {
+void QueryModelData::databaseConnect(int conn_number, QString database_name) {
     QMessageBox msg;
     PGresult *res;
-    QString conn_str = connections.getConnections().at(conn_number)->connectStr();
+    QString conn_str = connections.getConnections()
+            .at(conn_number)->connectStr("", "", database_name);
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {

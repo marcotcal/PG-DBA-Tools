@@ -138,7 +138,7 @@ public:
     QString getErrorMessage() { return error_message; }
     bool saveModel(QString file_name);
     void execute(ResultOutput* output, bool show_query = false);
-    void databaseConnect(int conn_number);
+    void databaseConnect(int conn_number, QString database_name);
     void databaseDisconnect();
     bool getConnected() { return connected; }
     void clear();

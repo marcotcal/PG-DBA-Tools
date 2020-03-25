@@ -24,14 +24,12 @@ public:
 
 private slots:
     void on_bt_project_path_clicked();
-
     virtual void done(int res);
 
 private slots:
 
     // hide exec slot
     virtual int exec() {return QDialog::exec(); }
-
     void on_bt_connections_clicked();
 
 private:
@@ -42,7 +40,6 @@ private:
     void createProject();
     void createSkeleton();
     void loadCombo(QComboBox *combo);
-
 };
 
 #endif // DLGPROJECT_H

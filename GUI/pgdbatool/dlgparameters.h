@@ -17,6 +17,8 @@ public:
     explicit DlgParameters(QueryModelData *model_data, ConnectionsData &connections,
                            int sel_connection, QWidget *parent = nullptr);
     ~DlgParameters();
+    QString getSelectedDatabaseName();
+
 private slots:
    void on_buttonBox_accepted();
 
@@ -27,6 +29,8 @@ private:
     void assignValues();
     ConnectionsData &connections;
     int sel_connection;
+
+    void loadDatabases();
 };
 
 #endif // DLGPARAMETERS_H

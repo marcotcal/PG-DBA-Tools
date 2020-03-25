@@ -762,15 +762,20 @@ void MainWindow::executeModel(QString resource_name)
     model_data->loadResource(resource_name);
     currentRow = ui->connection_list->currentRow();
 
-    DlgParameters *param = new DlgParameters(model_data, connections, ui->lis, this);
+    DlgParameters *param = new DlgParameters(model_data,
+                                             connections, ui->connection_list->currentRow(), this);
 
     if (model_data->getParameters().count() > 0 || model_data->getOrders().count() > 0 || model_data->getDatabaseRequest())
-        param->exec();
+        if (!param->exec())
+            return;
 
     if (currentRow != -1) {
+
         model_data->databaseDisconnect();
+
         if(!connections.getConnections().at(currentRow)->isInvalid()) {
-            model_data->databaseConnect(currentRow);
+
+            model_data->databaseConnect(currentRow, param->getSelectedDatabaseName());
 
             if (!model_data->getConnected()) {
 
