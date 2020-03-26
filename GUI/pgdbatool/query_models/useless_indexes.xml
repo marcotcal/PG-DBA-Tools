@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE model [
-  <!ELEMENT model (query_text, menu_path, output_type, parameters?, orders?, columns?)>
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
   <!ATTLIST model code CDATA "">
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
-  <!ELEMENT menu_path (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
   <!ATTLIST parameter code CDATA "">
@@ -60,6 +61,7 @@ WHERE idstat.idx_scan < 200
 ORDER BY idstat.schemaname,
 	 idstat.relname,
 	 indexrelname;]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <menu_path><![CDATA[/Statistics/Indexes/Useless Indexes]]></menu_path>
+    <model_path><![CDATA[]]></model_path>
 </model>

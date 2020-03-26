@@ -24,11 +24,21 @@
 ]>
 
 <model code="SCHE-0001" description="Schemas">
-    <parameters/>
-    <orders/>
+    <parameters>
+        <parameter code="p_owner" description="Schema Owner" mandatory="false">
+            <expression><![CDATA[WHERE schema_owner ilike ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+    </parameters>
+    <orders>
+        <order description="Name" fields="schema_name"/>
+        <order description="Owner" fields="schema_owner"/>
+    </orders>
     <columns/>
     <query_text><![CDATA[SELECT schema_name, schema_owner 
-FROM information_schema.schemata]]></query_text>
+FROM information_schema.schemata
+[!p_owner!]]]></query_text>
     <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Text With Separators]]></output_type>
     <model_path><![CDATA[/Structure]]></model_path>

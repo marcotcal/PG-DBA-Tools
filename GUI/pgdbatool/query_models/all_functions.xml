@@ -32,7 +32,7 @@
         </parameter>
     </parameters>
     <orders>
-        <order description="Shema + Name" fields="n.nspname, p.proname"/>
+        <order description="Schema + Name" fields="n.nspname, p.proname"/>
         <order description="Schema + Return Type" fields="n.nspname, t.typname"/>
     </orders>
     <columns/>

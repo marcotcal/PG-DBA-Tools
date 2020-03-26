@@ -761,6 +761,7 @@ void MainWindow::executeModel(QString resource_name)
     model_data->clear();
     model_data->loadResource(resource_name);
     currentRow = ui->connection_list->currentRow();
+    int item;
 
     DlgParameters *param = new DlgParameters(model_data,
                                              connections, ui->connection_list->currentRow(), this);
@@ -795,11 +796,19 @@ void MainWindow::executeModel(QString resource_name)
                 ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
                 HtmlOutput *list = new HtmlOutput(editor, ui->message_output, this);
 
-                list->getInformationMap()["Maintenance Connection"] = ui->connection_list->item(currentRow)->text();
+                item = 1;
+                list->getInformationMap()[QString("%1: Connection").arg(item, 2, 10 , QChar('0'))] = ui->connection_list->item(currentRow)->text();
+                item++;
+                if(model_data->getDatabaseRequest())
+                    list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = param->getSelectedDatabaseName();
+                else
+                    list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = "N/A";
 
                 foreach(QueryParameter *param, model_data->getParameters()) {
-
-                    list->getInformationMap()["Param: " + param->getDescription()] = param->getValue();
+                    if (!param->getValue().isNull()) {
+                        item++;
+                        list->getInformationMap()[QString("%1: ").arg(item, 2, 10 , QChar('0')) + param->getDescription()] = param->getValue();
+                    }
                 }
 
                 model_data->execute(list, ui->show_query->isChecked());
