@@ -15,8 +15,15 @@ public:
     explicit DlgCreateScript(QWidget *parent = nullptr);
     ~DlgCreateScript();
 
+    QString getFileName() { return file_name; }
+
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     Ui::DlgCreateScript *ui;
+
+    QString file_name;
 };
 
 #endif // DLGCREATESCRIPT_H
