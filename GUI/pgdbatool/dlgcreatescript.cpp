@@ -39,11 +39,20 @@ QString DlgCreateScript::getTask()
 
 void DlgCreateScript::on_buttonBox_accepted()
 {
-    file_name = path_to_file + QDateTime::currentDateTime().toString("yyyyMMddhhmmss") +
-            "_" + ui->sprint->text().trimmed() +
-            "_" + ui->task->text().trimmed() +
-            "_" + ui->description->text().trimmed().toLower().replace(" ","_") +
-            ".sql";
+    QString user_name;
+    file_name =  path_to_file + QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    user_name = qgetenv("USER");
+    if (user_name.isEmpty())
+        user_name = qgetenv("USERNAME");
+
+    file_name += "_" + user_name;
+
+    if (!ui->sprint->text().trimmed().isEmpty())
+        file_name += "_" + ui->sprint->text().trimmed();
+
+    file_name += "_" + ui->task->text().trimmed();
+    file_name += "_" + ui->description->text().trimmed().toLower().replace(" ","_");
+    file_name += ".sql";
     createFile();
 }
 
@@ -62,8 +71,15 @@ bool DlgCreateScript::createFile()
 
         stream << endl << endl;
 
-        stream << "START TRANSACTION;" << endl;
+        stream << "/***" << endl;
+        stream << "   NOTES:" << endl;
         stream << endl;
+        stream << endl;
+        stream << " ***/" << endl;
+        stream << endl;
+        stream << endl;
+        stream << "START TRANSACTION;" << endl;
+        stream << endl;        
         stream << "DO" << endl;
         stream << "$BODY$" << endl;
         stream << "BEGIN " << endl;

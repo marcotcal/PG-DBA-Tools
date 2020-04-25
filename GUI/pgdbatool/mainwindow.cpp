@@ -1156,7 +1156,7 @@ void MainWindow::on_actionOpen_Project_triggered()
 
 void MainWindow::on_actionCreate_New_SQL_Script_triggered()
 {
-    DlgCreateScript dlg(project.getProjectPath()+"/scripts/development/review/");
+    DlgCreateScript dlg(project.getProjectPath()+"/scripts/development/run/");
     SqlTool *sql_tool;
     QFile file;
 
