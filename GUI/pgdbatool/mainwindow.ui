@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1085</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -201,6 +201,7 @@
     <addaction name="actionProject_Options"/>
     <addaction name="separator"/>
     <addaction name="actionCreate_New_SQL_Script"/>
+    <addaction name="actionExecute_Project_Script"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -900,6 +901,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionExecute_Project_Script">
+   <property name="text">
+    <string>Execute Project Script</string>
    </property>
   </action>
  </widget>

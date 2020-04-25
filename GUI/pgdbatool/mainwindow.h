@@ -127,8 +127,8 @@ private slots:
     void on_actionSelect_All_triggered();
 
     void on_actionFind_triggered();
-
     void on_actionFind_Next_triggered();
+    void on_actionExecute_Project_Script_triggered();
 
 signals:
     void clean_custom_menu();

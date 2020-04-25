@@ -77,7 +77,8 @@ SOURCES += \
     dlgproject.cpp \
     projectdata.cpp \
     dlgcreatescript.cpp \
-    frmfindtext.cpp
+    frmfindtext.cpp \
+    frmprojectscript.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -113,7 +114,8 @@ HEADERS += \
     dlgproject.h \
     projectdata.h \
     dlgcreatescript.h \
-    frmfindtext.h
+    frmfindtext.h \
+    frmprojectscript.h
 
 FORMS += \
     mainwindow.ui \
@@ -135,7 +137,8 @@ FORMS += \
     memoryeditor.ui \
     dlgproject.ui \
     dlgcreatescript.ui \
-    frmfindtext.ui
+    frmfindtext.ui \
+    frmprojectscript.ui
 
 contains(TUNNELS, TRUE) {
     SOURCES += sshconnector.cpp

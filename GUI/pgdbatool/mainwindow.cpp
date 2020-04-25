@@ -36,6 +36,7 @@
 #include "modelscanner.h"
 #include "outputset.h"
 #include "dlgproject.h"
+#include "frmprojectscript.h"
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -64,6 +65,7 @@ void MainWindow::projectMenuOpen()
     ui->actionClose_Project->setEnabled(!project.getProjectName().isEmpty());
     ui->actionProject_Options->setEnabled(!project.getProjectName().isEmpty());
     ui->actionCreate_New_SQL_Script->setEnabled(!project.getProjectName().isEmpty());
+    ui->actionExecute_Project_Script->setEnabled(!project.getProjectName().isEmpty());
 }
 
 void MainWindow::editMenuOpen()
@@ -1239,4 +1241,18 @@ void MainWindow::on_actionFind_Next_triggered()
     if(sql) {
         sql->findNext();
     }
+}
+
+void MainWindow::on_actionExecute_Project_Script_triggered()
+{
+    FrmProjectScript *frm;
+
+    frm = new FrmProjectScript(project, ui->main_stack);
+
+    new QListWidgetItem("Project Runner", ui->editor_list);
+    ui->main_stack->addWidget(frm);
+    ui->main_stack->setCurrentWidget(frm);
+    ui->editor_list->clearSelection();
+    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+
 }
