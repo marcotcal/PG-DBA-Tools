@@ -63,6 +63,7 @@ void MainWindow::projectMenuOpen()
 {
     ui->actionClose_Project->setEnabled(!project.getProjectName().isEmpty());
     ui->actionProject_Options->setEnabled(!project.getProjectName().isEmpty());
+    ui->actionCreate_New_SQL_Script->setEnabled(!project.getProjectName().isEmpty());
 }
 
 void MainWindow::editMenuOpen()
@@ -1142,9 +1143,17 @@ void MainWindow::on_actionOpen_Project_triggered()
 
 void MainWindow::on_actionCreate_New_SQL_Script_triggered()
 {
-    DlgCreateScript dlg;
+    DlgCreateScript dlg(project.getProjectPath()+"/scripts/development/review/");
+    SqlTool *sql_tool;
+    QFile file;
 
-    dlg.exec();
+    if (dlg.exec()) {
+        sql_tool = openNewSQLTool("sql");
+
+        file.setFileName(dlg.getFileName());
+        sql_tool->openFileOnCurrent(file);
+        ui->editor_list->currentItem()->setText(dlg.getDescription());
+    }
 }
 
 void MainWindow::on_actionUndo_triggered()
