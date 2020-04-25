@@ -50,8 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     readSettings();    
     disable_actions();
-    data = new QueryModelData(connections, project, this);
-    data->readModels();
+    model_data = new QueryModelData(connections, project, this);
+    model_data->readModels();
     loadCustomMenus();
     setConnectionsList();
     ui->actionClose->setEnabled(false);
@@ -301,7 +301,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
     if (!name.isEmpty()) {
 
         new QListWidgetItem(name, ui->editor_list);
-        sql = new SqlTool(connections, project, ui->main_stack);
+        sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(ui->main_stack);
         ui->editor_list->clearSelection();        
@@ -742,13 +742,13 @@ void MainWindow::do_fileReaded(const QString &file_name)
 
 void MainWindow::do_scanCompleted()
 {
-    data->readModels();
+    model_data->readModels();
     loadCustomMenus();
 }
 
 void MainWindow::on_actionExecute_Saved_Model_triggered()
 {
-    DlgExecuteModel dlg(data->getItems());
+    DlgExecuteModel dlg(model_data->getItems());
 
     if (dlg.exec())
         executeModel(dlg.selectedFileName());
@@ -756,55 +756,68 @@ void MainWindow::on_actionExecute_Saved_Model_triggered()
 
 void MainWindow::executeModel(QString resource_name)
 {
-    QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    //QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     int currentRow;
 
-    data->clear();
-    data->loadResource(resource_name);
+    model_data->clear();
+    model_data->loadResource(resource_name);
     currentRow = ui->connection_list->currentRow();
+    int item;
 
-    DlgParameters *param = new DlgParameters(data, this);
+    DlgParameters *param = new DlgParameters(model_data,
+                                             connections, ui->connection_list->currentRow(), this);
 
-    if ((data->getParameters().count() == 0 && data->getOrders().count() == 0) || param->exec()) {
+    if (model_data->getParameters().count() > 0 || model_data->getOrders().count() > 0 || model_data->getDatabaseRequest())
+        if (!param->exec())
+            return;
 
-        if (currentRow != -1) {
-            data->databaseDisconnect();
-            if(!connections.getConnections().at(currentRow)->isInvalid()) {
-                data->databaseConnect(currentRow);
+    if (currentRow != -1) {
 
-                if (!data->getConnected()) {
+        model_data->databaseDisconnect();
 
-                    ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text() + " (Invalid)");
-                    ui->connection_list->item(currentRow)->setForeground(Qt::red);
+        if(!connections.getConnections().at(currentRow)->isInvalid()) {
 
-                } else {
+            model_data->databaseConnect(currentRow, param->getSelectedDatabaseName());
 
-                    ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text());
-                    ui->connection_list->item(currentRow)->setForeground(Qt::black);
+            if (!model_data->getConnected()) {
 
-                    new QListWidgetItem(data->getDescription(), ui->editor_list);
-                    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
-                    ui->main_stack->addWidget(editor);
-                    ui->main_stack->setCurrentWidget(editor);
-                    ui->editor_list->clearSelection();
-                    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-                    HtmlOutput *list = new HtmlOutput(editor, ui->message_output, this);
+                ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text() + " (Invalid)");
+                ui->connection_list->item(currentRow)->setForeground(Qt::red);
 
-                    list->getInformationMap()["Maintenance Connection"] = ui->connection_list->item(currentRow)->text();
+            } else {
 
-                    foreach(QueryParameter *param, data->getParameters()) {
+                ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text());
+                ui->connection_list->item(currentRow)->setForeground(Qt::black);
 
-                        list->getInformationMap()["Param: " + param->getDescription()] = param->getValue();
+                new QListWidgetItem(model_data->getDescription(), ui->editor_list);
+                QWebEngineView *editor = new QWebEngineView(ui->main_stack);
+                ui->main_stack->addWidget(editor);
+                ui->main_stack->setCurrentWidget(editor);
+                ui->editor_list->clearSelection();
+                ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+                HtmlOutput *list = new HtmlOutput(editor, ui->message_output, this);
+
+                item = 1;
+                list->getInformationMap()[QString("%1: Connection").arg(item, 2, 10 , QChar('0'))] = ui->connection_list->item(currentRow)->text();
+                item++;
+                if(model_data->getDatabaseRequest())
+                    list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = param->getSelectedDatabaseName();
+                else
+                    list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = "N/A";
+
+                foreach(QueryParameter *param, model_data->getParameters()) {
+                    if (!param->getValue().isNull()) {
+                        item++;
+                        list->getInformationMap()[QString("%1: ").arg(item, 2, 10 , QChar('0')) + param->getDescription()] = param->getValue();
                     }
-
-                    data->execute(list, ui->show_query->isChecked());
-
-                    data->databaseDisconnect();
-
                 }
+
+                model_data->execute(list, ui->show_query->isChecked());
+
+                model_data->databaseDisconnect();
+
             }
         }
-
     }
 }
 
@@ -860,7 +873,7 @@ void MainWindow::loadCustomMenus()
     QAction *child;
     QSignalMapper *mapper = new QSignalMapper(this);
 
-    foreach(ModelItem *item, data->getItems()) {
+    foreach(ModelItem *item, model_data->getItems()) {
         menu_element = root;
         QStringList parts = item->getMenuParts();
         for(int i = 0; i < parts.count(); i++ ) {

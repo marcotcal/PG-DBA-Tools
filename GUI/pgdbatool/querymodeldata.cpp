@@ -23,6 +23,8 @@ void QueryModelData::readXML()
     bool is_reading_parameter = false;
     QueryParameter *param = nullptr;
 
+    database_request = false;
+
     while(!reader.atEnd()) {
 
         while(reader.readNext()) {
@@ -66,6 +68,8 @@ void QueryModelData::readXML()
                     output_type = reader.readElementText().trimmed();
                 } else if (reader.name() == "model_path") {
                     model_path = reader.readElementText().trimmed();
+                } else if (reader.name() == "database_request") {
+                    database_request = (reader.readElementText().trimmed() == "yes");
                 } else if (reader.name() == "parameter") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString code;
@@ -159,6 +163,7 @@ bool QueryModelData::saveModel(QString file_name)
             "  <!ATTLIST model description CDATA \"\">\n"
             "  <!ELEMENT query_text (#PCDATA)>\n"
             "  <!ELEMENT output_type (#PCDATA)>\n"
+            "  <!ELEMENT database_request (#PCDATA)>\n"
             "  <!ELEMENT model_path (#PCDATA)>\n"
             "  <!ELEMENT parameters (parameter*)>\n"
             "  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>\n"
@@ -237,6 +242,10 @@ bool QueryModelData::saveModel(QString file_name)
     xmlWriter.writeCDATA(query_text);
     xmlWriter.writeEndElement();
 
+    xmlWriter.writeStartElement("database_request");
+    xmlWriter.writeCDATA(database_request ? "yes" : "no" );
+    xmlWriter.writeEndElement();
+
     xmlWriter.writeStartElement("output_type");
     xmlWriter.writeCDATA(output_type);
     xmlWriter.writeEndElement();
@@ -252,10 +261,11 @@ bool QueryModelData::saveModel(QString file_name)
     return true;
 }
 
-void QueryModelData::databaseConnect(int conn_number) {
+void QueryModelData::databaseConnect(int conn_number, QString database_name) {
     QMessageBox msg;
     PGresult *res;
-    QString conn_str = connections.getConnections().at(conn_number)->connectStr();
+    QString conn_str = connections.getConnections()
+            .at(conn_number)->connectStr("", "", database_name);
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {

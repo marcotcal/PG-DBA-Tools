@@ -5,6 +5,7 @@
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
   <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
@@ -56,6 +57,7 @@ WHERE relname NOT LIKE 'pg_%' AND
     relname NOT LIKE 'sql_%' AND
     relkind IN ('i')    
 ORDER BY 7 DESC, 1, 2]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Text With Separators]]></output_type>
     <model_path><![CDATA[Info - Statistics/Indexes]]></model_path>
 </model>

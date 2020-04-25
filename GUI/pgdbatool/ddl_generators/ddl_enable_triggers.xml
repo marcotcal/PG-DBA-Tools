@@ -23,28 +23,40 @@
   <!ATTLIST order width CDATA "">
 ]>
 
-<model code="STR0004" description="List of  on Normal Function by Schema">
+<model code="DLL_ENA_TRIGGERS" description="Enable Trigger">
     <parameters>
-        <parameter code="p_schema" description="Schema" mandatory="false">
+        <parameter code="p_schema" description="Schema" mandatory="true">
             <expression><![CDATA[AND n.nspname = ?]]></expression>
             <param_type><![CDATA[Text]]></param_type>
             <param_sub_type><![CDATA[Single]]></param_sub_type>
         </parameter>
+        <parameter code="p_table" description="Table Name " mandatory="true">
+            <expression><![CDATA[AND tbl.relname = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_trigger" description="Trigger Name" mandatory="true">
+            <expression><![CDATA[AND trg.tgname = ? ]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
     </parameters>
-    <orders>
-        <order description="Schema + Name" fields="n.nspname, p.proname"/>
-    </orders>
+    <orders/>
     <columns/>
-    <query_text><![CDATA[SELECT  
-    quote_ident(n.nspname) as schema_name,
-    quote_ident(p.proname) as function_name,
-    pg_catalog.pg_get_function_identity_arguments(p.oid) as arguments, 
-    t.typname as return_type
-FROM   pg_catalog.pg_proc p
-       JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace 
-       JOIN pg_catalog.pg_type t ON p.prorettype = t.oid
-WHERE  t.typname != 'trigger' [!p_schema!]]]></query_text>
+    <query_text><![CDATA[SELECT 
+    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' ENABLE TRIGGER ' || trg.tgname || ';' AS disable_trigger
+FROM 
+    pg_trigger trg
+    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid
+    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid
+WHERE        
+    tbl.relname !~ '^pg_'
+    [!p_schema!]
+    [!p_table!]
+    [!p_trigger!]
+    AND tgisinternal = FALSE
+ ]]></query_text>
     <database_request><![CDATA[yes]]></database_request>
-    <output_type><![CDATA[Html]]></output_type>
-    <model_path><![CDATA[]]></model_path>
+    <output_type><![CDATA[Text Without Separators]]></output_type>
+    <model_path><![CDATA[/triggers]]></model_path>
 </model>

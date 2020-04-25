@@ -139,7 +139,7 @@ private:
     ConnectionsData connections;
     ProjectData project;
 
-    QueryModelData *data;
+    QueryModelData *model_data;
     QString path_to_sql;
     QString path_to_models;
     QString last_path_to_sql;

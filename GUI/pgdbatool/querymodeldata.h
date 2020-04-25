@@ -128,6 +128,8 @@ public:
     void setModelPath(QString value) { model_path = value; }
     QString getOutputType() { return output_type; }
     void setOutputType(QString value) { output_type = value; }
+    bool getDatabaseRequest() { return database_request; }
+    void setDatabaseRequest(bool value) { database_request = value; }
     QList <QueryParameter *> &getParameters() { return parameters; }
     QList <QueryOrder *> &getOrders() { return orders; }
     QList <QueryColumn *> &getColumns() { return columns; }
@@ -136,7 +138,7 @@ public:
     QString getErrorMessage() { return error_message; }
     bool saveModel(QString file_name);
     void execute(ResultOutput* output, bool show_query = false);
-    void databaseConnect(int conn_number);
+    void databaseConnect(int conn_number, QString database_name);
     void databaseDisconnect();
     bool getConnected() { return connected; }
     void clear();
@@ -158,6 +160,7 @@ private:
     QString error_message;
     QString model_path;
     QString output_type;
+    bool database_request;
     QXmlStreamReader reader;
     ConnectionsData &connections;
     ProjectData &project;

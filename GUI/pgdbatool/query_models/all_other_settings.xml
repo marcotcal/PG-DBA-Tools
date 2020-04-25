@@ -5,6 +5,7 @@
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
   <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
@@ -35,6 +36,7 @@ WHERE name NOT LIKE 'tcp%' AND
       name NOT LIKE 'log_%' AND
       name NOT LIKE 'ssl_%'
 ORDER BY name]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Text With Separators]]></output_type>
     <model_path><![CDATA[/Info - Statistics/Settings]]></model_path>
 </model>

@@ -67,7 +67,7 @@ class SqlTool : public QWidget
     Q_OBJECT
 
 public:
-    explicit SqlTool(ConnectionsData &connections, ProjectData &project, QWidget *parent = nullptr);
+    explicit SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &project, QWidget *parent = nullptr);
     ~SqlTool();
     EditorItem *addEditor();
     bool closeCurrentEditor();
@@ -139,6 +139,8 @@ private slots:
 
     void on_from_line_valueChanged(const QString &arg1);
 
+    void loadDatabaseList(int sel_connection);
+
 signals:
     void beginExecution(SqlTool *sender);
     void endExecution(SqlTool *sender);
@@ -181,6 +183,7 @@ private:
     bool last_forward;
     bool last_backward;
 
+    int sel_connection;
     void initializeEditor(EditorItem *editor);
     bool saveToXML(QString file_name);
     bool readFromXML(QString file_name);

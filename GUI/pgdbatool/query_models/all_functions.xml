@@ -5,6 +5,7 @@
   <!ATTLIST model description CDATA "">
   <!ELEMENT query_text (#PCDATA)>
   <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
   <!ELEMENT model_path (#PCDATA)>
   <!ELEMENT parameters (parameter*)>
   <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
@@ -31,7 +32,7 @@
         </parameter>
     </parameters>
     <orders>
-        <order description="Shema + Name" fields="n.nspname, p.proname"/>
+        <order description="Schema + Name" fields="n.nspname, p.proname"/>
         <order description="Schema + Return Type" fields="n.nspname, t.typname"/>
     </orders>
     <columns/>
@@ -44,6 +45,7 @@ FROM   pg_catalog.pg_proc p
        JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace 
        JOIN pg_catalog.pg_type t ON p.prorettype = t.oid
 WHERE  TRUE [!p_schema!]]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Html]]></output_type>
     <model_path><![CDATA[]]></model_path>
 </model>

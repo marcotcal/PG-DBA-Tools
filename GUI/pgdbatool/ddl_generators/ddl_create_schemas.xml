@@ -23,23 +23,28 @@
   <!ATTLIST order width CDATA "">
 ]>
 
-<model code="SCHE-0001" description="Schemas">
+<model code="DDL_CRT_SCHEMAS" description="Create Schemas">
     <parameters>
-        <parameter code="p_owner" description="Schema Owner" mandatory="false">
-            <expression><![CDATA[WHERE schema_owner ilike ?]]></expression>
+        <parameter code="p_name" description="Schema" mandatory="false">
+            <expression><![CDATA[AND schema_name = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_owner" description="Owner" mandatory="false">
+            <expression><![CDATA[AND schema_owner = ?]]></expression>
             <param_type><![CDATA[Text]]></param_type>
             <param_sub_type><![CDATA[Single]]></param_sub_type>
         </parameter>
     </parameters>
-    <orders>
-        <order description="Name" fields="schema_name"/>
-        <order description="Owner" fields="schema_owner"/>
-    </orders>
+    <orders/>
     <columns/>
-    <query_text><![CDATA[SELECT schema_name, schema_owner 
+    <query_text><![CDATA[SELECT 
+    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || ';' AS create_schema
 FROM information_schema.schemata
-[!p_owner!]]]></query_text>
+WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_'  
+    [!p_name!]
+    [!p_owner!]]]></query_text>
     <database_request><![CDATA[yes]]></database_request>
     <output_type><![CDATA[Text With Separators]]></output_type>
-    <model_path><![CDATA[/Structure]]></model_path>
+    <model_path><![CDATA[/schemas]]></model_path>
 </model>
