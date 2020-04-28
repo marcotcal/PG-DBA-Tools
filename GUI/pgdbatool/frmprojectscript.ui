@@ -278,7 +278,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QListView" name="error_list"/>
+          <widget class="QListWidget" name="error_list"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">

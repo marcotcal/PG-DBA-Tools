@@ -1254,5 +1254,12 @@ void MainWindow::on_actionExecute_Project_Script_triggered()
     ui->main_stack->setCurrentWidget(frm);
     ui->editor_list->clearSelection();
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+    connect(frm, SIGNAL(openFileOnSQLTool(QString)), this, SLOT(openScriptOnNewTool(QString)));
+}
 
+void MainWindow::openScriptOnNewTool(QString file_name)
+{
+    QFile file(file_name);
+    SqlTool *sql = openNewSQLTool("Run Script");
+    sql->openFileOnCurrent(file);
 }

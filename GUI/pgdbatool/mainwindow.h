@@ -130,6 +130,10 @@ private slots:
     void on_actionFind_Next_triggered();
     void on_actionExecute_Project_Script_triggered();
 
+public slots:
+
+    void openScriptOnNewTool(QString file_name);
+
 signals:
     void clean_custom_menu();
 
