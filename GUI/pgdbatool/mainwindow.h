@@ -130,6 +130,8 @@ private slots:
     void on_actionFind_Next_triggered();
     void on_actionExecute_Project_Script_triggered();
 
+    void sqlToolModeChanged(SqlTool *sql, int current_mode);
+
 public slots:
 
     void openScriptOnNewTool(QString file_name);

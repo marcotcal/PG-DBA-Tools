@@ -67,6 +67,12 @@ class SqlTool : public QWidget
     Q_OBJECT
 
 public:
+    enum {
+        MODE_QUERY,
+        MODE_SCRIPT,
+        MODE_INTERNAL
+    };
+
     explicit SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &project, QWidget *parent = nullptr);
     ~SqlTool();
     EditorItem *addEditor();
@@ -123,6 +129,8 @@ public:
     void findFirst();
     void findNext();
 
+    int getMode() { return mode; }
+
 private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);
@@ -136,17 +144,21 @@ private slots:
     void on_modify_find_control();
 
     void on_text_to_find_textChanged(const QString &arg1);
-
     void on_from_line_valueChanged(const QString &arg1);
-
     void loadDatabaseList(int sel_connection);
+
+    void on_query_model_clicked();
+
+    void on_script_mode_clicked();
 
 signals:
     void beginExecution(SqlTool *sender);
     void endExecution(SqlTool *sender);
+    void modeChanged(SqlTool *sender, int current_mode);
 
 private:
     Ui::SqlTool *ui;
+
     enum {
         st_name,
         st_setting,
@@ -166,6 +178,7 @@ private:
         st_sourceline,
         st_pending_restart
     };
+
     QList<EditorItem*> editors;
     bool in_transaction;
     bool is_connected;
@@ -182,6 +195,8 @@ private:
     bool use_find_next;
     bool last_forward;
     bool last_backward;
+
+    int mode;
 
     int sel_connection;
     void initializeEditor(EditorItem *editor);

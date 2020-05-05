@@ -105,7 +105,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="query_model">
               <property name="text">
                <string>Query Mode</string>
               </property>
@@ -115,7 +115,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="script_mode">
               <property name="text">
                <string>Script Mode</string>
               </property>

@@ -177,6 +177,8 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     last_backward = true;
     last_forward = true;
 
+    mode = MODE_QUERY;
+
     //connect(ui->text_to_find, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
     //connect(ui->from_line, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
     connect(ui->from_cursor, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
@@ -1058,4 +1060,16 @@ void SqlTool::loadDatabaseList(int sel_connection)
         }
     }
 
+}
+
+void SqlTool::on_query_model_clicked()
+{
+    mode = MODE_QUERY;
+    emit modeChanged(this, mode);
+}
+
+void SqlTool::on_script_mode_clicked()
+{
+    mode = MODE_SCRIPT;
+    emit modeChanged(this, mode);
 }

@@ -237,7 +237,11 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
     ui->actionCancel_Current_Query->setEnabled(sql->isRunning());
 
     if (sql->connected()) {
-        ui->actionStart_Transaction->setEnabled(!sql->isRunning());
+        if (sql->getMode() == SqlTool::MODE_QUERY) {
+            ui->actionStart_Transaction->setEnabled(!sql->isRunning());
+        } else {
+            ui->actionStart_Transaction->setEnabled(false);
+        }
         ui->actionCommit_Transaction->setEnabled(false);
         ui->actionRollback_Transaction->setEnabled(false);     
     } else {
@@ -259,11 +263,13 @@ void MainWindow::enable_model_actions(QueryModel *model)
 void MainWindow::enable_sql_transactions(SqlTool *sql) {
     if (!sql->connected())
         return;
-    ui->actionStart_Transaction->setEnabled(!sql->transaction() && !sql->isRunning());
-    ui->actionCommit_Transaction->setEnabled(sql->transaction() && !sql->isRunning());
-    ui->actionRollback_Transaction->setEnabled(sql->transaction() && !sql->isRunning());
-    // suport implicit transactions
-    //ui->actionExecute->setEnabled(sql->transaction());
+
+    if (sql->getMode() == SqlTool::MODE_QUERY) {
+        ui->actionStart_Transaction->setEnabled(!sql->transaction() && !sql->isRunning());
+        ui->actionCommit_Transaction->setEnabled(sql->transaction() && !sql->isRunning());
+        ui->actionRollback_Transaction->setEnabled(sql->transaction() && !sql->isRunning());
+    }
+
     ui->actionExecute->setEnabled(sql->connected() && !sql->isRunning());
     ui->actionExplain->setEnabled(sql->connected() && !sql->isRunning());
     ui->actionCancel_Current_Query->setEnabled(sql->connected() && !sql->isRunning());
@@ -316,6 +322,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
         ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
         connect(sql, SIGNAL(beginExecution(SqlTool *)), this, SLOT(do_beginExecuteQuery(SqlTool*)));
         connect(sql, SIGNAL(endExecution(SqlTool *)), this, SLOT(do_endExecuteQuery(SqlTool*)));
+        connect(sql, SIGNAL(modeChanged(SqlTool *, int)), this, SLOT(sqlToolModeChanged(SqlTool *, int)));
         return sql;
 
     }
@@ -848,11 +855,13 @@ void MainWindow::do_endExecuteQuery(SqlTool *sender)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if (sender == sql) {
-        if (sql->transaction()) {
-            ui->actionCommit_Transaction->setEnabled(true);
-            ui->actionRollback_Transaction->setEnabled(true);
-        } else {
-            ui->actionStart_Transaction->setEnabled(true);
+        if (sql->getMode() == SqlTool::MODE_QUERY) {
+            if (sql->transaction()) {
+                ui->actionCommit_Transaction->setEnabled(true);
+                ui->actionRollback_Transaction->setEnabled(true);
+            } else {
+                ui->actionStart_Transaction->setEnabled(true);
+            }
         }
         ui->actionExecute->setEnabled(true);
         ui->actionExplain->setEnabled(true);
@@ -1255,6 +1264,15 @@ void MainWindow::on_actionExecute_Project_Script_triggered()
     ui->editor_list->clearSelection();
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
     connect(frm, SIGNAL(openFileOnSQLTool(QString)), this, SLOT(openScriptOnNewTool(QString)));
+}
+
+void MainWindow::sqlToolModeChanged(SqlTool *sql, int current_mode)
+{
+     enable_sql_tool_actions(sql);
+     // always rollback transaction if change mode
+     if (sql->transaction()) {
+         sql->rollback();
+     }
 }
 
 void MainWindow::openScriptOnNewTool(QString file_name)
