@@ -797,6 +797,14 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
 
     // execute query
 
+    if (mode == MODE_SCRIPT) {
+
+        if (PQtransactionStatus(conn) == PQTRANS_INERROR) {
+            PGresult *res = PQexec(conn, "ROLLBACK");
+            PQclear(res);
+        }
+    }
+
     query_running = true;
     ui->editors_tabs->setEnabled(false);
 
