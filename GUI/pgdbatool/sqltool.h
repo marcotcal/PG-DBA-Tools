@@ -196,6 +196,7 @@ private:
     bool use_find_next;
     bool last_forward;
     bool last_backward;
+    QString last_search_path;
 
     int mode;
 

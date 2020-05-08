@@ -112,6 +112,7 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
     menu->exec(event->globalPos());
     delete menu;
+
 }
 
 void EditorItem::on_reserved_word_uppercase_triggered()
@@ -187,6 +188,8 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     connect(ui->posix_regular_expression, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
     connect(ui->whole_word, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
     connect(ui->warp_around, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+
+    last_search_path = "public,pg_catalog";
 }
 
 SqlTool::~SqlTool()
@@ -711,6 +714,7 @@ void SqlTool::databaseConnect() {
     QMessageBox msg;
     QString conn_str;
     QString database_name;
+    QStringList schemas;
 
     database_name = ui->connection_list->itemText(ui->connection_list->currentIndex());
 
@@ -743,6 +747,13 @@ void SqlTool::databaseConnect() {
 
         conn_settings = new ConnectionSettings(conn, this);
 
+        ui->schema_list->clear();
+
+        schemas = connections.getConnections().at(sel_connection)->getSchemaList(database_name);
+
+        ui->schema_list->addItems(schemas);
+        ui->schema_list->setEnabled(true);
+
         return;
     }
     msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
@@ -763,6 +774,7 @@ void SqlTool::databaseDisconnect() {
         ui->ed_password->setEnabled(true);
         ui->lb_password->setEnabled(true);
     }
+    ui->schema_list->setEnabled(false);
     is_connected = false;
 }
 
@@ -794,7 +806,23 @@ void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
 void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_query)
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
-    QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();
+    QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();;
+    QString search_path;
+    QList<QListWidgetItem *> schemas = ui->schema_list->selectedItems();
+
+    if (schemas.count() == 0) {
+        search_path = "public,pg_catalog";
+    } else {
+        search_path = "";
+        foreach(QListWidgetItem *item, schemas)
+            search_path += item->text() + ",";
+        search_path += "pg_catalog";
+    }
+
+    if (search_path != last_search_path) {
+        query = "SET search_path=" + search_path + ";\n" + query;
+        last_search_path = search_path;
+    }
 
     this->output = output;
 

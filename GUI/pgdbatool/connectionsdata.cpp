@@ -106,7 +106,40 @@ QStringList ConnectionElement::getDatabaseList()
 
 QStringList ConnectionElement::getSchemaList(QString database_name)
 {
+    const char *sql =
+        "SELECT schema_name "
+        "FROM information_schema.schemata "
+        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
+    QString conn_str;
+    QStringList list;
+    int tuples;
 
+    PGconn *conn;
+
+    conn_str = connectStr("", "", database_name);
+
+    conn = PQconnectdb(conn_str.toStdString().c_str());
+
+    if (PQstatus(conn) == CONNECTION_OK) {
+        PGresult *res = PQexec(conn, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            PQfinish(conn);
+            return list;
+        }
+
+        tuples = PQntuples(res);
+
+        for (int i = 0; i < tuples; i++)
+            list << QString::fromStdString(PQgetvalue(res, i, 0));
+
+        PQclear(res);
+        PQfinish(conn);
+
+        return list;
+    }
 }
 
 void ConnectionElement::openSSHTunnel()
