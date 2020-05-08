@@ -129,7 +129,8 @@ public:
     void findFirst();
     void findNext();
 
-    int getMode() { return mode; }
+    int getMode();
+    void setMode(int value);
 
 private slots:
     void on_limit_result_clicked(bool checked);

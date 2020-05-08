@@ -907,6 +907,9 @@
    <property name="text">
     <string>Execute Project Script</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

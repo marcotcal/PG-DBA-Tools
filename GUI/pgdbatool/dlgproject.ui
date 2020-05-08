@@ -73,21 +73,31 @@
        <property name="spacing">
         <number>2</number>
        </property>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="cb_staging_database"/>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="cb_production_database"/>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_5">
+       <item row="4" column="1">
+        <widget class="QComboBox" name="cb_production_connection"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Production Connection</string>
+          <string>Development Connection</string>
          </property>
         </widget>
        </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Development Database</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="cb_staging_database"/>
+       </item>
        <item row="0" column="1">
         <widget class="QComboBox" name="cb_development_connection"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="cb_staging_connection"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_4">
@@ -98,6 +108,23 @@
        </item>
        <item row="1" column="1">
         <widget class="QComboBox" name="cb_development_database"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="cb_staging_connection"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Production Connection</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Production Database</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="2">
         <widget class="QToolButton" name="bt_connections">
@@ -110,50 +137,10 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QComboBox" name="cb_production_connection"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Development Connection</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>97</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="5" column="1">
-        <widget class="QComboBox" name="cb_production_database"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>Development Database</string>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_10">
          <property name="text">
           <string>Staging Database</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_11">
-         <property name="text">
-          <string>Production Database</string>
          </property>
         </widget>
        </item>

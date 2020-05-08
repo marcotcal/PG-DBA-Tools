@@ -25,11 +25,20 @@ public:
     QString getDevelopment() const;
     void setDevelopment(const QString &value);
 
+    QString getDevelopmentDatabase() const;
+    void setDevelopmentDatabase(const QString &value);
+
     QString getStaging() const;
     void setStaging(const QString &value);
 
+    QString getStagingDatabase() const;
+    void setStagingDatabase(const QString &value);
+
     QString getProduction() const;
     void setProduction(const QString &value);
+
+    QString getProductionDatabase() const;
+    void setProductionDatabase(const QString &value);
 
     QString getDescription() const;
     void setDescription(const QString &value);
@@ -52,8 +61,11 @@ private:
     QString query_path;
     QString model_path;
     QString development;
+    QString development_database;
     QString staging;
+    QString staging_database;
     QString production;
+    QString production_database;
     QString description;
 };
 

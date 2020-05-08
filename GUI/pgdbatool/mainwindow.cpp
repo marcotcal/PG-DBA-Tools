@@ -1263,7 +1263,7 @@ void MainWindow::on_actionExecute_Project_Script_triggered()
     ui->main_stack->setCurrentWidget(frm);
     ui->editor_list->clearSelection();
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-    connect(frm, SIGNAL(openFileOnSQLTool(QString)), this, SLOT(openScriptOnNewTool(QString)));
+    connect(frm, SIGNAL(openFileOnSQLTool(QString, bool)), this, SLOT(openScriptOnNewTool(QString, bool)));
 }
 
 void MainWindow::sqlToolModeChanged(SqlTool *sql, int current_mode)
@@ -1275,9 +1275,11 @@ void MainWindow::sqlToolModeChanged(SqlTool *sql, int current_mode)
      }
 }
 
-void MainWindow::openScriptOnNewTool(QString file_name)
+void MainWindow::openScriptOnNewTool(QString file_name, bool internal_mode)
 {
     QFile file(file_name);
     SqlTool *sql = openNewSQLTool("Run Script");
+    if(internal_mode)
+        sql->setMode(SqlTool::MODE_INTERNAL);
     sql->openFileOnCurrent(file);
 }

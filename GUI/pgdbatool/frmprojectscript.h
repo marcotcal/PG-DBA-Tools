@@ -33,7 +33,7 @@ private slots:
 
 signals:
 
-    void openFileOnSQLTool(QString file_name);
+    void openFileOnSQLTool(QString file_name, bool internal_mode);
 
 private:
     Ui::FrmProjectScript *ui;

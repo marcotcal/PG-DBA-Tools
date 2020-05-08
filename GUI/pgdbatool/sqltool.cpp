@@ -524,6 +524,17 @@ void SqlTool::findNext()
     }
 }
 
+int SqlTool::getMode() {
+    return mode;
+}
+
+void SqlTool::setMode(int value)
+{
+    mode = value;
+    if(mode == MODE_INTERNAL)
+        ui->config_frame->setVisible(false);
+}
+
 void SqlTool::initializeEditor(EditorItem *editor) {
     PostgreSQLLexer *lex =new PostgreSQLLexer(this);
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -1029,45 +1040,14 @@ void SqlTool::on_from_line_valueChanged(const QString &arg1)
 
 void SqlTool::loadDatabaseList(int sel_connection)
 {
-    QMessageBox msg;
-    QString conn_str;
-    int tuples;
-    const char *sql =
-            "SELECT db.datname "
-            "FROM pg_database db "
-            "ORDER BY db.datname ";
-    PGconn *conn;
+    QStringList databases;
 
     if (sel_connection != -1) {
-        conn_str = connections.getConnections().at(sel_connection)->connectStr();
+        databases = connections.getConnections().at(sel_connection)->getDatabaseList();
 
-        conn = PQconnectdb(conn_str.toStdString().c_str());
-
-        if (PQstatus(conn) == CONNECTION_OK) {
-            PGresult *res = PQexec(conn, sql);
-
-            if (PQresultStatus(res) != PGRES_TUPLES_OK)
-            {
-                msg.setText(QString("Read Database: %1").arg(PQerrorMessage(conn)));
-                msg.exec();
-                PQclear(res);
-                PQfinish(conn);
-                return;
-            }
-
-            tuples = PQntuples(res);
-
-            ui->connection_list->clear();
-
-            for (int i = 0; i < tuples; i++)
-                ui->connection_list->addItem(QString::fromStdString(PQgetvalue(res, i, 0)));
-
-            PQclear(res);
-            PQfinish(conn);
-
-        }
+        ui->connection_list->clear();
+        ui->connection_list->addItems(databases);
     }
-
 }
 
 void SqlTool::on_query_model_clicked()

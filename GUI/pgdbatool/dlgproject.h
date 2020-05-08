@@ -32,6 +32,10 @@ private slots:
     virtual int exec() {return QDialog::exec(); }
     void on_bt_connections_clicked();
 
+    void on_cb_development_connection_activated(int index);
+    void on_cb_staging_connection_activated(int index);
+    void on_cb_production_connection_activated(int index);
+
 private:
     Ui::DlgProject *ui;
     ConnectionsData &connections;
@@ -40,6 +44,7 @@ private:
     void createProject();
     void createSkeleton();
     void loadCombo(QComboBox *combo);
+    void loadDBCombo(QComboBox *combo, int connection);
 };
 
 #endif // DLGPROJECT_H

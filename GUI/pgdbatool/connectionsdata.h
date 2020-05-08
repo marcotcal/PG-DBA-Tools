@@ -17,6 +17,8 @@ public:
     QString connectStr(QString alternate_user="", QString alternate_password="", QString alternate_database="");
     bool isInvalid() { return invalid; }
     void setInvalid(bool value) { invalid = value; }
+    QStringList getDatabaseList();
+    QStringList getSchemaList(QString database_name);
 private:    
     QString connection_name;
     bool invalid;

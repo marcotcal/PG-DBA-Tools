@@ -57,6 +57,16 @@ void ProjectData::setDevelopment(const QString &value)
     development = value;
 }
 
+QString ProjectData::getDevelopmentDatabase() const
+{
+    return development_database;
+}
+
+void ProjectData::setDevelopmentDatabase(const QString &value)
+{
+    development_database = value;
+}
+
 QString ProjectData::getStaging() const
 {
     return staging;
@@ -67,6 +77,16 @@ void ProjectData::setStaging(const QString &value)
     staging = value;
 }
 
+QString ProjectData::getStagingDatabase() const
+{
+    return staging_database;
+}
+
+void ProjectData::setStagingDatabase(const QString &value)
+{
+    staging_database = value;
+}
+
 QString ProjectData::getProduction() const
 {
     return production;
@@ -75,6 +95,16 @@ QString ProjectData::getProduction() const
 void ProjectData::setProduction(const QString &value)
 {
     production = value;
+}
+
+QString ProjectData::getProductionDatabase() const
+{
+    return production_database;
+}
+
+void ProjectData::setProductionDatabase(const QString &value)
+{
+    production_database = value;
 }
 
 QString ProjectData::getDescription() const
@@ -130,8 +160,11 @@ void ProjectData::writeConfig()
         "  <!ELEMENT project_name (#PCDATA)>\n"
         "  <!ELEMENT project_path (#PCDATA)>\n"
         "  <!ELEMENT development (#PCDATA)>\n"
+        "  <!ELEMENT development_database (#PCDATA)>\n"
         "  <!ELEMENT staging (#PCDATA)>\n"
+        "  <!ELEMENT staging_database (#PCDATA)>\n"
         "  <!ELEMENT production (#PCDATA)>\n"
+        "  <!ELEMENT production_database (#PCDATA)>\n"
         "  <!ELEMENT query_path (#PCDATA)>\n"
         "  <!ELEMENT model_path (#PCDATA)>\n"
         "  <!ELEMENT description (#PCDATA)>\n"
@@ -157,12 +190,24 @@ void ProjectData::writeConfig()
     xmlWriter.writeCharacters(development);
     xmlWriter.writeEndElement();
 
+    xmlWriter.writeStartElement("development_database");
+    xmlWriter.writeCharacters(development_database);
+    xmlWriter.writeEndElement();
+
     xmlWriter.writeStartElement("staging");
     xmlWriter.writeCharacters(staging);
     xmlWriter.writeEndElement();
 
+    xmlWriter.writeStartElement("staging_database");
+    xmlWriter.writeCharacters(staging_database);
+    xmlWriter.writeEndElement();
+
     xmlWriter.writeStartElement("production");
     xmlWriter.writeCharacters(production);
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("production_database");
+    xmlWriter.writeCharacters(production_database);
     xmlWriter.writeEndElement();
 
     xmlWriter.writeStartElement("query_path");
@@ -229,6 +274,12 @@ bool ProjectData::readConfig()
                     staging = reader.readElementText().trimmed();
                 } else if (reader.name() == "production") {
                     production = reader.readElementText().trimmed();
+                } else if (reader.name() == "development_database") {
+                    development_database = reader.readElementText().trimmed();
+                } else if (reader.name() == "staging_database") {
+                    staging_database = reader.readElementText().trimmed();
+                } else if (reader.name() == "production_database") {
+                    production_database = reader.readElementText().trimmed();
                 }
             }
         }

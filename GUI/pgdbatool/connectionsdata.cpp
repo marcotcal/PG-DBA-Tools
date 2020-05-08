@@ -3,6 +3,7 @@
 #include <QList>
 #include <iostream>
 #include <QXmlSimpleReader>
+#include <libpq-fe.h>
 
 ConnectionElement::ConnectionElement(QObject *parent) : QObject (parent)
 {
@@ -64,6 +65,48 @@ QString ConnectionElement::connectStr(QString alternate_user, QString alternate_
         }
     }
     return cr;
+}
+
+QStringList ConnectionElement::getDatabaseList()
+{
+    QString conn_str;
+    QStringList list;
+    int tuples;
+    const char *sql =
+            "SELECT db.datname "
+            "FROM pg_database db "
+            "ORDER BY db.datname ";
+    PGconn *conn;
+
+    conn_str = connectStr();
+
+    conn = PQconnectdb(conn_str.toStdString().c_str());
+
+    if (PQstatus(conn) == CONNECTION_OK) {
+        PGresult *res = PQexec(conn, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            PQfinish(conn);
+            return list;
+        }
+
+        tuples = PQntuples(res);
+
+        for (int i = 0; i < tuples; i++)
+            list << QString::fromStdString(PQgetvalue(res, i, 0));
+
+        PQclear(res);
+        PQfinish(conn);
+
+        return list;
+    }
+}
+
+QStringList ConnectionElement::getSchemaList(QString database_name)
+{
+
 }
 
 void ConnectionElement::openSSHTunnel()

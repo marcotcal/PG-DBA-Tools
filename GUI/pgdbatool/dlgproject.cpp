@@ -45,18 +45,32 @@ int DlgProject::projectEdit()
         ui->ed_models_dir->setText(project.getModelPath());
         ui->ed_description->setPlainText(project.getDescription());
         index = ui->cb_development_connection->findText(project.getDevelopment());
-        if ( index != -1 ) {
+        if ( index != 0 ) {
            ui->cb_development_connection->setCurrentIndex(index);
+           loadDBCombo(ui->cb_development_database, index-1);
         }
         index = ui->cb_staging_connection->findText(project.getStaging());
-        if ( index != -1 ) {
+        if ( index != 0 ) {
            ui->cb_staging_connection->setCurrentIndex(index);
+           loadDBCombo(ui->cb_staging_database, index-1);
         }
         index = ui->cb_production_connection->findText(project.getProduction());
-        if ( index != -1 ) {
+        if ( index != 0 ) {
            ui->cb_production_connection->setCurrentIndex(index);
+           loadDBCombo(ui->cb_production_database, index-1);
         }
-
+        index = ui->cb_development_database->findText(project.getDevelopmentDatabase());
+        if ( index != 0 ) {
+           ui->cb_development_database->setCurrentIndex(index);
+        }
+        index = ui->cb_staging_database->findText(project.getStagingDatabase());
+        if ( index != 0 ) {
+           ui->cb_staging_database->setCurrentIndex(index);
+        }
+        index = ui->cb_production_database->findText(project.getProductionDatabase());
+        if ( index != 0 ) {
+           ui->cb_production_database->setCurrentIndex(index);
+        }
         return exec();
 
     } else {
@@ -75,6 +89,12 @@ void DlgProject::createProject()
                            ui->cb_staging_connection->currentIndex()));
     project.setProduction(ui->cb_production_connection->itemText(
                               ui->cb_production_connection->currentIndex()));
+    project.setDevelopmentDatabase(ui->cb_development_database->itemText(
+                               ui->cb_development_database->currentIndex()));
+    project.setStagingDatabase(ui->cb_staging_database->itemText(
+                           ui->cb_staging_database->currentIndex()));
+    project.setProductionDatabase(ui->cb_production_database->itemText(
+                              ui->cb_production_database->currentIndex()));
     project.setQueryPath(ui->ed_query_dir->text());
     project.setModelPath(ui->ed_models_dir->text());
     project.setDescription(ui->ed_description->toPlainText());
@@ -117,6 +137,18 @@ void DlgProject::loadCombo(QComboBox *combo)
     for (int i = 0; i < project.getConnnections().getConnections().count(); i++) {
         ConnectionElement *conn = project.getConnnections().getConnections().at(i);
         combo->addItem(conn->name());
+    }
+}
+
+void DlgProject::loadDBCombo(QComboBox *combo, int connection)
+{
+    QStringList databases;
+
+    combo->clear();
+
+    databases = connections.getConnections().at(connection)->getDatabaseList();
+    for (int i = 0; i < databases.count(); i++) {
+        combo->addItem(databases.at(i));
     }
 }
 
@@ -223,4 +255,33 @@ void DlgProject::on_bt_connections_clicked()
     if ( index != -1 ) {
        ui->cb_production_connection->setCurrentIndex(index);
     }
+}
+
+void DlgProject::on_cb_development_connection_activated(int index)
+{
+    index--;
+    if (index  == -1) {
+        ui->cb_development_database->clear();
+        return;
+    }
+    loadDBCombo(ui->cb_development_database, index);
+}
+void DlgProject::on_cb_staging_connection_activated(int index)
+{
+    index--;
+    if (index  == -1) {
+        ui->cb_staging_database->clear();
+        return;
+    }
+    loadDBCombo(ui->cb_staging_database, index);
+}
+
+void DlgProject::on_cb_production_connection_activated(int index)
+{
+    index--;
+    if (index  == -1) {
+        ui->cb_production_database->clear();
+        return;
+    }
+    loadDBCombo(ui->cb_production_database, index);
 }

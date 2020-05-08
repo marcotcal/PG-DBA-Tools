@@ -134,7 +134,7 @@ private slots:
 
 public slots:
 
-    void openScriptOnNewTool(QString file_name);
+    void openScriptOnNewTool(QString file_name, bool internal_mode=false);
 
 signals:
     void clean_custom_menu();

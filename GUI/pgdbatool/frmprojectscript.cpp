@@ -49,7 +49,8 @@ void FrmProjectScript::loadRunFiles()
             ui->run_list->addItem(QFileInfo(file).fileName());
         }
     }
-
+    if (ui->run_list->count() > 0)
+        ui->run_list->setCurrentRow(0);
 }
 
 void FrmProjectScript::loadReviewFiles()
@@ -80,6 +81,8 @@ void FrmProjectScript::loadReviewFiles()
             ui->review_list->addItem(QFileInfo(file).fileName());
         }
     }
+    if (ui->review_list->count() > 0)
+        ui->review_list->setCurrentRow(0);
 }
 
 void FrmProjectScript::loadErrorFiles()
@@ -110,6 +113,8 @@ void FrmProjectScript::loadErrorFiles()
             ui->error_list->addItem(QFileInfo(file).fileName());
         }
     }
+    if (ui->error_list->count() > 0)
+        ui->error_list->setCurrentRow(0);
 }
 
 void FrmProjectScript::loadDoneFiles()
@@ -141,6 +146,8 @@ void FrmProjectScript::loadDoneFiles()
             ui->done_list->addItem(QFileInfo(file).fileName());
         }
     }
+    if (ui->done_list->count() > 0)
+        ui->done_list->setCurrentRow(0);
 }
 
 void FrmProjectScript::on_tabWidget_currentChanged(int index)
@@ -154,25 +161,25 @@ void FrmProjectScript::on_tabWidget_currentChanged(int index)
 void FrmProjectScript::on_bt_run_run_clicked()
 {
     QString file_name = run_dir + ui->run_list->item(ui->run_list->currentRow())->text();
-
+    emit openFileOnSQLTool(file_name, true);
 }
 
 void FrmProjectScript::on_bt_run_open_clicked()
 {
     QString file_name = run_dir + ui->run_list->item(ui->run_list->currentRow())->text();
-    emit openFileOnSQLTool(file_name);
+    emit openFileOnSQLTool(file_name, false);
 }
 
 void FrmProjectScript::on_bt_review_run_clicked()
 {
     QString file_name = review_dir + ui->review_list->item(ui->run_list->currentRow())->text();
-
+    emit openFileOnSQLTool(file_name, true);
 }
 
 void FrmProjectScript::on_bt_review_open_clicked()
 {
     QString file_name = review_dir + ui->review_list->item(ui->run_list->currentRow())->text();
-    emit openFileOnSQLTool(file_name);
+    emit openFileOnSQLTool(file_name, false);
 }
 
 void FrmProjectScript::on_bt_show_error_clicked()
