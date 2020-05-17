@@ -214,8 +214,10 @@ void MainWindow::disable_actions()
 void MainWindow::enable_sql_tool_actions(SqlTool *sql)
 {    
 
-    ui->actionAdd_Editor->setEnabled(true);
-    ui->actionClose_Editor->setEnabled(true);
+    if (sql->getMode() == SqlTool::MODE_QUERY || sql->getMode() == SqlTool::MODE_SCRIPT) {
+        ui->actionAdd_Editor->setEnabled(true);
+        ui->actionClose_Editor->setEnabled(true);
+    }
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
 
@@ -301,7 +303,7 @@ void MainWindow::setConnectionsList()
         ui->connection_list->setCurrentRow(0);
 }
 
-SqlTool *MainWindow::openNewSQLTool(QString name)
+SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 {
     SqlTool *sql;
     OutputSet *out;
@@ -309,7 +311,21 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
     if (!name.isEmpty()) {
 
         new QListWidgetItem(name, ui->editor_list);
-        sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
+
+        switch(mode) {
+        case SqlTool::MODE_INTERNAL_DEVELOPMENT:
+        case SqlTool::MODE_INTERNAL_STAGING:
+        case SqlTool::MODE_INTERNAL_PRODUCTION:
+        case SqlTool::MODE_QUERY:
+        case SqlTool::MODE_SCRIPT:
+            sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
+            break;
+        default:
+            return nullptr;
+        }
+
+        sql->setMode(mode);
+
         ui->main_stack->addWidget(sql);
         ui->main_stack->setCurrentWidget(ui->main_stack);
         ui->editor_list->clearSelection();        
@@ -323,6 +339,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name)
         connect(sql, SIGNAL(beginExecution(SqlTool *)), this, SLOT(do_beginExecuteQuery(SqlTool*)));
         connect(sql, SIGNAL(endExecution(SqlTool *)), this, SLOT(do_endExecuteQuery(SqlTool*)));
         connect(sql, SIGNAL(modeChanged(SqlTool *, int)), this, SLOT(sqlToolModeChanged(SqlTool *, int)));
+        connect(sql, SIGNAL(requestToClose()), this, SLOT(closeRequested()));
         return sql;
 
     }
@@ -671,7 +688,6 @@ void MainWindow::on_actionExecute_triggered()
             break;
         }
     }
-
 }
 
 void MainWindow::on_actionExplain_triggered()
@@ -1263,7 +1279,7 @@ void MainWindow::on_actionExecute_Project_Script_triggered()
     ui->main_stack->setCurrentWidget(frm);
     ui->editor_list->clearSelection();
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-    connect(frm, SIGNAL(openFileOnSQLTool(QString, bool)), this, SLOT(openScriptOnNewTool(QString, bool)));
+    connect(frm, SIGNAL(openFileOnSQLTool(QString, int)), this, SLOT(openScriptOnNewTool(QString, int)));
 }
 
 void MainWindow::sqlToolModeChanged(SqlTool *sql, int current_mode)
@@ -1275,11 +1291,26 @@ void MainWindow::sqlToolModeChanged(SqlTool *sql, int current_mode)
      }
 }
 
-void MainWindow::openScriptOnNewTool(QString file_name, bool internal_mode)
+void MainWindow::closeRequested()
+{
+    on_actionClose_triggered();
+
+    FrmProjectScript *frm;
+
+    for (int i = 0; i < ui->main_stack->count(); i++) {
+
+        frm = dynamic_cast<FrmProjectScript*>(ui->main_stack->widget(i));
+        if(frm) {
+            frm->refreshAll();
+        }
+    }
+
+}
+
+void MainWindow::openScriptOnNewTool(QString file_name, int internal_mode)
 {
     QFile file(file_name);
-    SqlTool *sql = openNewSQLTool("Run Script");
-    if(internal_mode)
-        sql->setMode(SqlTool::MODE_INTERNAL);
+    SqlTool *sql = openNewSQLTool("Run Script", internal_mode);
+    sql->setMode(internal_mode);
     sql->openFileOnCurrent(file);
 }

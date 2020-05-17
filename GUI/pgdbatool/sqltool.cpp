@@ -154,15 +154,17 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     addEditor();
     in_transaction = false;
     is_connected = false;
-    ui->connection_list->clear();
+    ui->database_list->clear();
     loadDatabaseList(sel_connection);
-    /*
+
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
         if (!conn->isInvalid())
             ui->connection_list->addItem(conn->name());
     }
-    */
+
+    ui->connection_list->setCurrentIndex(sel_connection);
+
     if(project.getProjectName().isNull()) {
         default_path = settings.value("path_to_sql", "").toString();
     } else {
@@ -534,8 +536,15 @@ int SqlTool::getMode() {
 void SqlTool::setMode(int value)
 {
     mode = value;
-    if(mode == MODE_INTERNAL)
+    switch(mode) {
+    case MODE_INTERNAL_DEVELOPMENT:
+    case MODE_INTERNAL_STAGING:
+    case MODE_INTERNAL_PRODUCTION:
         ui->config_frame->setVisible(false);
+        break;
+    default:
+        ui->config_frame->setVisible(true);
+    }
 }
 
 void SqlTool::initializeEditor(EditorItem *editor) {
@@ -715,13 +724,32 @@ void SqlTool::databaseConnect() {
     QString conn_str;
     QString database_name;
     QStringList schemas;
+    int connection_index;
 
-    database_name = ui->connection_list->itemText(ui->connection_list->currentIndex());
+    switch(mode) {
+    case MODE_INTERNAL_DEVELOPMENT:
+            connection_index = connections.getConnectionIndexByName(project.getDevelopment());
+            database_name = project.getDevelopmentDatabase();
+            break;
+    case MODE_INTERNAL_STAGING:
+            connection_index = connections.getConnectionIndexByName(project.getStaging());
+            database_name = project.getStagingDatabase();
+            break;
+    case MODE_INTERNAL_PRODUCTION:
+            connection_index = connections.getConnectionIndexByName(project.getProduction());
+            database_name = project.getProductionDatabase();
+            break;
+    case MODE_QUERY:
+    case MODE_SCRIPT:
+        database_name = ui->database_list->itemText(ui->database_list->currentIndex());
+        connection_index = ui->connection_list->currentIndex();
+    }
 
     if (!ui->ck_use_alternate_user->isChecked()) {
 
-        if (sel_connection != -1)
-            conn_str = connections.getConnections().at(sel_connection)->connectStr("", "", database_name);
+        if (connection_index != -1)
+            conn_str = connections.getConnections().at(
+                        connection_index)->connectStr("", "", database_name);
         else {
             msg.setText("No connection available. Please create a connection.");
             msg.exec();
@@ -729,13 +757,15 @@ void SqlTool::databaseConnect() {
         }
 
     } else {
-        conn_str = connections.getConnections().at(sel_connection)
+        conn_str = connections.getConnections().at(connection_index)
                 ->connectStr(ui->ed_user->text(), ui->ed_password->text(), database_name);
     }
+
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {
         PQexec(conn, QString("SET application_name=\"PGDBATool - %1\"").arg(group_name).toStdString().c_str());
+        ui->database_list->setEnabled(false);
         ui->connection_list->setEnabled(false);
         ui->led_connected->setStyleSheet("background-color:#00FF00;border-radius:6;");
         is_connected = true;
@@ -764,6 +794,7 @@ void SqlTool::databaseDisconnect() {
 
     delete conn_settings;
     PQfinish(conn);
+    ui->database_list->setEnabled(true);
     ui->connection_list->setEnabled(true);
     ui->led_connected->setStyleSheet("background-color:#008800;border-radius:6;");
     ui->led_transaction->setStyleSheet("background-color:#C46709;border-radius:6;");
@@ -848,7 +879,7 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
     ui->editors_tabs->setEnabled(false);
 
     QueryExecutor *executor = new QueryExecutor(conn, query);
-    connect(executor, SIGNAL(finished), executor, SLOT(deleteLater));
+    connect(executor, SIGNAL(finished()), executor, SLOT(deleteLater()));
     connect(executor, SIGNAL(query_ended(PGresult *)), this, SLOT(do_query_ended(PGresult *)));
     connect(executor, SIGNAL(generate_notice(QString)), output, SLOT(generateStatusMessage(QString)));
 
@@ -896,6 +927,16 @@ void SqlTool::on_limit_result_clicked(bool checked)
 
 void SqlTool::do_query_ended(PGresult *res)
 {    
+    bool run_with_error  = false;
+    QString run_dir;
+    QString review_dir;
+    QString done_dir;
+    QString error_dir;
+    QString next_run;
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
+    QString original_file_name = editor->getFileName();
+    QString file_name = QFileInfo(original_file_name).fileName();
+
     switch(PQresultStatus(res)) {
 
     case PGRES_EMPTY_QUERY:
@@ -926,16 +967,19 @@ void SqlTool::do_query_ended(PGresult *res)
         output->clearOutput();
         output->generateError(conn);
         output->generateStatusMessage(res);
+        run_with_error = true;
         break;
     case PGRES_FATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
         output->generateStatusMessage(res);
+        run_with_error = true;
         break;
     case PGRES_NONFATAL_ERROR:
         output->clearOutput();
         output->generateError(conn);
         output->generateStatusMessage(res);
+        run_with_error = true;
         break;
     }
 
@@ -943,6 +987,87 @@ void SqlTool::do_query_ended(PGresult *res)
     query_running = false;
     ui->editors_tabs->setEnabled(true);
     emit endExecution(this);
+
+    if (mode == MODE_INTERNAL_DEVELOPMENT) {
+        run_dir = project.getProjectPath() + "/scripts/development/run/";
+        review_dir = project.getProjectPath() + "/scripts/development/review/";
+        done_dir = project.getProjectPath() + "/scripts/development/done/";
+        error_dir = project.getProjectPath() + "/scripts/development/error/";
+        next_run = project.getProjectPath() + "/scripts/staging/run/";
+        if (!run_with_error) {
+            QFile::copy(original_file_name, next_run + file_name);
+            QFile::rename(original_file_name, done_dir + file_name);
+            emit requestToClose();
+            return;
+        }
+
+        QFile::rename(original_file_name, review_dir + file_name);
+
+        QString error = QString("Command failed: %1").arg(PQerrorMessage(conn));
+        QString filename = error_dir + QDateTime::currentDateTime().toString("error_yyyyMMddhhmmsszzz") + ".txt";
+        QFile file( filename );
+        if ( file.open(QIODevice::ReadWrite) )
+        {
+            QTextStream stream( &file );
+            stream << error << endl;
+        }
+        file.close();
+
+        emit requestToClose();
+
+    } else if (mode == MODE_INTERNAL_STAGING) {
+        run_dir = project.getProjectPath() + "/scripts/stage/run/";
+        review_dir = project.getProjectPath() + "/scripts/stage/review/";
+        done_dir = project.getProjectPath() + "/scripts/stage/done/";
+        error_dir = project.getProjectPath() + "/scripts/stage/error/";
+        next_run = project.getProjectPath() + "/scripts/production/run/";
+        if (!run_with_error) {
+            QFile::copy(original_file_name, next_run + file_name);
+            QFile::rename(original_file_name, done_dir + file_name);
+            emit requestToClose();
+            return;
+        }
+
+        QFile::rename(original_file_name, review_dir + file_name);
+
+        QString error = QString("Command failed: %1").arg(PQerrorMessage(conn));
+        QString filename = error_dir + QDateTime::currentDateTime().toString("error_yyyyMMddhhmmsszzz") + ".txt";
+        QFile file( filename );
+        if ( file.open(QIODevice::ReadWrite) )
+        {
+            QTextStream stream( &file );
+            stream << error << endl;
+        }
+        file.close();
+
+        emit requestToClose();
+
+    } else if (mode == MODE_INTERNAL_PRODUCTION) {
+        run_dir = project.getProjectPath() + "/scripts/production/run/";
+        review_dir = project.getProjectPath() + "/scripts/production/review/";
+        done_dir = project.getProjectPath() + "/scripts/production/done/";
+        error_dir = project.getProjectPath() + "/scripts/production/error/";
+        if (!run_with_error) {
+            QFile::rename(original_file_name, done_dir + file_name);
+            emit requestToClose();
+            return;
+        }
+
+        QFile::rename(original_file_name, review_dir + file_name);
+
+        QString error = QString("Command failed: %1").arg(PQerrorMessage(conn));
+        QString filename = error_dir + QDateTime::currentDateTime().toString("error_yyyyMMddhhmmsszzz") + ".txt";
+        QFile file( filename );
+        if ( file.open(QIODevice::ReadWrite) )
+        {
+            QTextStream stream( &file );
+            stream << error << endl;
+        }
+        file.close();
+
+        emit requestToClose();
+
+    }
 }
 
 void SqlTool::on_ck_use_alternate_user_clicked(bool checked)
@@ -1073,8 +1198,8 @@ void SqlTool::loadDatabaseList(int sel_connection)
     if (sel_connection != -1) {
         databases = connections.getConnections().at(sel_connection)->getDatabaseList();
 
-        ui->connection_list->clear();
-        ui->connection_list->addItems(databases);
+        ui->database_list->clear();
+        ui->database_list->addItems(databases);
     }
 }
 
@@ -1088,4 +1213,9 @@ void SqlTool::on_script_mode_clicked()
 {
     mode = MODE_SCRIPT;
     emit modeChanged(this, mode);
+}
+
+void SqlTool::on_connection_list_activated(int index)
+{
+    loadDatabaseList(index);
 }

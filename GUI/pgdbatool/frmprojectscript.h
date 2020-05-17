@@ -17,10 +17,7 @@ public:
     explicit FrmProjectScript(ProjectData &project, QWidget *parent = 0);
     ~FrmProjectScript();
 
-    void loadRunFiles();
-    void loadReviewFiles();
-    void loadErrorFiles();
-    void loadDoneFiles();
+    void refreshAll();
 
 private slots:
     void on_tabWidget_currentChanged(int index);
@@ -33,7 +30,7 @@ private slots:
 
 signals:
 
-    void openFileOnSQLTool(QString file_name, bool internal_mode);
+    void openFileOnSQLTool(QString file_name, int internal_mode);
 
 private:
     Ui::FrmProjectScript *ui;
@@ -44,7 +41,13 @@ private:
     QString done_dir;
     QString error_dir;
 
+    int mode;
+
     bool executeScript();
+    void loadRunFiles();
+    void loadReviewFiles();
+    void loadErrorFiles();
+    void loadDoneFiles();
 };
 
 #endif // FRMPROJECTSCRIPT_H

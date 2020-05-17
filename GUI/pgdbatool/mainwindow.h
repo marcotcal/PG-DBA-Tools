@@ -24,6 +24,7 @@
 #include "connectionsdata.h"
 #include "projectdata.h"
 
+
 namespace Ui {
 class MainWindow;
 }
@@ -132,9 +133,11 @@ private slots:
 
     void sqlToolModeChanged(SqlTool *sql, int current_mode);
 
+    void closeRequested();
+
 public slots:
 
-    void openScriptOnNewTool(QString file_name, bool internal_mode=false);
+    void openScriptOnNewTool(QString file_name, int internal_mode=SqlTool::MODE_INTERNAL_DEVELOPMENT);
 
 signals:
     void clean_custom_menu();
@@ -160,7 +163,7 @@ private:
     void enable_model_actions(QueryModel *model);
     void enable_sql_transactions(SqlTool *sql);    
     void setConnectionsList();
-    SqlTool *openNewSQLTool(QString name);
+    SqlTool *openNewSQLTool(QString name, int mode=SqlTool::MODE_QUERY);
     QueryModel *openNewQueryModel(QString name);
     void loadCustomMenus();
 };

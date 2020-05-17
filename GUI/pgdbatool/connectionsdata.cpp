@@ -265,6 +265,30 @@ ConnectionElement *ConnectionsData::newConnection()
     return  ele;
 }
 
+ConnectionElement *ConnectionsData::getConnectionByName(QString name)
+{
+    ConnectionElement *ele;
+
+    foreach (ele, connections) {
+        if (ele->name() == name) {
+            return ele;
+        }
+    }
+    return nullptr;
+}
+
+int ConnectionsData::getConnectionIndexByName(QString name)
+{
+    ConnectionElement *ele;
+
+    foreach (ele, connections) {
+        if (ele->name() == name) {
+            return connections.indexOf(ele);
+        }
+    }
+    return -1;
+}
+
 void ConnectionsData::sortByName()
 {
     std::sort(connections.begin(), connections.end(),

@@ -70,7 +70,9 @@ public:
     enum {
         MODE_QUERY,
         MODE_SCRIPT,
-        MODE_INTERNAL
+        MODE_INTERNAL_DEVELOPMENT,
+        MODE_INTERNAL_STAGING,
+        MODE_INTERNAL_PRODUCTION
     };
 
     explicit SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &project, QWidget *parent = nullptr);
@@ -149,13 +151,15 @@ private slots:
     void loadDatabaseList(int sel_connection);
 
     void on_query_model_clicked();
-
     void on_script_mode_clicked();
+
+    void on_connection_list_activated(int index);
 
 signals:
     void beginExecution(SqlTool *sender);
     void endExecution(SqlTool *sender);
     void modeChanged(SqlTool *sender, int current_mode);
+    void requestToClose();
 
 private:
     Ui::SqlTool *ui;

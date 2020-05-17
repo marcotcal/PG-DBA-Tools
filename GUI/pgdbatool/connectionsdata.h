@@ -36,6 +36,8 @@ public:
     void writeConnections(QString path=".");
     QList<ConnectionElement *> &getConnections();
     ConnectionElement *newConnection();
+    ConnectionElement *getConnectionByName(QString name);
+    int getConnectionIndexByName(QString name);
     void sortByName();    
     void clear();
 private:

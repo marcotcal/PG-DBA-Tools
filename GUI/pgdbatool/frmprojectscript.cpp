@@ -10,6 +10,7 @@ FrmProjectScript::FrmProjectScript(ProjectData &project, QWidget *parent) :
 {
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
+    mode = SqlTool::MODE_INTERNAL_DEVELOPMENT;
     loadRunFiles();
     loadReviewFiles();
     loadDoneFiles();
@@ -21,19 +22,27 @@ FrmProjectScript::~FrmProjectScript()
     delete ui;
 }
 
+void FrmProjectScript::refreshAll()
+{
+    loadDoneFiles();
+    loadErrorFiles();
+    loadReviewFiles();
+    loadRunFiles();
+}
+
 void FrmProjectScript::loadRunFiles()
 {
     QString phase;
     QString file;
 
-    switch(ui->tabWidget->currentIndex()) {
-    case 0:
+    switch(mode) {
+    case SqlTool::MODE_INTERNAL_DEVELOPMENT:
        phase = "development";
        break;
-    case 1:
-       phase = "stage";
+    case SqlTool::MODE_INTERNAL_STAGING:
+       phase = "staging";
        break;
-    case 2:
+    case SqlTool::MODE_INTERNAL_PRODUCTION:
        phase = "production";
        break;
     }
@@ -58,14 +67,14 @@ void FrmProjectScript::loadReviewFiles()
     QString phase;
     QString file;
 
-    switch(ui->tabWidget->currentIndex()) {
-    case 0:
+    switch(mode) {
+    case SqlTool::MODE_INTERNAL_DEVELOPMENT:
        phase = "development";
        break;
-    case 1:
-       phase = "stage";
+    case SqlTool::MODE_INTERNAL_STAGING:
+       phase = "staging";
        break;
-    case 2:
+    case SqlTool::MODE_INTERNAL_PRODUCTION:
        phase = "production";
        break;
     }
@@ -90,14 +99,14 @@ void FrmProjectScript::loadErrorFiles()
     QString phase;
     QString file;
 
-    switch(ui->tabWidget->currentIndex()) {
-    case 0:
+    switch(mode) {
+    case SqlTool::MODE_INTERNAL_DEVELOPMENT:
        phase = "development";
        break;
-    case 1:
-       phase = "stage";
+    case SqlTool::MODE_INTERNAL_STAGING:
+       phase = "staging";
        break;
-    case 2:
+    case SqlTool::MODE_INTERNAL_PRODUCTION:
        phase = "production";
        break;
     }
@@ -123,14 +132,14 @@ void FrmProjectScript::loadDoneFiles()
     QString phase;
     QString file;
 
-    switch(ui->tabWidget->currentIndex()) {
-    case 0:
+    switch(mode) {
+    case SqlTool::MODE_INTERNAL_DEVELOPMENT:
        phase = "development";
        break;
-    case 1:
-       phase = "stage";
+    case SqlTool::MODE_INTERNAL_STAGING:
+       phase = "staging";
        break;
-    case 2:
+    case SqlTool::MODE_INTERNAL_PRODUCTION:
        phase = "production";
        break;
     }
@@ -152,6 +161,17 @@ void FrmProjectScript::loadDoneFiles()
 
 void FrmProjectScript::on_tabWidget_currentChanged(int index)
 {
+    switch(index) {
+    case 0:
+       mode = SqlTool::MODE_INTERNAL_DEVELOPMENT;
+       break;
+    case 1:
+       mode = SqlTool::MODE_INTERNAL_STAGING;
+       break;
+    case 2:
+       mode = SqlTool::MODE_INTERNAL_PRODUCTION;
+       break;
+    }
     loadRunFiles();
     loadReviewFiles();
     loadDoneFiles();
@@ -161,30 +181,30 @@ void FrmProjectScript::on_tabWidget_currentChanged(int index)
 void FrmProjectScript::on_bt_run_run_clicked()
 {
     QString file_name = run_dir + ui->run_list->item(ui->run_list->currentRow())->text();
-    emit openFileOnSQLTool(file_name, true);
+    emit openFileOnSQLTool(file_name, mode);
 }
 
 void FrmProjectScript::on_bt_run_open_clicked()
 {
     QString file_name = run_dir + ui->run_list->item(ui->run_list->currentRow())->text();
-    emit openFileOnSQLTool(file_name, false);
+    emit openFileOnSQLTool(file_name, SqlTool::MODE_QUERY);
 }
 
 void FrmProjectScript::on_bt_review_run_clicked()
 {
-    QString file_name = review_dir + ui->review_list->item(ui->run_list->currentRow())->text();
-    emit openFileOnSQLTool(file_name, true);
+    QString file_name = review_dir + ui->review_list->item(ui->review_list->currentRow())->text();
+    emit openFileOnSQLTool(file_name, mode);
 }
 
 void FrmProjectScript::on_bt_review_open_clicked()
 {
-    QString file_name = review_dir + ui->review_list->item(ui->run_list->currentRow())->text();
-    emit openFileOnSQLTool(file_name, false);
+    QString file_name = review_dir + ui->review_list->item(ui->review_list->currentRow())->text();
+    emit openFileOnSQLTool(file_name, SqlTool::MODE_QUERY);
 }
 
 void FrmProjectScript::on_bt_show_error_clicked()
 {
-    QString file_name = error_dir + ui->error_list->item(ui->run_list->currentRow())->text();
+    QString file_name = error_dir + ui->error_list->item(ui->error_list->currentRow())->text();
 
 }
 
