@@ -836,6 +836,8 @@ void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
 
 void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_query)
 {
+    const char *keywords;
+
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();;
     QString search_path;
@@ -849,6 +851,8 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
             search_path += item->text() + ",";
         search_path += "pg_catalog";
     }
+
+    keywords = editor->lexer()->keywords(1);
 
     if (search_path != last_search_path) {
         query = "SET search_path=" + search_path + ";\n" + query;
