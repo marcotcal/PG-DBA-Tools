@@ -1314,3 +1314,43 @@ void MainWindow::openScriptOnNewTool(QString file_name, int internal_mode)
     sql->setMode(internal_mode);
     sql->openFileOnCurrent(file);
 }
+
+void MainWindow::on_dock_connections_visibilityChanged(bool visible)
+{
+    ui->actionViewMaintenance_Connections->setChecked(visible);
+}
+
+void MainWindow::on_doc_sql_editors_visibilityChanged(bool visible)
+{
+    ui->actionViewSql_Editors_List->setChecked(visible);
+}
+
+void MainWindow::on_dock_output_visibilityChanged(bool visible)
+{
+    ui->actionViewOutputs->setChecked(visible);
+}
+
+void MainWindow::on_dock_messages_visibilityChanged(bool visible)
+{
+    ui->actionViewMessages->setChecked(visible);
+}
+
+void MainWindow::on_actionViewMaintenance_Connections_toggled(bool arg1)
+{
+    ui->dock_connections->setVisible(arg1);
+}
+
+void MainWindow::on_actionViewSql_Editors_List_toggled(bool arg1)
+{
+    ui->doc_sql_editors->setVisible(arg1);
+}
+
+void MainWindow::on_actionViewOutputs_toggled(bool arg1)
+{
+    ui->dock_output->setVisible(arg1);
+}
+
+void MainWindow::on_actionViewMessages_toggled(bool arg1)
+{
+    ui->dock_messages->setVisible(arg1);
+}

@@ -78,7 +78,8 @@ SOURCES += \
     projectdata.cpp \
     dlgcreatescript.cpp \
     frmfindtext.cpp \
-    frmprojectscript.cpp
+    frmprojectscript.cpp \
+    ddlgentreewidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -115,7 +116,8 @@ HEADERS += \
     projectdata.h \
     dlgcreatescript.h \
     frmfindtext.h \
-    frmprojectscript.h
+    frmprojectscript.h \
+    ddlgentreewidget.h
 
 FORMS += \
     mainwindow.ui \

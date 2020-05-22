@@ -220,8 +220,18 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionViewMaintenance_Connections"/>
+    <addaction name="actionViewSql_Editors_List"/>
+    <addaction name="actionViewOutputs"/>
+    <addaction name="actionViewMessages"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
    <addaction name="menuConnections"/>
    <addaction name="menuProjects"/>
    <addaction name="menuSQL"/>
@@ -270,7 +280,7 @@
    <addaction name="actionCancel_Current_Query"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dock_connections">
    <property name="windowTitle">
     <string>&amp;Maintenance Connections</string>
    </property>
@@ -279,13 +289,28 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
      <item>
       <widget class="QListWidget" name="connection_list"/>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="doc_sql_editors">
    <property name="windowTitle">
     <string>S&amp;QL Editors</string>
    </property>
@@ -294,13 +319,28 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
      <item>
       <widget class="QListWidget" name="editor_list"/>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_3">
+  <widget class="QDockWidget" name="dock_output">
    <property name="allowedAreas">
     <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
    </property>
@@ -328,9 +368,21 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0">
        <property name="spacing">
-        <number>0</number>
+        <number>2</number>
+       </property>
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
        </property>
        <item>
         <widget class="QStackedWidget" name="output_stack"/>
@@ -340,7 +392,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_4">
+  <widget class="QDockWidget" name="dock_messages">
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -353,19 +405,19 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0">
      <property name="spacing">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="leftMargin">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="topMargin">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="rightMargin">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="bottomMargin">
-      <number>0</number>
+      <number>2</number>
      </property>
      <item>
       <widget class="QPlainTextEdit" name="message_output">
@@ -384,6 +436,45 @@
        <property name="text">
         <string>Show Query</string>
        </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dock_ddl">
+   <property name="windowTitle">
+    <string>DDL Generation</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item>
+      <widget class="DDLGenTreeWidget" name="treeWidget">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>
@@ -911,8 +1002,53 @@
     <string>Ctrl+R</string>
    </property>
   </action>
+  <action name="actionViewMaintenance_Connections">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Maintenance Connections</string>
+   </property>
+  </action>
+  <action name="actionViewSql_Editors_List">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Sql Editors List</string>
+   </property>
+  </action>
+  <action name="actionViewOutputs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Outputs</string>
+   </property>
+  </action>
+  <action name="actionViewMessages">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Messages</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>DDLGenTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>ddlgentreewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="pgdbatool.qrc"/>
  </resources>
