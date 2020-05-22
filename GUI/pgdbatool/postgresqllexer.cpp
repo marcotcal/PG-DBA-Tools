@@ -88,6 +88,8 @@ QColor PostgreSQLLexer::defaultColor(int style) const
         return QColor(0,127,255);
 
     case DoubleQuotedString:
+        return QColor(0xff,0x00,0x7f);
+
     case SingleQuotedString:
         return QColor(0x7f,0x00,0x7f);
 
@@ -95,6 +97,8 @@ QColor PostgreSQLLexer::defaultColor(int style) const
         return QColor(0x7f,0x7f,0x00);
 
     case Operator:
+        return QColor(0, 170, 255);
+
     case Identifier:
         break;
 
@@ -220,7 +224,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "return returns revoke right role rollback rollup "
             "routine row rows savepoint schema scroll scope "
             "search second section select sequence session "
-            "session_user set sets size some| space "
+            "session_user set sets size some space perform "
             "specific specifictype sql sqlexception sqlstate "
             "sqlwarning start state statement static structure "
             "system_user table temporary terminate than then "

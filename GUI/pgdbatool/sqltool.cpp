@@ -20,6 +20,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QRegularExpression>
 #include <QFileInfo>
 #include <QFile>
 #include <QMenu>
@@ -117,11 +118,16 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
 void EditorItem::on_reserved_word_uppercase_triggered()
 {
-    QString text;
+    QStringList keywords = QString(lexer()->keywords(1)).split(" ");
+    QString text;  
+
     if (hasSelectedText()) {
         text = selectedText();
-        // TODO - Inplement reserved word change
-        text = text.toUpper();
+        foreach (QString word, keywords)  {
+            QRegExp re("\\b("+word+")\\b");
+            re.setCaseSensitivity(Qt::CaseInsensitive);
+            text = text.replace(re, word.toUpper());
+        }
         replaceSelectedText(text);
     }
 }
@@ -836,8 +842,6 @@ void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
 
 void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_query)
 {
-    const char *keywords;
-
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
     QString query = !explain.isEmpty() ? explain + "\n" + editor->text() : editor->text();;
     QString search_path;
@@ -851,8 +855,6 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
             search_path += item->text() + ",";
         search_path += "pg_catalog";
     }
-
-    keywords = editor->lexer()->keywords(1);
 
     if (search_path != last_search_path) {
         query = "SET search_path=" + search_path + ";\n" + query;
