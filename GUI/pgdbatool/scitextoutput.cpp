@@ -32,13 +32,20 @@ void SciTextOutput::generateOutput(PGresult *res)
     QList<QString> fields;
     QList<int> max_field_lengths;
     QsciScintilla *editor = dynamic_cast<QsciScintilla* >(output);
+    QString text;
+
+    int line;
+    int index;
 
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
     messages->insertPlainText(QString("Number of columns returned by the last command: %1\n").arg(columns));
     if (fetch_limit != -1 && fetch_limit < tuples)
         messages->insertPlainText(QString("Returned tuples where limited bt: %1 rows \n").arg(fetch_limit));
 
-    editor->clear();
+    if (clean_before)
+        editor->clear();
+
+    editor->getCursorPosition(&line, &index);
 
     // get field names
     for (int i = 0; i < columns; i++) {
@@ -72,35 +79,38 @@ void SciTextOutput::generateOutput(PGresult *res)
     line_separator += "\n";
 
     if (show_header) {
-        editor->append(line_separator);
-        editor->append("|");
+        text.append(line_separator);
+        text.append("|");
         for(int c = 0; c < fields.count(); c++) {
-            editor->append(
+            text.append(
                         fields.at(c).leftJustified(max_field_lengths.at(c)) + "|");
         }
-        editor->append("\n");
+        text.append("\n");
     }
 
     if (show_border) {
-        editor->append(line_separator);
+        text.append(line_separator);
     }
 
     for (int r = 0; r < rows.count(); r++) {
-        editor->append(show_border ? "|" : " ");
+        text.append(show_border ? "|" : "");
         for (int c = 0; c < rows.at(r).count(); c++) {
-            editor->append(
+            text.append(
                         rows.at(r).at(c).toString()
                         .leftJustified(max_field_lengths.at(c)) + (show_border ? "|" : " "));
         }
-        editor->append("\n");
+        text.append("\n");
     }
 
     if (show_border) {
-        editor->append(line_separator);
+        text.append(line_separator);
     }
+
+    editor->insertAt(text, line, index);
 }
 
 void SciTextOutput::clearOutput()
 {
-    dynamic_cast<QsciScintilla* >(output)->clear();
+    if (clean_before)
+        dynamic_cast<QsciScintilla* >(output)->clear();
 }

@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionClose->setEnabled(false);
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
+    connect(ui->ddl_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
 }
 
 void MainWindow::projectMenuOpen()
@@ -781,16 +782,26 @@ void MainWindow::on_actionExecute_Saved_Model_triggered()
 
 void MainWindow::executeModel(QString resource_name)
 {
-    //QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     int currentRow;
 
     model_data->clear();
     model_data->loadResource(resource_name);
-    currentRow = ui->connection_list->currentRow();
+
+    if(model_data->getOutputType() != "Editor") {
+        currentRow = ui->connection_list->currentRow();
+    } else {
+        if (sql)  {
+            currentRow = sql->getSelectedConnectionIndex();
+        } else {
+            return;
+        }
+    }
+
     int item;
 
     DlgParameters *param = new DlgParameters(model_data,
-                                             connections, ui->connection_list->currentRow(), this);
+                                             connections, currentRow, this);
 
     if (model_data->getParameters().count() > 0 || model_data->getOrders().count() > 0 || model_data->getDatabaseRequest())
         if (!param->exec())
@@ -815,29 +826,50 @@ void MainWindow::executeModel(QString resource_name)
                 ui->connection_list->item(currentRow)->setForeground(Qt::black);
 
                 new QListWidgetItem(model_data->getDescription(), ui->editor_list);
-                QWebEngineView *editor = new QWebEngineView(ui->main_stack);
-                ui->main_stack->addWidget(editor);
-                ui->main_stack->setCurrentWidget(editor);
-                ui->editor_list->clearSelection();
-                ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-                HtmlOutput *list = new HtmlOutput(editor, ui->message_output, this);
 
-                item = 1;
-                list->getInformationMap()[QString("%1: Connection").arg(item, 2, 10 , QChar('0'))] = ui->connection_list->item(currentRow)->text();
-                item++;
-                if(model_data->getDatabaseRequest())
-                    list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = param->getSelectedDatabaseName();
-                else
-                    list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = "N/A";
+                if(model_data->getOutputType() != "Editor") {
 
-                foreach(QueryParameter *param, model_data->getParameters()) {
-                    if (!param->getValue().isNull()) {
-                        item++;
-                        list->getInformationMap()[QString("%1: ").arg(item, 2, 10 , QChar('0')) + param->getDescription()] = param->getValue();
+                    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
+                    ui->main_stack->addWidget(editor);
+                    ui->main_stack->setCurrentWidget(editor);
+                    ui->editor_list->clearSelection();
+                    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+                    HtmlOutput *list = new HtmlOutput(editor, ui->message_output, this);
+
+                    item = 1;
+                    list->getInformationMap()[QString("%1: Connection").arg(item, 2, 10 , QChar('0'))] = ui->connection_list->item(currentRow)->text();
+                    item++;
+                    if(model_data->getDatabaseRequest())
+                        list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = param->getSelectedDatabaseName();
+                    else
+                        list->getInformationMap()[QString("%1: Database").arg(item, 2, 10 , QChar('0'))] = "N/A";
+
+                    foreach(QueryParameter *param, model_data->getParameters()) {
+                        if (!param->getValue().isNull()) {
+                            item++;
+                            list->getInformationMap()[QString("%1: ").arg(item, 2, 10 , QChar('0')) + param->getDescription()] = param->getValue();
+                        }
                     }
-                }
 
-                model_data->execute(list, ui->show_query->isChecked());
+                    model_data->execute(list, ui->show_query->isChecked());
+
+                } else {
+
+                    if(sql) {
+                        EditorItem *editor = sql->getCurrentEditor();
+                        if (editor) {
+
+                            SciTextOutput *text = new SciTextOutput(editor, ui->message_output, this);
+                            text->showBorder(false);
+                            text->showHeader(false);
+                            text->cleanBefore(false);
+                            model_data->execute(text, ui->show_query->isChecked());
+
+                        }
+
+                    }
+
+                }
 
                 model_data->databaseDisconnect();
 

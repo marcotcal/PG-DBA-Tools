@@ -16,6 +16,7 @@ public:
     ~ResultOutput();
     void showHeader(bool value) { show_header = value; }
     void showBorder(bool value) { show_border = value; }
+    void cleanBefore(bool value) { clean_before = value; }
     virtual void generateOutput(PGresult *res) = 0;    
     virtual void clearOutput() = 0;
     void cleanMessage();
@@ -40,6 +41,7 @@ protected:
     int fetch_limit;
     bool show_border;
     bool show_header;
+    bool clean_before;
     QMap<QString, QVariant> information_map;
 
 private:

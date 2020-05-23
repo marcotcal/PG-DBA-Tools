@@ -290,6 +290,12 @@ QString SqlTool::getCurrentEditorName()
     return ui->editors_tabs->tabText(ui->editors_tabs->currentIndex()).replace("&","");
 }
 
+EditorItem *SqlTool::getCurrentEditor()
+{
+    EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->widget(ui->editors_tabs->currentIndex()));
+    return editor;
+}
+
 bool SqlTool::saveGroup()
 {
     if (group_name == "")
@@ -378,6 +384,11 @@ void SqlTool::otherPlanningSettings()
     if(dlg.exec()) {
 
     }
+}
+
+int SqlTool::getSelectedConnectionIndex()
+{
+    return ui->connection_list->currentIndex();
 }
 
 bool SqlTool::isRedoAvailable()

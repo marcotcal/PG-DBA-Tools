@@ -39,13 +39,12 @@
     <orders/>
     <columns/>
     <query_text><![CDATA[SELECT 
-    'DROP SCHEMA IF EXISTS ' || schema_name || ';' AS create_schema
-FROM information_schema.schemata
+    'DROP SCHEMA IF EXISTS ' || schema_name || E';\n' AS create_schema
+FROM information_schema.schemata 
 WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_'  
     [!p_name!]
-    [!p_owner!]
-    ]]></query_text>
+    [!p_owner!]]]></query_text>
     <database_request><![CDATA[yes]]></database_request>
-    <output_type><![CDATA[Text With Separators]]></output_type>
+    <output_type><![CDATA[Editor]]></output_type>
     <model_path><![CDATA[/schemas]]></model_path>
 </model>

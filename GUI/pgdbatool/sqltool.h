@@ -97,6 +97,7 @@ public:
     void setGroupName(const QString &value) { group_name = value; }
     QString &getGroupName() { return group_name; }
     QString getCurrentEditorName();
+    EditorItem *getCurrentEditor();
     bool saveGroup();
     bool saveGroupAs();
     bool restoreGroup();
@@ -107,6 +108,8 @@ public:
     void parallelismSettings();
     void workersSettings();
     void otherPlanningSettings();
+
+    int getSelectedConnectionIndex();
 
     // Methods related to menu edit
     // All this methods will get info from the active editor

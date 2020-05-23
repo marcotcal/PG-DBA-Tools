@@ -466,7 +466,7 @@
       <number>2</number>
      </property>
      <item>
-      <widget class="DDLGenTreeWidget" name="treeWidget">
+      <widget class="DDLGenTreeWidget" name="ddl_generator_list">
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>

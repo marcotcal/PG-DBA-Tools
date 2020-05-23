@@ -36,7 +36,7 @@
             <param_sub_type><![CDATA[Single]]></param_sub_type>
         </parameter>
         <parameter code="p_trigger" description="Trigger Name" mandatory="true">
-            <expression><![CDATA[AND trg.tgname = ? ]]></expression>
+            <expression><![CDATA[AND trg.tgname = ?]]></expression>
             <param_type><![CDATA[Text]]></param_type>
             <param_sub_type><![CDATA[Single]]></param_sub_type>
         </parameter>
@@ -44,7 +44,7 @@
     <orders/>
     <columns/>
     <query_text><![CDATA[SELECT 
-    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' DISABLE TRIGGER ' || trg.tgname || ';' AS disable_trigger
+    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' DISABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger
 FROM 
     pg_trigger trg
     INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid
@@ -54,9 +54,8 @@ WHERE
     [!p_schema!]
     [!p_table!]
     [!p_trigger!]
-    AND tgisinternal = FALSE
- ]]></query_text>
+    AND tgisinternal = FALSE]]></query_text>
     <database_request><![CDATA[yes]]></database_request>
-    <output_type><![CDATA[Text Without Separators]]></output_type>
+    <output_type><![CDATA[Editor]]></output_type>
     <model_path><![CDATA[/triggers]]></model_path>
 </model>

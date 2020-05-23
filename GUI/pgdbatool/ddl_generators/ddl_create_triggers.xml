@@ -70,9 +70,9 @@
                     ), 'FOR ', E'\n    FOR '
                 ), 'EXECUTE', E'\n    EXECUTE'
             ), 'WHEN ', E'\n    WHEN '  
-        ) AS create_trigger   
+        ) || E';\n\n' AS create_trigger   
     FROM triggers t]]></query_text>
     <database_request><![CDATA[yes]]></database_request>
-    <output_type><![CDATA[Text Without Separators]]></output_type>
+    <output_type><![CDATA[Editor]]></output_type>
     <model_path><![CDATA[/triggers]]></model_path>
 </model>

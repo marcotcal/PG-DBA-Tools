@@ -9,6 +9,7 @@ ResultOutput::ResultOutput(QWidget *output, QPlainTextEdit *messages, QObject *p
     fetch_limit = -1;
     show_border = true;
     show_header = true;
+    clean_before = true;
 }
 
 ResultOutput::~ResultOutput()

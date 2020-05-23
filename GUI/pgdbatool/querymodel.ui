@@ -78,12 +78,7 @@
       <widget class="QComboBox" name="output">
        <item>
         <property name="text">
-         <string>Text With Separators</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Text Without Separators</string>
+         <string>Text</string>
         </property>
        </item>
        <item>
@@ -94,6 +89,11 @@
        <item>
         <property name="text">
          <string>Html</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Editor</string>
         </property>
        </item>
       </widget>

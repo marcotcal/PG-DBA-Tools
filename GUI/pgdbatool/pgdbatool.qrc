@@ -145,4 +145,12 @@
         <file>query_models/normal_functions.xml</file>
         <file>query_models/struct_list_of_views.xml</file>
     </qresource>
+    <qresource prefix="/ddl">
+        <file>ddl_generators/ddl_create_schemas.xml</file>
+        <file>ddl_generators/ddl_create_triggers.xml</file>
+        <file>ddl_generators/ddl_disable_triggers.xml</file>
+        <file>ddl_generators/ddl_drop_schemas.xml</file>
+        <file>ddl_generators/ddl_drop_triggers.xml</file>
+        <file>ddl_generators/ddl_enable_triggers.xml</file>
+    </qresource>
 </RCC>
