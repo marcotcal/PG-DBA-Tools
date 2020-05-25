@@ -228,6 +228,7 @@
     <addaction name="actionViewSql_Editors_List"/>
     <addaction name="actionViewOutputs"/>
     <addaction name="actionViewMessages"/>
+    <addaction name="actionViewDDL_Generation"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1038,6 +1039,14 @@
    </property>
    <property name="text">
     <string>Messages</string>
+   </property>
+  </action>
+  <action name="actionViewDDL_Generation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>DDL Generation</string>
    </property>
   </action>
  </widget>

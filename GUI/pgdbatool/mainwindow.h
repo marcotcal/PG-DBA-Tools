@@ -116,6 +116,7 @@ private slots:
 
     void projectMenuOpen();
     void editMenuOpen();
+    void viewMenuOpen();
 
     void on_actionCreate_New_SQL_Script_triggered();
 
@@ -135,14 +136,12 @@ private slots:
 
     void closeRequested();
 
-    void on_dock_connections_visibilityChanged(bool visible);
-    void on_doc_sql_editors_visibilityChanged(bool visible);
-    void on_dock_output_visibilityChanged(bool visible);
-    void on_dock_messages_visibilityChanged(bool visible);
     void on_actionViewMaintenance_Connections_toggled(bool arg1);
     void on_actionViewSql_Editors_List_toggled(bool arg1);
     void on_actionViewOutputs_toggled(bool arg1);
     void on_actionViewMessages_toggled(bool arg1);
+
+    void on_actionViewDDL_Generation_toggled(bool arg1);
 
 public slots:
 

@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionClose->setEnabled(false);
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
+    connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
     connect(ui->ddl_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
 }
 
@@ -96,6 +97,15 @@ void MainWindow::editMenuOpen()
         ui->actionDelete->setEnabled(false);
         ui->actionSelect_All->setEnabled(false);
     }
+}
+
+void MainWindow::viewMenuOpen()
+{
+    ui->actionViewMaintenance_Connections->setChecked(ui->dock_connections->isVisible());
+    ui->actionViewMessages->setChecked(ui->dock_messages->isVisible());
+    ui->actionViewOutputs->setChecked(ui->dock_output->isVisible());
+    ui->actionViewSql_Editors_List->setChecked(ui->doc_sql_editors->isVisible());
+    ui->actionViewDDL_Generation->setChecked(ui->dock_ddl->isVisible());
 }
 
 MainWindow::~MainWindow()
@@ -1347,25 +1357,6 @@ void MainWindow::openScriptOnNewTool(QString file_name, int internal_mode)
     sql->openFileOnCurrent(file);
 }
 
-void MainWindow::on_dock_connections_visibilityChanged(bool visible)
-{
-    ui->actionViewMaintenance_Connections->setChecked(visible);
-}
-
-void MainWindow::on_doc_sql_editors_visibilityChanged(bool visible)
-{
-    ui->actionViewSql_Editors_List->setChecked(visible);
-}
-
-void MainWindow::on_dock_output_visibilityChanged(bool visible)
-{
-    ui->actionViewOutputs->setChecked(visible);
-}
-
-void MainWindow::on_dock_messages_visibilityChanged(bool visible)
-{
-    ui->actionViewMessages->setChecked(visible);
-}
 
 void MainWindow::on_actionViewMaintenance_Connections_toggled(bool arg1)
 {
@@ -1385,4 +1376,9 @@ void MainWindow::on_actionViewOutputs_toggled(bool arg1)
 void MainWindow::on_actionViewMessages_toggled(bool arg1)
 {
     ui->dock_messages->setVisible(arg1);
+}
+
+void MainWindow::on_actionViewDDL_Generation_toggled(bool arg1)
+{
+    ui->dock_ddl->setVisible(arg1);
 }
