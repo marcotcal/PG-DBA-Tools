@@ -45,13 +45,13 @@ void DlgCreateScript::on_buttonBox_accepted()
     if (user_name.isEmpty())
         user_name = qgetenv("USERNAME");
 
-    file_name += "_" + user_name;
+    file_name += "-U_" + user_name;
 
     if (!ui->sprint->text().trimmed().isEmpty())
-        file_name += "_" + ui->sprint->text().trimmed();
+        file_name += "-S_" + ui->sprint->text().trimmed();
 
-    file_name += "_" + ui->task->text().trimmed();
-    file_name += "_" + ui->description->text().trimmed().toLower().replace(" ","_");
+    file_name += "-TSK_" + ui->task->text().trimmed();
+    file_name += "-" + ui->description->text().trimmed().toLower().replace(" ","_");
     file_name += ".sql";
     createFile();
 }
