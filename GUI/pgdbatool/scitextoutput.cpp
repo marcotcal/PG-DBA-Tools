@@ -71,12 +71,14 @@ void SciTextOutput::generateOutput(PGresult *res)
         }
     }
 
-    line_separator += "+";
-    for(int c = 0; c < fields.count(); c++) {
-        QString rep = "-";
-        line_separator += rep.repeated(max_field_lengths.at(c))+"+";
+    if (show_border) {
+        line_separator += "+";
+        for(int c = 0; c < fields.count(); c++) {
+            QString rep = "-";
+            line_separator += rep.repeated(max_field_lengths.at(c))+"+";
+        }
+        line_separator += "\n";
     }
-    line_separator += "\n";
 
     if (show_header) {
         text.append(line_separator);
@@ -95,9 +97,13 @@ void SciTextOutput::generateOutput(PGresult *res)
     for (int r = 0; r < rows.count(); r++) {
         text.append(show_border ? "|" : "");
         for (int c = 0; c < rows.at(r).count(); c++) {
-            text.append(
-                        rows.at(r).at(c).toString()
-                        .leftJustified(max_field_lengths.at(c)) + (show_border ? "|" : " "));
+            if (show_border)
+                text.append(
+                            rows.at(r).at(c).toString()
+                            .leftJustified(max_field_lengths.at(c)) + "|");
+            else
+                text.append(
+                            rows.at(r).at(c).toString());
         }
         text.append("\n");
     }

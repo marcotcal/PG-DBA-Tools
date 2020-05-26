@@ -152,5 +152,7 @@
         <file>ddl_generators/ddl_drop_schemas.xml</file>
         <file>ddl_generators/ddl_drop_triggers.xml</file>
         <file>ddl_generators/ddl_enable_triggers.xml</file>
+        <file>ddl_generators/ddl_update_sequences.xml</file>
+        <file>ddl_generators/ddl_reset_sequences.xml</file>
     </qresource>
 </RCC>

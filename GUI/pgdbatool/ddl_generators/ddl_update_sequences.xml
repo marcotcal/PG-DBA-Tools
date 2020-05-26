@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="DDL_UPD_SCHEMAS" description="Update Sequences">
+    <parameters>
+        <parameter code="p_schema" description="Schema" mandatory="false">
+            <expression><![CDATA[AND nspname = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_table" description="Table Name" mandatory="false">
+            <expression><![CDATA[AND relname = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+    </parameters>
+    <orders>
+        <order description="Schema + Table" fields="nspname, relname"/>
+    </orders>
+    <columns/>
+    <query_text><![CDATA[DO
+$$
+DECLARE 
+    seq record;
+    val integer;
+BEGIN 
+
+    CREATE TEMPORARY TABLE sequences ON COMMIT DROP AS
+        SELECT DISTINCT
+            d.refobjid::regclass AS table_name, 
+            c.relname, 
+            n.nspname, 
+            a.attname AS field_name,
+            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) AS sequence_name,
+            0 AS value_to_update
+        FROM   
+            pg_depend d
+            INNER JOIN pg_class c ON c.oid = d.refobjid
+            INNER JOIN pg_namespace n ON c.relnamespace = n.oid
+            INNER JOIN pg_attribute a ON a.attrelid = d.refobjid AND a.attnum = d.refobjsubid
+        WHERE 
+            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) IS NOT NULL
+            [!p_schema!]
+            [!p_table!];
+            
+    FOR seq IN 
+        SELECT *  FROM sequences 
+    LOOP
+        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.table_name INTO val; 
+        
+        UPDATE sequences SET 
+            value_to_update = val
+        WHERE table_name = seq.table_name AND field_name = seq.field_name;    
+    END LOOP;    
+   
+END;   
+$$;    
+
+SELECT 
+    CASE  
+        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n'  
+        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n'
+    END 
+FROM sequences;]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
+    <output_type><![CDATA[Editor]]></output_type>
+    <model_path><![CDATA[/sequences]]></model_path>
+</model>

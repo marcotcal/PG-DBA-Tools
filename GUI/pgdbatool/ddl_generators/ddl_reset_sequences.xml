@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="DDL_RST_SCHEMAS" description="Reset  Sequences">
+    <parameters>
+        <parameter code="p_schema" description="Schema" mandatory="false">
+            <expression><![CDATA[AND sequence_schema = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_sequence" description="Sequence Name" mandatory="false">
+            <expression><![CDATA[AND sequence_name = ?]]></expression>
+            <param_type><![CDATA[Text]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+    </parameters>
+    <orders>
+        <order description="Schema + Sequence" fields="schema_name, sequence_name"/>
+    </orders>
+    <columns/>
+    <query_text><![CDATA[SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n'
+FROM information_schema.sequences
+WHERE TRUE
+    [!p_schema!]
+    [!p_sequence!];]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
+    <output_type><![CDATA[Editor]]></output_type>
+    <model_path><![CDATA[/sequences]]></model_path>
+</model>

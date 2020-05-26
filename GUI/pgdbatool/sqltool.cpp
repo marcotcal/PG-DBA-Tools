@@ -111,7 +111,24 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     action->setEnabled(hasSelectedText());
     connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
+    action = menu->addAction(tr("Generate Insert (All fields)"));
+    action->setEnabled(hasSelectedText());
+    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+
+    action = menu->addAction(tr("Generate Insert (Only Mandatory)"));
+    action->setEnabled(hasSelectedText());
+    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+
+    action = menu->addAction(tr("Generate Update (All fields)"));
+    action->setEnabled(hasSelectedText());
+    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+
+    action = menu->addAction(tr("Generate Update (Only Mandatory)"));
+    action->setEnabled(hasSelectedText());
+    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+
     menu->exec(event->globalPos());
+
     delete menu;
 
 }

@@ -3,20 +3,29 @@
 DDLGenTreeWidget::DDLGenTreeWidget(QWidget *parent) : QTreeWidget(parent)
 {
     QTreeWidgetItem* schemas = new QTreeWidgetItem();
+    QTreeWidgetItem* sequences = new QTreeWidgetItem();
     QTreeWidgetItem* triggers = new QTreeWidgetItem();
     QTreeWidgetItem* item;
 
     schemas->setText(0,"Schemas");
+    sequences->setText(0,"Sequences");
     triggers->setText(0,"Triggers");
 
     insertTopLevelItem(0, schemas);
-    insertTopLevelItem(1,triggers);
+    insertTopLevelItem(1, sequences);
+    insertTopLevelItem(2,triggers);
 
     item = new QTreeWidgetItem(QStringList() << "Create Schema" << ":/ddl/ddl_generators/ddl_create_schemas.xml",1);
     schemas->addChild(item);
 
     item = new QTreeWidgetItem(QStringList() << "Drop Schema" << ":/ddl/ddl_generators/ddl_drop_schemas.xml",1);
     schemas->addChild(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Update Sequences" << ":/ddl/ddl_generators/ddl_update_sequences.xml",1);
+    sequences->addChild(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Reset Sequences" << ":/ddl/ddl_generators/ddl_reset_sequences.xml",1);
+    sequences->addChild(item);
 
     item = new QTreeWidgetItem(QStringList() << "Create Trigger" << ":/ddl/ddl_generators/ddl_create_triggers.xml",1);
     triggers->addChild(item);
