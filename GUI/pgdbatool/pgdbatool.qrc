@@ -144,6 +144,7 @@
         <file>query_models/trigger_functions.xml</file>
         <file>query_models/normal_functions.xml</file>
         <file>query_models/struct_list_of_views.xml</file>
+        <file>query_models/struct_list_table_fields.xml</file>
     </qresource>
     <qresource prefix="/ddl">
         <file>ddl_generators/ddl_create_schemas.xml</file>

@@ -1129,6 +1129,11 @@ void MainWindow::on_actionList_of_Views_triggered()
     executeModel(":/query_defs/query_models/struct_list_of_views.xml");
 }
 
+void MainWindow::on_actionList_of_Table_Fields_triggered()
+{
+    executeModel(":/query_defs/query_models/struct_list_table_fields.xml");
+}
+
 void MainWindow::on_actionNew_Project_triggered()
 {
     DlgProject prj(project, connections);
@@ -1382,3 +1387,4 @@ void MainWindow::on_actionViewDDL_Generation_toggled(bool arg1)
 {
     ui->dock_ddl->setVisible(arg1);
 }
+

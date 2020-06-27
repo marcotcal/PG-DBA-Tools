@@ -143,6 +143,8 @@ private slots:
 
     void on_actionViewDDL_Generation_toggled(bool arg1);
 
+    void on_actionList_of_Table_Fields_triggered();
+
 public slots:
 
     void openScriptOnNewTool(QString file_name, int internal_mode=SqlTool::MODE_INTERNAL_DEVELOPMENT);

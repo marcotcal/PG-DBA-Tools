@@ -171,6 +171,7 @@
     <addaction name="actionSchemas"/>
     <addaction name="actionList_of_Tables"/>
     <addaction name="actionList_of_Views"/>
+    <addaction name="actionList_of_Table_Fields"/>
     <addaction name="menuFunctions"/>
    </widget>
    <widget class="QMenu" name="menuUser_Models">
@@ -1047,6 +1048,11 @@
    </property>
    <property name="text">
     <string>DDL Generation</string>
+   </property>
+  </action>
+  <action name="actionList_of_Table_Fields">
+   <property name="text">
+    <string>List of Table Fields</string>
    </property>
   </action>
  </widget>
