@@ -1,13 +1,13 @@
-#ifndef DDLGENTREEVIEW_H
-#define DDLGENTREEVIEW_H
+#ifndef SQLGENTREEWIDGET_H
+#define SQLGENTREEWIDGET_H
 
 #include <QTreeWidget>
 
-class DDLGenTreeWidget : public QTreeWidget
-{    
+class SQLGenTreeWidget : public QTreeWidget
+{
     Q_OBJECT
 public:
-    DDLGenTreeWidget(QWidget *parent = Q_NULLPTR);
+    SQLGenTreeWidget(QWidget *parent = Q_NULLPTR);
 
 protected slots:
 
@@ -19,4 +19,4 @@ signals:
 
 };
 
-#endif // DDLGENTREEVIEW_H
+#endif // SQLGENTREEWIDGET_H

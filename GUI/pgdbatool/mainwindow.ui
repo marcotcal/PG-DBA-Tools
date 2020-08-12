@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1085</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -475,6 +475,45 @@
        <column>
         <property name="text">
          <string>1</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dock_sql">
+   <property name="windowTitle">
+    <string>SQL Generation</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_6">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item>
+      <widget class="SQLGenTreeWidget" name="sql_generator_list">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
         </property>
        </column>
       </widget>
@@ -1062,6 +1101,11 @@
    <class>DDLGenTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>ddlgentreewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SQLGenTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>sqlgentreewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

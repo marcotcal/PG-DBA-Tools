@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
     connect(ui->ddl_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
+    connect(ui->sql_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
 }
 
 void MainWindow::projectMenuOpen()
