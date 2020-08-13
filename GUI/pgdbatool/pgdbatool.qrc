@@ -156,4 +156,7 @@
         <file>ddl_generators/ddl_update_sequences.xml</file>
         <file>ddl_generators/ddl_reset_sequences.xml</file>
     </qresource>
+    <qresource prefix="/sql">
+        <file>sql_generators/sql_insert_all_fields.xml</file>
+    </qresource>
 </RCC>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="SQL_INSERT_ALL_FIELDS" description="Insert all fields">
+    <parameters>
+        <parameter code="p_schema" description="Schema" mandatory="false">
+            <expression><![CDATA[?]]></expression>
+            <param_type><![CDATA[Raw]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_table" description="Table Name" mandatory="false">
+            <expression><![CDATA[?]]></expression>
+            <param_type><![CDATA[Raw]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+    </parameters>
+    <orders>
+        <order description="Schema + Table" fields="nspname, relname"/>
+    </orders>
+    <columns/>
+    <query_text><![CDATA[DO
+$$
+BEGIN 
+
+    CREATE TEMPORARY TABLE insert_result (
+        line text
+    ) ON COMMIT DROP;
+    
+    INSERT INTO insert_result(line) VALUES ('INSERT INTO [!p_schema!].[!p_table!] (');
+ 
+    INSERT INTO insert_result(line)  
+        SELECT '    ' || column_name  
+        FROM information_schema.columns
+        WHERE 
+            table_schema = '[!p_schema!]' 
+            AND table_name = '[!p_table!]';
+
+    INSERT INTO insert_result(line) VALUES (') VALUES (');
+    
+    INSERT INTO insert_result(line)  
+        SELECT '    ' || 
+            CASE 
+                WHEN column_default IS NOT NULL THEN CASE WHEN ordinal_position = 1 THEN ' ' ELSE ',' END || column_default || ' -- ' || column_name
+                WHEN data_type = 'character varying' THEN CASE WHEN ordinal_position = 1 THEN '''' ELSE ',''''' END || ' -- ' || column_name
+                ELSE  CASE WHEN ordinal_position = 1 THEN ' ' ELSE ',' END || ' -- ' || column_name
+            END     
+        FROM information_schema.columns
+        WHERE 
+            table_schema = '[!p_schema!]' 
+            AND table_name = '[!p_table!]';
+
+    INSERT INTO insert_result(line) VALUES (');');
+    
+END;    
+$$;
+    
+SELECT * FROM insert_result;]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
+    <output_type><![CDATA[Editor]]></output_type>
+    <model_path><![CDATA[/sequences]]></model_path>
+</model>

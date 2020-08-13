@@ -316,13 +316,24 @@ QString QueryModelData::parseParameters(QString query)
         } else {
 
             expr = parameter->getExpression();
-            if (parameter->getType() == "Text") {
+            if (parameter->getType() == "Text" || parameter->getType() == "Date and Time" ) {
                 if (parameter->getSubType() == "Single") {
                     expr.replace("?", "'"+parameter->getValue().toString()+"'");
                 } else if (parameter->getSubType() == "List") {
                     items = parameter->getValue().toString().split(";");
                     for(int i = 0; i < items.count(); i++)
                         items[i] = "'"+items[i]+"'";
+                    expr.replace("?", "("+items.join(",")+")");
+                } else if (parameter->getSubType() == "Range") {
+                    // todo
+                }
+            } else if (parameter->getType() == "Number" || parameter->getType() == "Raw") {
+                if (parameter->getSubType() == "Single") {
+                    expr.replace("?", parameter->getValue().toString());
+                } else if (parameter->getSubType() == "List") {
+                    items = parameter->getValue().toString().split(";");
+                    for(int i = 0; i < items.count(); i++)
+                        items[i] = items[i];
                     expr.replace("?", "("+items.join(",")+")");
                 } else if (parameter->getSubType() == "Range") {
                     // todo

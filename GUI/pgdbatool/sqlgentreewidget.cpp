@@ -15,7 +15,7 @@ SQLGenTreeWidget::SQLGenTreeWidget(QWidget *parent) : QTreeWidget(parent)
     insertTopLevelItem(1, updates);
     insertTopLevelItem(2, selects);
 
-    item = new QTreeWidgetItem(QStringList() << "Insert in Table" << ":/ddl/ddl_generators/ddl_create_schemas.xml",1);
+    item = new QTreeWidgetItem(QStringList() << "Insert in Table" << ":/sql/sql_generators/sql_insert_all_fields.xml",1);
     inserts->addChild(item);
 
     item = new QTreeWidgetItem(QStringList() << "Insert in Table (Only Mandatory)" << ":/ddl/ddl_generators/ddl_create_schemas.xml",1);

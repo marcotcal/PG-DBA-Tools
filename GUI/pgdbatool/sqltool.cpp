@@ -61,10 +61,14 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
 
+    SqlTool *tool;
+    QMenu *mddl = new QMenu(tr("SQL Generation"));
+    QMenu *msql = new QMenu(tr("DDL Generation"));
+
     action = menu->addAction(tr("Find..."));
     action->setShortcut(Qt::CTRL+'f');
     connect(action, SIGNAL(triggered()), this, SLOT(on_find_triggered()));
-    action->setEnabled(!text().isEmpty());
+    action->setEnabled(connect);
 
     menu->addSeparator();
 
@@ -107,23 +111,29 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
+
     action = menu->addAction(tr("Reserved Word to Uppercase"));
     action->setEnabled(hasSelectedText());
     connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
-    action = menu->addAction(tr("Generate Insert (All fields)"));
+    menu->addSeparator();
+
+    menu->addMenu(msql);
+    menu->addMenu(mddl);
+
+    action = msql->addAction(tr("Generate Insert (All fields)"));
     action->setEnabled(hasSelectedText());
     //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
-    action = menu->addAction(tr("Generate Insert (Only Mandatory)"));
+    action = msql->addAction(tr("Generate Insert (Only Mandatory)"));
     action->setEnabled(hasSelectedText());
     //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
-    action = menu->addAction(tr("Generate Update (All fields)"));
+    action = msql->addAction(tr("Generate Update (All fields)"));
     action->setEnabled(hasSelectedText());
     //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 
-    action = menu->addAction(tr("Generate Update (Only Mandatory)"));
+    action = msql->addAction(tr("Generate Update (Only Mandatory)"));
     action->setEnabled(hasSelectedText());
     //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
 

@@ -417,14 +417,14 @@ void MainWindow::on_actionOpen_triggered()
             query_path = project.getProjectPath() + "/scripts/development/review";
         }
 
-        file_name = QFileDialog::getOpenFileName(this, "Open File", query_path, "SQL files (*.sql);;All files (*.*))");
+        file_name = QFileDialog::getOpenFileName(this, "Open File", query_path, "SQL files (*.sql);;All files (*.*)");
         if (file_name != "") {
             file.setFileName(file_name);
             sql->openFileOnCurrent(file);            
             ui->editor_list->currentItem()->setText(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
         }
     } else if (model) {
-        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_models, "Model files (*.xml);;All files (*.*))");
+        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_models, "Model files (*.xml);;All files (*.*)");
         if (file_name != "") {
             file.setFileName(file_name);
             model->openFile(file);
@@ -432,7 +432,7 @@ void MainWindow::on_actionOpen_triggered()
         }
     } else {
         file_name = QFileDialog::getOpenFileName(this, "Open File", last_path_to_sql,
-                                                 "SQL files (*.sql);;Model files (*.xml);;All files (*.*))");
+                                                 "SQL files (*.sql);;Model files (*.xml);;All files (*.*)");
         if (file_name != "") {
             QFile file(file_name);
             QFileInfo info(file_name);
@@ -836,9 +836,9 @@ void MainWindow::executeModel(QString resource_name)
                 ui->connection_list->item(currentRow)->setText(ui->connection_list->item(currentRow)->text());
                 ui->connection_list->item(currentRow)->setForeground(Qt::black);
 
-                new QListWidgetItem(model_data->getDescription(), ui->editor_list);
-
                 if(model_data->getOutputType() != "Editor") {
+
+                    new QListWidgetItem(model_data->getDescription(), ui->editor_list);
 
                     QWebEngineView *editor = new QWebEngineView(ui->main_stack);
                     ui->main_stack->addWidget(editor);

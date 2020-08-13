@@ -122,7 +122,7 @@ void QueryModel::dataToEditors()
         ui->parameter_table->setItem(row, 3, item);
 
         combo = new QComboBox(this);
-        combo->addItems(QStringList() << "Text" << "Number" << "Date and Time");
+        combo->addItems(QStringList() << "Text" << "Number" << "Date and Time" << "Raw");
         item = new QTableWidgetItem("");
         ui->parameter_table->setItem(row, 4, item);
         ui->parameter_table->setCellWidget(row, 4, combo);
