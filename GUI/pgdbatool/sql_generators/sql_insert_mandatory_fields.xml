@@ -51,10 +51,11 @@ BEGIN
     INSERT INTO insert_result(line) VALUES ('INSERT INTO [!p_schema!].[!p_table!] (');
  
     INSERT INTO insert_result(line)  
-        SELECT '    ' || column_name  
+        SELECT '    ' || CASE WHEN ordinal_position = 1 THEN ' ' ELSE ',' END || column_name  
         FROM information_schema.columns
         WHERE 
-            table_schema = '[!p_schema!]' 
+            is_nullable = 'NO'
+            AND table_schema = '[!p_schema!]' 
             AND table_name = '[!p_table!]';
 
     INSERT INTO insert_result(line) VALUES (') VALUES (');

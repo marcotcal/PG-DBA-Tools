@@ -158,5 +158,6 @@
     </qresource>
     <qresource prefix="/sql">
         <file>sql_generators/sql_insert_all_fields.xml</file>
+        <file>sql_generators/sql_insert_mandatory_fields.xml</file>
     </qresource>
 </RCC>

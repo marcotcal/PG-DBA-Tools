@@ -19,6 +19,7 @@
 #include <QtWidgets>
 #include <QWebEngineView>
 #include <QMenu>
+#include <QLibrary>
 #include "dlgmenunew.h"
 #include "dlgconnections.h"
 #include "dlgconfiguration.h"
