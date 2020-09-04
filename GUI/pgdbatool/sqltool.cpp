@@ -68,7 +68,7 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     action = menu->addAction(tr("Find..."));
     action->setShortcut(Qt::CTRL+'f');
     connect(action, SIGNAL(triggered()), this, SLOT(on_find_triggered()));
-    action->setEnabled(connect);
+    action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
 
