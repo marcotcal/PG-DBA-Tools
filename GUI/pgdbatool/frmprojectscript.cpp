@@ -210,5 +210,5 @@ void FrmProjectScript::on_bt_show_error_clicked()
 
 bool FrmProjectScript::executeScript()
 {
-
+    return true;
 }

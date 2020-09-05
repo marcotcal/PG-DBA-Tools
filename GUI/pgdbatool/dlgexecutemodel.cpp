@@ -87,6 +87,7 @@ void DlgExecuteModel::on_model_tree_currentItemChanged(QTreeWidgetItem *current,
 void DlgExecuteModel::on_model_tree_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column)
+    Q_UNUSED(item)
     if (selected->text(1) != "") {
         accept();
     }

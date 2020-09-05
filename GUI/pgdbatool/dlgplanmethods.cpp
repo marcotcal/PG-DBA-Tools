@@ -19,11 +19,6 @@ DlgPlanMethods::~DlgPlanMethods()
 void DlgPlanMethods::initialize()
 {
     QVariant value;
-    long effect = 0;
-    int unit = 0;
-    int max = 0;
-    int min = 0;
-    int steps = 0;
 
     value = conn_settings->getSetting("enable_bitmapscan");
     if (value.isValid())

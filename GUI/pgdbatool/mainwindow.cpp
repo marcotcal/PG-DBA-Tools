@@ -738,6 +738,7 @@ void MainWindow::on_actionCancel_Current_Query_triggered()
 
 void MainWindow::on_connection_list_currentRowChanged(int currentRow)
 {
+    Q_UNUSED(currentRow) // temporary deactivation
     /*
     if (currentRow != -1) {
         data->databaseDisconnect();
@@ -1333,6 +1334,7 @@ void MainWindow::on_actionExecute_Project_Script_triggered()
 
 void MainWindow::sqlToolModeChanged(SqlTool *sql, int current_mode)
 {
+    Q_UNUSED(current_mode)
      enable_sql_tool_actions(sql);
      // always rollback transaction if change mode
      if (sql->transaction()) {

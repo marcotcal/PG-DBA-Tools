@@ -4,8 +4,8 @@
 
 FrmFindText::FrmFindText(EditorItem *editor) :
     QWidget(nullptr),
-    editor(editor),
-    ui(new Ui::FrmFindText)
+    ui(new Ui::FrmFindText),
+    editor(editor)
 {
     ui->setupUi(this);
 }

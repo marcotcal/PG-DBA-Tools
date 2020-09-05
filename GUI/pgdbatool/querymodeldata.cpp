@@ -263,21 +263,22 @@ bool QueryModelData::saveModel(QString file_name)
 
 void QueryModelData::databaseConnect(int conn_number, QString database_name) {
     QMessageBox msg;
-    PGresult *res;
+
     QString conn_str = connections.getConnections()
             .at(conn_number)->connectStr("", "", database_name);
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
-    if (PQstatus(conn) == CONNECTION_OK) {
-        connected = true;
-        res = PQexec(conn, "SET application_name=\"PGDBATool - Global Connection\"");
-        connections.getConnections().at(conn_number)->setInvalid(false);
+    if (PQstatus(conn) != CONNECTION_OK) {
+        connected = false;
+        connections.getConnections().at(conn_number)->setInvalid(true);
+        msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
+        msg.exec();
         return;
     }
-    connections.getConnections().at(conn_number)->setInvalid(true);
-    msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
-    msg.exec();
-    connected = false;
+
+    PQexec(conn, "SET application_name=\"PGDBATool - Global Connection\"");
+    connections.getConnections().at(conn_number)->setInvalid(false);
+    connected = true;
 }
 
 void QueryModelData::databaseDisconnect() {

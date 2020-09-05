@@ -149,8 +149,17 @@ contains(TUNNELS, TRUE) {
     HEADERS += sshconnector.h
 }
 
+INCLUDEPATH += ../pgdba_generators
 
 LIBS += -lqscintilla2_qt5
+
+CONFIG(release, debug|release) {
+    unix:LIBS += -L ../build/release -lpgdba_generators
+}
+
+CONFIG(debug, debug|release) {
+    unix:LIBS += -L ../build/debug -lpgdba_generators
+}
 
 # Include postgres lib
 unix:INCLUDEPATH += $$system(pg_config --includedir)

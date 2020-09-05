@@ -775,11 +775,6 @@
     <string>&amp;Wasted Index Space</string>
    </property>
   </action>
-  <action name="actionUseless_Indexes">
-   <property name="text">
-    <string>&amp;Useless Indexes</string>
-   </property>
-  </action>
   <action name="actionExecute_Saved_Model">
    <property name="text">
     <string>E&amp;xecute Saved Model</string>

@@ -39,6 +39,10 @@
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
 
+//  libraries
+
+#include "pgdbagenerators.h"
+
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";    
 }
@@ -61,7 +65,6 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
 
-    SqlTool *tool;
     QMenu *mddl = new QMenu(tr("SQL Generation"));
     QMenu *msql = new QMenu(tr("DDL Generation"));
 
@@ -122,8 +125,8 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     menu->addMenu(mddl);
 
     action = msql->addAction(tr("Generate Insert (All fields)"));
-    action->setEnabled(hasSelectedText());
-    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+    //action->setEnabled(hasSelectedText());
+    connect(action, SIGNAL(triggered()), this, SLOT(on_execute_generator()));
 
     action = msql->addAction(tr("Generate Insert (Only Mandatory)"));
     action->setEnabled(hasSelectedText());
@@ -424,6 +427,7 @@ bool SqlTool::isRedoAvailable()
     if (editor) {
         return editor->isRedoAvailable();
     }
+    return false;
 }
 
 bool SqlTool::isUndoAvailable()
@@ -1227,11 +1231,13 @@ void SqlTool::on_modify_find_control()
 
 void SqlTool::on_text_to_find_textChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1)
     use_find_next = false;
 }
 
 void SqlTool::on_from_line_valueChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1)
     use_find_next = false;
 }
 
@@ -1262,4 +1268,19 @@ void SqlTool::on_script_mode_clicked()
 void SqlTool::on_connection_list_activated(int index)
 {
     loadDatabaseList(index);
+}
+
+void SqlTool::on_execute_generator()
+{
+    PGDBAGenerators gen;
+    int generator = 0;
+
+    switch(generator) {
+
+    case 0:
+        gen.getInsert(nullptr);
+
+    default:
+        break;
+    }
 }

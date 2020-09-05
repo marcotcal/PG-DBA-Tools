@@ -158,6 +158,8 @@ private slots:
 
     void on_connection_list_activated(int index);
 
+    void on_execute_generator();
+
 signals:
     void beginExecution(SqlTool *sender);
     void endExecution(SqlTool *sender);

@@ -102,6 +102,8 @@ QStringList ConnectionElement::getDatabaseList()
 
         return list;
     }
+
+    return QStringList();
 }
 
 QStringList ConnectionElement::getSchemaList(QString database_name)
@@ -140,6 +142,8 @@ QStringList ConnectionElement::getSchemaList(QString database_name)
 
         return list;
     }
+
+    return QStringList();
 }
 
 void ConnectionElement::openSSHTunnel()

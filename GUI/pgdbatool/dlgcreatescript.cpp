@@ -91,5 +91,9 @@ bool DlgCreateScript::createFile()
         stream << endl;
         stream << "COMMIT TRANSACTION;" << endl;
         stream << endl;
+
+        return true;
     }
+
+    return false;
 }

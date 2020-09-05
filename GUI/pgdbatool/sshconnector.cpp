@@ -36,7 +36,7 @@ bool SSHConnector::tunnelInitialize()
     const char *fprint;
     char *userauthlist;
     int sockopt, sock = -1;
-    int listensock = -1, forwardsock = -1;
+    int listensock = -1 /*, forwardsock = -1*/;
 
     QString msg;
 

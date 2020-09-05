@@ -51,5 +51,6 @@ void DlgMenuNew::on_editors_list_currentRowChanged(int currentRow)
 
 void DlgMenuNew::on_editors_list_itemDoubleClicked(QListWidgetItem *item)
 {
+    Q_UNUSED(item)
     accept();
 }

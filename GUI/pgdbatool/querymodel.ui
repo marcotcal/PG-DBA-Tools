@@ -542,7 +542,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget_1">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QsciScintilla" name="sql_editor">
