@@ -13,6 +13,11 @@ public:
     PGDBAGenerators();
 
     QString getInsert(PGconn *connection);
+    void setOnlyMandatory(bool value);
+
+private:
+
+    bool mandatory;
 };
 
 #endif // PGDBAGENERATORS_H

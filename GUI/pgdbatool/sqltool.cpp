@@ -64,8 +64,12 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     //QMenu *menu = createStandardContextMenu();
     QMenu *menu = new QMenu();
     QAction *action;
+    // parent chain - stack, tab, sqltool
+    SqlTool *editor = dynamic_cast<SqlTool *>(parent()->parent()->parent());
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
+
+    bool connected = editor->isConnected();
 
     QMenu *mddl = new QMenu(tr("SQL Generation"));
     QMenu *msql = new QMenu(tr("DDL Generation"));
@@ -127,22 +131,22 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     menu->addMenu(mddl);
 
     action = msql->addAction(tr("Generate Insert (All fields)"));
-    //action->setEnabled(hasSelectedText());
+    action->setEnabled(connected);
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_INSERT_ALL);
 
     action = msql->addAction(tr("Generate Insert (Only Mandatory)"));
-    //action->setEnabled(hasSelectedText());
+    action->setEnabled(connected);
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_INSERT_MANDATORY);
 
     action = msql->addAction(tr("Generate Update (All fields)"));
-    //action->setEnabled(hasSelectedText());
+    action->setEnabled(connected);
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_UPDATE_ALL);
 
     action = msql->addAction(tr("Generate Update (Only Mandatory)"));
-    //action->setEnabled(hasSelectedText());
+    action->setEnabled(connected);
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_UPDATE_MANDATORY);
 
@@ -515,6 +519,11 @@ bool SqlTool::isFindNextAvailable()
     return false;
 }
 
+bool SqlTool::isConnected()
+{
+    return is_connected;
+}
+
 void SqlTool::redo()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
@@ -721,7 +730,7 @@ bool SqlTool::readFromXML(QString file_name)
 EditorItem *SqlTool::addEditor() {
 
     QString new_sufix = QString("%1").arg(ui->editors_tabs->count()+1);
-    EditorItem *editor = new EditorItem();
+    EditorItem *editor = new EditorItem(this);
 
     editor->setObjectName("editor"+new_sufix);
     initializeEditor(editor);
@@ -1289,7 +1298,14 @@ void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
     switch(gen_sql) {
 
     case EditorItem::GEN_INSERT_ALL:
-        gen.getInsert(nullptr);
+        gen.getInsert(conn);
+        gen.setOnlyMandatory(false);
+        break;
+
+    case EditorItem::GEN_INSERT_MANDATORY:
+        gen.getInsert(conn);
+        gen.setOnlyMandatory(true);
+        break;
 
     default:
         break;

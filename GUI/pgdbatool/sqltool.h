@@ -36,6 +36,8 @@ namespace Ui {
 class SqlTool;
 }
 
+class SqlTool;
+
 class EditorItem : public QsciScintilla  {
 
     Q_OBJECT
@@ -72,6 +74,7 @@ private:
     FrmFindText *frm_find;
 
     QSignalMapper *signal_mapper;
+
 };
 
 class SqlTool : public QWidget
@@ -135,6 +138,7 @@ public:
     bool isSelectAllAvailable();
     bool isFindAvailable();
     bool isFindNextAvailable();
+    bool isConnected();
 
     void redo();
     void undo();
