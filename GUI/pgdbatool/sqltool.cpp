@@ -45,6 +45,8 @@
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";    
+    signal_mapper = new QSignalMapper(this);
+    connect(signal_mapper, SIGNAL(mapped(int)), this, SLOT(do_execute_generator(int)));
 }
 
 void EditorItem::setFileName(QString value)
@@ -70,7 +72,7 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
     action = menu->addAction(tr("Find..."));
     action->setShortcut(Qt::CTRL+'f');
-    connect(action, SIGNAL(triggered()), this, SLOT(on_find_triggered()));
+    connect(action, SIGNAL(triggered()), this, SLOT(find_triggered()));
     action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
@@ -126,19 +128,23 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
     action = msql->addAction(tr("Generate Insert (All fields)"));
     //action->setEnabled(hasSelectedText());
-    connect(action, SIGNAL(triggered()), this, SLOT(on_execute_generator()));
+    connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
+    signal_mapper->setMapping(action, GEN_INSERT_ALL);
 
     action = msql->addAction(tr("Generate Insert (Only Mandatory)"));
-    action->setEnabled(hasSelectedText());
-    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+    //action->setEnabled(hasSelectedText());
+    connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
+    signal_mapper->setMapping(action, GEN_INSERT_MANDATORY);
 
     action = msql->addAction(tr("Generate Update (All fields)"));
-    action->setEnabled(hasSelectedText());
-    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+    //action->setEnabled(hasSelectedText());
+    connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
+    signal_mapper->setMapping(action, GEN_UPDATE_ALL);
 
     action = msql->addAction(tr("Generate Update (Only Mandatory)"));
-    action->setEnabled(hasSelectedText());
-    //connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+    //action->setEnabled(hasSelectedText());
+    connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
+    signal_mapper->setMapping(action, GEN_UPDATE_MANDATORY);
 
     menu->exec(event->globalPos());
 
@@ -169,9 +175,14 @@ void EditorItem::on_delete_selection_triggered()
     }
 }
 
-void EditorItem::on_find_triggered()
+void EditorItem::find_triggered()
 {
-    emit findRequest(this);
+    emit find_request(this);
+}
+
+void EditorItem::do_execute_generator(int gen_sql)
+{
+    emit execute_generator(this, gen_sql);
 }
 
 EditorItem::~EditorItem() {
@@ -220,12 +231,12 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
 
     //connect(ui->text_to_find, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
     //connect(ui->from_line, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
-    connect(ui->from_cursor, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
-    connect(ui->case_sensitive, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
-    connect(ui->regular_expression, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
-    connect(ui->posix_regular_expression, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
-    connect(ui->whole_word, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
-    connect(ui->warp_around, SIGNAL(pressed()), this, SLOT(on_modify_find_control()));
+    connect(ui->from_cursor, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
+    connect(ui->case_sensitive, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
+    connect(ui->regular_expression, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
+    connect(ui->posix_regular_expression, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
+    connect(ui->whole_word, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
+    connect(ui->warp_around, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
 
     last_search_path = "public,pg_catalog";
 }
@@ -719,7 +730,8 @@ EditorItem *SqlTool::addEditor() {
     ui->editors_tabs->addTab(editor, "SQL "+new_sufix);
     ui->editors_tabs->setCurrentIndex(ui->editors_tabs->count()-1);
     editor->setFocus();
-    connect(editor, SIGNAL(findRequest(EditorItem*)), this, SLOT(on_find_request(EditorItem*)));
+    connect(editor, SIGNAL(find_request(EditorItem*)), this, SLOT(do_find_request(EditorItem*)));
+    connect(editor, SIGNAL(execute_generator(EditorItem*,int)), this, SLOT(do_execute_generator(EditorItem*,int)));
     return editor;
 }
 
@@ -1211,7 +1223,7 @@ void SqlTool::on_find_backward_clicked()
     }
 }
 
-void SqlTool::on_find_request(EditorItem *editor)
+void SqlTool::do_find_request(EditorItem *editor)
 {
     if (editor) {
         ui->find_panel->show();
@@ -1224,7 +1236,7 @@ void SqlTool::on_close_find_clicked()
     ui->find_panel->hide();
 }
 
-void SqlTool::on_modify_find_control()
+void SqlTool::do_modify_find_control()
 {
     use_find_next = false;
 }
@@ -1270,14 +1282,13 @@ void SqlTool::on_connection_list_activated(int index)
     loadDatabaseList(index);
 }
 
-void SqlTool::on_execute_generator()
+void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
 {
     PGDBAGenerators gen;
-    int generator = 0;
 
-    switch(generator) {
+    switch(gen_sql) {
 
-    case 0:
+    case EditorItem::GEN_INSERT_ALL:
         gen.getInsert(nullptr);
 
     default:

@@ -41,6 +41,12 @@ class EditorItem : public QsciScintilla  {
     Q_OBJECT
 
 public:
+    enum {
+        GEN_INSERT_ALL,
+        GEN_INSERT_MANDATORY,
+        GEN_UPDATE_ALL,
+        GEN_UPDATE_MANDATORY
+    };
     explicit EditorItem(QWidget *parent = nullptr);
     ~EditorItem();
     void setFileName(QString value);
@@ -51,15 +57,21 @@ public slots:
 
     void on_reserved_word_uppercase_triggered();
     void on_delete_selection_triggered();
-    void on_find_triggered();
+
+    void find_triggered();
+    void do_execute_generator(int gen_sql);
 
 signals:
 
-    void findRequest(EditorItem *editor);
+    void find_request(EditorItem *editor);
+    void execute_generator(EditorItem *editor, int gen_sql);
 
-private:
+private: 
+
     QString file_name;
     FrmFindText *frm_find;
+
+    QSignalMapper *signal_mapper;
 };
 
 class SqlTool : public QWidget
@@ -137,6 +149,10 @@ public:
     int getMode();
     void setMode(int value);
 
+public slots:
+    void do_find_request(EditorItem *editor);
+    void do_modify_find_control();
+
 private slots:
     void on_limit_result_clicked(bool checked);
     void do_query_ended(PGresult *res);
@@ -144,10 +160,8 @@ private slots:
     void on_from_cursor_toggled(bool checked);
     void on_find_forward_clicked();
     void on_find_backward_clicked();
-    void on_find_request(EditorItem *editor);
 
     void on_close_find_clicked();
-    void on_modify_find_control();
 
     void on_text_to_find_textChanged(const QString &arg1);
     void on_from_line_valueChanged(const QString &arg1);
@@ -158,7 +172,7 @@ private slots:
 
     void on_connection_list_activated(int index);
 
-    void on_execute_generator();
+    void do_execute_generator(EditorItem *editor, int gen_sql);
 
 signals:
     void beginExecution(SqlTool *sender);
