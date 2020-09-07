@@ -13,11 +13,19 @@ class DlgInsert : public QDialog
     Q_OBJECT
 
 public:
+    enum {
+        NO_CONFLICT_CLAUSE,
+        ON_CONFLICT_DO_NOTHING,
+        ON_ONFLICT_UPDATE
+    };
     explicit DlgInsert(PGconn *connection, QWidget *parent = 0);
     ~DlgInsert();
 
     QString schema();
     QString table();
+    bool addComments();
+    bool removeMandatoryWithDefaults();
+
 
 private slots:
 

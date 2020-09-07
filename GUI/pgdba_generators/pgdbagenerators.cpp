@@ -58,7 +58,7 @@ QString PGDBAGenerators::getInsert(PGconn *connection)
                     if (mandatory && is_mandatory == "NO")
                         continue;
                     if (column_default != "")
-                        values << "   " + column_default;
+                        values << "   " + column_default + "  /* " + column_name + " */";
                     else if (data_type == "character varying")
                         values << "   '' /* " + column_name + " */";
                     else

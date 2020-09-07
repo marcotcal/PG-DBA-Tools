@@ -18,6 +18,7 @@ public:
 private:
 
     bool mandatory;
+
 };
 
 #endif // PGDBAGENERATORS_H
