@@ -16,9 +16,8 @@ public:
     explicit DlgInsert(PGconn *connection, QWidget *parent = 0);
     ~DlgInsert();
 
-    void getSchemas();
-    void getViews(const char *schema);
-    void getTables(const char *schema);
+    QString schema();
+    QString table();
 
 private slots:
 
@@ -30,6 +29,10 @@ private slots:
 private:
     Ui::DlgInsert *ui;
     PGconn *connection;
+
+    void getSchemas();
+    void getViews(const char *schema);
+    void getTables(const char *schema);
 };
 
 #endif // DLGINSERT_H

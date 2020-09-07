@@ -15,6 +15,16 @@ DlgInsert::~DlgInsert()
     delete ui;
 }
 
+QString DlgInsert::schema()
+{
+    return ui->schemas->itemText(ui->schemas->currentIndex());
+}
+
+QString DlgInsert::table()
+{
+    return ui->tables->itemText(ui->tables->currentIndex());
+}
+
 void DlgInsert::getSchemas()
 {
     const char *sql =

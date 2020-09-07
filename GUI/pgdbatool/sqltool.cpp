@@ -1293,18 +1293,26 @@ void SqlTool::on_connection_list_activated(int index)
 
 void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
 {
+    Q_UNUSED(editor)
     PGDBAGenerators gen;
+    QString resp;
+    int line;
+    int index;
+
+    editor->getCursorPosition(&line, &index);
 
     switch(gen_sql) {
 
     case EditorItem::GEN_INSERT_ALL:
-        gen.getInsert(conn);
         gen.setOnlyMandatory(false);
+        resp = gen.getInsert(conn);
+        editor->insertAt(resp, line, index);
         break;
 
     case EditorItem::GEN_INSERT_MANDATORY:
-        gen.getInsert(conn);
         gen.setOnlyMandatory(true);
+        resp = gen.getInsert(conn);
+        editor->insertAt(resp, line, index);
         break;
 
     default:
