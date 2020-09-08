@@ -1,4 +1,7 @@
 #include "ddlgentreewidget.h"
+#include <QDir>
+#include <QCoreApplication>
+#include <QPluginLoader>
 
 DDLGenTreeWidget::DDLGenTreeWidget(QWidget *parent) : QTreeWidget(parent)
 {
@@ -6,6 +9,8 @@ DDLGenTreeWidget::DDLGenTreeWidget(QWidget *parent) : QTreeWidget(parent)
     QTreeWidgetItem* sequences = new QTreeWidgetItem();
     QTreeWidgetItem* triggers = new QTreeWidgetItem();
     QTreeWidgetItem* item;
+
+    loadPlugins();
 
     schemas->setText(0,"Schemas");
     sequences->setText(0,"Sequences");
@@ -48,4 +53,39 @@ void DDLGenTreeWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
     Q_UNUSED(column)
     if (item->type() == 1)
         emit executeItem(item->text(1));
+}
+
+bool DDLGenTreeWidget::loadPlugins()
+{
+    QString version;
+    PGDBAPluginInterface *interface;
+    QDir pluginsDir(QCoreApplication::applicationDirPath());
+    bool plugin_loaded = false;
+
+    #if defined(Q_OS_WIN)
+        if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+            pluginsDir.cdUp();
+    #elif defined(Q_OS_MAC)
+        if (pluginsDir.dirName() == "MacOS") {
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+        }
+    #endif
+
+    pluginsDir.cd("plugins");
+    const QStringList entries = pluginsDir.entryList(QDir::Files);
+    for (const QString &fileName : entries) {
+        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            interface = qobject_cast<PGDBAPluginInterface *>(plugin);
+            if (interface) {
+                interface_list[interface->plugin_name()] = interface;
+                plugin_loaded = true;
+            }
+        }
+    }
+
+    return plugin_loaded;
 }

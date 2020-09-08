@@ -119,7 +119,8 @@ HEADERS += \
     frmfindtext.h \
     frmprojectscript.h \
     ddlgentreewidget.h \
-    sqlgentreewidget.h
+    sqlgentreewidget.h \
+    pgdbaplugininterface.h
 
 FORMS += \
     mainwindow.ui \
