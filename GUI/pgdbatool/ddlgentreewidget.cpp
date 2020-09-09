@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QPluginLoader>
+#include <QMessageBox>
 
 DDLGenTreeWidget::DDLGenTreeWidget(QWidget *parent) : QTreeWidget(parent)
 {
@@ -84,6 +85,8 @@ bool DDLGenTreeWidget::loadPlugins()
                 interface_list[interface->plugin_name()] = interface;
                 plugin_loaded = true;
             }
+        } else {
+            QMessageBox::warning(this, "Plugin Error", pluginLoader.errorString());
         }
     }
 

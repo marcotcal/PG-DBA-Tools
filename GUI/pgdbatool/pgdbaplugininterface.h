@@ -1,6 +1,9 @@
 #ifndef PGDBAPLUGININTERFACE_H
 #define PGDBAPLUGININTERFACE_H
 
+#include <QString>
+#include <libpq-fe.h>
+
 /**
  * common interface for the SQL Generation
  */
@@ -13,6 +16,7 @@ class PGDBAPluginInterface
     virtual QString plugin_name() = 0;
     virtual QString root_node_name() = 0;
     virtual QStringList itemNames() = 0;
+    virtual bool run(PGconn *connection, QString item_name) = 0;
  };
 
 #define PGDBAPluginInterface_iid "org.pgdbatools.PGDBAPluginInterface"

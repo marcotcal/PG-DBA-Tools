@@ -27,6 +27,11 @@ HEADERS += \
         ddlgenerationplugin.h
 DISTFILES += pgdba_ddlgenplugin.json 
 
+# Include postgres lib
+unix:INCLUDEPATH += $$system(pg_config --includedir)
+unix:LIBS += -L$$system(pg_config --libdir)
+unix:LIBS += $$system(pg_config --libs) -lpq
+
 INCLUDEPATH += ../pgdbatool
 
 unix {

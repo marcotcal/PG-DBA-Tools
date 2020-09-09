@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "pgdbaplugininterface.h"
+#include <libpq-fe.h>
 
 class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
     QString plugin_name() override;
     QString root_node_name() override;
     QStringList itemNames() override;
+    bool run(PGconn *connection, QString item_name) override;
 };
 
 #endif // DDLGENERATIONPLUGIN_H
