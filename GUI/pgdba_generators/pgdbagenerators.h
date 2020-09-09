@@ -12,7 +12,7 @@ class PGDBA_GENERATORSSHARED_EXPORT PGDBAGenerators
 public:
     PGDBAGenerators();
 
-    QString getInsert(PGconn *connection);
+    QString getInsert(int offset, PGconn *connection);
     void setOnlyMandatory(bool value);
 
 private:

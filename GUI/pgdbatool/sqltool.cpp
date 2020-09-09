@@ -1305,13 +1305,13 @@ void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
 
     case EditorItem::GEN_INSERT_ALL:
         gen.setOnlyMandatory(false);
-        resp = gen.getInsert(conn);
+        resp = gen.getInsert(index, conn);
         editor->insertAt(resp, line, index);
         break;
 
     case EditorItem::GEN_INSERT_MANDATORY:
         gen.setOnlyMandatory(true);
-        resp = gen.getInsert(conn);
+        resp = gen.getInsert(index, conn);
         editor->insertAt(resp, line, index);
         break;
 

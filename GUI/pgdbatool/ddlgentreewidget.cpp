@@ -11,8 +11,6 @@ DDLGenTreeWidget::DDLGenTreeWidget(QWidget *parent) : QTreeWidget(parent)
     QTreeWidgetItem* triggers = new QTreeWidgetItem();
     QTreeWidgetItem* item;
 
-    loadPlugins();
-
     schemas->setText(0,"Schemas");
     sequences->setText(0,"Sequences");
     triggers->setText(0,"Triggers");
@@ -55,7 +53,7 @@ void DDLGenTreeWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
     if (item->type() == 1)
         emit executeItem(item->text(1));
 }
-
+/*
 bool DDLGenTreeWidget::loadPlugins()
 {
     QString version;
@@ -92,3 +90,4 @@ bool DDLGenTreeWidget::loadPlugins()
 
     return plugin_loaded;
 }
+*/

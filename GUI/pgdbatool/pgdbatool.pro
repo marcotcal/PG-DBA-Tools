@@ -80,7 +80,8 @@ SOURCES += \
     frmfindtext.cpp \
     frmprojectscript.cpp \
     ddlgentreewidget.cpp \
-    sqlgentreewidget.cpp
+    sqlgentreewidget.cpp \
+    dlgplugins.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -120,7 +121,8 @@ HEADERS += \
     frmprojectscript.h \
     ddlgentreewidget.h \
     sqlgentreewidget.h \
-    pgdbaplugininterface.h
+    pgdbaplugininterface.h \
+    dlgplugins.h
 
 FORMS += \
     mainwindow.ui \
@@ -143,7 +145,8 @@ FORMS += \
     dlgproject.ui \
     dlgcreatescript.ui \
     frmfindtext.ui \
-    frmprojectscript.ui
+    frmprojectscript.ui \
+    dlgplugins.ui
 
 contains(TUNNELS, TRUE) {
     SOURCES += sshconnector.cpp

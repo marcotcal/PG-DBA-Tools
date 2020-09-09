@@ -38,6 +38,7 @@
 #include "outputset.h"
 #include "dlgproject.h"
 #include "frmprojectscript.h"
+#include "dlgplugins.h"
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -57,11 +58,52 @@ MainWindow::MainWindow(QWidget *parent) :
     loadCustomMenus();
     setConnectionsList();
     ui->actionClose->setEnabled(false);
+
+    loadPlugins();
+
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
     connect(ui->ddl_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
     connect(ui->sql_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
+}
+
+bool MainWindow::loadPlugins()
+{
+
+    PGDBAPluginInterface *interface;
+    QDir pluginsDir(QCoreApplication::applicationDirPath());
+    bool plugin_loaded = false;
+
+    #if defined(Q_OS_WIN)
+        if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+            pluginsDir.cdUp();
+    #elif defined(Q_OS_MAC)
+        if (pluginsDir.dirName() == "MacOS") {
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+        }
+    #endif
+
+    pluginsDir.cd("plugins");
+    const QStringList entries = pluginsDir.entryList(QDir::Files);
+    for (const QString &fileName : entries) {
+        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            interface = qobject_cast<PGDBAPluginInterface *>(plugin);
+            if (interface) {
+                interface->setFileName(pluginLoader.fileName());
+                interface_list[interface->plugin_name()] = interface;
+                plugin_loaded = true;
+            }
+        } else {
+            QMessageBox::warning(this, "Plugin Error", pluginLoader.errorString());
+        }
+    }
+
+    return plugin_loaded;
 }
 
 void MainWindow::projectMenuOpen()
@@ -578,7 +620,9 @@ void MainWindow::on_actionCommit_Transaction_triggered()
 
 void MainWindow::on_actionManage_Plugins_triggered()
 {
+    DlgPlugins dlg(interface_list);
 
+    dlg.exec();
 }
 
 void MainWindow::on_main_stack_currentChanged(int arg1)

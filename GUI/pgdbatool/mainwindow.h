@@ -23,7 +23,7 @@
 #include "querymodel.h"
 #include "connectionsdata.h"
 #include "projectdata.h"
-
+#include "pgdbaplugininterface.h"
 
 namespace Ui {
 class MainWindow;
@@ -164,6 +164,7 @@ private:
     QString last_path_to_sql;
     int cfg_options;
     QString cfg_task_prefix;
+    QMap<QString, PGDBAPluginInterface *> interface_list;
 
     bool maybeSave();
     void readSettings();
@@ -175,7 +176,9 @@ private:
     void setConnectionsList();
     SqlTool *openNewSQLTool(QString name, int mode=SqlTool::MODE_QUERY);
     QueryModel *openNewQueryModel(QString name);
-    void loadCustomMenus();
+    void loadCustomMenus();    
+    bool loadPlugins();
+
 };
 
 #endif // MAINWINDOW_H

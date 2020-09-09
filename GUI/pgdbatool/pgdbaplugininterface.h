@@ -1,5 +1,7 @@
 #ifndef PGDBAPLUGININTERFACE_H
 #define PGDBAPLUGININTERFACE_H
+#include <QString>
+#include <libpq-fe.h>
 
 #include <QString>
 #include <libpq-fe.h>
@@ -16,6 +18,8 @@ class PGDBAPluginInterface
     virtual QString plugin_name() = 0;
     virtual QString root_node_name() = 0;
     virtual QStringList itemNames() = 0;
+    virtual QString fileName() = 0;
+    virtual void setFileName(QString value) = 0;
     virtual bool run(PGconn *connection, QString item_name) = 0;
  };
 
