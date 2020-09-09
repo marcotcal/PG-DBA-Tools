@@ -29,6 +29,11 @@ DISTFILES += pgdba_ddlgenplugin.json
 
 INCLUDEPATH += ../pgdbatool
 
+# Include postgres lib
+unix:INCLUDEPATH += $$system(pg_config --includedir)
+unix:LIBS += -L$$system(pg_config --libdir)
+unix:LIBS += $$system(pg_config --libs) -lpq
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

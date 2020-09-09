@@ -26,6 +26,11 @@ QStringList DDLGenerationPlugin::itemNames()
     return QStringList();
 }
 
+bool DDLGenerationPlugin::run(QString item_name)
+{
+
+}
+
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(pgdba_ddlgenplugin, DDLGenerationPlugin)
 #endif // QT_VERSION < 0x050000
