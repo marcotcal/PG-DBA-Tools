@@ -620,8 +620,11 @@ void MainWindow::on_actionCommit_Transaction_triggered()
 
 void MainWindow::on_actionManage_Plugins_triggered()
 {
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     DlgPlugins dlg(interface_list);
-
+    if (sql) {
+        dlg.setEditor(sql->getCurrentEditor());
+    }
     dlg.exec();
 }
 

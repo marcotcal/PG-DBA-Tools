@@ -4,6 +4,10 @@
 #include <QObject>
 #include "pgdbaplugininterface.h"
 #include <libpq-fe.h>
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexersql.h>
+#include <Qsci/qscilexer.h>
+#include <sqltool.h>
 
 class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
     Q_OBJECT
@@ -18,7 +22,7 @@ public:
     QStringList itemNames() override;
     QString fileName() override;
     void setFileName(QString value) override;
-    bool run(PGconn *connection, QString item_name) override;
+    bool run(PGconn *connection, QString item_name, EditorItem *editor) override;
 
 private:
     QString file_name;

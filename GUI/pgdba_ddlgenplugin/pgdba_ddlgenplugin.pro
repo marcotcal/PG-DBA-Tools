@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = pgdba_ddlgenplugin
 TEMPLATE = lib
@@ -31,6 +33,8 @@ DISTFILES += pgdba_ddlgenplugin.json
 unix:INCLUDEPATH += $$system(pg_config --includedir)
 unix:LIBS += -L$$system(pg_config --libdir)
 unix:LIBS += $$system(pg_config --libs) -lpq
+
+LIBS += -lqscintilla2_qt5
 
 INCLUDEPATH += ../pgdbatool
 

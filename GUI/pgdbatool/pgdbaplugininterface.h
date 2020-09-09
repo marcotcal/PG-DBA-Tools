@@ -5,6 +5,7 @@
 
 #include <QString>
 #include <libpq-fe.h>
+#include <sqltool.h>
 
 /**
  * common interface for the SQL Generation
@@ -20,7 +21,7 @@ class PGDBAPluginInterface
     virtual QStringList itemNames() = 0;
     virtual QString fileName() = 0;
     virtual void setFileName(QString value) = 0;
-    virtual bool run(PGconn *connection, QString item_name) = 0;
+    virtual bool run(PGconn *connection, QString item_name, EditorItem *editor) = 0;
  };
 
 #define PGDBAPluginInterface_iid "org.pgdbatools.PGDBAPluginInterface"

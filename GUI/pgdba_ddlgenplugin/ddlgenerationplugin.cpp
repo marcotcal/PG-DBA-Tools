@@ -36,8 +36,16 @@ void DDLGenerationPlugin::setFileName(QString value)
     file_name = value;
 }
 
-bool DDLGenerationPlugin::run(PGconn *connection, QString item_name)
+bool DDLGenerationPlugin::run(PGconn *connection, QString item_name, EditorItem *editor)
 {
+    if (item_name == "TEST_PLUGIN") {
+
+        editor->append("-- Plugin Test.\n");
+        editor->append("SELECT 'TESTING PLUGIN " + plugin_name() + " " + version() + "'\n");
+        editor->append("-- End.\n");
+
+    }
+
     return true;
 
 }

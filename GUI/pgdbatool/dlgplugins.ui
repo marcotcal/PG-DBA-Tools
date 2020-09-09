@@ -65,6 +65,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="bt_test">
+       <property name="text">
+        <string>Test Plugin</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="bt_close">
        <property name="text">
         <string>Close</string>
