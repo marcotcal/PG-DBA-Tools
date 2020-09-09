@@ -7,7 +7,7 @@ PGDBAGenerators::PGDBAGenerators()
     mandatory = false;
 }
 
-QString PGDBAGenerators::getInsert(PGconn *connection)
+QString PGDBAGenerators::getInsert(int offset, PGconn *connection)
 {
     QStringList columns;
     QStringList values;
@@ -16,6 +16,7 @@ QString PGDBAGenerators::getInsert(PGconn *connection)
     QString data_type;
     QString is_mandatory;
     int tuples;
+    QString offset_space = QString(" ").repeated(offset);
     char *error;
     const char *params[2];
     QString insert_stmt;
@@ -58,12 +59,12 @@ QString PGDBAGenerators::getInsert(PGconn *connection)
                     if (mandatory && is_mandatory == "NO")
                         continue;
                     if (column_default != "")
-                        values << "   " + column_default + "  /* " + column_name + " */";
+                        values << offset_space + "   " + column_default + "  /* " + column_name + " */";
                     else if (data_type == "character varying")
-                        values << "   '' /* " + column_name + " */";
+                        values << offset_space + "   '' /* " + column_name + " */";
                     else
-                        values << "      /* " + column_name + " */";
-                    columns << "   " + column_name;
+                        values << offset_space + "      /* " + column_name + " */";
+                    columns << offset_space + "   " + column_name;
 
                 }
 
@@ -74,9 +75,9 @@ QString PGDBAGenerators::getInsert(PGconn *connection)
     }
 
     insert_stmt += columns.join(QByteArray(",\n"));
-    insert_stmt += "\n) VALUES (\n";
+    insert_stmt += "\n" + offset_space + ") VALUES (\n";
     insert_stmt += values.join(QByteArray(",\n"));
-    insert_stmt += "\n);";
+    insert_stmt += "\n" + offset_space + ");";
 
     return insert_stmt;
 
