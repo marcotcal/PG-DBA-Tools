@@ -120,7 +120,7 @@ HEADERS += \
     frmprojectscript.h \
     ddlgentreewidget.h \
     sqlgentreewidget.h \
-    interface.h
+    pgdbaplugininterface.h
 
 FORMS += \
     mainwindow.ui \

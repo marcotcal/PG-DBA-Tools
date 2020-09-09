@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 CONFIG   += ordered
 
-SUBDIRS = \    
+SUBDIRS = \
+    pgdbatool \
     pgdba_generators \
-    pgdbatool
+    pgdba_ddlgenplugin
 
