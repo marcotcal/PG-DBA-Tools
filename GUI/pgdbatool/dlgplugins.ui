@@ -39,7 +39,17 @@
      </column>
      <column>
       <property name="text">
-       <string>Location</string>
+       <string>Author</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Vendor</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>URL</string>
       </property>
      </column>
      <column>

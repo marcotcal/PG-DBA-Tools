@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <pgdbaplugininterface.h>
 #include <sqltool.h>
+#include <pluginelement.h>
 
 namespace Ui {
 class DlgPlugins;
@@ -14,7 +15,7 @@ class DlgPlugins : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgPlugins(QMap<QString, PGDBAPluginInterface *> &interface_list, QWidget *parent = 0);
+    explicit DlgPlugins(QMap<QString, PluginElement *> &interface_list, QWidget *parent = 0);
     ~DlgPlugins();
 
     void setEditor(EditorItem *value);
@@ -25,7 +26,7 @@ private slots:
 
 private:
     Ui::DlgPlugins *ui;
-    QMap<QString, PGDBAPluginInterface *> &interface_list;
+    QMap<QString, PluginElement *> &interface_list;
     EditorItem *editor;
 
     void loadTable();

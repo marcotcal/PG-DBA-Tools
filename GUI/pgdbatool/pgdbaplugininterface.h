@@ -6,6 +6,8 @@
 #include <QString>
 #include <libpq-fe.h>
 #include <sqltool.h>
+#include <QMenu>
+#include <QTreeWidget>
 
 /**
  * common interface for the SQL Generation
@@ -15,12 +17,9 @@ class PGDBAPluginInterface
  {
  public:
     virtual ~PGDBAPluginInterface() {}
-    virtual QString version() = 0;
-    virtual QString plugin_name() = 0;
-    virtual QString root_node_name() = 0;
-    virtual QStringList itemNames() = 0;
-    virtual QString fileName() = 0;
-    virtual void setFileName(QString value) = 0;
+    virtual void setMenu(QMenu *menu) = 0;
+    virtual void setTreeWidget(QTreeWidget *tree) = 0;
+
     virtual bool run(PGconn *connection, QString item_name, EditorItem *editor) = 0;
  };
 

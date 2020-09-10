@@ -1,3 +1,11 @@
 {
-    "Keys" : [ ]
+    "Name" : "PGDBA Generators",
+    "Version" : "1.0.0",
+    "CompatVersion" : "1.0.0",
+    "Vendor" : "pgdbatools.org",
+    "Author" : "pgdbatools",
+    "Copyright" : "(C) PG DBATools",
+    "License":"GNU General Public License v.3",
+    "URL":"http://www.pgdbatools.org",
+    "Keys" : ["PGDBATOOLS", "DDL", "DDL_TREE", "INPLACE_MENU"]
 }

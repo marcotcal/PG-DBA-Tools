@@ -81,7 +81,8 @@ SOURCES += \
     frmprojectscript.cpp \
     ddlgentreewidget.cpp \
     sqlgentreewidget.cpp \
-    dlgplugins.cpp
+    dlgplugins.cpp \
+    pluginelement.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -122,7 +123,8 @@ HEADERS += \
     ddlgentreewidget.h \
     sqlgentreewidget.h \
     pgdbaplugininterface.h \
-    dlgplugins.h
+    dlgplugins.h \
+    pluginelement.h
 
 FORMS += \
     mainwindow.ui \

@@ -61,10 +61,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadPlugins();
 
+    // assign plugins to DDL
+    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
+        ui->ddl_generator_list->setPluginElement(i.value());
+
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
-    connect(ui->ddl_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
+    connect(ui->ddl_generator_list, SIGNAL(executeItem(PluginElement*,QString)), this, SLOT(executePlugin(PluginElement*,QString)));
     connect(ui->sql_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
 }
 
@@ -74,6 +78,8 @@ bool MainWindow::loadPlugins()
     PGDBAPluginInterface *interface;
     QDir pluginsDir(QCoreApplication::applicationDirPath());
     bool plugin_loaded = false;
+    QJsonValue meta;
+    QJsonArray keys;
 
     #if defined(Q_OS_WIN)
         if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
@@ -92,10 +98,13 @@ bool MainWindow::loadPlugins()
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = pluginLoader.instance();
         if (plugin) {
+            meta = pluginLoader.metaData().value("MetaData");
+            keys = pluginLoader.metaData().value("MetaData").toObject().value("Keys").toArray();
+
             interface = qobject_cast<PGDBAPluginInterface *>(plugin);
             if (interface) {
-                interface->setFileName(pluginLoader.fileName());
-                interface_list[interface->plugin_name()] = interface;
+                interface_list["test"] =
+                        new PluginElement(interface, pluginLoader.metaData().value("MetaData"), this);
                 plugin_loaded = true;
             }
         } else {
@@ -934,6 +943,18 @@ void MainWindow::executeModel(QString resource_name)
                 model_data->databaseDisconnect();
 
             }
+        }
+    }
+}
+
+void MainWindow::executePlugin(PluginElement *element, QString item)
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    EditorItem *editor;
+    if (sql) {
+        editor = sql->getCurrentEditor();
+        if (sql->connected()) {
+            element->getInterface()->run(sql->getPostgresConnection(), item, editor);
         }
     }
 }

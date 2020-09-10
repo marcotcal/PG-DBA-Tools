@@ -436,6 +436,10 @@ int SqlTool::getSelectedConnectionIndex()
     return ui->connection_list->currentIndex();
 }
 
+PGconn *SqlTool::getPostgresConnection() {
+    return conn;
+}
+
 bool SqlTool::isRedoAvailable()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());

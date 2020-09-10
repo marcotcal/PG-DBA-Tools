@@ -24,6 +24,7 @@
 #include "connectionsdata.h"
 #include "projectdata.h"
 #include "pgdbaplugininterface.h"
+#include "pluginelement.h"
 
 namespace Ui {
 class MainWindow;
@@ -95,6 +96,7 @@ private slots:
 
     void on_actionExplain_triggered();
     void executeModel(QString resource_name);
+    void executePlugin(PluginElement *element, QString item);
     void on_actionPlanner_Method_Settings_triggered();
     void on_actionGenetic_Query_Optimization_Settings_triggered();
     void on_actionPallelism_Settings_triggered();
@@ -142,7 +144,6 @@ private slots:
     void on_actionViewMessages_toggled(bool arg1);
 
     void on_actionViewDDL_Generation_toggled(bool arg1);
-
     void on_actionList_of_Table_Fields_triggered();
 
 public slots:
@@ -164,7 +165,7 @@ private:
     QString last_path_to_sql;
     int cfg_options;
     QString cfg_task_prefix;
-    QMap<QString, PGDBAPluginInterface *> interface_list;
+    QMap<QString, PluginElement *> interface_list;
 
     bool maybeSave();
     void readSettings();

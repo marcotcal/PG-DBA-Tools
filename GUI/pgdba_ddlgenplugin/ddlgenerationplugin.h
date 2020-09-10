@@ -16,12 +16,9 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
 
 public:
     DDLGenerationPlugin(QObject *parent = 0);
-    QString version() override;
-    QString plugin_name() override;
-    QString root_node_name() override;
-    QStringList itemNames() override;
-    QString fileName() override;
-    void setFileName(QString value) override;
+    void setMenu(QMenu *menu);
+    void setTreeWidget(QTreeWidget *tree);
+
     bool run(PGconn *connection, QString item_name, EditorItem *editor) override;
 
 private:

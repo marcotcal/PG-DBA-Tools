@@ -4,22 +4,27 @@
 #include <QTreeWidget>
 #include <QMap>
 #include <QString>
+#include <pgdbaplugininterface.h>
+#include <pluginelement.h>
 
 class DDLGenTreeWidget : public QTreeWidget
 {    
     Q_OBJECT
 public:
-    DDLGenTreeWidget(QWidget *parent = Q_NULLPTR);
 
+    DDLGenTreeWidget(QWidget *parent = Q_NULLPTR);
+    void setPluginElement(PluginElement *value);
 protected slots:
 
     void doItemDoubleClicked(QTreeWidgetItem *item, int column);
 
 signals:
 
-    void executeItem(QString resource_name);
+    void executeItem(PluginElement *element, QString item);
 
 private:
+
+    PluginElement *element;
 
 };
 

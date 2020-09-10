@@ -126,6 +126,8 @@ public:
 
     int getSelectedConnectionIndex();
 
+    PGconn *getPostgresConnection();
+
     // Methods related to menu edit
     // All this methods will get info from the active editor
 
