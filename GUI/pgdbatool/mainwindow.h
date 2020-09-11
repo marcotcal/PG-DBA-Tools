@@ -96,7 +96,7 @@ private slots:
 
     void on_actionExplain_triggered();
     void executeModel(QString resource_name);
-    void executePlugin(PluginElement *element, QString item);
+    void executePlugin(PluginElement *element, int item);
     void on_actionPlanner_Method_Settings_triggered();
     void on_actionGenetic_Query_Optimization_Settings_triggered();
     void on_actionPallelism_Settings_triggered();

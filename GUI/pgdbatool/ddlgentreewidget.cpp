@@ -24,6 +24,6 @@ void DDLGenTreeWidget::setPluginElement(PluginElement *value)
 void DDLGenTreeWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column)
-    if (item->type() == 1)
-        emit executeItem(element, item->text(1));
+    if (item->type() != 0)
+        emit executeItem(element, item->type());
 }

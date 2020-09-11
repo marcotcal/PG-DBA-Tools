@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
-    connect(ui->ddl_generator_list, SIGNAL(executeItem(PluginElement*,QString)), this, SLOT(executePlugin(PluginElement*,QString)));
+    connect(ui->ddl_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
     connect(ui->sql_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
 }
 
@@ -103,7 +103,7 @@ bool MainWindow::loadPlugins()
 
             interface = qobject_cast<PGDBAPluginInterface *>(plugin);
             if (interface) {
-                interface_list["test"] =
+                interface_list[meta.toObject().value("Name").toString()] =
                         new PluginElement(interface, pluginLoader.metaData().value("MetaData"), this);
                 plugin_loaded = true;
             }
@@ -947,7 +947,7 @@ void MainWindow::executeModel(QString resource_name)
     }
 }
 
-void MainWindow::executePlugin(PluginElement *element, QString item)
+void MainWindow::executePlugin(PluginElement *element, int item)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     EditorItem *editor;

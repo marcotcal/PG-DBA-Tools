@@ -39,7 +39,7 @@ void DlgPlugins::on_bt_test_clicked()
         name = ui->plugin_table->item(row,0)->text();
         for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
             if(name == i.value()->getMeta().toObject().value("Name").toString())
-                i.value()->getInterface()->run(nullptr, "TEST_PLUGIN", editor);
+                i.value()->getInterface()->run(nullptr, 0, editor);
         }
     }
 }

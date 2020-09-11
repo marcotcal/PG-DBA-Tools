@@ -15,14 +15,28 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
     Q_INTERFACES(PGDBAPluginInterface)
 
 public:
+    enum {
+        DDL_TEST = 0,
+        DDL_CREATE_SCHEMA = 1000,
+        DDL_DROP_SCHEMA,
+        DDL_UPDATE_SEQUENCE,
+        DDL_RESET_SEQUENCE,
+        DDL_CREATE_TRIGGER,
+        DDL_DROP_TRIGGER,
+        DDL_ENABLE_TRIGGER,
+        DDL_DISABLE_TRIGGER
+    };
     DDLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
     void setTreeWidget(QTreeWidget *tree);
 
-    bool run(PGconn *connection, QString item_name, EditorItem *editor) override;
+    bool run(PGconn *connection, int item, EditorItem *editor) override;
 
 private:
+    QString error;
     QString file_name;
+    QString gen_create_schema(PGconn *connection, int offset);
+    QString gen_drop_schema(PGconn *connection, int offset);
 };
 
 #endif // DDLGENERATIONPLUGIN_H

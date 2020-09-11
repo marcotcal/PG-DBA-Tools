@@ -20,7 +20,7 @@ protected slots:
 
 signals:
 
-    void executeItem(PluginElement *element, QString item);
+    void executeItem(PluginElement *element, int item);
 
 private:
 

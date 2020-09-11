@@ -23,10 +23,12 @@ CONFIG(release, debug|release) {
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
-        ddlgenerationplugin.cpp
+        ddlgenerationplugin.cpp \
+    dlgparametersschema.cpp
 
 HEADERS += \
-        ddlgenerationplugin.h
+        ddlgenerationplugin.h \
+    dlgparametersschema.h
 DISTFILES += pgdba_ddlgenplugin.json 
 
 # Include postgres lib
@@ -42,3 +44,6 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+FORMS += \
+    dlgparametersschema.ui
