@@ -148,7 +148,22 @@ QString DDLGenerationPlugin::gen_drop_schema(PGconn *connection, int offset)
             "FROM information_schema.schemata "
             "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
     QString result = "";
+    DlgParametersSchema dlg(connection);
+    QString schema_name;
+    QString schema_owner;
     int tuples;
+
+    if (!dlg.exec())
+        return "";
+
+    schema_name = dlg.schemaName();
+    schema_owner = dlg.schemaOwner();
+
+    if (!schema_name.isNull())
+        sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
+
+    if (!schema_owner.isNull())
+        sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
 
     if (PQstatus(connection) == CONNECTION_OK) {
 
