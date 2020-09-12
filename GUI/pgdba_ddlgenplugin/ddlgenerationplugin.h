@@ -37,6 +37,12 @@ private:
     QString file_name;
     QString gen_create_schema(PGconn *connection, int offset);
     QString gen_drop_schema(PGconn *connection, int offset);
+    QString gen_update_sequece(PGconn *connection, int offset);
+    QString gen_reset_sequece(PGconn *connection, int offset);
+    QString gen_create_trigger(PGconn *connection, int offset);
+    QString gen_drop_trigger(PGconn *connection, int offset);
+    QString gen_disable_trigger(PGconn *connection, int offset);
+    QString gen_enable_trigger(PGconn *connection, int offset);
 };
 
 #endif // DDLGENERATIONPLUGIN_H

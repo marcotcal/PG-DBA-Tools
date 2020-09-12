@@ -194,6 +194,83 @@ QString DDLGenerationPlugin::gen_drop_schema(PGconn *connection, int offset)
     return result;
 }
 
+QString DDLGenerationPlugin::gen_update_sequece(PGconn *connection, int offset)
+{
+
+}
+
+QString DDLGenerationPlugin::gen_reset_sequece(PGconn *connection, int offset)
+{
+    QString sql =
+            "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
+            "FROM information_schema.sequences ";
+    QString result = "";
+    DlgParametersSchema dlg(connection);
+    QString schema_name;
+    QString schema_owner;
+    int tuples;
+
+    if (!dlg.exec())
+        return "";
+
+    schema_name = dlg.schemaName();
+    schema_owner = dlg.schemaOwner();
+
+    if (!schema_name.isNull())
+        sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
+
+    if (!schema_owner.isNull())
+        sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+
+        //PGresult *res =  PQexecParams(connection, sql_list_fields, 2, NULL, params, NULL, NULL, 0);
+
+        PGresult *res =  PQexec(connection, sql.toStdString().c_str());
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+
+            error = PQerrorMessage(connection);
+            PQclear(res);
+
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++) {
+                if (i > 0)
+                    result += QString(" ").repeated(offset);
+                result += QString::fromStdString(PQgetvalue(res, i, 0));
+            }
+
+            PQclear(res);
+        }
+    }
+
+    return result;
+}
+
+QString DDLGenerationPlugin::gen_create_trigger(PGconn *connection, int offset)
+{
+
+}
+
+QString DDLGenerationPlugin::gen_drop_trigger(PGconn *connection, int offset)
+{
+
+}
+
+QString DDLGenerationPlugin::gen_disable_trigger(PGconn *connection, int offset)
+{
+
+}
+
+QString DDLGenerationPlugin::gen_enable_trigger(PGconn *connection, int offset)
+{
+
+}
+
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(pgdba_ddlgenplugin, DDLGenerationPlugin)

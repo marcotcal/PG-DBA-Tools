@@ -20,15 +20,22 @@ CONFIG(release, debug|release) {
     DESTDIR = ../build/release/plugins
 }
 
+OBJECTS_DIR = $$DESTDIR/.obj
+MOC_DIR = $$DESTDIR/.moc
+RCC_DIR = $$DESTDIR/.qrc
+UI_DIR = $$DESTDIR/.ui
+
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         ddlgenerationplugin.cpp \
-    dlgparametersschema.cpp
+    dlgparametersschema.cpp \
+    dlgparameterobject.cpp
 
 HEADERS += \
         ddlgenerationplugin.h \
-    dlgparametersschema.h
+    dlgparametersschema.h \
+    dlgparameterobject.h
 DISTFILES += pgdba_ddlgenplugin.json 
 
 # Include postgres lib
@@ -46,4 +53,5 @@ unix {
 }
 
 FORMS += \
-    dlgparametersschema.ui
+    dlgparametersschema.ui \
+    dlgparameterobject.ui
