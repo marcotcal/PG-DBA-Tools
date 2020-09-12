@@ -19,12 +19,12 @@ public:
     QString schemaName();
     QString schemaOwner();
 
+    void setUserList(QStringList values);
+    void setSchemas(QStringList values);
 private:
     Ui::DlgParametersSchema *ui;
     PGconn *connection;
 
-    QStringList schemas();
-    QStringList users();
 };
 
 #endif // DLGPARAMETERSSCHEMA_H

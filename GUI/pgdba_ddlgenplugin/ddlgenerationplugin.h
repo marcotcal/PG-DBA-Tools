@@ -35,6 +35,11 @@ public:
 private:
     QString error;
     QString file_name;
+
+    QStringList schemas(PGconn *connection);
+    QStringList users(PGconn *connection);
+    QStringList sequences(PGconn *connection);
+
     QString gen_create_schema(PGconn *connection, int offset);
     QString gen_drop_schema(PGconn *connection, int offset);
     QString gen_update_sequece(PGconn *connection, int offset);

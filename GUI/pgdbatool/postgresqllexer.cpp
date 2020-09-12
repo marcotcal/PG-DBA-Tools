@@ -205,7 +205,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "distinct disable domain drop dynamic each else elsif end "
             "end-exec enable equals escape every except exception exec "
             "execute external exists false fetch first for "
-            "foreign found from free full function general get "
+            "foreign found from free full function get "
             "global go goto grant group grouping having host "
             "hour identity if ignore immediate in indicator "
             "initialize initially inner inout input insert int "
@@ -235,7 +235,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "view when whenever where with without work write "
             "year zone replace do index simple setof cost volatile "
             "raise notice debug loop owner immutable ilike search_path "
-            "inherits oids tablespace type returning nothing";
+            "inherits oids tablespace type returning nothing restart";
 
     if (set == 3)
         return

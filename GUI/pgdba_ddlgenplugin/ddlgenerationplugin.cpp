@@ -1,5 +1,7 @@
 #include "ddlgenerationplugin.h"
 #include <dlgparametersschema.h>
+#include <dlgparameterobject.h>
+
 
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
@@ -72,6 +74,9 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
         break;
     case DDL_UPDATE_SEQUENCE:
     case DDL_RESET_SEQUENCE:
+        editor->getCursorPosition(&line, &index);
+        editor->insertAt(gen_reset_sequece(connection, index), line, index);
+        break;
     case DDL_CREATE_TRIGGER:
     case DDL_DROP_TRIGGER:
     case DDL_ENABLE_TRIGGER:
@@ -81,6 +86,93 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
     }
 
     return true;
+
+}
+
+QStringList DDLGenerationPlugin::schemas(PGconn *connection)
+{
+    const char *sql =
+        "SELECT schema_name "
+        "FROM information_schema.schemata "
+        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
+
+    QStringList list;
+
+    list << "";
+
+    int tuples;
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+        PGresult *res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++)
+                list << QString::fromStdString(PQgetvalue(res, i, 0));
+
+            PQclear(res);
+
+            return list;
+
+        }
+    }
+
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::users(PGconn *connection)
+{
+    const char *sql =
+            "SELECT usename AS role_name, "
+            "  CASE "
+            "     WHEN usesuper AND usecreatedb THEN "
+            "       CAST('superuser, create database' AS pg_catalog.text) "
+            "     WHEN usesuper THEN "
+            "        CAST('superuser' AS pg_catalog.text) "
+            "     WHEN usecreatedb THEN "
+            "        CAST('create database' AS pg_catalog.text) "
+            "     ELSE "
+            "        CAST('' AS pg_catalog.text) "
+            "  END role_attributes "
+            "FROM pg_catalog.pg_user "
+            "ORDER BY role_name desc ";
+
+    QStringList list;
+
+    list << "";
+
+    int tuples;
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+        PGresult *res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++)
+                list << QString::fromStdString(PQgetvalue(res, i, 0));
+
+            PQclear(res);
+
+            return list;
+
+        }
+    }
+
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::sequences(PGconn *connection)
+{
 
 }
 
@@ -97,16 +189,18 @@ QString DDLGenerationPlugin::gen_create_schema(PGconn *connection, int offset)
     QString result = "";
     int tuples;
 
+    dlg.setSchemas(schemas(connection));
+    dlg.setUserList(users(connection));
     if (!dlg.exec())
         return "";
 
     schema_name = dlg.schemaName();
     schema_owner = dlg.schemaOwner();
 
-    if (!schema_name.isNull())
+    if (!schema_name.isEmpty())
         sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
 
-    if (!schema_owner.isNull())
+    if (!schema_owner.isEmpty())
         sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
 
     if (PQstatus(connection) == CONNECTION_OK) {
@@ -153,16 +247,18 @@ QString DDLGenerationPlugin::gen_drop_schema(PGconn *connection, int offset)
     QString schema_owner;
     int tuples;
 
+    dlg.setSchemas(schemas(connection));
+    dlg.setUserList(users(connection));
     if (!dlg.exec())
         return "";
 
     schema_name = dlg.schemaName();
     schema_owner = dlg.schemaOwner();
 
-    if (!schema_name.isNull())
+    if (!schema_name.isEmpty())
         sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
 
-    if (!schema_owner.isNull())
+    if (!schema_owner.isEmpty())
         sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
 
     if (PQstatus(connection) == CONNECTION_OK) {
@@ -202,25 +298,29 @@ QString DDLGenerationPlugin::gen_update_sequece(PGconn *connection, int offset)
 QString DDLGenerationPlugin::gen_reset_sequece(PGconn *connection, int offset)
 {
     QString sql =
-            "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
-            "FROM information_schema.sequences ";
+            "SELECT 'ALTER SEQUENCE ' || schemaname || '.' || sequencename || E' RESTART;\n' "
+            "FROM pg_catalog.pg_sequences ";
     QString result = "";
-    DlgParametersSchema dlg(connection);
+    DlgParameterObject dlg(connection);
     QString schema_name;
-    QString schema_owner;
+    QString object_owner;
     int tuples;
+
+    dlg.setSchemas(schemas(connection));
+    dlg.setUserList(users(connection));
+    dlg.setLabel("Sequence");
 
     if (!dlg.exec())
         return "";
 
     schema_name = dlg.schemaName();
-    schema_owner = dlg.schemaOwner();
+    object_owner = dlg.objectOwner();
 
-    if (!schema_name.isNull())
+    if (!schema_name.isEmpty())
         sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
 
-    if (!schema_owner.isNull())
-        sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
+    if (!object_owner.isEmpty())
+        sql += QString("AND schema_owner ILIKE '%%1%'").arg(object_owner);
 
     if (PQstatus(connection) == CONNECTION_OK) {
 
