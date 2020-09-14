@@ -41,5 +41,5 @@ void DlgParameterObject::setSchemas(QStringList values)
 
 void DlgParameterObject::setObjecs(QStringList values)
 {
-    ui->object_name->addItems(value);
+    ui->object_name->addItems(values);
 }
