@@ -18,14 +18,22 @@ public:
 
     QString schemaName();
     QString objectOwner();
+    QString objectName();
 
     void setLabel(QString value);
     void setUserList(QStringList values);
     void setSchemas(QStringList values);
     void setObjecs(QStringList values);
+private slots:
+    void on_schema_name_currentIndexChanged(int index);
+
+    void on_object_owner_currentIndexChanged(int index);
+
 private:
     Ui::DlgParameterObject *ui;
     PGconn *connection;
+
+    void objectsList();
 };
 
 #endif // DLGPARAMETEROBJECT_H

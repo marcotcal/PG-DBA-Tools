@@ -38,7 +38,6 @@ private:
 
     QStringList schemas(PGconn *connection);
     QStringList users(PGconn *connection);
-    QStringList sequences(PGconn *connection);
 
     QString gen_create_schema(PGconn *connection, int offset);
     QString gen_drop_schema(PGconn *connection, int offset);

@@ -171,11 +171,6 @@ QStringList DDLGenerationPlugin::users(PGconn *connection)
     return QStringList();
 }
 
-QStringList DDLGenerationPlugin::sequences(PGconn *connection)
-{
-
-}
-
 QString DDLGenerationPlugin::gen_create_schema(PGconn *connection, int offset)
 {
     DlgParametersSchema dlg(connection);
@@ -191,6 +186,7 @@ QString DDLGenerationPlugin::gen_create_schema(PGconn *connection, int offset)
 
     dlg.setSchemas(schemas(connection));
     dlg.setUserList(users(connection));
+
     if (!dlg.exec())
         return "";
 
@@ -263,8 +259,6 @@ QString DDLGenerationPlugin::gen_drop_schema(PGconn *connection, int offset)
 
     if (PQstatus(connection) == CONNECTION_OK) {
 
-        //PGresult *res =  PQexecParams(connection, sql_list_fields, 2, NULL, params, NULL, NULL, 0);
-
         PGresult *res =  PQexec(connection, sql.toStdString().c_str());
 
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
@@ -297,9 +291,29 @@ QString DDLGenerationPlugin::gen_update_sequece(PGconn *connection, int offset)
 
 QString DDLGenerationPlugin::gen_reset_sequece(PGconn *connection, int offset)
 {
+    /* This query will work only with versions greater than 10
     QString sql =
             "SELECT 'ALTER SEQUENCE ' || schemaname || '.' || sequencename || E' RESTART;\n' "
             "FROM pg_catalog.pg_sequences ";
+    */
+
+    QString sql =
+        "SELECT 'ALTER SEQUENCE ' || n.nspname || '.' || relname || E' RESTART;\n' "
+        "FROM pg_class c, "
+        "     pg_user u, "
+        "     pg_namespace n "
+        "WHERE "
+        "    c.relowner = u.usesysid "
+        "    AND c.relkind = 'S' "
+        "    AND n.oid = relnamespace "
+        "    AND relnamespace IN "
+        "        ( "
+        "            SELECT oid "
+        "                FROM pg_namespace "
+        "             WHERE "
+        "                nspname NOT LIKE 'pg_%' "
+        "                AND nspname != 'information_schema' "
+        "        ) ";
     QString result = "";
     DlgParameterObject dlg(connection);
     QString schema_name;
@@ -317,14 +331,12 @@ QString DDLGenerationPlugin::gen_reset_sequece(PGconn *connection, int offset)
     object_owner = dlg.objectOwner();
 
     if (!schema_name.isEmpty())
-        sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
+        sql += QString("AND n.nspname ILIKE '%%1%'").arg(schema_name);
 
     if (!object_owner.isEmpty())
-        sql += QString("AND schema_owner ILIKE '%%1%'").arg(object_owner);
+        sql += QString("AND u.usename ILIKE '%%1%'").arg(object_owner);
 
     if (PQstatus(connection) == CONNECTION_OK) {
-
-        //PGresult *res =  PQexecParams(connection, sql_list_fields, 2, NULL, params, NULL, NULL, 0);
 
         PGresult *res =  PQexec(connection, sql.toStdString().c_str());
 
