@@ -852,7 +852,7 @@ void SqlTool::databaseConnect() {
 
         ui->schema_list->clear();
 
-        schemas = connections.getConnections().at(sel_connection)->getSchemaList(database_name);
+        schemas = connections.getConnections().at(connection_index)->getSchemaList(database_name);
 
         ui->schema_list->addItems(schemas);
         ui->schema_list->setEnabled(true);

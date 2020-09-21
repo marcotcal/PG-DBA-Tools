@@ -30,12 +30,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         ddlgenerationplugin.cpp \
     dlgparametersschema.cpp \
-    dlgparameterobject.cpp
+    dlgparametersequence.cpp
 
 HEADERS += \
         ddlgenerationplugin.h \
     dlgparametersschema.h \
-    dlgparameterobject.h
+    dlgparametersequence.h
 DISTFILES += pgdba_ddlgenplugin.json 
 
 # Include postgres lib
@@ -54,4 +54,4 @@ unix {
 
 FORMS += \
     dlgparametersschema.ui \
-    dlgparameterobject.ui
+    dlgparametersequence.ui
