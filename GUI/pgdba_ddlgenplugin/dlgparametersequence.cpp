@@ -148,19 +148,14 @@ QString DlgParameterSequence::gen_reset_sequece(PGconn *connection, int offset)
     QString result = "";
     int tuples;
 
-    dlg.setLabel("Sequence");
-
-    if (!dlg.exec())
+    if (!exec())
         return "";
 
-    schema_name = dlg.schemaName();
-    object_owner = dlg.objectOwner();
+    if (!ui->schema_name->currentText().isEmpty())
+        sql += QString("AND n.nspname ILIKE '%%1%'").arg(ui->schema_name->currentText());
 
-    if (!schema_name.isEmpty())
-        sql += QString("AND n.nspname ILIKE '%%1%'").arg(schema_name);
-
-    if (!object_owner.isEmpty())
-        sql += QString("AND u.usename ILIKE '%%1%'").arg(object_owner);
+    if (!ui->object_owner->currentText().isEmpty())
+        sql += QString("AND u.usename ILIKE '%%1%'").arg(ui->object_owner->currentText());
 
     if (PQstatus(connection) == CONNECTION_OK) {
 

@@ -17,13 +17,6 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Shema Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Owner</string>
@@ -31,14 +24,21 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="schema_name">
+      <widget class="QComboBox" name="schema_owner">
        <property name="editable">
-        <bool>true</bool>
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Shema Name</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="schema_owner">
+      <widget class="QComboBox" name="schema_name">
        <property name="editable">
         <bool>true</bool>
        </property>

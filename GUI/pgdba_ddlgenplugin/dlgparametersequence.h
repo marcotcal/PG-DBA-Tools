@@ -23,14 +23,19 @@ public:
     void setUserList(QStringList values);
     void setSchemas(QStringList values);
     void setObjecs(QStringList values);
+
+    QString gen_reset_sequece(PGconn *connection, int offset);
+    QString gen_update_sequece(PGconn *connection, int offset);
+
 private slots:
     void on_schema_name_currentIndexChanged(int index);
-
     void on_object_owner_currentIndexChanged(int index);
 
 private:
     Ui::DlgParameterSequence *ui;
     PGconn *connection;
+
+    QString error;
 
     void objectsList();
 };

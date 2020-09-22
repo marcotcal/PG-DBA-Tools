@@ -84,7 +84,7 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
     case DDL_UPDATE_SEQUENCE:
     case DDL_RESET_SEQUENCE:
         editor->getCursorPosition(&line, &index);
-        editor->insertAt(gen_reset_sequece(connection, index), line, index);
+        editor->insertAt(dlg_sequence.gen_reset_sequece(connection, index), line, index);
         break;
     case DDL_CREATE_TRIGGER:
     case DDL_DROP_TRIGGER:

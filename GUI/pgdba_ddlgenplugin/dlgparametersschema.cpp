@@ -37,11 +37,11 @@ QString DlgParametersSchema::gen_create_schema(PGconn *connection, int offset)
     if (!exec())
         return "";
 
+    if (!ui->schema_owner->currentText().isEmpty())
+        sql += QString("AND schema_owner = '%1'").arg(ui->schema_owner->currentText());
+
     if (!ui->schema_name->currentText().isEmpty())
         sql += QString("AND schema_name ILIKE '%%1%'").arg(ui->schema_name->currentText());
-
-    if (!ui->schema_owner->currentText().isEmpty())
-        sql += QString("AND schema_owner ILIKE '%%1%'").arg(ui->schema_owner->currentText());
 
     if (PQstatus(connection) == CONNECTION_OK) {
 
