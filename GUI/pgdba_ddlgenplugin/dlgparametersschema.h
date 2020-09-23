@@ -16,16 +16,24 @@ public:
     explicit DlgParametersSchema(PGconn *connection, QWidget *parent = 0);
     ~DlgParametersSchema();
 
+    void setOffset(int value);
     void setUserList(QStringList values);
     void setSchemas(QStringList values);
 
-    QString gen_create_schema(PGconn *connection, int offset);
-    QString gen_drop_schema(PGconn *connection, int offset);
+    QString gen_create_schema();
+    QString gen_drop_schema();
+private slots:
+    void on_schema_owner_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::DlgParametersSchema *ui;
     PGconn *connection;
-
     QString error;
+    QStringList names;
+    QStringList create_schemas;
+    QStringList drop_schemas;
+    int offset;
+    void readSchemas();
 
 };
 

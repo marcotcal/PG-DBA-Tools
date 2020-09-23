@@ -67,6 +67,10 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
     dlg_sequence.setSchemas(schemas(connection));
     dlg_sequence.setUserList(users(connection));
 
+    editor->getCursorPosition(&line, &index);
+
+    dlg_schema.setOffset(index);
+
     switch(item) {
     case DDL_TEST:
         editor->append("-- Plugin Test.\n");
@@ -74,12 +78,14 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
         editor->append("-- End.\n");
         break;
     case DDL_CREATE_SCHEMA:
-        editor->getCursorPosition(&line, &index);
-        editor->insertAt(dlg_schema.gen_create_schema(connection, index), line, index);
+        if (dlg_schema.exec()) {
+            editor->insertAt(dlg_schema.gen_create_schema(), line, index);
+        }
         break;
     case DDL_DROP_SCHEMA:
-        editor->getCursorPosition(&line, &index);
-        editor->insertAt(dlg_schema.gen_drop_schema(connection, index), line, index);
+        if (dlg_schema.exec()) {
+            editor->insertAt(dlg_schema.gen_create_schema(), line, index);
+        }
         break;
     case DDL_UPDATE_SEQUENCE:
     case DDL_RESET_SEQUENCE:
