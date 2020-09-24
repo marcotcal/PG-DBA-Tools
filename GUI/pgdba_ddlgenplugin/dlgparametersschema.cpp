@@ -1,12 +1,14 @@
 #include "dlgparametersschema.h"
 #include "ui_dlgparametersschema.h"
 
-DlgParametersSchema::DlgParametersSchema(PGconn *connection, QWidget *parent) :
+DlgParametersSchema::DlgParametersSchema(PGconn *connection, EditorItem *editor, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgParametersSchema),
-    connection(connection)
+    ParameterBase(connection, editor),
+    ui(new Ui::DlgParametersSchema)
 {
     ui->setupUi(this);
+    ui->schema_owner->addItems(users());
+    //ui->schema_name->addItems(schemas(""));
 }
 
 DlgParametersSchema::~DlgParametersSchema()
@@ -14,23 +16,17 @@ DlgParametersSchema::~DlgParametersSchema()
     delete ui;
 }
 
-void DlgParametersSchema::setOffset(int value)
-{
-    offset = value;
-}
-
-void DlgParametersSchema::setUserList(QStringList values)
-{
-    ui->schema_owner->addItems(values);
-}
-
-void DlgParametersSchema::setSchemas(QStringList values)
-{
-     ui->schema_name->addItems(values);
-}
-
 QString DlgParametersSchema::gen_create_schema()
 {
+    // test code
+    const char *params[10];
+    const char *sql =
+            "SELECT schema_name, schema_owner "
+            "FROM information_schema.schemata "
+            "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
+
+    executeSQL(sql, nullptr, 0);
+
     return create_schemas.join("\n");
 }
 
@@ -41,7 +37,8 @@ QString DlgParametersSchema::gen_drop_schema()
 
 void DlgParametersSchema::on_schema_owner_currentIndexChanged(const QString &arg1)
 {
-    readSchemas();
+    ui->schema_name->clear();
+    ui->schema_name->addItems(schemas(arg1));
 }
 
 void DlgParametersSchema::readSchemas()
@@ -74,19 +71,13 @@ void DlgParametersSchema::readSchemas()
 
             tuples = PQntuples(res);
 
-            names.clear();
             create_schemas.clear();
             drop_schemas.clear();
-            ui->schema_name->clear();
-
-            names << "";
 
             for (int i = 0; i < tuples; i++) {
 
                 name = QString::fromStdString(PQgetvalue(res, i, 0));
                 owner = QString::fromStdString(PQgetvalue(res, i, 1));
-
-                names << name;
 
                 create_schemas  << (i > 0 ? QString(" ").repeated(offset) : "") + "CREATE SCHEMA " + name +
                                    " AUTHORIZATION " + owner + ";";
@@ -94,9 +85,18 @@ void DlgParametersSchema::readSchemas()
                                        " AUTHORIZATION " + owner + ";";
             }
 
-            ui->schema_name->addItems(names);
-
             PQclear(res);
         }
     }
+}
+
+void DlgParametersSchema::readRows()
+{
+    QString schema;
+    QString owner;
+    for (int i = 0; i < tuples; i++) {
+        schema = QString::fromStdString(PQgetvalue(resp, i, 0));
+        owner = QString::fromStdString(PQgetvalue(resp, i, 1));
+    }
+
 }

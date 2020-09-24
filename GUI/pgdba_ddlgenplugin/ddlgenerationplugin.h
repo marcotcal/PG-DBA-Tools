@@ -36,9 +36,6 @@ private:
 
     QString file_name;
 
-    QStringList schemas(PGconn *connection);
-    QStringList users(PGconn *connection);
-
 };
 
 #endif // DDLGENERATIONPLUGIN_H

@@ -3,33 +3,31 @@
 
 #include <QDialog>
 #include <libpq-fe.h>
+#include <parameterbase.h>
 
 namespace Ui {
 class DlgParametersSchema;
 }
 
-class DlgParametersSchema : public QDialog
+class DlgParametersSchema : public QDialog, ParameterBase
 {
     Q_OBJECT
 
 public:
-    explicit DlgParametersSchema(PGconn *connection, QWidget *parent = 0);
+    explicit DlgParametersSchema(PGconn *connection, EditorItem *editor, QWidget *parent = 0);
     ~DlgParametersSchema();
-
-    void setOffset(int value);
-    void setUserList(QStringList values);
-    void setSchemas(QStringList values);
 
     QString gen_create_schema();
     QString gen_drop_schema();
 private slots:
     void on_schema_owner_currentIndexChanged(const QString &arg1);
 
+protected:
+    void readRows() override;
+
 private:
     Ui::DlgParametersSchema *ui;
-    PGconn *connection;
-    QString error;
-    QStringList names;
+
     QStringList create_schemas;
     QStringList drop_schemas;
     int offset;
