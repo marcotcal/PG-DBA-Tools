@@ -1,13 +1,13 @@
 #include "dlgparametersequence.h"
 #include "ui_dlgparametersequence.h"
 
-DlgParameterSequence::DlgParameterSequence(PGconn *connection, QWidget *parent) :
+DlgParameterSequence::DlgParameterSequence(PGconn *connection, EditorItem *editor, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgParameterSequence),
-    connection(connection)
+    ParameterBase(connection, editor),
+    ui(new Ui::DlgParameterSequence)
 {
     ui->setupUi(this);
-    objectsList();
+    ui->sequence_owner->addItems(users());
 }
 
 DlgParameterSequence::~DlgParameterSequence()
@@ -15,120 +15,17 @@ DlgParameterSequence::~DlgParameterSequence()
     delete ui;
 }
 
-QString DlgParameterSequence::schemaName()
+QString DlgParameterSequence::gen_reset_sequece()
 {
-    return ui->schema_name->currentText();
-}
-
-QString DlgParameterSequence::objectOwner()
-{
-    return ui->object_owner->currentText();
-}
-
-void DlgParameterSequence::setUserList(QStringList values)
-{
-    ui->object_owner->addItems(values);
-}
-
-void DlgParameterSequence::setSchemas(QStringList values)
-{
-    ui->schema_name->addItems(values);
-}
-
-void DlgParameterSequence::setObjecs(QStringList values)
-{
-    ui->object_name->addItems(values);
-}
-
-void DlgParameterSequence::objectsList()
-{
-    /* it will work only after version 10
-    QString sql =
-        "SELECT sequencename "
-        "FROM pg_catalog.pg_sequences ";
-    */
-
-    QString sql =
-        "SELECT relname, u.usename, n.nspname "
-        "FROM pg_class c, "
-        "     pg_user u, "
-        "     pg_namespace n "
-        "WHERE "
-        "    c.relowner = u.usesysid "
-        "    AND c.relkind = 'S' "
-        "    AND n.oid = relnamespace "
-        "    AND relnamespace IN "
-        "        ( "
-        "            SELECT oid "
-        "                FROM pg_namespace "
-        "             WHERE "
-        "                nspname NOT LIKE 'pg_%' "
-        "                AND nspname != 'information_schema' "
-        "        ) ";
-
-    QStringList list;
-    QString schema_name;
-    QString object_owner;
-
-    schema_name = schemaName();
-    object_owner = objectOwner();
-
-    ui->object_name->clear();
-
-    if (!schema_name.isEmpty()) {
-        sql += QString("AND n.nspname = '%1' ").arg(schema_name);
-    }
-
-    if (!object_owner.isEmpty()) {
-        sql += QString("AND u.usename = '%1' ").arg(object_owner);
-    }
-
-    list << "";
-
-    int tuples;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexec(connection, sql.toStdString().c_str());
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-            PQclear(res);
-
-            ui->object_name->addItems(list);
-        }
-    }
-
-    return;
-}
-
-void DlgParameterSequence::on_schema_name_currentIndexChanged(int index)
-{
-    objectsList();
-}
-
-void DlgParameterSequence::on_object_owner_currentIndexChanged(int index)
-{
-    objectsList();
-}
-
-QString DlgParameterSequence::gen_reset_sequece(PGconn *connection, int offset)
-{
+    QString reset_sequence = "";
+    const char *params[3];
     /* This query will work only with versions greater than 10
-    QString sql =
+    const char *sql =
             "SELECT 'ALTER SEQUENCE ' || schemaname || '.' || sequencename || E' RESTART;\n' "
             "FROM pg_catalog.pg_sequences ";
     */
 
-    QString sql =
+    const char *sql =
         "SELECT 'ALTER SEQUENCE ' || n.nspname || '.' || relname || E' RESTART;\n' "
         "FROM pg_class c, "
         "     pg_user u, "
@@ -144,49 +41,143 @@ QString DlgParameterSequence::gen_reset_sequece(PGconn *connection, int offset)
         "             WHERE "
         "                nspname NOT LIKE 'pg_%' "
         "                AND nspname != 'information_schema' "
-        "        ) ";
-    QString result = "";
-    int tuples;
+        "                AND nspname ILIKE $1 || '%' "
+        "        ) "
+        "    AND usename ILIKE $2 || '%' "
+        "    AND relname ILIKE $3 || '%' ";
 
-    if (!exec())
-        return "";
+    params[0] = ui->schema_name->currentText().toStdString().c_str();
+    params[1] = ui->sequence_owner->currentText().toStdString().c_str();
+    params[2] = ui->sequence_name->currentText().toStdString().c_str();
 
-    if (!ui->schema_name->currentText().isEmpty())
-        sql += QString("AND n.nspname ILIKE '%%1%'").arg(ui->schema_name->currentText());
+    executeSQL(sql, params, 3);
 
-    if (!ui->object_owner->currentText().isEmpty())
-        sql += QString("AND u.usename ILIKE '%%1%'").arg(ui->object_owner->currentText());
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexec(connection, sql.toStdString().c_str());
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-
-            error = PQerrorMessage(connection);
-            PQclear(res);
-
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++) {
-                if (i > 0)
-                    result += QString(" ").repeated(offset);
-                result += QString::fromStdString(PQgetvalue(res, i, 0));
-            }
-
-            PQclear(res);
-        }
+    for (int i = 0; i < tuples; i++) {
+        reset_sequence += (i > 0 ? QString(" ").repeated(index) : "") +
+                QString::fromStdString(PQgetvalue(query_result, i, 0));
     }
 
-    return result;
+    clearResult();
+
+    return reset_sequence;
 
 }
 
-QString DlgParameterSequence::gen_update_sequece(PGconn *connection, int offset)
+QString DlgParameterSequence::gen_update_sequece()
 {
+    const char *params[3];
+    QString update_sequence;
+    const char *sql =
+        "DO "
+        "$$ "
+        "DECLARE "
+        "    seq record; "
+        "    val integer; "
+        "BEGIN "
+        "    DROP TABLE IF EXISTS sequences; "
+        "    CREATE TEMPORARY TABLE sequences ON COMMIT DROP AS "
+        "        SELECT DISTINCT "
+        "            d.refobjid::regclass AS table_name, "
+        "            c.relname, "
+        "            n.nspname, "
+        "            a.attname AS field_name, "
+        "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) AS sequence_name, "
+        "            0 AS value_to_update "
+        "        FROM "
+        "            pg_depend d "
+        "            INNER JOIN pg_class c ON c.oid = d.refobjid "
+        "            INNER JOIN pg_user u ON c.relowner = u.usesysid "
+        "            INNER JOIN pg_namespace n ON c.relnamespace = n.oid "
+        "            INNER JOIN pg_attribute a ON a.attrelid = d.refobjid AND a.attnum = d.refobjsubid "
+        "        WHERE "
+        "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) IS NOT NULL "
+        "            AND c.relname ILIKE $1 || '%' "
+        "            AND d.refobjid::regclass ILIKE $2 || '%' "
+        "            AND u.usename ILIKE $3 || '%' "
+        "    FOR seq IN "
+        "        SELECT *  FROM sequences "
+        "    LOOP "
+        "        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.table_name INTO val; "
+        "        UPDATE sequences SET "
+        "            value_to_update = val "
+        "        WHERE table_name = seq.table_name AND field_name = seq.field_name;  "
+        "    END LOOP;  "
+        "END; "
+        "$$; "
+        "SELECT "
+        "    CASE "
+        "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n'  "
+        "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n'  "
+        "    END  "
+        "FROM sequences;  ";
+
+    params[0] = ui->schema_name->currentText().toStdString().c_str();
+    params[1] = ui->sequence_owner->currentText().toStdString().c_str();
+    params[2] = ui->sequence_name->currentText().toStdString().c_str();
+
+    executeSQL(sql, params, 3);
+
+    for (int i = 0; i < tuples; i++) {
+        update_sequence += (i > 0 ? QString(" ").repeated(index) : "") +
+                QString::fromStdString(PQgetvalue(query_result, i, 0));
+    }
+
+    clearResult();
+
+    return update_sequence;
 
 }
 
+void DlgParameterSequence::on_schema_name_currentIndexChanged(const QString &arg1)
+{
+    ui->sequence_name->clear();
+    ui->sequence_name->addItems(sequences(ui->sequence_owner->currentText(), arg1));
+}
+
+void DlgParameterSequence::on_sequence_owner_currentIndexChanged(const QString &arg1)
+{
+    ui->schema_name->clear();
+    ui->schema_name->addItems(schemas(arg1));
+}
+
+QStringList DlgParameterSequence::sequences(QString owner, QString schema_name)
+{
+    const char *params[2];
+    const char *sql =
+        "SELECT relname "
+        "FROM pg_class c, "
+        "     pg_user u, "
+        "     pg_namespace n "
+        "WHERE "
+        "    c.relowner = u.usesysid "
+        "    AND c.relkind = 'S' "
+        "    AND n.oid = relnamespace "
+        "    AND relnamespace IN "
+        "        ( "
+        "            SELECT oid "
+        "                FROM pg_namespace "
+        "             WHERE "
+        "                nspname NOT LIKE 'pg_%' "
+        "                AND nspname != 'information_schema' "
+        "                AND nspname ILIKE $1 || '%' "
+        "        ) "
+        "    AND usename ILIKE $2 || '%' ";
+    QStringList list;
+
+    list << "";
+
+    params[0] = schema_name.toStdString().c_str();
+    params[1] = owner.toStdString().c_str();
+
+    if(executeSQL(sql, params, 2)) {
+
+        for (int i = 0; i < tuples; i++) {
+            list << QString::fromStdString(PQgetvalue(query_result, i, 0));
+        }
+
+        clearResult();
+
+    }
+
+    return list;
+}

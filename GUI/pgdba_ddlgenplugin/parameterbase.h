@@ -18,12 +18,12 @@ protected:
     int line;
     int index;
     int tuples;
-    PGresult *resp;
+    PGresult *query_result;
 
     QStringList schemas(QString owner);
     QStringList users();
-    void executeSQL(const char *sql, const char *params[], int num_params);
-    virtual void readRows() = 0;
+    bool executeSQL(const char *sql, const char *params[], int num_params);
+    void clearResult();
 
 };
 

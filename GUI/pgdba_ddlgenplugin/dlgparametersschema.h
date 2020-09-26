@@ -22,16 +22,8 @@ public:
 private slots:
     void on_schema_owner_currentIndexChanged(const QString &arg1);
 
-protected:
-    void readRows() override;
-
 private:
     Ui::DlgParametersSchema *ui;
-
-    QStringList create_schemas;
-    QStringList drop_schemas;
-    int offset;
-    void readSchemas();
 
 };
 

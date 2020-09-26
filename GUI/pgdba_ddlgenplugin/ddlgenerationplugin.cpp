@@ -74,13 +74,14 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
         break;
     case DDL_DROP_SCHEMA:
         if (dlg_schema.exec()) {
-            editor->insertAt(dlg_schema.gen_create_schema(), line, index);
+            editor->insertAt(dlg_schema.gen_drop_schema(), line, index);
         }
         break;
     case DDL_UPDATE_SEQUENCE:
     case DDL_RESET_SEQUENCE:
-        editor->getCursorPosition(&line, &index);
-        editor->insertAt(dlg_sequence.gen_reset_sequece(connection, index), line, index);
+        if (dlg_sequence.exec()) {
+            editor->insertAt(dlg_sequence.gen_reset_sequece(), line, index);
+        }
         break;
     case DDL_CREATE_TRIGGER:
     case DDL_DROP_TRIGGER:

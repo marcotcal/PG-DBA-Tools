@@ -1,4 +1,5 @@
 #include "parameterbase.h"
+#include <QMessageBox>
 
 ParameterBase::ParameterBase(PGconn *connection, EditorItem *editor) :
     connection(connection),
@@ -98,26 +99,39 @@ QStringList ParameterBase::users()
     return QStringList();
 }
 
-void ParameterBase::executeSQL(const char *sql, const char *params[], int num_params)
+bool ParameterBase::executeSQL(const char *sql, const char *params[], int num_params)
 {
+    if (!PQstatus(connection) == CONNECTION_OK)
+        return false;
 
-    if (PQstatus(connection) == CONNECTION_OK) {
+    query_result =  PQexecParams(connection, sql, num_params, NULL, params, NULL, NULL, 0);
 
-        resp =  PQexecParams(connection, sql, num_params, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(resp) != PGRES_TUPLES_OK)
-        {
-
-            tuples = 0;
-            PQclear(resp);
-
-        } else {
-
-            tuples = PQntuples(resp);
-
-            readRows();
-
-            PQclear(resp);
-        }
+    switch(PQresultStatus(query_result)) {
+    case PGRES_EMPTY_QUERY:
+        QMessageBox::critical(nullptr, "Error", "Empty Query", QMessageBox::Ok);
+        break;
+    case PGRES_TUPLES_OK:
+        tuples = PQntuples(query_result);
+        return true;
+        break;
+    case PGRES_COMMAND_OK:
+    case PGRES_SINGLE_TUPLE:
+    case PGRES_COPY_IN:
+    case PGRES_COPY_OUT:
+    case PGRES_COPY_BOTH:
+    case PGRES_BAD_RESPONSE:
+    case PGRES_FATAL_ERROR:
+    case PGRES_NONFATAL_ERROR:
+        QMessageBox::critical(nullptr, "Error", "Unexpected Query Result");
     }
+
+    tuples = 0;
+    PQclear(query_result);
+    return false;
+
+}
+
+void ParameterBase::clearResult()
+{
+    PQclear(query_result);
 }
