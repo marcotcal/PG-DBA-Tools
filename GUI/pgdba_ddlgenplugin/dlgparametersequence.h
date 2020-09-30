@@ -28,6 +28,7 @@ private:
     Ui::DlgParameterSequence *ui;
 
     QStringList sequences(QString owner, QString schema_name);
+    QStringList tables(QString owner, QString schema_name);
 
 };
 

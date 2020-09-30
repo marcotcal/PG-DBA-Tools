@@ -78,6 +78,10 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
         }
         break;
     case DDL_UPDATE_SEQUENCE:
+        if (dlg_sequence.exec()) {
+            editor->insertAt(dlg_sequence.gen_update_sequece(), line, index);
+        }
+        break;
     case DDL_RESET_SEQUENCE:
         if (dlg_sequence.exec()) {
             editor->insertAt(dlg_sequence.gen_reset_sequece(), line, index);

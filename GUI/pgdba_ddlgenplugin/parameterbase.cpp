@@ -101,30 +101,30 @@ QStringList ParameterBase::users()
 
 bool ParameterBase::executeSQL(const char *sql, const char *params[], int num_params)
 {
+    ExecStatusType status;
+
+    // It is expected that all queries executed by this method return tuples
+
     if (!PQstatus(connection) == CONNECTION_OK)
         return false;
 
-    query_result =  PQexecParams(connection, sql, num_params, NULL, params, NULL, NULL, 0);
+    // the below code will permit the executions of unamed functions (usings DO) and queries
+    // with multiple sentences.
+    // In these cases we cannot use parametes since multiple sentences queries cannot be prepared
+    if (num_params == 0)
+        query_result = PQexec(connection, sql);
+    else
+        query_result =  PQexecParams(connection, sql, num_params, NULL, params, NULL, NULL, 0);
 
-    switch(PQresultStatus(query_result)) {
-    case PGRES_EMPTY_QUERY:
+    status = PQresultStatus(query_result);
+    if (status == PGRES_EMPTY_QUERY) {
         QMessageBox::critical(nullptr, "Error", "Empty Query", QMessageBox::Ok);
-        break;
-    case PGRES_TUPLES_OK:
+    } else if (status == PGRES_TUPLES_OK) {
         tuples = PQntuples(query_result);
         return true;
-        break;
-    case PGRES_COMMAND_OK:
-    case PGRES_SINGLE_TUPLE:
-    case PGRES_COPY_IN:
-    case PGRES_COPY_OUT:
-    case PGRES_COPY_BOTH:
-    case PGRES_BAD_RESPONSE:
-    case PGRES_FATAL_ERROR:
-    case PGRES_NONFATAL_ERROR:
-        QMessageBox::critical(nullptr, "Error", "Unexpected Query Result");
     }
 
+    QMessageBox::critical(nullptr, "Error", "Unexpected Query Result");
     tuples = 0;
     PQclear(query_result);
     return false;
