@@ -15,18 +15,24 @@ void DDLGenerationPlugin::setMenu(QMenu *menu)
 
 void DDLGenerationPlugin::setTreeWidget(QTreeWidget *tree)
 {
+    QTreeWidgetItem* existing_objects = new QTreeWidgetItem();
     QTreeWidgetItem* schemas = new QTreeWidgetItem();
     QTreeWidgetItem* sequences = new QTreeWidgetItem();
     QTreeWidgetItem* triggers = new QTreeWidgetItem();
     QTreeWidgetItem* item;
 
+    existing_objects->setText(0,"Existing");
     schemas->setText(0,"Schemas");
     sequences->setText(0,"Sequences");
     triggers->setText(0,"Triggers");
 
-    tree->insertTopLevelItem(0, schemas);
-    tree->insertTopLevelItem(1, sequences);
-    tree->insertTopLevelItem(2,triggers);
+    tree->insertTopLevelItem(0, existing_objects);
+
+    existing_objects->addChild(schemas);
+    existing_objects->addChild(sequences);
+    existing_objects->addChild(triggers);
+
+    tree->expandItem(existing_objects);
 
     item = new QTreeWidgetItem(QStringList() << "Create Schema", DDL_CREATE_SCHEMA);
     schemas->addChild(item);
