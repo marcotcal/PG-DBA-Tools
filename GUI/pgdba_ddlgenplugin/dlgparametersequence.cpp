@@ -2,7 +2,7 @@
 #include "ui_dlgparametersequence.h"
 
 /* TODO
- * If a sequence is not created withou using serial it is not assigned to the table
+ * If a sequence is not created using serial it is not assigned to the table
  * create a function do detect sequences not attached and attatch them using the following code
  *
  * alter sequence my_sequence owned by my_table_manually.id;
