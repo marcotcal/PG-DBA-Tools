@@ -22,6 +22,7 @@ protected:
 
     QStringList schemas(QString owner);
     QStringList users();
+    QString databaseVersion();
     bool executeSQL(const char *sql, const char *params[], int num_params);
     void clearResult();
 

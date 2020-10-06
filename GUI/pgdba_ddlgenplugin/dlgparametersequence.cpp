@@ -56,7 +56,12 @@ QString DlgParameterSequence::gen_reset_sequece()
         "        WHERE "
         "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) IS NOT NULL "
         "    ) "
-        "    SELECT 'ALTER SEQUENCE ' || schema_name || '.' || sequence_name || E' RESTART;\n' "
+        "    SELECT "
+        "        schema_name, "
+        "        sequence_name, "
+        "        complete_table_name, "
+        "        owner_name, "
+        "        field_name "
         "    FROM sequences "
         "    WHERE "
         "        schema_name ILIKE $1 || '%' "
@@ -71,15 +76,33 @@ QString DlgParameterSequence::gen_reset_sequece()
 
     if (executeSQL(sql, params, 4)) {
         for (int i = 0; i < tuples; i++) {
-            reset_sequence += (i > 0 ? QString(" ").repeated(index) : "") +
-                    QString::fromStdString(PQgetvalue(query_result, i, 0));
+            reset_sequence += (i > 0 ? QString(" ").repeated(index) : "");
+            if (ui->include_comments->isChecked()) {
+                reset_sequence += "/**\n";
+                reset_sequence += " Sequence : ";
+                reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 0)) + ".";
+                reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 1)) + "\n";
+                reset_sequence += " Table : ";
+                reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 2)) + "\n";
+                reset_sequence += " Field : ";
+                reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 4)) + "\n";
+                reset_sequence += " Owner : ";
+                reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 3)) + "\n";
+                reset_sequence += "**/\n";
+            }
+            reset_sequence += "ALTER SEQUENCE ";
+            reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 0)) + ".";
+            reset_sequence += QString::fromStdString(PQgetvalue(query_result, i, 1)) + " ";
+            reset_sequence += "RESTART;\n";
+            if (ui->include_comments->isChecked()) {
+                reset_sequence += "\n";
+            }
         }
 
         clearResult();
     } else {
         return QString(PQerrorMessage(connection));
     }
-
 
     return reset_sequence;
 

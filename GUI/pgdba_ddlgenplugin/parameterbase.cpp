@@ -99,6 +99,19 @@ QStringList ParameterBase::users()
     return QStringList();
 }
 
+QString ParameterBase::databaseVersion()
+{
+    const char* sql = "SELECT (regexp_matches(version(),'^PostgreSQL [0-9]*\.[0-9]*'))[1]";
+    QString version = "";
+
+    if(executeSQL(sql, nullptr, 0)) {
+        version = QString::fromStdString(PQgetvalue(query_result, 0, 0));
+        clearResult();
+    }
+
+    return version;
+}
+
 bool ParameterBase::executeSQL(const char *sql, const char *params[], int num_params)
 {
     ExecStatusType status;
