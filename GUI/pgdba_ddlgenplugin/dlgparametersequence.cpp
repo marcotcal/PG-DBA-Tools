@@ -31,12 +31,6 @@ QString DlgParameterSequence::gen_reset_sequece()
 {
     QString reset_sequence = "";
     const char *params[4];
-    /* This query will work only with versions greater than 10
-    const char *sql =
-            "SELECT 'ALTER SEQUENCE ' || schemaname || '.' || sequencename || E' RESTART;\n' "
-            "FROM pg_catalog.pg_sequences ";
-    */
-
     const char *sql =
         "WITH "
         "    sequences AS ( "
@@ -121,11 +115,12 @@ QString DlgParameterSequence::gen_update_sequece()
         "    DROP TABLE IF EXISTS sequences; "
         "    CREATE TEMPORARY TABLE sequences ON COMMIT DROP AS "
         "        SELECT DISTINCT "
-        "            d.refobjid::regclass AS table_name, "
-        "            c.relname, "
-        "            n.nspname, "
+        "            d.refobjid::regclass AS complete_table_name, "
+        "            c.relname AS table_name, "
+        "            n.nspname AS schema_name, "
         "            a.attname AS field_name, "
         "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) AS sequence_name, "
+        "            u.usename AS owner_name, "
         "            0 AS value_to_update "
         "        FROM "
         "            pg_depend d "
@@ -142,7 +137,7 @@ QString DlgParameterSequence::gen_update_sequece()
         "    FOR seq IN "
         "        SELECT *  FROM sequences "
         "    LOOP "
-        "        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.table_name INTO val; "
+        "        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.complete_table_name INTO val; "
         "        UPDATE sequences SET "
         "            value_to_update = val "
         "        WHERE table_name = seq.table_name AND field_name = seq.field_name;  "
@@ -150,11 +145,13 @@ QString DlgParameterSequence::gen_update_sequece()
         "END; "
         "$$; "
         "SELECT "
-        "    CASE "
-        "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n'  "
-        "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n'  "
-        "    END  "
-        "FROM sequences;  ";
+        "   schema_name, "
+        "   sequence_name, "
+        "   complete_table_name, "
+        "   owner_name, "
+        "   field_name, "
+        "   value_to_update "
+        "FROM sequences ";
 
     sql = sql.arg(ui->schema_name->currentText()).
             arg(ui->sequence_owner->currentText()).
@@ -164,8 +161,32 @@ QString DlgParameterSequence::gen_update_sequece()
     if(executeSQL(sql.toStdString().c_str(), nullptr, 0)) {
 
         for (int i = 0; i < tuples; i++) {
-            update_sequence += (i > 0 ? QString(" ").repeated(index) : "") +
-                    QString::fromStdString(PQgetvalue(query_result, i, 0));
+            for (int i = 0; i < tuples; i++) {
+                update_sequence += (i > 0 ? QString(" ").repeated(index) : "");
+                if (ui->include_comments->isChecked()) {
+                    update_sequence += "/**\n";
+                    update_sequence += " Sequence : ";
+                    update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 0)) + ".";
+                    update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 1)) + "\n";
+                    update_sequence += " Table : ";
+                    update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 2)) + "\n";
+                    update_sequence += " Field : ";
+                    update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 4)) + "\n";
+                    update_sequence += " Owner : ";
+                    update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 3)) + "\n";
+                    update_sequence += "**/\n";
+                }
+                update_sequence += "ALTER SEQUENCE ";
+                update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 0)) + ".";
+                update_sequence += QString::fromStdString(PQgetvalue(query_result, i, 1)) + " ";
+                if (QString::fromStdString(PQgetvalue(query_result, i, 5)).toInt() == 0)
+                    update_sequence += "RESTART;\n";
+                else
+                    update_sequence += QString("RESTART WITH %1;\n").arg(QString::fromStdString(PQgetvalue(query_result, i, 5)));
+                if (ui->include_comments->isChecked()) {
+                    update_sequence += "\n";
+                }
+            }
         }
 
         clearResult();
