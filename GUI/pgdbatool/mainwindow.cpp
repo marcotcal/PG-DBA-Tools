@@ -504,9 +504,10 @@ void MainWindow::on_actionSave_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
-    if (sql)
-        sql->saveCurrent();
-    else if (model)
+    if (sql) {
+        sql->saveGroup();
+        ui->editor_list->currentItem()->setText(sql->getGroupName());
+    } else if (model)
         model->saveFile();
 
 }
@@ -515,9 +516,9 @@ void MainWindow::on_actionSave_As_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
-    if (sql)
-        sql->saveCurrentAs();
-    else if (model)
+    if (sql) {
+        sql->saveGroupAs();
+    } else if (model)
         model->saveFileAs();
 }
 

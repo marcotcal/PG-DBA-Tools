@@ -223,6 +223,7 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     }
 
     group_name = "";
+    group_file_name = "";
     query_running = false;
     conn_settings = nullptr;
     ui->find_panel->hide();
@@ -343,32 +344,31 @@ EditorItem *SqlTool::getCurrentEditor()
 
 bool SqlTool::saveGroup()
 {
-    if (group_name == "")
+    if (group_file_name == "")
         return saveGroupAs();
-    return saveToXML(group_name);
+    return saveToXML(group_file_name);
 }
 
 bool SqlTool::saveGroupAs()
 {
-    QString file_name;
 
-    file_name = QFileDialog::getSaveFileName(this, "Save Query Tool As", default_path, "Query Tool files (*.qtx);;All files (*.*)");
+    group_file_name = QFileDialog::getSaveFileName(this, "Save Query Tool As", default_path, "Query Tool files (*.qtx);;All files (*.*)");
 
-    if (file_name != "") {
-        return saveToXML(file_name);
+    if (group_file_name != "") {
+        group_name = QFileInfo(group_file_name).baseName();
+        return saveToXML(group_file_name);
     }
     return false;
 }
 
 bool SqlTool::restoreGroup()
 {
-    QString file_name;
 
-    file_name = QFileDialog::getOpenFileName(this, "Open File", default_path, "Query Tool files (*.qtx);;All files (*.*))");
+    group_file_name = QFileDialog::getOpenFileName(this, "Open File", default_path, "Query Tool files (*.qtx);;All files (*.*))");
 
-    if (file_name != "") {
+    if (group_file_name != "") {
         closeAllEditors();
-        return readFromXML(file_name);
+        return readFromXML(group_file_name);
     }
     return false;
 }

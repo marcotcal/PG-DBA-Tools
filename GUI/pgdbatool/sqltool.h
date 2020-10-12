@@ -217,6 +217,7 @@ private:
     PGconn *conn;
     QString default_path;
     QString group_name;
+    QString group_file_name;
     OutputSet *output_set;
     ResultOutput *output;
     bool query_running;
