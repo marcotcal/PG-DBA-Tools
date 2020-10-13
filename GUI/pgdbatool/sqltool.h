@@ -116,6 +116,7 @@ public:
     bool saveGroup();
     bool saveGroupAs();
     bool restoreGroup();
+    bool restoreGroup(QString group_fn);
     bool isRunning() { return query_running; }
     void cancelCurrentQuery();
     void plannerMethodSettings();

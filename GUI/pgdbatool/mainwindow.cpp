@@ -255,15 +255,15 @@ void MainWindow::disable_actions()
 {
     ui->actionSave->setEnabled(false);
     ui->actionSave_As->setEnabled(false);
+    ui->actionSave_SQL_File->setEnabled(false);
+    ui->actionSave_SQL_File_As->setEnabled(false);
+    ui->actionOpen_SQL_File->setEnabled(false);
     ui->actionAdd_Editor->setEnabled(false);
     ui->actionClose_Editor->setEnabled(false);
     ui->actionStart_Transaction->setEnabled(false);
     ui->actionCommit_Transaction->setEnabled(false);
     ui->actionRollback_Transaction->setEnabled(false);
     ui->actionExecute->setEnabled(false);
-    ui->actionOpen_SQL_Tool_Set->setEnabled(false);
-    ui->actionSave_SQL_Tool->setEnabled(false);
-    ui->actionSave_SQL_Tool_As->setEnabled(false);
     ui->actionExplain->setEnabled(false);
     ui->actionConnect->setEnabled(false);
     ui->actionDisconect->setEnabled(false);
@@ -284,10 +284,9 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
     }
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
-
-    ui->actionOpen_SQL_Tool_Set->setEnabled(true);
-    ui->actionSave_SQL_Tool->setEnabled(true);
-    ui->actionSave_SQL_Tool_As->setEnabled(true);
+    ui->actionSave_SQL_File->setEnabled(true);
+    ui->actionSave_SQL_File_As->setEnabled(true);
+    ui->actionOpen_SQL_File->setEnabled(true);
 
     ui->actionConnect->setEnabled(!sql->connected() && !sql->isRunning());
     ui->actionDisconect->setEnabled(sql->connected() && !sql->isRunning());
@@ -315,8 +314,7 @@ void MainWindow::enable_sql_tool_actions(SqlTool *sql)
         ui->actionCommit_Transaction->setEnabled(false);
         ui->actionRollback_Transaction->setEnabled(false);
     }
-    ui->actionSave->setEnabled(true);
-    ui->actionSave_As->setEnabled(true);
+
 }
 
 void MainWindow::enable_model_actions(QueryModel *model)
@@ -324,6 +322,7 @@ void MainWindow::enable_model_actions(QueryModel *model)
     Q_UNUSED(model)
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
+
 }
 
 void MainWindow::enable_sql_transactions(SqlTool *sql) {
@@ -347,6 +346,9 @@ void MainWindow::enable_sql_transactions(SqlTool *sql) {
 
     ui->actionSave->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
+    ui->actionSave_SQL_File->setEnabled(true);
+    ui->actionSave_SQL_File_As->setEnabled(true);
+    ui->actionOpen_SQL_File->setEnabled(true);
 }
 
 void MainWindow::setConnectionsList()
@@ -372,60 +374,52 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     SqlTool *sql;
     OutputSet *out;
 
-    if (!name.isEmpty()) {
+    new QListWidgetItem(name, ui->editor_list);
 
-        new QListWidgetItem(name, ui->editor_list);
-
-        switch(mode) {
-        case SqlTool::MODE_INTERNAL_DEVELOPMENT:
-        case SqlTool::MODE_INTERNAL_STAGING:
-        case SqlTool::MODE_INTERNAL_PRODUCTION:
-        case SqlTool::MODE_QUERY:
-        case SqlTool::MODE_SCRIPT:
-            sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
-            break;
-        default:
-            return nullptr;
-        }
-
-        sql->setMode(mode);
-
-        ui->main_stack->addWidget(sql);
-        ui->main_stack->setCurrentWidget(ui->main_stack);
-        ui->editor_list->clearSelection();        
-        sql->setGroupName(name);
-        out = new OutputSet(sql);
-        sql->setOutputSet(out);
-        ui->output_stack->addWidget(out);
-        ui->output_stack->setCurrentWidget(out);
-        ui->main_stack->setCurrentWidget(sql);
-        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-        connect(sql, SIGNAL(beginExecution(SqlTool *)), this, SLOT(do_beginExecuteQuery(SqlTool*)));
-        connect(sql, SIGNAL(endExecution(SqlTool *)), this, SLOT(do_endExecuteQuery(SqlTool*)));
-        connect(sql, SIGNAL(modeChanged(SqlTool *, int)), this, SLOT(sqlToolModeChanged(SqlTool *, int)));
-        connect(sql, SIGNAL(requestToClose()), this, SLOT(closeRequested()));
-        return sql;
-
+    switch(mode) {
+    case SqlTool::MODE_INTERNAL_DEVELOPMENT:
+    case SqlTool::MODE_INTERNAL_STAGING:
+    case SqlTool::MODE_INTERNAL_PRODUCTION:
+    case SqlTool::MODE_QUERY:
+    case SqlTool::MODE_SCRIPT:
+        sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
+        break;
+    default:
+        return nullptr;
     }
-    return nullptr;
+
+    sql->setMode(mode);
+
+    ui->main_stack->addWidget(sql);
+    ui->main_stack->setCurrentWidget(ui->main_stack);
+    ui->editor_list->clearSelection();
+    sql->setGroupName(name);
+    out = new OutputSet(sql);
+    sql->setOutputSet(out);
+    ui->output_stack->addWidget(out);
+    ui->output_stack->setCurrentWidget(out);
+    ui->main_stack->setCurrentWidget(sql);
+    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
+    connect(sql, SIGNAL(beginExecution(SqlTool *)), this, SLOT(do_beginExecuteQuery(SqlTool*)));
+    connect(sql, SIGNAL(endExecution(SqlTool *)), this, SLOT(do_endExecuteQuery(SqlTool*)));
+    connect(sql, SIGNAL(modeChanged(SqlTool *, int)), this, SLOT(sqlToolModeChanged(SqlTool *, int)));
+    connect(sql, SIGNAL(requestToClose()), this, SLOT(closeRequested()));
+    return sql;
+
 }
 
 QueryModel *MainWindow::openNewQueryModel(QString name)
 {
     QueryModel *qmod;
 
-    if (!name.isEmpty()) {
+    new QListWidgetItem(name, ui->editor_list);
+    qmod = new QueryModel(connections, project, ui->main_stack);
+    ui->main_stack->addWidget(qmod);
+    ui->main_stack->setCurrentWidget(qmod);
+    ui->editor_list->clearSelection();
+    ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
 
-        new QListWidgetItem(name, ui->editor_list);
-        qmod = new QueryModel(connections, project, ui->main_stack);
-        ui->main_stack->addWidget(qmod);
-        ui->main_stack->setCurrentWidget(qmod);        
-        ui->editor_list->clearSelection();
-        ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
-
-        return qmod;
-    }
-    return nullptr;
+    return qmod;
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -453,15 +447,60 @@ void MainWindow::on_actionNew_triggered()
     }
 }
 
-void MainWindow::on_actionOpen_triggered()
+void MainWindow::on_actionOpen_SQL_Tool_triggered()
 {
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
+    QString file_name;
+    QString query_path;
+    SqlTool *sql;
+
+    if (project.getProjectPath().isNull()) {
+        query_path = last_path_to_sql;
+    } else {
+        query_path = project.getProjectPath() + "/scripts/development/review";
+    }
+
+    file_name = QFileDialog::getOpenFileName(this, "Open File", query_path,
+                                             "Query Tool files (*.qtx);;All files (*.*)");
+    if (file_name != "") {
+
+        QFileInfo info(file_name);
+        last_path_to_sql = info.path();
+        sql = openNewSQLTool();
+        sql->restoreGroup(file_name);
+        ui->editor_list->currentItem()->setText(sql->getGroupName());
+     }
+}
+
+void MainWindow::on_actionOpen_Query_Model_triggered()
+{
+    QueryModel *model;
     QString file_name;
     QFile file;
     QString query_path;
 
-    if (sql) {
+    if (project.getProjectPath().isNull()) {
+        query_path = last_path_to_models;
+    } else {
+        query_path = project.getModelPath();
+    }
+
+    file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_models, "Model files (*.xml);;All files (*.*)");
+    if (file_name != "") {
+        file.setFileName(file_name);
+        model = openNewQueryModel("");
+        model->openFile(file);
+        ui->editor_list->currentItem()->setText(QFileInfo(file).baseName());
+    }
+}
+
+void MainWindow::on_actionOpen_SQL_File_triggered()
+{
+    QString file_name;
+    QString query_path;
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QFile file;
+
+    if(sql) {
 
         if (project.getProjectPath().isNull()) {
             query_path = last_path_to_sql;
@@ -469,34 +508,28 @@ void MainWindow::on_actionOpen_triggered()
             query_path = project.getProjectPath() + "/scripts/development/review";
         }
 
-        file_name = QFileDialog::getOpenFileName(this, "Open File", query_path, "SQL files (*.sql);;All files (*.*)");
+        file_name = QFileDialog::getOpenFileName(this, "Open File", query_path,
+                                                 "SQL files (*.sql);;All files (*.*)");
         if (file_name != "") {
             file.setFileName(file_name);
-            sql->openFileOnCurrent(file);            
-            ui->editor_list->currentItem()->setText(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
+            sql->openFileOnCurrent(file);
         }
-    } else if (model) {
-        file_name = QFileDialog::getOpenFileName(this, "Open File", path_to_models, "Model files (*.xml);;All files (*.*)");
-        if (file_name != "") {
-            file.setFileName(file_name);
-            model->openFile(file);
-            ui->editor_list->currentItem()->setText(QFileInfo(file).baseName());
-        }
-    } else {
-        file_name = QFileDialog::getOpenFileName(this, "Open File", last_path_to_sql,
-                                                 "SQL files (*.sql);;Model files (*.xml);;All files (*.*)");
-        if (file_name != "") {
-            QFile file(file_name);
-            QFileInfo info(file_name);
-            last_path_to_sql = info.path();
-            if (info.suffix().toLower() == "sql") {
-                    sql = openNewSQLTool(QString("Sql Tool %1").arg(ui->main_stack->count()+1));
-                    sql->openFileOnCurrent(file);
-            } else {
-                model = openNewQueryModel(info.baseName());
-                model->openFile(file);
-            }
-         }
+    }
+}
+
+void MainWindow::on_actionSave_SQL_File_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->saveCurrent(true);
+    }
+}
+
+void MainWindow::on_actionSave_SQL_File_As_triggered()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->saveCurrentAs();
     }
 }
 
@@ -533,33 +566,6 @@ void MainWindow::on_actionManageConnections_triggered()
     dlg->exec();
 
     setConnectionsList();
-}
-
-void MainWindow::on_actionSave_SQL_Tool_triggered()
-{
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    if (sql) {
-        sql->saveGroup();
-        ui->editor_list->currentItem()->setText(sql->getGroupName());
-    }
-}
-
-void MainWindow::on_actionSave_SQL_Tool_As_triggered()
-{
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    if (sql) {
-        sql->saveGroupAs();
-        ui->editor_list->currentItem()->setText(sql->getGroupName());
-    }
-}
-
-void MainWindow::on_actionOpen_SQL_Tool_Set_triggered()
-{
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    if (sql) {
-        sql->restoreGroup();
-        ui->editor_list->currentItem()->setText(sql->getGroupName());
-    }
 }
 
 void MainWindow::on_actionDatabase_to_Database_triggered()
@@ -1221,6 +1227,7 @@ void MainWindow::on_actionNew_Project_triggered()
         path_to_sql = project.getQueryPath();
         last_path_to_sql = path_to_sql;
         path_to_models = project.getModelPath();
+        last_path_to_models = path_to_models;
         setConnectionsList();
 
     }
@@ -1242,6 +1249,7 @@ void MainWindow::on_actionProject_Options_triggered()
         path_to_sql = project.getQueryPath();
         last_path_to_sql = path_to_sql;
         path_to_models = project.getModelPath();
+        last_path_to_models = path_to_models;
         setConnectionsList();
     }
 }

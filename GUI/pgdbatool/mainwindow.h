@@ -45,13 +45,9 @@ protected:
 private slots:
     void on_actionExit_triggered();
     void on_actionNew_triggered();
-    void on_actionOpen_triggered();
     void on_actionSave_triggered();
     void on_actionSave_As_triggered();
     void on_actionSQL_Tool_triggered();
-    void on_actionSave_SQL_Tool_triggered();
-    void on_actionSave_SQL_Tool_As_triggered();
-    void on_actionOpen_SQL_Tool_Set_triggered();
     void on_actionManageConnections_triggered();
     void on_actionDatabase_to_Database_triggered();
     void on_actionAdd_Editor_triggered();
@@ -146,6 +142,16 @@ private slots:
     void on_actionViewDDL_Generation_toggled(bool arg1);
     void on_actionList_of_Table_Fields_triggered();
 
+    void on_actionOpen_SQL_Tool_triggered();
+
+    void on_actionOpen_Query_Model_triggered();
+
+    void on_actionOpen_SQL_File_triggered();
+
+    void on_actionSave_SQL_File_triggered();
+
+    void on_actionSave_SQL_File_As_triggered();
+
 public slots:
 
     void openScriptOnNewTool(QString file_name, int internal_mode=SqlTool::MODE_INTERNAL_DEVELOPMENT);
@@ -163,6 +169,7 @@ private:
     QString path_to_sql;
     QString path_to_models;
     QString last_path_to_sql;
+    QString last_path_to_models;
     int cfg_options;
     QString cfg_task_prefix;
     QMap<QString, PluginElement *> interface_list;
@@ -175,8 +182,8 @@ private:
     void enable_model_actions(QueryModel *model);
     void enable_sql_transactions(SqlTool *sql);    
     void setConnectionsList();
-    SqlTool *openNewSQLTool(QString name, int mode=SqlTool::MODE_QUERY);
-    QueryModel *openNewQueryModel(QString name);
+    SqlTool *openNewSQLTool(QString name="", int mode=SqlTool::MODE_QUERY);
+    QueryModel *openNewQueryModel(QString name="");
     void loadCustomMenus();    
     bool loadPlugins();
 

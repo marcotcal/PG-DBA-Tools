@@ -48,10 +48,26 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
+    <widget class="QMenu" name="menuOpenTools">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <property name="icon">
+      <iconset resource="pgdbatool.qrc">
+       <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
+     </property>
+     <addaction name="actionOpen_SQL_Tool"/>
+     <addaction name="actionOpen_Query_Model"/>
+    </widget>
     <addaction name="actionNew"/>
-    <addaction name="actionOpen"/>
+    <addaction name="menuOpenTools"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_SQL_File"/>
+    <addaction name="actionSave_SQL_File"/>
+    <addaction name="actionSave_SQL_File_As"/>
+    <addaction name="separator"/>
     <addaction name="actionClose"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -61,10 +77,6 @@
      <string>SQL</string>
     </property>
     <addaction name="actionSQL_Tool"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_SQL_Tool"/>
-    <addaction name="actionSave_SQL_Tool_As"/>
-    <addaction name="actionOpen_SQL_Tool_Set"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_Editor"/>
     <addaction name="actionClose_Editor"/>
@@ -263,7 +275,6 @@
    <addaction name="actionDrop_Database"/>
    <addaction name="separator"/>
    <addaction name="actionNew"/>
-   <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionSave_As"/>
    <addaction name="actionClose"/>
@@ -545,18 +556,6 @@
     <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="actionOpen">
-   <property name="icon">
-    <iconset resource="pgdbatool.qrc">
-     <normaloff>:/icons/images/icons/icons8-opened-folder-40.png</normaloff>:/icons/images/icons/icons8-opened-folder-40.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Open</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
   <action name="actionSave">
    <property name="icon">
     <iconset resource="pgdbatool.qrc">
@@ -732,7 +731,7 @@
      <normaloff>:/icons/images/icons/icons8-cancel-40.png</normaloff>:/icons/images/icons/icons8-cancel-40.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Close</string>
+    <string>&amp;Close Tool</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -818,21 +817,6 @@
   <action name="actionList_of_Tables">
    <property name="text">
     <string>&amp;List of Tables By Schema</string>
-   </property>
-  </action>
-  <action name="actionSave_SQL_Tool">
-   <property name="text">
-    <string>Sa&amp;ve SQL Tool Set</string>
-   </property>
-  </action>
-  <action name="actionSave_SQL_Tool_As">
-   <property name="text">
-    <string>Save S&amp;QL Tool Set As...</string>
-   </property>
-  </action>
-  <action name="actionOpen_SQL_Tool_Set">
-   <property name="text">
-    <string>O&amp;pen SQL Tool Set</string>
    </property>
   </action>
   <action name="actionSchemas">
@@ -1087,6 +1071,39 @@
   <action name="actionList_of_Table_Fields">
    <property name="text">
     <string>List of Table Fields</string>
+   </property>
+  </action>
+  <action name="actionOpen_SQL_Tool">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>SQL Tool</string>
+   </property>
+  </action>
+  <action name="actionOpen_Query_Model">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-data-quality-40.png</normaloff>:/icons/images/icons/icons8-data-quality-40.png</iconset>
+   </property>
+   <property name="text">
+    <string>Query Model</string>
+   </property>
+  </action>
+  <action name="actionSave_SQL_File">
+   <property name="text">
+    <string>Save SQL File</string>
+   </property>
+  </action>
+  <action name="actionSave_SQL_File_As">
+   <property name="text">
+    <string>Save SQL File As...</string>
+   </property>
+  </action>
+  <action name="actionOpen_SQL_File">
+   <property name="text">
+    <string>Open SQL File</string>
    </property>
   </action>
  </widget>

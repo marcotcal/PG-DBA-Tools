@@ -373,6 +373,16 @@ bool SqlTool::restoreGroup()
     return false;
 }
 
+bool SqlTool::restoreGroup(QString group_fn)
+{
+
+    if (group_fn != "") {
+        closeAllEditors();
+        return readFromXML(group_fn);
+    }
+    return false;
+}
+
 void SqlTool::cancelCurrentQuery()
 {
     PGcancel *cancel = PQgetCancel(conn);
