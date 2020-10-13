@@ -521,7 +521,7 @@ void MainWindow::on_actionSave_SQL_File_triggered()
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     if(sql) {
-        sql->saveCurrent(true);
+        sql->saveCurrent();
     }
 }
 
