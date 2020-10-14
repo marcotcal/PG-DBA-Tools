@@ -378,6 +378,7 @@ bool SqlTool::restoreGroup(QString group_fn)
 
     if (group_fn != "") {
         closeAllEditors();
+        group_file_name = group_fn;
         return readFromXML(group_fn);
     }
     return false;
