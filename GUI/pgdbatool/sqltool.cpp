@@ -244,6 +244,7 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
     connect(ui->warp_around, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
 
     last_search_path = "public,pg_catalog";
+    group_modified = false;
 }
 
 SqlTool::~SqlTool()
@@ -537,6 +538,22 @@ bool SqlTool::isFindNextAvailable()
 bool SqlTool::isConnected()
 {
     return is_connected;
+}
+
+bool SqlTool::isModified()
+{
+    bool modified = false;
+
+    if (group_modified)
+        return true;
+
+    int count;
+
+    foreach (EditorItem *editor, editors) {
+        if (editor->isModified())
+            modified = true;
+    }
+    return modified;
 }
 
 void SqlTool::redo()

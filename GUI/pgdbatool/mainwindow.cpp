@@ -169,13 +169,29 @@ MainWindow::~MainWindow()
 bool MainWindow::maybeSave()
 {
     SqlTool *sql;
+    QMessageBox msgbox;
 
     for (int i = 0; i < ui->main_stack->count(); i++) {
         ui->main_stack->setCurrentIndex(i);
         sql = dynamic_cast<SqlTool*>(ui->main_stack->widget(i));
         if (sql) {
-            if(!sql->closeAllEditors())
-                return false;
+            if (sql->isModified()) {
+                ui->main_stack->setCurrentIndex(i);
+                msgbox.setText("The SQL Tool has been modified.");
+                msgbox.setInformativeText("Do you want to save your changes?");
+                msgbox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+                msgbox.setDefaultButton(QMessageBox::Save);
+                switch(msgbox.exec()) {
+                case QMessageBox::Save:
+                    return sql->saveGroup();
+                case QMessageBox::Discard:
+                    return true;
+                case QMessageBox::Cancel:
+                    return false;
+                default:
+                    break;
+                }
+            }
         }
     }
 
@@ -373,8 +389,9 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 {
     SqlTool *sql;
     OutputSet *out;
+    QListWidgetItem *list_item;
 
-    new QListWidgetItem(name, ui->editor_list);
+    list_item = new QListWidgetItem(name, ui->editor_list);
 
     switch(mode) {
     case SqlTool::MODE_INTERNAL_DEVELOPMENT:
@@ -383,6 +400,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     case SqlTool::MODE_QUERY:
     case SqlTool::MODE_SCRIPT:
         sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
+        list_item->setData(Qt::UserRole+1, );
         break;
     default:
         return nullptr;

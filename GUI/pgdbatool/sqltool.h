@@ -142,6 +142,7 @@ public:
     bool isFindAvailable();
     bool isFindNextAvailable();
     bool isConnected();
+    bool isModified();
 
     void redo();
     void undo();
@@ -230,6 +231,7 @@ private:
     QString last_search_path;
 
     int mode;
+    bool group_modified;
 
     int sel_connection;
     void initializeEditor(EditorItem *editor);
