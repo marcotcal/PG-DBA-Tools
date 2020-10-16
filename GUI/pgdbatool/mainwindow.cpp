@@ -175,6 +175,8 @@ bool MainWindow::maybeSave()
         ui->main_stack->setCurrentIndex(i);
         sql = dynamic_cast<SqlTool*>(ui->main_stack->widget(i));
         if (sql) {
+            ui->editor_list->findItems(sql->getGroupName(),Qt::MatchExactly)
+                    .at(0)->setSelected(true);
             if (sql->isModified()) {
                 ui->main_stack->setCurrentIndex(i);
                 msgbox.setText("The SQL Tool has been modified.");
@@ -400,7 +402,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     case SqlTool::MODE_QUERY:
     case SqlTool::MODE_SCRIPT:
         sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
-        list_item->setData(Qt::UserRole+1, );
+        //list_item->setData(Qt::UserRole+1, ui->main_stack->currentIndex());
         break;
     default:
         return nullptr;
