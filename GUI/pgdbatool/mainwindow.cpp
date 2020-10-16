@@ -402,7 +402,6 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     case SqlTool::MODE_QUERY:
     case SqlTool::MODE_SCRIPT:
         sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
-        //list_item->setData(Qt::UserRole+1, ui->main_stack->currentIndex());
         break;
     default:
         return nullptr;

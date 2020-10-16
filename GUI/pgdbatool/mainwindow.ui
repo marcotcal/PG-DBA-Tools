@@ -35,7 +35,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
+  <widget class="QMenuBar" name="sqlBar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -274,14 +274,11 @@
    <addaction name="actionCreate_Database"/>
    <addaction name="actionDrop_Database"/>
    <addaction name="separator"/>
-   <addaction name="actionNew"/>
-   <addaction name="actionSave"/>
-   <addaction name="actionSave_As"/>
-   <addaction name="actionClose"/>
    <addaction name="separator"/>
-   <addaction name="actionSQL_Tool"/>
    <addaction name="actionAdd_Editor"/>
    <addaction name="actionClose_Editor"/>
+   <addaction name="actionOpen_SQL_File"/>
+   <addaction name="actionSave_SQL_File"/>
    <addaction name="separator"/>
    <addaction name="actionConnect"/>
    <addaction name="actionDisconect"/>
@@ -532,6 +529,39 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="ToolsBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <property name="floatable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen_Query_Model"/>
+   <addaction name="actionSQL_Tool"/>
+   <addaction name="actionOpen_SQL_Tool"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionSave_As"/>
+   <addaction name="actionClose"/>
+  </widget>
   <action name="actionExit">
    <property name="icon">
     <iconset resource="pgdbatool.qrc">
@@ -583,7 +613,7 @@
   <action name="actionSQL_Tool">
    <property name="icon">
     <iconset resource="pgdbatool.qrc">
-     <normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</iconset>
+     <normaloff>:/icons/images/icons/icons8-new-sql-tool-40.png</normaloff>:/icons/images/icons/icons8-new-sql-tool-40.png</iconset>
    </property>
    <property name="text">
     <string>&amp;SQL Tool</string>
@@ -1076,7 +1106,7 @@
   <action name="actionOpen_SQL_Tool">
    <property name="icon">
     <iconset resource="pgdbatool.qrc">
-     <normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</normaloff>:/icons/images/icons/icons8-upload-link-document-40.png</iconset>
+     <normaloff>:/icons/images/icons/icons8-open-sql-tool-40.png</normaloff>:/icons/images/icons/icons8-open-sql-tool-40.png</iconset>
    </property>
    <property name="text">
     <string>SQL Tool</string>
@@ -1092,6 +1122,10 @@
    </property>
   </action>
   <action name="actionSave_SQL_File">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-save-sql-40.png</normaloff>:/icons/images/icons/icons8-save-sql-40.png</iconset>
+   </property>
    <property name="text">
     <string>Save SQL File</string>
    </property>
@@ -1102,6 +1136,10 @@
    </property>
   </action>
   <action name="actionOpen_SQL_File">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-open-sql-file-40.png</normaloff>:/icons/images/icons/icons8-open-sql-file-40.png</iconset>
+   </property>
    <property name="text">
     <string>Open SQL File</string>
    </property>

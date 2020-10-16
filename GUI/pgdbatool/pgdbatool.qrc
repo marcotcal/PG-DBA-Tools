@@ -118,6 +118,11 @@
         <file>images/icons/icons8-close-26.png</file>
         <file>images/icons/icons8-down-26.png</file>
         <file>images/icons/icons8-up-26.png</file>
+        <file>images/icons/icons8-save-sql-40.png</file>
+        <file>images/icons/icons8-open-sql-file-40.png</file>
+        <file>images/icons/icons8-sql-tool-40.png</file>
+        <file>images/icons/icons8-new-sql-tool-40.png</file>
+        <file>images/icons/icons8-open-sql-tool-40.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>
