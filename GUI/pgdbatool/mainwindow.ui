@@ -276,9 +276,9 @@
    <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionAdd_Editor"/>
-   <addaction name="actionClose_Editor"/>
    <addaction name="actionOpen_SQL_File"/>
    <addaction name="actionSave_SQL_File"/>
+   <addaction name="actionClose_Editor"/>
    <addaction name="separator"/>
    <addaction name="actionConnect"/>
    <addaction name="actionDisconect"/>
@@ -643,10 +643,13 @@
   <action name="actionAdd_Editor">
    <property name="icon">
     <iconset resource="pgdbatool.qrc">
-     <normaloff>:/icons/images/icons/icons8-edit-file-40.png</normaloff>:/icons/images/icons/icons8-edit-file-40.png</iconset>
+     <normaloff>:/icons/images/icons/icons8-new-sql-file-40.png</normaloff>:/icons/images/icons/icons8-new-sql-file-40.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Add Editor</string>
+   </property>
+   <property name="toolTip">
+    <string>New SQL Editor</string>
    </property>
   </action>
   <action name="actionClose_Editor">
