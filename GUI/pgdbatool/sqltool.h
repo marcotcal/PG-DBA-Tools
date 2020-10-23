@@ -106,6 +106,7 @@ public:
     void rollback();
     void commit();
     bool closeAllEditors();
+    bool openFileOnNew(QFile &file);
     bool openFileOnCurrent(QFile &file);
     bool saveCurrent(bool force=false);
     bool saveCurrentAs();

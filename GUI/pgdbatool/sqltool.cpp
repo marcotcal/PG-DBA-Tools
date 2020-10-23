@@ -276,6 +276,24 @@ bool SqlTool::closeAllEditors() {
     return true;
 }
 
+bool SqlTool::openFileOnNew(QFile &file)
+{
+    EditorItem *editor;
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+
+    editor = addEditor();
+    QTextStream in(&file);
+    editor->setFileName(file.fileName());
+    editor->setText(in.readAll());
+    editor->setModified(false);
+    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(),
+                                           QFileInfo(file).baseName());
+
+    return true;
+}
+
 bool SqlTool::openFileOnCurrent(QFile &file)
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());

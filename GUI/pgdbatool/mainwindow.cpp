@@ -531,7 +531,7 @@ void MainWindow::on_actionOpen_SQL_File_triggered()
                                                  "SQL files (*.sql);;All files (*.*)");
         if (file_name != "") {
             file.setFileName(file_name);
-            sql->openFileOnCurrent(file);
+            sql->openFileOnNew(file);
         }
     }
 }
