@@ -1,0 +1,11 @@
+{
+    "Name" : "PGDBA Generators",
+    "Version" : "1.0.0",
+    "CompatVersion" : "1.0.0",
+    "Vendor" : "pgdbatools.org",
+    "Author" : "pgdbatools",
+    "Copyright" : "(C) PG DBATools",
+    "License":"GNU General Public License v.3",
+    "URL":"http://www.pgdbatools.org",
+    "Keys" : ["PGDBATOOLS", "SQL", "SQL_TREE", "INPLACE_MENU"]
+}
