@@ -24,9 +24,9 @@ void SQLGenerationPlugin::setTreeWidget(QTreeWidget *tree)
     sql_update->setText(0,"Update");
     sql_delete->setText(0,"Delete");
 
-    tree->insertTopLevelItem(0, schemas);
-    tree->insertTopLevelItem(1, sequences);
-    tree->insertTopLevelItem(2,triggers);
+    tree->insertTopLevelItem(0, sql_insert);
+    tree->insertTopLevelItem(1, sql_update);
+    tree->insertTopLevelItem(2, sql_delete);
 
     item = new QTreeWidgetItem(QStringList() << "Insert (All fields)", SQL_INSERT_ALL);
     sql_insert->addChild(item);

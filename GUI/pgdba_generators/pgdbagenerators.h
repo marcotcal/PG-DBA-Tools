@@ -6,7 +6,7 @@
 #include <libpq-fe.h>
 
 
-class PGDBA_GENERATORSSHARED_EXPORT PGDBAGenerators
+class PGDBAGenerators
 {
 
 public:
