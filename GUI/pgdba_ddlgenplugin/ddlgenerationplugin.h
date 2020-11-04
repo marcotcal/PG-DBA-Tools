@@ -8,6 +8,7 @@
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
 #include <sqltool.h>
+#include <pgdbagenerators.h>
 
 class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
     Q_OBJECT

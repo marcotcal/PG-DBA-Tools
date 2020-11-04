@@ -1,7 +1,7 @@
 {
     "Name" : "PGDBA Generators",
     "Version" : "1.0.0",
-    "CompatVersion" : "1.0.0",
+    "CompatVersion" : "1.0.1",
     "Vendor" : "pgdbatools.org",
     "Author" : "pgdbatools",
     "Copyright" : "(C) PG DBATools",

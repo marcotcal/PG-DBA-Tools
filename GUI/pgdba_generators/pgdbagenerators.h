@@ -10,14 +10,20 @@ class PGDBAGenerators
 {
 
 public:
-    PGDBAGenerators();
+    PGDBAGenerators(PGconn *connection);
 
     QString getInsert(int offset, PGconn *connection);
     void setOnlyMandatory(bool value);
 
+    QStringList schemas();
+    QStringList users();
+
+
 private:
 
     bool mandatory;
+    char *error;
+    PGconn *connection;
 
 };
 

@@ -6,6 +6,7 @@
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
 {
+
 }
 
 void DDLGenerationPlugin::setMenu(QMenu *menu)
@@ -57,6 +58,7 @@ void DDLGenerationPlugin::setTreeWidget(QTreeWidget *tree)
 bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
 {
     int line, index;
+    PGDBAGenerators *generators = new PGDBAGenerators(connection);
 
     switch(item) {
     case DDL_TEST:
@@ -82,9 +84,11 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
     case DDL_ENABLE_TRIGGER:
     case DDL_DISABLE_TRIGGER:
     default:
+        delete generators;
         return false;
     }
 
+    delete generators;
     return true;
 
 }

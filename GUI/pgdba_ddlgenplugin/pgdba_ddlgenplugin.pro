@@ -38,6 +38,16 @@ HEADERS += \
     dlgparameterobject.h
 DISTFILES += pgdba_ddlgenplugin.json 
 
+INCLUDEPATH += ../pgdba_generators
+
+CONFIG(release, debug|release) {
+    unix:LIBS += -L ../build/release -lpgdba_generators
+}
+
+CONFIG(debug, debug|release) {
+    unix:LIBS += -L ../build/debug -lpgdba_generators
+}
+
 # Include postgres lib
 unix:INCLUDEPATH += $$system(pg_config --includedir)
 unix:LIBS += -L$$system(pg_config --libdir)

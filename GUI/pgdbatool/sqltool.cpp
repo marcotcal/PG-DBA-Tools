@@ -1344,6 +1344,8 @@ void SqlTool::on_connection_list_activated(int index)
 void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
 {
     Q_UNUSED(editor)
+    /* TODO - Change generator call */
+    /*
     PGDBAGenerators gen;
     QString resp;
     int line;
@@ -1368,4 +1370,5 @@ void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
     default:
         break;
     }
+    */
 }
