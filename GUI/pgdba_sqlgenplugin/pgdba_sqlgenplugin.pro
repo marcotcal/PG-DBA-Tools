@@ -30,12 +30,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         sqlgenerationplugin.cpp \
     dlgparametersschema.cpp \
-    dlgparameterobject.cpp
+    dlgparameterobject.cpp \
+    dlginsert.cpp
 
 HEADERS += \
         sqlgenerationplugin.h \
     dlgparametersschema.h \
-    dlgparameterobject.h
+    dlgparameterobject.h \
+    dlginsert.h
 DISTFILES += pgdba_sqlgenplugin.json
 
 INCLUDEPATH += ../pgdba_generators
@@ -64,4 +66,5 @@ unix {
 
 FORMS += \
     dlgparametersschema.ui \
-    dlgparameterobject.ui
+    dlgparameterobject.ui \
+    dlginsert.ui

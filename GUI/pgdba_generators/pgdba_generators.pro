@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets
+QT       += widgets gui xml
 
 TARGET = pgdba_generators
 TEMPLATE = lib
@@ -35,18 +35,21 @@ RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
 
 SOURCES += \
-        pgdbagenerators.cpp \
-    dlginsert.cpp
+    pgdbagenerators.cpp \
+    parameterbase.cpp
 
 HEADERS += \
-        pgdbagenerators.h \
-        pgdba_generators_global.h \ 
-    dlginsert.h
+    pgdbagenerators.h \
+    pgdba_generators_global.h \
+    parameterbase.h
+
+LIBS += -lqscintilla2_qt5
+
+INCLUDEPATH += ../pgdbatool
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
 
-FORMS += \
-    dlginsert.ui
+FORMS +=

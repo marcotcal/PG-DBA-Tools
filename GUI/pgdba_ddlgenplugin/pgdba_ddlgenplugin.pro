@@ -30,14 +30,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         ddlgenerationplugin.cpp \
     dlgparametersschema.cpp \
-    dlgparametersequence.cpp \
-    parameterbase.cpp
+    dlgparametersequence.cpp
 
 HEADERS += \
         ddlgenerationplugin.h \
     dlgparametersschema.h \
-    dlgparametersequence.h \
-    parameterbase.h
+    dlgparametersequence.h
 DISTFILES += pgdba_ddlgenplugin.json 
 
 INCLUDEPATH += ../pgdba_generators

@@ -64,35 +64,40 @@ void DDLGenerationPlugin::setTreeWidget(QTreeWidget *tree)
 bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
 {
     int line, index;
-    PGDBAGenerators *generators = new PGDBAGenerators(connection);
+    PGDBAGenerators *generators;
+    DlgParametersSchema *dlg_schema;
+    DlgParameterSequence *dlg_sequence;
 
-    DlgParametersSchema dlg_schema(connection, editor);
-    DlgParameterSequence dlg_sequence(connection, editor);
+    if (connection) {
+        generators = new PGDBAGenerators(connection);
+        dlg_schema = new DlgParametersSchema(connection, editor);
+        dlg_sequence = new DlgParameterSequence(connection, editor);
+    }
 
     switch(item) {
     case DDL_TEST:
         editor->append("-- Plugin Test.\n");
-        editor->append("SELECT 'TESTING PLUGIN'\n");
+        editor->append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
         editor->append("-- End.\n");
         break;
     case DDL_CREATE_SCHEMA:
-        if (dlg_schema.exec()) {
-            editor->insertAt(dlg_schema.gen_create_schema(), line, index);
+        if (dlg_schema->exec()) {
+            editor->insertAt(dlg_schema->gen_create_schema(), line, index);
         }
         break;
     case DDL_DROP_SCHEMA:
-        if (dlg_schema.exec()) {
-            editor->insertAt(dlg_schema.gen_drop_schema(), line, index);
+        if (dlg_schema->exec()) {
+            editor->insertAt(dlg_schema->gen_drop_schema(), line, index);
         }
         break;
     case DDL_UPDATE_SEQUENCE:
-        if (dlg_sequence.exec()) {
-            editor->insertAt(dlg_sequence.gen_update_sequece(), line, index);
+        if (dlg_sequence->exec()) {
+            editor->insertAt(dlg_sequence->gen_update_sequece(), line, index);
         }
         break;
     case DDL_RESET_SEQUENCE:
-        if (dlg_sequence.exec()) {
-            editor->insertAt(dlg_sequence.gen_reset_sequece(), line, index);
+        if (dlg_sequence->exec()) {
+            editor->insertAt(dlg_sequence->gen_reset_sequece(), line, index);
         }
         break;
     case DDL_CREATE_TRIGGER:
@@ -100,11 +105,19 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
     case DDL_ENABLE_TRIGGER:
     case DDL_DISABLE_TRIGGER:
     default:
-        delete generators;
+        if (connection) {
+            delete generators;
+            delete dlg_schema;
+            delete dlg_sequence;
+        }
         return false;
     }
 
-    delete generators;
+    if (connection) {
+        delete generators;
+        delete dlg_schema;
+        delete dlg_sequence;
+    }
     return true;
 
 }

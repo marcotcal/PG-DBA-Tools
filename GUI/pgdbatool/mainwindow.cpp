@@ -65,11 +65,15 @@ MainWindow::MainWindow(QWidget *parent) :
     for(auto i = interface_list.begin(); i != interface_list.end(); i++)
         ui->ddl_generator_list->setPluginElement(i.value());
 
+    // assign plugins to SQL
+    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
+        ui->sql_generator_list->setPluginElement(i.value());
+
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
     connect(ui->ddl_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
-    connect(ui->sql_generator_list, SIGNAL(executeItem(QString)), this, SLOT(executeModel(QString)));
+    connect(ui->sql_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
 }
 
 bool MainWindow::loadPlugins()

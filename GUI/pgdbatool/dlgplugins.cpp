@@ -34,12 +34,13 @@ void DlgPlugins::on_bt_close_clicked()
 void DlgPlugins::on_bt_test_clicked()
 {
     QString name;
+    int row_sel = ui->plugin_table->currentRow();
+
     QMapIterator<QString, PluginElement*> i(interface_list);
-    for(int row = 0; row < ui->plugin_table->rowCount(); row++) {
-        name = ui->plugin_table->item(row,0)->text();
-        for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
-            if(name == i.value()->getMeta().toObject().value("Name").toString())
-                i.value()->getInterface()->run(nullptr, 0, editor);
+    name = ui->plugin_table->item(row_sel,0)->text();
+    for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
+        if(name == i.value()->getMeta().toObject().value("Name").toString()) {
+            i.value()->getInterface()->run(nullptr, 0, editor);
         }
     }
 }

@@ -1,6 +1,7 @@
 #include "sqlgenerationplugin.h"
 #include <dlgparametersschema.h>
 #include <dlgparameterobject.h>
+#include <dlginsert.h>
 
 
 SQLGenerationPlugin::SQLGenerationPlugin(QObject *parent) :
@@ -43,7 +44,7 @@ bool SQLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
     switch(item) {
     case SQL_TEST:
         editor->append("-- Plugin Test.\n");
-        editor->append("SELECT 'TESTING PLUGIN'\n");
+        editor->append("SELECT 'TESTING SQL GENERATION PLUGIN'\n");
         editor->append("-- End.\n");
         break;
     case SQL_INSERT_ALL:
@@ -147,115 +148,83 @@ QStringList SQLGenerationPlugin::users(PGconn *connection)
 
 QString SQLGenerationPlugin::gen_insert_all(PGconn *connection, int offset)
 {
-    DlgParametersSchema dlg(connection);
-    QString schema_name;
-    QString schema_owner;
-    QString sql =
-            "SELECT "
-            "    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || E';\n' AS create_schema "
-            "FROM information_schema.schemata "
-            "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
-    QString result = "";
-    int tuples;
+    QStringList columns;
+        QStringList values;
+        QString column_name;
+        QString column_default;
+        QString data_type;
+        QString is_mandatory;
+        int tuples;
+        QString offset_space = QString(" ").repeated(offset);
+        char *error;
+        const char *params[2];
+        QString insert_stmt;
+        const char *sql_list_fields =
+            "SELECT column_name, column_default, data_type, is_nullable "
+            "FROM information_schema.columns "
+            "WHERE "
+            "   table_schema = $1 "
+            "   AND table_name = $2 ";
 
-    dlg.setSchemas(schemas(connection));
-    dlg.setUserList(users(connection));
+        DlgInsert dlg(connection);
 
-    if (!dlg.exec())
-        return "";
+        if (dlg.exec()) {
 
-    schema_name = dlg.schemaName();
-    schema_owner = dlg.schemaOwner();
+            insert_stmt = QString("INSERT INTO %1.%2 ( \n").arg(dlg.schema()).arg(dlg.table());
 
-    if (!schema_name.isEmpty())
-        sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
+            params[0] = dlg.schema().toStdString().c_str();
+            params[1] = dlg.table().toStdString().c_str();
 
-    if (!schema_owner.isEmpty())
-        sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
+            if (PQstatus(connection) == CONNECTION_OK) {
 
-    if (PQstatus(connection) == CONNECTION_OK) {
+                PGresult *res =  PQexecParams(connection, sql_list_fields, 2, NULL, params, NULL, NULL, 0);
 
-        //PGresult *res =  PQexecParams(connection, sql_list_fields, 2, NULL, params, NULL, NULL, 0);
+                if (PQresultStatus(res) != PGRES_TUPLES_OK)
+                {
 
-        PGresult *res =  PQexec(connection, sql.toStdString().c_str());
+                    error = PQerrorMessage(connection);
+                    PQclear(res);
 
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
+                } else {
 
-            error = PQerrorMessage(connection);
-            PQclear(res);
-            return error;
+                    tuples = PQntuples(res);
 
-        } else {
+                    for (int i = 0; i < tuples; i++) {
 
-            tuples = PQntuples(res);
+                        column_name = QString::fromStdString(PQgetvalue(res, i, 0));
+                        column_default = QString::fromStdString(PQgetvalue(res, i, 1));
+                        data_type = QString::fromStdString(PQgetvalue(res, i, 2));
+                        is_mandatory = QString::fromStdString(PQgetvalue(res, i, 3));
+                        //if (mandatory && is_mandatory == "NO")
+                        //    continue;
+                        if (column_default != "")
+                            values << offset_space + "   " + column_default + "  /* " + column_name + " */";
+                        else if (data_type == "character varying")
+                            values << offset_space + "   '' /* " + column_name + " */";
+                        else
+                            values << offset_space + "      /* " + column_name + " */";
+                        columns << offset_space + "   " + column_name;
 
-            for (int i = 0; i < tuples; i++) {
-                if (i > 0)
-                    result += QString(" ").repeated(offset);
-                result += QString::fromStdString(PQgetvalue(res, i, 0));
+                    }
+
+                    PQclear(res);
+                }
             }
 
-            PQclear(res);
         }
-    }
 
-    return result;
+        insert_stmt += columns.join(QByteArray(",\n"));
+        insert_stmt += "\n" + offset_space + ") VALUES (\n";
+        insert_stmt += values.join(QByteArray(",\n"));
+        insert_stmt += "\n" + offset_space + ");";
 
+        return insert_stmt;
 }
 
 QString SQLGenerationPlugin::gen_insert_mandatory(PGconn *connection, int offset)
 {
-    QString sql =
-            "SELECT "
-            "    'DROP SCHEMA IF EXISTS ' || schema_name || E';\n' AS drop_schema "
-            "FROM information_schema.schemata "
-            "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
-    QString result = "";
-    DlgParametersSchema dlg(connection);
-    QString schema_name;
-    QString schema_owner;
-    int tuples;
 
-    dlg.setSchemas(schemas(connection));
-    dlg.setUserList(users(connection));
-    if (!dlg.exec())
-        return "";
 
-    schema_name = dlg.schemaName();
-    schema_owner = dlg.schemaOwner();
-
-    if (!schema_name.isEmpty())
-        sql += QString("AND schema_name ILIKE '%%1%'").arg(schema_name);
-
-    if (!schema_owner.isEmpty())
-        sql += QString("AND schema_owner ILIKE '%%1%'").arg(schema_owner);
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexec(connection, sql.toStdString().c_str());
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-
-            error = PQerrorMessage(connection);
-            PQclear(res);
-
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++) {
-                if (i > 0)
-                    result += QString(" ").repeated(offset);
-                result += QString::fromStdString(PQgetvalue(res, i, 0));
-            }
-
-            PQclear(res);
-        }
-    }
-
-    return result;
 }
 
 #if QT_VERSION < 0x050000
