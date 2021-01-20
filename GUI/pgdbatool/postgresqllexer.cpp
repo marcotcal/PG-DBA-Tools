@@ -220,7 +220,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "parameters partial path postfix prefix "
             "preorder prepare preserve primary prior privileges "
             "procedure public read reads real recursive ref "
-            "references referencing relative restrict result "
+            "references referencing relative rename restrict result "
             "return returns revoke right role rollback rollup "
             "routine row rows savepoint schema scroll scope "
             "search second section select sequence session "
