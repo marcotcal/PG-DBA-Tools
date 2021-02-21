@@ -53,6 +53,8 @@ public:
     ~EditorItem();
     void setFileName(QString value);
     const QString &getFileName() const;
+    QString getLabel() const;
+    void setLabel(const QString &value);
     void contextMenuEvent(QContextMenuEvent *event);
 
 public slots:
@@ -71,6 +73,8 @@ signals:
 private: 
 
     QString file_name;
+    QString label;
+
     FrmFindText *frm_find;
 
     QSignalMapper *signal_mapper;
@@ -215,6 +219,8 @@ private:
     QList<EditorItem*> editors;
     bool in_transaction;
     bool is_connected;
+    int last_editor_number;
+
     ConnectionsData &connections;
     ProjectData &project;
     PGconn *conn;

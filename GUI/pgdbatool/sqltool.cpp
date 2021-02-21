@@ -189,6 +189,16 @@ void EditorItem::do_execute_generator(int gen_sql)
     emit execute_generator(this, gen_sql);
 }
 
+QString EditorItem::getLabel() const
+{
+    return label;
+}
+
+void EditorItem::setLabel(const QString &value)
+{
+    label = value;
+}
+
 EditorItem::~EditorItem() {
 
 }
@@ -202,11 +212,12 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     ui->setupUi(this);
-    addEditor();
+    // addEditor();
     in_transaction = false;
     is_connected = false;
     ui->database_list->clear();
     loadDatabaseList(sel_connection);
+    last_editor_number = 0;
 
     for (int i = 0; i < connections.getConnections().count(); i++) {
         ConnectionElement *conn = connections.getConnections().at(i);
@@ -286,10 +297,10 @@ bool SqlTool::openFileOnNew(QFile &file)
     editor = addEditor();
     QTextStream in(&file);
     editor->setFileName(file.fileName());
+    editor->setLabel(QFileInfo(file).baseName());
     editor->setText(in.readAll());
     editor->setModified(false);
-    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(),
-                                           QFileInfo(file).baseName());
+    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(), editor->getLabel());
 
     return true;
 }
@@ -306,10 +317,10 @@ bool SqlTool::openFileOnCurrent(QFile &file)
 
     QTextStream in(&file);
     editor->setFileName(file.fileName());
+    editor->setLabel(QFileInfo(file).baseName());
     editor->setText(in.readAll());
     editor->setModified(false);
-    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(),
-                                           QFileInfo(file).baseName());
+    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(), editor->getLabel());
 
     return true;
 }
@@ -325,7 +336,8 @@ bool SqlTool::saveCurrent(bool force)
                     QTextStream ts(&destination);
                     ts << editor->text();
                     editor->setModified(false);
-                    ui->editors_tabs->setTabText(ui->editors_tabs->currentIndex(),QFileInfo(editor->getFileName()).baseName());
+                    editor->setLabel(QFileInfo(editor->getFileName()).baseName());
+                    ui->editors_tabs->setTabText(ui->editors_tabs->currentIndex(), editor->getLabel());
                     return true;
                 }
             } else {                
@@ -698,9 +710,11 @@ bool SqlTool::saveToXML(QString file_name)
             "  <!ELEMENT query_set (queries)>\n"
             "  <!ATTLIST query_set count CDATA \"\">\n"
             "  <!ATTLIST query_set group_name CDATA \"\">\n"
+            "  <!ATTLIST query_set last_editor_number CDATA \"\">\n"
             "  <!ELEMENT queries (query*)>\n"
             "  <!ELEMENT query (#PCDATA)>"
-            "  <!ATTLIST query name CDATA \"\">\n"
+            "  <!ATTLIST query file_name CDATA \"\">\n"
+            "  <!ATTLIST query label CDATA \"\">\n"
             "]>\n";
     file.open(QIODevice::WriteOnly);
     QXmlStreamWriter xmlWriter(&file);
@@ -710,12 +724,15 @@ bool SqlTool::saveToXML(QString file_name)
 
     xmlWriter.writeStartElement("query_set");
     xmlWriter.writeAttribute("","count", QString("%1").arg(editors.count()));
+    xmlWriter.writeAttribute("","last_editor_name", QString("%1").arg(last_editor_number));
     xmlWriter.writeAttribute("","group_name", group_name);
     Q_FOREACH(EditorItem *editor, editors) {
         xmlWriter.writeStartElement("query");
-        xmlWriter.writeAttribute("","name", QFileInfo(editor->getFileName()).baseName());
+        xmlWriter.writeAttribute("","file_name", editor->getFileName());
+        xmlWriter.writeAttribute("","label", editor->getLabel());
         xmlWriter.writeCDATA(editor->text());
         xmlWriter.writeEndElement();
+        editor->setModified(false);
     }
     xmlWriter.writeEndElement();
 
@@ -728,7 +745,7 @@ bool SqlTool::readFromXML(QString file_name)
 {
     QFile file(file_name);
     QXmlStreamReader reader;
-    QString name;
+    QString label;
     QString query;
     EditorItem *editor;
 
@@ -757,17 +774,21 @@ bool SqlTool::readFromXML(QString file_name)
                     //     count = attributes.value("count").toInt();
                     if(attributes.hasAttribute("group_name"))
                          group_name = attributes.value("group_name").toString();
+                    if(attributes.hasAttribute("last_editor_number"))
+                         last_editor_number = attributes.value("last_editor_number").toInt();
                 } else if (reader.name() == "query") {
                     QXmlStreamAttributes attributes = reader.attributes();
-                    if(attributes.hasAttribute("name"))
-                         name = attributes.value("name").toString();
+                    if(attributes.hasAttribute("file_name"))
+                         file_name = attributes.value("file_name").toString();
+                    if(attributes.hasAttribute("label"))
+                         label = attributes.value("label").toString();
                     query = reader.readElementText().trimmed();
                     editor = addEditor();
                     editor->setText(query);
                     editor->setModified(false);
-                    if(name == "")
-                        name = QString("SQL %1").arg(ui->editors_tabs->currentIndex() + 1 );
-                    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(), name);
+                    editor->setFileName(file_name);
+                    editor->setLabel(label);
+                    ui->editors_tabs->tabBar()->setTabText(ui->editors_tabs->currentIndex(), label);
                 }
             }
         }
@@ -779,14 +800,18 @@ bool SqlTool::readFromXML(QString file_name)
 
 EditorItem *SqlTool::addEditor() {
 
-    QString new_sufix = QString("%1").arg(ui->editors_tabs->count()+1);
+    QString new_sufix = QString("%1").arg(++last_editor_number);
     EditorItem *editor = new EditorItem(this);
 
     editor->setObjectName("editor"+new_sufix);
     initializeEditor(editor);
     editors.append(editor);
-    editor->setObjectName("SQL "+new_sufix);
-    ui->editors_tabs->addTab(editor, "SQL "+new_sufix);
+    editor->setObjectName("new sql " + new_sufix);
+
+    editor->setFileName("");
+    editor->setLabel("new sql " + new_sufix);
+
+    ui->editors_tabs->addTab(editor, "new sql " + new_sufix);
     ui->editors_tabs->setCurrentIndex(ui->editors_tabs->count()-1);
     editor->setFocus();
     connect(editor, SIGNAL(find_request(EditorItem*)), this, SLOT(do_find_request(EditorItem*)));

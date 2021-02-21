@@ -406,6 +406,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     case SqlTool::MODE_QUERY:
     case SqlTool::MODE_SCRIPT:
         sql = new SqlTool(connections, ui->connection_list->currentRow(), project, ui->main_stack);
+        sql->addEditor();
         break;
     default:
         return nullptr;
@@ -535,7 +536,10 @@ void MainWindow::on_actionOpen_SQL_File_triggered()
                                                  "SQL files (*.sql);;All files (*.*)");
         if (file_name != "") {
             file.setFileName(file_name);
-            sql->openFileOnNew(file);
+            if (sql->getCurrentEditor()->isModified())
+                sql->openFileOnNew(file);
+            else
+                sql->openFileOnCurrent(file);
         }
     }
 }
@@ -985,7 +989,12 @@ void MainWindow::executePlugin(PluginElement *element, int item)
         editor = sql->getCurrentEditor();
         if (sql->connected()) {
             element->getInterface()->run(sql->getPostgresConnection(), item, editor);
+        } else {
+            QMessageBox::warning(this, "Connection", "Please open choose the connection "
+                                 "and open the database before generate sentence.");
         }
+    } else {
+        QMessageBox::warning(this, "Connection", "The current view is not a SQL Tool");
     }
 }
 
