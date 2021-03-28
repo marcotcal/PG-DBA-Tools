@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1085</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -278,6 +278,7 @@
    <addaction name="actionAdd_Editor"/>
    <addaction name="actionOpen_SQL_File"/>
    <addaction name="actionSave_SQL_File"/>
+   <addaction name="actionSave_SQL_File_As"/>
    <addaction name="actionClose_Editor"/>
    <addaction name="separator"/>
    <addaction name="actionConnect"/>
@@ -1134,6 +1135,10 @@
    </property>
   </action>
   <action name="actionSave_SQL_File_As">
+   <property name="icon">
+    <iconset resource="pgdbatool.qrc">
+     <normaloff>:/icons/images/icons/icons8-save-as-40.png</normaloff>:/icons/images/icons/icons8-save-as-40.png</iconset>
+   </property>
    <property name="text">
     <string>Save SQL File As...</string>
    </property>
