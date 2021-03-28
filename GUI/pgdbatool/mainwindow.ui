@@ -14,7 +14,7 @@
    <string>PostgreSQL DBA Tool</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_5">
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -396,7 +396,41 @@
         <number>2</number>
        </property>
        <item>
-        <widget class="QStackedWidget" name="output_stack"/>
+        <widget class="QStackedWidget" name="output_stack">
+         <widget class="QWidget" name="output_dummy_page">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="output_dummy_label">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(222, 222, 222);
+color: rgb(180, 180,180);</string>
+             </property>
+             <property name="text">
+              <string>No SQL Tool Selected</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </item>
@@ -477,15 +511,43 @@
       <number>2</number>
      </property>
      <item>
-      <widget class="DDLGenTreeWidget" name="ddl_generator_list">
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </column>
+      <widget class="QStackedWidget" name="ddl_stack">
+       <widget class="QWidget" name="ddl_dummy_page">
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="ddl_dummy_label">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(222, 222, 222);
+color: rgb(180, 180,180);</string>
+           </property>
+           <property name="text">
+            <string>No SQL Tool Selected</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -516,15 +578,43 @@
       <number>2</number>
      </property>
      <item>
-      <widget class="SQLGenTreeWidget" name="sql_generator_list">
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
+      <widget class="QStackedWidget" name="sql_stack">
+       <widget class="QWidget" name="sql_dummy_page">
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="sql_dummy_label">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(222, 222, 222);
+color: rgb(180, 180,180);</string>
+           </property>
+           <property name="text">
+            <string>No SQL Tool Selected</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -1154,18 +1244,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>DDLGenTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>ddlgentreewidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SQLGenTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>sqlgentreewidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="pgdbatool.qrc"/>
  </resources>

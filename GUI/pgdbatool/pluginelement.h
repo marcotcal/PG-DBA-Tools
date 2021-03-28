@@ -18,6 +18,7 @@ private:
     PGDBAPluginInterface *interface;
     QJsonValue meta;
 public slots:
+
 };
 
 #endif // PLUGINELEMENT_H

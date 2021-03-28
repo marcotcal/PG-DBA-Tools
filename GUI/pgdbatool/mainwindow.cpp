@@ -39,6 +39,8 @@
 #include "dlgproject.h"
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
+#include "ddlgentreewidget.h"
+#include "sqlgentreewidget.h"
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -61,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadPlugins();
 
+    /*
     // assign plugins to DDL
     for(auto i = interface_list.begin(); i != interface_list.end(); i++)
         ui->ddl_generator_list->setPluginElement(i.value());
@@ -68,12 +71,16 @@ MainWindow::MainWindow(QWidget *parent) :
     // assign plugins to SQL
     for(auto i = interface_list.begin(); i != interface_list.end(); i++)
         ui->sql_generator_list->setPluginElement(i.value());
+    */
 
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
+
+    /*
     connect(ui->ddl_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
     connect(ui->sql_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
+    */
 }
 
 bool MainWindow::loadPlugins()
@@ -395,6 +402,9 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 {
     SqlTool *sql;
     OutputSet *out;
+    DDLGenTreeWidget *ddl_tree;
+    SQLGenTreeWidget *sql_tree;
+
     QListWidgetItem *list_item;
 
     list_item = new QListWidgetItem(name, ui->editor_list);
@@ -418,10 +428,23 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->main_stack->setCurrentWidget(ui->main_stack);
     ui->editor_list->clearSelection();
     sql->setGroupName(name);
+
+
     out = new OutputSet(sql);
     sql->setOutputSet(out);
     ui->output_stack->addWidget(out);
     ui->output_stack->setCurrentWidget(out);
+
+    ddl_tree = new DDLGenTreeWidget(sql);
+    sql->setDDLTree(ddl_tree);
+    ui->ddl_stack->addWidget(ddl_tree);
+    ui->ddl_stack->setCurrentWidget(ddl_tree);
+
+    sql_tree = new SQLGenTreeWidget(sql);
+    sql->setDDLTree(sql_tree);
+    ui->sql_stack->addWidget(sql_tree);
+    ui->sql_stack->setCurrentWidget(sql_tree);
+
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
     connect(sql, SIGNAL(beginExecution(SqlTool *)), this, SLOT(do_beginExecuteQuery(SqlTool*)));
@@ -682,6 +705,8 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
         enable_sql_tool_actions(sql);
         enable_sql_transactions(sql);
         ui->output_stack->setCurrentWidget(sql->getOutputSet());
+        ui->ddl_stack->setCurrentWidget(sql->getDDLTree());
+        ui->sql_stack->setCurrentWidget(sql->getSQLTree());
     }
     if (model){
         enable_model_actions(model);
@@ -738,6 +763,12 @@ void MainWindow::on_actionClose_triggered()
         } else {
             ui->output_stack->removeWidget(sql->getOutputSet());
             sql->getOutputSet()->deleteLater();
+
+            ui->ddl_stack->removeWidget(sql->getDDLTree());
+            sql->getDDLTree()->deleteLater();
+
+            ui->sql_stack->removeWidget(sql->getSQLTree());
+            sql->getSQLTree()->deleteLater();
         }
     }
 

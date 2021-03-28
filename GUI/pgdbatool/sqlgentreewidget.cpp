@@ -8,6 +8,8 @@ SQLGenTreeWidget::SQLGenTreeWidget(QWidget *parent) :
     QTreeWidget(parent)
 {
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem*,int)));
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setHeaderHidden(true);
 }
 
 void SQLGenTreeWidget::setPluginElement(PluginElement *value)

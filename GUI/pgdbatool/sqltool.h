@@ -31,6 +31,7 @@
 #include "connectionsettings.h"
 #include "projectdata.h"
 #include "frmfindtext.h"
+#include <QTreeWidget>
 
 namespace Ui {
 class SqlTool;
@@ -104,7 +105,15 @@ public:
     bool transaction();
     void beginTransaction(QString command);
     void setOutputSet(OutputSet *value) { output_set = value; }
+
     OutputSet *getOutputSet() { return output_set; }
+
+    void setDDLTree(QTreeWidget *value) { ddl_tree_view = value; }
+    void setSQLTree(QTreeWidget *value) { sql_tree_view = value; }
+
+    QTreeView *getDDLTree() { return ddl_tree_view; }
+    QTreeView *getSQLTree() { return ddl_tree_view; }
+
     void executeCurrent(ResultOutput* output, bool show_query=false);
     void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
     void rollback();
@@ -227,7 +236,12 @@ private:
     QString default_path;
     QString group_name;
     QString group_file_name;
+
     OutputSet *output_set;
+
+    QTreeWidget *sql_tree_view;
+    QTreeWidget *ddl_tree_view;
+
     ResultOutput *output;
     bool query_running;
     ConnectionSettings *conn_settings;
