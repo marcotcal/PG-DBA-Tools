@@ -4,6 +4,7 @@
 #include <QTreeWidget>
 #include <pgdbaplugininterface.h>
 #include <pluginelement.h>
+#include <libpq-fe.h>
 
 class SQLGenTreeWidget : public QTreeWidget
 {
@@ -12,6 +13,7 @@ public:
 
     SQLGenTreeWidget(QWidget *parent = Q_NULLPTR);
     void setPluginElement(PluginElement *value);
+    void setConnection(PGconn *value);
 
 protected slots:
 
@@ -24,6 +26,7 @@ signals:
 private:
 
     PluginElement *element;
+    PGconn *connection;
 
 };
 

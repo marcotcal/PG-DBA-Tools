@@ -212,8 +212,7 @@ bool MainWindow::maybeSave()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
-{
-    if (maybeSave()) {
+{    if (maybeSave()) {
         writeSettings();
         event->accept();
     } else {
@@ -439,11 +438,13 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     sql->setDDLTree(ddl_tree);
     ui->ddl_stack->addWidget(ddl_tree);
     ui->ddl_stack->setCurrentWidget(ddl_tree);
+    ddl_tree->setConnection(NULL);
 
     sql_tree = new SQLGenTreeWidget(sql);
     sql->setDDLTree(sql_tree);
     ui->sql_stack->addWidget(sql_tree);
     ui->sql_stack->setCurrentWidget(sql_tree);
+    sql_tree->setConnection(NULL);
 
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
@@ -717,21 +718,38 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 
 void MainWindow::on_actionConnect_triggered()
 {
+    DDLGenTreeWidget *ddl_tree;
+    SQLGenTreeWidget *sql_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
         sql->databaseConnect();
         enable_sql_tool_actions(sql);
+        ddl_tree = dynamic_cast<DDLGenTreeWidget *>(sql->getDDLTree());
+        sql_tree = dynamic_cast<SQLGenTreeWidget *>(sql->getSQLTree());
+        if (ddl_tree)
+            ddl_tree->setConnection(sql->getPostgresConnection());
+        if (sql_tree)
+            sql_tree->setConnection(sql->getPostgresConnection());
+
     }
 }
 
 void MainWindow::on_actionDisconect_triggered()
 {
+    DDLGenTreeWidget *ddl_tree;
+    SQLGenTreeWidget *sql_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
         sql->databaseDisconnect();
         enable_sql_tool_actions(sql);
+        ddl_tree = dynamic_cast<DDLGenTreeWidget *>(sql->getDDLTree());
+        sql_tree = dynamic_cast<SQLGenTreeWidget *>(sql->getSQLTree());
+        if (ddl_tree)
+            ddl_tree->setConnection(NULL);
+        if (sql_tree)
+            sql_tree->setConnection(NULL);
     }
 }
 

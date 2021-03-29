@@ -29,3 +29,8 @@ void DDLGenTreeWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
     if (item->type() != 0)
         emit executeItem(element, item->type());
 }
+
+void DDLGenTreeWidget::setConnection(PGconn *value)
+{
+    connection =value;
+}

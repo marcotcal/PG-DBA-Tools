@@ -23,6 +23,11 @@ void SQLGenTreeWidget::setPluginElement(PluginElement *value)
         element->getInterface()->setTreeWidget(this);
 }
 
+void SQLGenTreeWidget::setConnection(PGconn *value)
+{
+    connection = value;
+}
+
 void SQLGenTreeWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column)
