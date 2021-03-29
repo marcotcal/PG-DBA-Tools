@@ -63,24 +63,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadPlugins();
 
-    /*
-    // assign plugins to DDL
-    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
-        ui->ddl_generator_list->setPluginElement(i.value());
-
-    // assign plugins to SQL
-    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
-        ui->sql_generator_list->setPluginElement(i.value());
-    */
-
     connect(ui->menuProjects, &QMenu::aboutToShow, this, &MainWindow::projectMenuOpen);
     connect(ui->menuEdit, &QMenu::aboutToShow, this, &MainWindow::editMenuOpen);
     connect(ui->menuView, &QMenu::aboutToShow, this, &MainWindow::viewMenuOpen);
 
-    /*
-    connect(ui->ddl_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
-    connect(ui->sql_generator_list, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
-    */
 }
 
 bool MainWindow::loadPlugins()
@@ -440,11 +426,21 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->ddl_stack->setCurrentWidget(ddl_tree);
     ddl_tree->setConnection(NULL);
 
+    connect(ddl_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
+
+    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
+        ddl_tree->setPluginElement(i.value());
+
     sql_tree = new SQLGenTreeWidget(sql);
-    sql->setDDLTree(sql_tree);
+    sql->setSQLTree(sql_tree);
     ui->sql_stack->addWidget(sql_tree);
     ui->sql_stack->setCurrentWidget(sql_tree);
     sql_tree->setConnection(NULL);
+
+    connect(sql_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
+
+    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
+        sql_tree->setPluginElement(i.value());
 
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
@@ -706,6 +702,7 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
         enable_sql_tool_actions(sql);
         enable_sql_transactions(sql);
         ui->output_stack->setCurrentWidget(sql->getOutputSet());
+
         ui->ddl_stack->setCurrentWidget(sql->getDDLTree());
         ui->sql_stack->setCurrentWidget(sql->getSQLTree());
     }
@@ -727,8 +724,12 @@ void MainWindow::on_actionConnect_triggered()
         enable_sql_tool_actions(sql);
         ddl_tree = dynamic_cast<DDLGenTreeWidget *>(sql->getDDLTree());
         sql_tree = dynamic_cast<SQLGenTreeWidget *>(sql->getSQLTree());
-        if (ddl_tree)
+
+        if (ddl_tree) {
             ddl_tree->setConnection(sql->getPostgresConnection());
+            ddl_tree->createTree();
+        }
+
         if (sql_tree)
             sql_tree->setConnection(sql->getPostgresConnection());
 
@@ -746,10 +747,14 @@ void MainWindow::on_actionDisconect_triggered()
         enable_sql_tool_actions(sql);
         ddl_tree = dynamic_cast<DDLGenTreeWidget *>(sql->getDDLTree());
         sql_tree = dynamic_cast<SQLGenTreeWidget *>(sql->getSQLTree());
-        if (ddl_tree)
+
+        if (ddl_tree) {
             ddl_tree->setConnection(NULL);
+            ddl_tree->clear();
+        }
         if (sql_tree)
             sql_tree->setConnection(NULL);
+
     }
 }
 

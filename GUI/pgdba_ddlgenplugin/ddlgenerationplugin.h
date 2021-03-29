@@ -29,13 +29,16 @@ public:
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
-    void setTreeWidget(QTreeWidget *tree);
-
+    void setTreeWidget(QTreeWidget *value);
+    void createTree(PGconn *connection);
     bool run(PGconn *connection, int item, EditorItem *editor) override;
 
 private:
 
+    QTreeWidget *tree;
     QString file_name;
+
+    QStringList schemas(PGconn *connection);
 
 };
 

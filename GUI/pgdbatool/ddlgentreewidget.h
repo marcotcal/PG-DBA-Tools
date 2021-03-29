@@ -15,6 +15,7 @@ public:
     DDLGenTreeWidget(QWidget *parent = Q_NULLPTR);
     void setPluginElement(PluginElement *value);
     void setConnection(PGconn *value);
+    void createTree();
 
 protected slots:
 
@@ -26,7 +27,8 @@ signals:
 
 private:
 
-    PluginElement *element;
+    QList<PluginElement *>elements;
+
     PGconn *connection;
 };
 

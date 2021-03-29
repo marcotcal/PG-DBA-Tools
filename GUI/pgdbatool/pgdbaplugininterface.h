@@ -19,7 +19,7 @@ class PGDBAPluginInterface
     virtual ~PGDBAPluginInterface() {}
     virtual void setMenu(QMenu *menu) = 0;
     virtual void setTreeWidget(QTreeWidget *tree) = 0;
-
+    virtual void createTree(PGconn *connection) = 0;
     virtual bool run(PGconn *connection, int item, EditorItem *editor) = 0;
  };
 

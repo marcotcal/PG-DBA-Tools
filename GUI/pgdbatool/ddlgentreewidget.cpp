@@ -14,23 +14,40 @@ DDLGenTreeWidget::DDLGenTreeWidget(QWidget *parent) :
 
 void DDLGenTreeWidget::setPluginElement(PluginElement *value)
 {
-    element = value;
+
     QJsonArray keys;
 
-    keys = element->getMeta().toObject().value("Keys").toArray();
+    keys = value->getMeta().toObject().value("Keys").toArray();
 
-    if (keys.contains(QJsonValue("PGDBATOOLS")) && keys.contains(QJsonValue("DDL")) && keys.contains(QJsonValue("DDL_TREE")))
-        element->getInterface()->setTreeWidget(this);
+    if (keys.contains(QJsonValue("PGDBATOOLS")) && keys.contains(QJsonValue("DDL")) && keys.contains(QJsonValue("DDL_TREE"))) {
+        elements.append(value);
+        value->getInterface()->setTreeWidget(this);
+    }
+
 }
 
 void DDLGenTreeWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column)
+    /*
     if (item->type() != 0)
         emit executeItem(element, item->type());
+    */
 }
 
 void DDLGenTreeWidget::setConnection(PGconn *value)
 {
     connection =value;
+}
+
+void DDLGenTreeWidget::createTree()
+{
+
+    PluginElement *element;
+
+    for(int i = 0; i < elements.count(); i++) {
+        element = elements[i];
+        element->getInterface()->createTree(connection);
+    }
+
 }

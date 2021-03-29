@@ -112,7 +112,7 @@ public:
     void setSQLTree(QTreeWidget *value) { sql_tree_view = value; }
 
     QTreeView *getDDLTree() { return ddl_tree_view; }
-    QTreeView *getSQLTree() { return ddl_tree_view; }
+    QTreeView *getSQLTree() { return sql_tree_view; }
 
     void executeCurrent(ResultOutput* output, bool show_query=false);
     void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
