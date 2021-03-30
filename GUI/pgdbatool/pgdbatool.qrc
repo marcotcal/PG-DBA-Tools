@@ -124,6 +124,13 @@
         <file>images/icons/icons8-new-sql-tool-40.png</file>
         <file>images/icons/icons8-open-sql-tool-40.png</file>
         <file>images/icons/icons8-new-sql-file-40.png</file>
+        <file>images/icons/database.png</file>
+        <file>images/icons/schema.png</file>
+        <file>images/icons/schemas.png</file>
+        <file>images/icons/table.png</file>
+        <file>images/icons/tables.png</file>
+        <file>images/icons/view.png</file>
+        <file>images/icons/views.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>

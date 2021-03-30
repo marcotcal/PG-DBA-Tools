@@ -8,7 +8,6 @@
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
 #include <sqltool.h>
-#include <pgdbagenerators.h>
 
 class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
     Q_OBJECT
@@ -39,6 +38,10 @@ private:
     QString file_name;
 
     QStringList schemas(PGconn *connection);
+    QStringList tables(QString schema, PGconn *connection);
+    QStringList views(QString schema, PGconn *connection);
+    QStringList users(PGconn *connection);
+
 
 };
 

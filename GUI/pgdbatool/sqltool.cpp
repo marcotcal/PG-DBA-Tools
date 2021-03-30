@@ -41,9 +41,6 @@
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
 
-//  libraries
-
-#include "pgdbagenerators.h"
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";    
