@@ -16,32 +16,33 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
 
 public:
     enum {
-        DDL_TEST = 0,
-        DDL_CREATE_SCHEMA = 1000,
-        DDL_DROP_SCHEMA,
-        DDL_UPDATE_SEQUENCE,
-        DDL_RESET_SEQUENCE,
-        DDL_CREATE_TRIGGER,
-        DDL_DROP_TRIGGER,
-        DDL_ENABLE_TRIGGER,
-        DDL_DISABLE_TRIGGER
+        SCHEMA_ITEM,
+        TABLE_ITEM,
+        VIEW_ITEM
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
     void setTreeWidget(QTreeWidget *value);
-    void createTree(PGconn *connection);
+    void createTree(PGconn *value);
     bool run(PGconn *connection, int item, EditorItem *editor) override;
+
+private slots:
+
+    void processItem(QTreeWidgetItem *item, int column);
 
 private:
 
     QTreeWidget *tree;
     QString file_name;
 
+    PGconn *connection;
     QStringList schemas(PGconn *connection);
     QStringList tables(QString schema, PGconn *connection);
     QStringList views(QString schema, PGconn *connection);
     QStringList users(PGconn *connection);
 
+    void processSchema(QTreeWidgetItem *item);
+    void processTable(QTreeWidgetItem *item);
 
 };
 

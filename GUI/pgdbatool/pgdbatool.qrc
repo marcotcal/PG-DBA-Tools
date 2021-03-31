@@ -131,6 +131,19 @@
         <file>images/icons/tables.png</file>
         <file>images/icons/view.png</file>
         <file>images/icons/views.png</file>
+        <file>images/icons/functions.png</file>
+        <file>images/icons/function.png</file>
+        <file>images/icons/constraints.png</file>
+        <file>images/icons/sequences.png</file>
+        <file>images/icons/trigger_function.png</file>
+        <file>images/icons/trigger_functions.png</file>
+        <file>images/icons/trigger.png</file>
+        <file>images/icons/triggers.png</file>
+        <file>images/icons/unique_key.png</file>
+        <file>images/icons/foreign_key.png</file>
+        <file>images/icons/sequence.png</file>
+        <file>images/icons/primary_key.png</file>
+        <file>images/icons/check_constraint.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>
