@@ -77,12 +77,17 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
     case SEQUENCES_ITEM:
         if(item->childCount() == 0) processSequences(item);
         break;
-
     case FUNCTIONS_ITEM:
         if(item->childCount() == 0) processFunctions(item);
         break;
     case TRIGGER_FUNCTIONS_ITEM:
         if(item->childCount() == 0) processTrigerFunctions(item);
+        break;
+    case CONSTRAINTS_ITEM:
+        if(item->childCount() == 0) processConstraints(item);
+        break;
+    case TRIGGERS_ITEM:
+        if(item->childCount() == 0) processTriggers(item);
         break;
     }
 }
@@ -159,11 +164,17 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
         constraints_node = new QTreeWidgetItem();
         constraints_node->setText(0, "Constraints");
         constraints_node->setIcon(0, QIcon(":/icons/images/icons/constraints.png"));
+        constraints_node->setData(0, ROLE_ITEM_TYPE, CONSTRAINTS_ITEM);
+        constraints_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        constraints_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
         table->addChild(constraints_node);
 
         triggers_node = new QTreeWidgetItem();
         triggers_node->setText(0, "Triggers");
         triggers_node->setIcon(0, QIcon(":/icons/images/icons/triggers.png"));
+        triggers_node->setData(0, ROLE_ITEM_TYPE, TRIGGERS_ITEM);
+        triggers_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        triggers_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
         table->addChild(triggers_node);
 
     }
@@ -245,6 +256,88 @@ void DDLGenerationPlugin::processTrigerFunctions(QTreeWidgetItem *item)
         item->addChild(function);
 
     }
+}
+
+void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
+{
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString table = item->data(0, ROLE_TABLE_NAME).toString();
+    QStringList constr;
+    QTreeWidgetItem *constraint;
+
+    // primary key
+    constr = constraints(schema, table, "p", connection);
+    if (constr.count() > 0) {
+        constraint = new QTreeWidgetItem();
+        constraint->setText(0, constr[0]);
+        constraint->setIcon(0, QIcon(":/icons/images/icons/primary_key.png"));
+        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_TABLE_NAME, table);
+        constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONTRAINT_TYPE, "P");
+        item->addChild(constraint);
+    }
+
+    // unique key
+    constr = constraints(schema, table, "u", connection);
+    for(int j=0; j < constr.count(); j++) {
+        constraint = new QTreeWidgetItem();
+        constraint->setText(0, constr[j]);
+        constraint->setIcon(0, QIcon(":/icons/images/icons/unique_key.png"));
+        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_TABLE_NAME, table);
+        constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONTRAINT_TYPE, "U");
+        item->addChild(constraint);
+    }
+
+    // foreign key
+    constr = constraints(schema, table, "f", connection);
+    for(int j=0; j < constr.count(); j++) {
+        constraint = new QTreeWidgetItem();
+        constraint->setText(0, constr[j]);
+        constraint->setIcon(0, QIcon(":/icons/images/icons/foreign_key.png"));
+        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_TABLE_NAME, table);
+        constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONTRAINT_TYPE, "F");
+        item->addChild(constraint);
+    }
+
+    // check constraint
+    constr = constraints(schema, table, "c", connection);
+    for(int j=0; j < constr.count(); j++) {
+        constraint = new QTreeWidgetItem();
+        constraint->setText(0, constr[j]);
+        constraint->setIcon(0, QIcon(":/icons/images/icons/check_constraint.png"));
+        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_TABLE_NAME, table);
+        constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONTRAINT_TYPE, "C");
+        item->addChild(constraint);
+    }
+}
+
+void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
+{
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString table = item->data(0, ROLE_TABLE_NAME).toString();
+    QStringList trigger_list;
+    QTreeWidgetItem *trigger;
+
+    trigger_list = triggers(schema, table, connection);
+
+    for(int j=0; j < trigger_list.count(); j++) {
+        trigger = new QTreeWidgetItem();
+        trigger->setText(0, trigger_list[j]);
+        trigger->setIcon(0, QIcon(":/icons/images/icons/trigger.png"));
+        trigger->setData(0, ROLE_ITEM_TYPE, TRIGGER_ITEM);
+        trigger->setData(0, ROLE_TABLE_NAME, table);
+        trigger->setData(0, ROLE_SCHEMA_NAME, schema);
+        trigger->setData(0, ROLE_CONTRAINT_TYPE, "C");
+        item->addChild(trigger);
+    }
+
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)
@@ -535,6 +628,120 @@ QStringList DDLGenerationPlugin::triggerFunctions(QString schema, PGconn *connec
 
             for (int i = 0; i < tuples; i++)
                 list << QString::fromStdString(PQgetvalue(res, i, 1));
+
+            PQclear(res);
+
+            return list;
+
+        }
+    }
+
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char *ctype, PGconn *connection)
+{
+    /*
+     * u = unique
+     * p = primary key
+     * f = foreign key
+     * c = check
+     */
+
+    const char *sql =
+            "SELECT con.conname, con.contype "
+            "FROM "
+            "    pg_catalog.pg_constraint con "
+            "    INNER JOIN pg_catalog.pg_class rel ON rel.oid = con.conrelid "
+            "    INNER JOIN pg_catalog.pg_namespace nsp ON nsp.oid = connamespace "
+            "WHERE "
+            "    nsp.nspname = $1 "
+            "    AND rel.relname = $2 "
+            "    AND con.contype = $3 ";
+    const char *params[3];
+    QStringList list;
+    int tuples;
+
+    params[0] = schema.toStdString().c_str();
+    params[1] = table.toStdString().c_str();
+    params[2] = ctype;
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+
+        PGresult *res =  PQexecParams(connection, sql, 3, NULL, params, NULL, NULL, 0);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++)
+                list << QString::fromStdString(PQgetvalue(res, i, 0));
+
+            PQclear(res);
+
+            return list;
+
+        }
+    }
+
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::triggers(QString schema, QString table, PGconn *connection)
+{
+    /* for detailed use
+    const char *sql =
+            "SELECT event_object_schema, "
+            "       event_object_table, "
+            "       trigger_schema, "
+            "       trigger_name, "
+            "       string_agg(event_manipulation, ',') as event, "
+            "       action_timing, "
+            "       action_condition, "
+            "       action_statement "
+            "FROM information_schema.triggers "
+            "WHERE "
+            "    event_object_schema = $1 "
+            "    AND event_object_table = $2 ";
+            "GROUP BY 1,2,3,4,6,7,8 ";
+    */
+
+    const char *sql =
+            "SELECT "
+            "    trg.tgname "
+            "FROM "
+            "    pg_trigger trg "
+            "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+            "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+            "WHERE "
+            "    tbl.relname !~ '^pg_' "
+            "    AND tgisinternal = FALSE "
+            "    AND n.nspname = $1 "
+            "    AND tbl.relname = $2 ";
+
+    const char *params[2];
+    QStringList list;
+    int tuples;
+
+    params[0] = schema.toStdString().c_str();
+    params[1] = table.toStdString().c_str();
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+
+        PGresult *res =  PQexecParams(connection, sql, 2, NULL, params, NULL, NULL, 0);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++)
+                list << QString::fromStdString(PQgetvalue(res, i, 0));
 
             PQclear(res);
 

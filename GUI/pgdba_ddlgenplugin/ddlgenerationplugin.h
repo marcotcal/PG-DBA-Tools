@@ -28,12 +28,16 @@ public:
         FUNCTIONS_ITEM,
         FUNCTION_ITEM,
         TRIGGER_FUNCTIONS_ITEM,
-        TRIGGER_FUNCTION_ITEM
-
+        TRIGGER_FUNCTION_ITEM,
+        CONSTRAINTS_ITEM,
+        TRIGGERS_ITEM,
+        TRIGGER_ITEM
     };
     enum {
         ROLE_ITEM_TYPE = Qt::UserRole,
-        ROLE_SCHEMA_NAME
+        ROLE_SCHEMA_NAME,
+        ROLE_TABLE_NAME,
+        ROLE_CONTRAINT_TYPE
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
@@ -58,6 +62,8 @@ private:
     QStringList sequences(QString schema, PGconn *connection);
     QStringList functions(QString schema, PGconn *connection);
     QStringList triggerFunctions(QString schema, PGconn *connection);
+    QStringList constraints(QString schema, QString table, char *ctype, PGconn *connection);
+    QStringList triggers(QString schema, QString table, PGconn *connection);
 
     void processSchema(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);
@@ -65,6 +71,8 @@ private:
     void processSequences(QTreeWidgetItem *item);
     void processFunctions(QTreeWidgetItem *item);
     void processTrigerFunctions(QTreeWidgetItem *item);
+    void processConstraints(QTreeWidgetItem *item);
+    void processTriggers(QTreeWidgetItem *item);
 
 };
 
