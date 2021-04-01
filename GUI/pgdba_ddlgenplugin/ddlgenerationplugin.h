@@ -16,8 +16,12 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
 
 public:
     enum {
+        DATABAE_ITEM,
+        SCHEMAS_ITEM,
         SCHEMA_ITEM,
+        TABLES_ITEM,
         TABLE_ITEM,
+        VIEWS_ITEM,
         VIEW_ITEM
     };
     DDLGenerationPlugin(QObject *parent = 0);

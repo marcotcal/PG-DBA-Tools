@@ -66,10 +66,10 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
 
     switch(item->data(0, Qt::UserRole).toInt()) {
     case SCHEMA_ITEM:
-        processSchema(item);
+        if(item->childCount() == 0) processSchema(item);
         break;
     case TABLE_ITEM:
-        processTable(item);
+        if(item->childCount() == 0) processTable(item);
         break;
     }
 }
@@ -99,6 +99,7 @@ void DDLGenerationPlugin::processSchema(QTreeWidgetItem *item) {
         table = new QTreeWidgetItem();
         table->setText(0, table_list[j]);
         table->setIcon(0, QIcon(":/icons/images/icons/table.png"));
+        table->setData(0, Qt::UserRole, TABLE_ITEM);
         table_node->addChild(table);
 
     }
