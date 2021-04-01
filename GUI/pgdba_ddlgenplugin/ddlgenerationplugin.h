@@ -22,7 +22,18 @@ public:
         TABLES_ITEM,
         TABLE_ITEM,
         VIEWS_ITEM,
-        VIEW_ITEM
+        VIEW_ITEM,
+        SEQUENCES_ITEM,
+        SEQUENCE_ITEM,
+        FUNCTIONS_ITEM,
+        FUNCTION_ITEM,
+        TRIGGER_FUNCTIONS_ITEM,
+        TRIGGER_FUNCTION_ITEM
+
+    };
+    enum {
+        ROLE_ITEM_TYPE = Qt::UserRole,
+        ROLE_SCHEMA_NAME
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
@@ -40,13 +51,20 @@ private:
     QString file_name;
 
     PGconn *connection;
+    QStringList users(PGconn *connection);
     QStringList schemas(PGconn *connection);
     QStringList tables(QString schema, PGconn *connection);
     QStringList views(QString schema, PGconn *connection);
-    QStringList users(PGconn *connection);
+    QStringList sequences(QString schema, PGconn *connection);
+    QStringList functions(QString schema, PGconn *connection);
+    QStringList triggerFunctions(QString schema, PGconn *connection);
 
     void processSchema(QTreeWidgetItem *item);
-    void processTable(QTreeWidgetItem *item);
+    void processTables(QTreeWidgetItem *item);
+    void processViews(QTreeWidgetItem *item);
+    void processSequences(QTreeWidgetItem *item);
+    void processFunctions(QTreeWidgetItem *item);
+    void processTrigerFunctions(QTreeWidgetItem *item);
 
 };
 
