@@ -15,8 +15,10 @@ void DDLGenerationPlugin::setMenu(QMenu *menu)
 void DDLGenerationPlugin::setTreeWidget(QTreeWidget *value)
 {
     tree = value;
+    tree->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
+    connect(tree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
 void DDLGenerationPlugin::createTree(PGconn *value)
@@ -36,9 +38,9 @@ void DDLGenerationPlugin::createTree(PGconn *value)
         tree->insertTopLevelItem(0, root);
 
         schema_node = new QTreeWidgetItem();
-        schema_node->setText(0, "Schemas");
+        schema_node->setText(0, "Schemas");        
         schema_node->setIcon(0, QIcon(":/icons/images/icons/schemas.png"));
-
+        schema_node->setData(0, ROLE_ITEM_TYPE, SCHEMAS_ITEM);
         root->addChild(schema_node);
 
         for(int i=0; i < schemas_list.count(); i++) {
@@ -46,7 +48,7 @@ void DDLGenerationPlugin::createTree(PGconn *value)
             schema = new QTreeWidgetItem();
             schema->setText(0, schemas_list[i]);
             schema->setIcon(0, QIcon(":/icons/images/icons/schema.png"));
-            schema->setData(0, Qt::UserRole, SCHEMA_ITEM);
+            schema->setData(0, ROLE_ITEM_TYPE, SCHEMA_ITEM);
             schema_node->addChild(schema);
 
         }
@@ -57,6 +59,8 @@ void DDLGenerationPlugin::createTree(PGconn *value)
 bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
 {
     int line, index;
+
+    editor->getCursorPosition(&line, &index);
 
     switch(item) {
     case DDL_TEST:
@@ -75,7 +79,7 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
 void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
 {
 
-    switch(item->data(0, Qt::UserRole).toInt()) {
+    switch(item->data(0, ROLE_ITEM_TYPE).toInt()) {
     case SCHEMA_ITEM:
         if(item->childCount() == 0) processSchema(item);
         break;
@@ -101,6 +105,60 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         if(item->childCount() == 0) processTriggers(item);
         break;
     }
+}
+
+void DDLGenerationPlugin::showContextMenu(const QPoint &pos)
+{
+    QAction *action;
+    QTreeWidgetItem *item = tree->itemAt(pos);
+    int item_type;
+
+    if (!item)
+        return;
+    item_type = item->data(0, ROLE_ITEM_TYPE).toInt();
+
+    QMenu menu(item->text(0), tree);
+
+    switch(item_type) {
+    case SCHEMAS_ITEM:
+        action = menu.addAction("Create all schemas");
+        action = menu.addAction("Drop all schemas");
+        break;
+    case SCHEMA_ITEM:
+        action = menu.addAction("Create schema");
+        action = menu.addAction("Drop schema");
+        break;
+    case SEQUENCES_ITEM:
+        action = menu.addAction("Resset Sequences");
+        action = menu.addAction("Update Sequences");
+        break;
+    case SEQUENCE_ITEM:
+        action = menu.addAction("Resset Sequence");
+        action = menu.addAction("Update Sequence");
+        break;
+    case FUNCTIONS_ITEM:
+        action = menu.addAction("Create New Function");
+        action = menu.addAction("Drop all Functions");
+        action = menu.addAction("Create all Functions");
+        break;
+    case FUNCTION_ITEM:
+        action = menu.addAction("Drop Function");
+        action = menu.addAction("Create or Replace Function");
+        action = menu.addAction("Script Alter Function Parameters");
+        break;
+    case TRIGGER_FUNCTIONS_ITEM:
+        action = menu.addAction("Create New Function");
+        action = menu.addAction("Drop all Functions and related triggers");
+        action = menu.addAction("Create all Functions");
+        break;
+    case TRIGGER_FUNCTION_ITEM:
+        action = menu.addAction("Drop Function and related triggers");
+        action = menu.addAction("Create or Replace Function");
+        action = menu.addAction("Script Alter Function Parameters");
+        break;
+    }
+
+    menu.exec(tree->viewport()->mapToGlobal(pos));
 }
 
 QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...)

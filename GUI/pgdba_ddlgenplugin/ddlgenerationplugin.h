@@ -51,6 +51,7 @@ public:
 private slots:
 
     void processItem(QTreeWidgetItem *item, int column);
+    void showContextMenu(const QPoint &pos);
 
 private:
 
