@@ -1,5 +1,5 @@
 #include "ddlgenerationplugin.h"
-
+#include <QDebug>
 
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
@@ -54,9 +54,20 @@ void DDLGenerationPlugin::createTree(PGconn *value)
     }
 }
 
-
 bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
 {
+    int line, index;
+
+    switch(item) {
+    case DDL_TEST:
+        editor->append("-- Plugin Test.\n");
+        editor->append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
+        editor->append("-- End.\n");
+        break;
+
+    default:
+        return false;
+    }
 
     return true;
 }
@@ -90,6 +101,48 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         if(item->childCount() == 0) processTriggers(item);
         break;
     }
+}
+
+QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...)
+{
+    QStringList list;
+    int tuples;
+    const char *params[param_count];
+    PGresult *res;
+    va_list vl;
+    va_start(vl, param_count);
+
+    for (int i = 0; i < param_count; i++) {
+        params[i] = va_arg(vl, char *);
+    }
+    va_end(vl);
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+
+
+        if (param_count > 0)
+            res =  PQexecParams(connection, sql, param_count, NULL, params, NULL, NULL, 0);
+        else
+            res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++)
+                list << QString::fromStdString(PQgetvalue(res, i, return_col));
+
+            PQclear(res);
+
+            return list;
+
+        }
+    }
+
+    return QStringList();
 }
 
 void DDLGenerationPlugin::processSchema(QTreeWidgetItem *item) {
@@ -199,6 +252,9 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
         triggers_node = new QTreeWidgetItem();
         triggers_node->setText(0, "Triggers");
         triggers_node->setIcon(0, QIcon(":/icons/images/icons/triggers.png"));
+        triggers_node->setData(0, ROLE_ITEM_TYPE, TRIGGERS_ITEM);
+        triggers_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        triggers_node->setData(0, ROLE_TABLE_NAME, view_list[j]);
         view->addChild(triggers_node);
 
     }
@@ -392,32 +448,7 @@ QStringList DDLGenerationPlugin::schemas(PGconn *connection)
         "SELECT schema_name "
         "FROM information_schema.schemata "
         "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
-
-    QStringList list;
-
-    int tuples;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexec(connection, sql);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    return createObjectList(connection, sql, 0, 0);
 }
 
 QStringList DDLGenerationPlugin::tables(QString schema, PGconn *connection)
@@ -438,34 +469,7 @@ QStringList DDLGenerationPlugin::tables(QString schema, PGconn *connection)
             "    schemaname != 'pg_catalog' "
             "    AND schemaname != 'information_schema' "
             "    AND schemaname = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 1));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::views(QString schema, PGconn *connection)
@@ -481,35 +485,7 @@ QStringList DDLGenerationPlugin::views(QString schema, PGconn *connection)
         "WHERE "
         "    schemaname NOT IN ('pg_catalog', 'information_schema') "
         "    AND schemaname = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 1));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
-
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::sequences(QString schema, PGconn *connection)
@@ -520,35 +496,7 @@ QStringList DDLGenerationPlugin::sequences(QString schema, PGconn *connection)
         "  sequence_name "
         "FROM information_schema.sequences "
         "WHERE sequence_schema = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 1));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
-
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::functions(QString schema, PGconn *connection)
@@ -565,34 +513,7 @@ QStringList DDLGenerationPlugin::functions(QString schema, PGconn *connection)
         "WHERE "
         "    t.typname != 'trigger' AND "
         "    n.nspname = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 1));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::triggerFunctions(QString schema, PGconn *connection)
@@ -609,34 +530,7 @@ QStringList DDLGenerationPlugin::triggerFunctions(QString schema, PGconn *connec
             "WHERE "
             "    t.typname = 'trigger' AND "
             "    n.nspname = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 1));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char *ctype, PGconn *connection)
@@ -658,36 +552,10 @@ QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char
             "    nsp.nspname = $1 "
             "    AND rel.relname = $2 "
             "    AND con.contype = $3 ";
-    const char *params[3];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-    params[1] = table.toStdString().c_str();
-    params[2] = ctype;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 3, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            ctype);
 }
 
 QStringList DDLGenerationPlugin::triggers(QString schema, QString table, PGconn *connection)
@@ -708,7 +576,6 @@ QStringList DDLGenerationPlugin::triggers(QString schema, QString table, PGconn 
             "    AND event_object_table = $2 ";
             "GROUP BY 1,2,3,4,6,7,8 ";
     */
-
     const char *sql =
             "SELECT "
             "    trg.tgname "
@@ -721,36 +588,10 @@ QStringList DDLGenerationPlugin::triggers(QString schema, QString table, PGconn 
             "    AND tgisinternal = FALSE "
             "    AND n.nspname = $1 "
             "    AND tbl.relname = $2 ";
+    return createObjectList(connection, sql, 0, 2,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str());
 
-    const char *params[2];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema.toStdString().c_str();
-    params[1] = table.toStdString().c_str();
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-
-        PGresult *res =  PQexecParams(connection, sql, 2, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
 }
 
 #if QT_VERSION < 0x050000

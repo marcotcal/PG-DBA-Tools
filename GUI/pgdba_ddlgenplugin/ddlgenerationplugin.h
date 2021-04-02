@@ -16,6 +16,9 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
 
 public:
     enum {
+        DDL_TEST = 0,
+    };
+    enum {
         DATABAE_ITEM,
         SCHEMAS_ITEM,
         SCHEMA_ITEM,
@@ -55,6 +58,9 @@ private:
     QString file_name;
 
     PGconn *connection;
+
+    QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
+
     QStringList users(PGconn *connection);
     QStringList schemas(PGconn *connection);
     QStringList tables(QString schema, PGconn *connection);
