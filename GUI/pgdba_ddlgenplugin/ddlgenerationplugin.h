@@ -53,6 +53,8 @@ private slots:
     void processItem(QTreeWidgetItem *item, int column);
     void showContextMenu(const QPoint &pos);
 
+    void createAllSchemas();
+
 private:
 
     QTreeWidget *tree;
@@ -60,19 +62,19 @@ private:
 
     PGconn *connection;
 
-    QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
+    QStringList createObjectList(const char *sql, int return_col, int param_count, ...);
 
-    QStringList users(PGconn *connection);
-    QStringList schemas(PGconn *connection);
-    QStringList tables(QString schema, PGconn *connection);
-    QStringList views(QString schema, PGconn *connection);
-    QStringList sequences(QString schema, PGconn *connection);
-    QStringList functions(QString schema, PGconn *connection);
-    QStringList triggerFunctions(QString schema, PGconn *connection);
-    QStringList constraints(QString schema, QString table, char *ctype, PGconn *connection);
-    QStringList triggers(QString schema, QString table, PGconn *connection);
+    QStringList users();
+    QStringList schemas();
+    QStringList tables(QString schema);
+    QStringList views(QString schema);
+    QStringList sequences(QString schema);
+    QStringList functions(QString schema);
+    QStringList triggerFunctions(QString schema);
+    QStringList constraints(QString schema, QString table, char *ctype);
+    QStringList triggers(QString schema, QString table);
 
-    void processSchema(QTreeWidgetItem *item);
+    void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);
     void processViews(QTreeWidgetItem *item);
     void processSequences(QTreeWidgetItem *item);

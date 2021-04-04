@@ -32,7 +32,7 @@ void DDLGenerationPlugin::createTree(PGconn *value)
 
     if (value) {
 
-        schemas_list = schemas(connection);
+        schemas_list = schemas();
         root->setText(0, QString(PQdb(value)));
         root->setIcon(0, QIcon(":/icons/images/icons/database.png"));
         tree->insertTopLevelItem(0, root);
@@ -81,7 +81,7 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
 
     switch(item->data(0, ROLE_ITEM_TYPE).toInt()) {
     case SCHEMA_ITEM:
-        if(item->childCount() == 0) processSchema(item);
+        if(item->childCount() == 0) processSchemas(item);
         break;
     case TABLES_ITEM:
         if(item->childCount() == 0) processTables(item);
@@ -161,7 +161,7 @@ void DDLGenerationPlugin::showContextMenu(const QPoint &pos)
     menu.exec(tree->viewport()->mapToGlobal(pos));
 }
 
-QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...)
+QStringList DDLGenerationPlugin::createObjectList(const char *sql, int return_col, int param_count, ...)
 {
     QStringList list;
     int tuples;
@@ -203,7 +203,7 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
     return QStringList();
 }
 
-void DDLGenerationPlugin::processSchema(QTreeWidgetItem *item) {
+void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
 
 
     QTreeWidgetItem *table_node;
@@ -262,7 +262,7 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
     QTreeWidgetItem *table;
     QStringList table_list;
 
-    table_list = tables(item->data(0, ROLE_SCHEMA_NAME).toString(), connection);
+    table_list = tables(item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < table_list.count(); j++) {
 
@@ -297,7 +297,7 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
     QTreeWidgetItem *view;
     QStringList view_list;
 
-    view_list = views(item->data(0, ROLE_SCHEMA_NAME).toString(), connection);
+    view_list = views(item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < view_list.count(); j++) {
 
@@ -323,7 +323,7 @@ void DDLGenerationPlugin::processSequences(QTreeWidgetItem *item)
     QStringList sequence_list;
     QTreeWidgetItem *sequence;
 
-    sequence_list = sequences(item->data(0, ROLE_SCHEMA_NAME).toString(), connection);
+    sequence_list = sequences(item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < sequence_list.count(); j++) {
 
@@ -341,7 +341,7 @@ void DDLGenerationPlugin::processFunctions(QTreeWidgetItem *item)
     QStringList function_list;
     QTreeWidgetItem *function;
 
-    function_list = functions(item->data(0, ROLE_SCHEMA_NAME).toString(), connection);
+    function_list = functions(item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < function_list.count(); j++) {
 
@@ -359,7 +359,7 @@ void DDLGenerationPlugin::processTrigerFunctions(QTreeWidgetItem *item)
     QStringList function_list;
     QTreeWidgetItem *function;
 
-    function_list = triggerFunctions(item->data(0, ROLE_SCHEMA_NAME).toString(), connection);
+    function_list = triggerFunctions(item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < function_list.count(); j++) {
 
@@ -380,7 +380,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     QTreeWidgetItem *constraint;
 
     // primary key
-    constr = constraints(schema, table, "p", connection);
+    constr = constraints(schema, table, "p");
     if (constr.count() > 0) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[0]);
@@ -393,7 +393,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     }
 
     // unique key
-    constr = constraints(schema, table, "u", connection);
+    constr = constraints(schema, table, "u");
     for(int j=0; j < constr.count(); j++) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
@@ -406,7 +406,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     }
 
     // foreign key
-    constr = constraints(schema, table, "f", connection);
+    constr = constraints(schema, table, "f");
     for(int j=0; j < constr.count(); j++) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
@@ -419,7 +419,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     }
 
     // check constraint
-    constr = constraints(schema, table, "c", connection);
+    constr = constraints(schema, table, "c");
     for(int j=0; j < constr.count(); j++) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
@@ -439,7 +439,7 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
     QStringList trigger_list;
     QTreeWidgetItem *trigger;
 
-    trigger_list = triggers(schema, table, connection);
+    trigger_list = triggers(schema, table);
 
     for(int j=0; j < trigger_list.count(); j++) {
         trigger = new QTreeWidgetItem();
@@ -454,7 +454,7 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
 
 }
 
-QStringList DDLGenerationPlugin::users(PGconn *connection)
+QStringList DDLGenerationPlugin::users()
 {
     const char *sql =
             "SELECT usename AS role_name, "
@@ -470,46 +470,19 @@ QStringList DDLGenerationPlugin::users(PGconn *connection)
             "  END role_attributes "
             "FROM pg_catalog.pg_user "
             "ORDER BY role_name desc ";
-
-    QStringList list;
-
-    list << "";
-
-    int tuples;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexec(connection, sql);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    return createObjectList(sql, 0, 0);
 }
 
-QStringList DDLGenerationPlugin::schemas(PGconn *connection)
+QStringList DDLGenerationPlugin::schemas()
 {
     const char *sql =
         "SELECT schema_name "
         "FROM information_schema.schemata "
         "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
-    return createObjectList(connection, sql, 0, 0);
+    return createObjectList(sql, 0, 0);
 }
 
-QStringList DDLGenerationPlugin::tables(QString schema, PGconn *connection)
+QStringList DDLGenerationPlugin::tables(QString schema)
 {
     const char *sql =
             "SELECT "
@@ -527,10 +500,10 @@ QStringList DDLGenerationPlugin::tables(QString schema, PGconn *connection)
             "    schemaname != 'pg_catalog' "
             "    AND schemaname != 'information_schema' "
             "    AND schemaname = $1 ";
-    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::views(QString schema, PGconn *connection)
+QStringList DDLGenerationPlugin::views(QString schema)
 {
 
     const char *sql =
@@ -543,10 +516,10 @@ QStringList DDLGenerationPlugin::views(QString schema, PGconn *connection)
         "WHERE "
         "    schemaname NOT IN ('pg_catalog', 'information_schema') "
         "    AND schemaname = $1 ";
-    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::sequences(QString schema, PGconn *connection)
+QStringList DDLGenerationPlugin::sequences(QString schema)
 {
     const char *sql =
         "SELECT "
@@ -554,10 +527,10 @@ QStringList DDLGenerationPlugin::sequences(QString schema, PGconn *connection)
         "  sequence_name "
         "FROM information_schema.sequences "
         "WHERE sequence_schema = $1 ";
-    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::functions(QString schema, PGconn *connection)
+QStringList DDLGenerationPlugin::functions(QString schema)
 {
     const char *sql =
         "SELECT "
@@ -571,10 +544,10 @@ QStringList DDLGenerationPlugin::functions(QString schema, PGconn *connection)
         "WHERE "
         "    t.typname != 'trigger' AND "
         "    n.nspname = $1 ";
-    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::triggerFunctions(QString schema, PGconn *connection)
+QStringList DDLGenerationPlugin::triggerFunctions(QString schema)
 {
     const char *sql =
             "SELECT "
@@ -588,10 +561,10 @@ QStringList DDLGenerationPlugin::triggerFunctions(QString schema, PGconn *connec
             "WHERE "
             "    t.typname = 'trigger' AND "
             "    n.nspname = $1 ";
-    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char *ctype, PGconn *connection)
+QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char *ctype)
 {
     /*
      * u = unique
@@ -610,13 +583,13 @@ QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char
             "    nsp.nspname = $1 "
             "    AND rel.relname = $2 "
             "    AND con.contype = $3 ";
-    return createObjectList(connection, sql, 0, 3,
+    return createObjectList(sql, 0, 3,
                             schema.toStdString().c_str(),
                             table.toStdString().c_str(),
                             ctype);
 }
 
-QStringList DDLGenerationPlugin::triggers(QString schema, QString table, PGconn *connection)
+QStringList DDLGenerationPlugin::triggers(QString schema, QString table)
 {
     /* for detailed use
     const char *sql =
@@ -646,7 +619,7 @@ QStringList DDLGenerationPlugin::triggers(QString schema, QString table, PGconn 
             "    AND tgisinternal = FALSE "
             "    AND n.nspname = $1 "
             "    AND tbl.relname = $2 ";
-    return createObjectList(connection, sql, 0, 2,
+    return createObjectList(sql, 0, 2,
                             schema.toStdString().c_str(),
                             table.toStdString().c_str());
 
