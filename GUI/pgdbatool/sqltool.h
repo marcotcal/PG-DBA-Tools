@@ -33,6 +33,7 @@
 #include "frmfindtext.h"
 #include <QTreeWidget>
 #include <QTabWidget>
+#include <QListWidget>
 
 namespace Ui {
 class SqlTool;
@@ -109,9 +110,11 @@ public:
 
     OutputSet *getOutputSet() { return output_set; }
 
-    void setDDLTree(QTabWidget *value) { ddl_tree_view = value; }
+    void setDDLTree(QTabWidget *value);
+    void setFunctionList(QListWidget *value);
 
-    QTabWidget *getDDLTree() { return ddl_tree_view; }
+    QTabWidget *getDDLTree();
+    QListWidget *getFunctionList();
 
     void executeCurrent(ResultOutput* output, bool show_query=false);
     void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
@@ -239,6 +242,7 @@ private:
     OutputSet *output_set;
 
     QTabWidget *ddl_tree_view;
+    QListWidget *function_list;
 
     ResultOutput *output;
     bool query_running;

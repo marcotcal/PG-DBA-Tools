@@ -40,7 +40,6 @@
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
 #include "plugintreewidget.h"
-#include "sqlgentreewidget.h"
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -155,7 +154,8 @@ void MainWindow::viewMenuOpen()
     ui->actionViewMessages->setChecked(ui->dock_messages->isVisible());
     ui->actionViewOutputs->setChecked(ui->dock_output->isVisible());
     ui->actionViewSql_Editors_List->setChecked(ui->doc_sql_editors->isVisible());
-    ui->actionViewDDL_Generation->setChecked(ui->dock_ddl->isVisible());
+    ui->actionViewCode_Generators->setChecked(ui->dock_plugin->isVisible());
+    ui->actionViewCode_Function->setChecked(ui->dock_function->isVisible());
 }
 
 MainWindow::~MainWindow()
@@ -388,8 +388,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     SqlTool *sql;
     OutputSet *out;
     PluginTreeWidget *ddl_tree;
-    SQLGenTreeWidget *sql_tree;
-
+    QListWidget *function_list;
     QListWidgetItem *list_item;
 
     list_item = new QListWidgetItem(name, ui->editor_list);
@@ -422,14 +421,19 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 
     ddl_tree = new PluginTreeWidget(sql);
     sql->setDDLTree(ddl_tree);
-    ui->ddl_stack->addWidget(ddl_tree);
-    ui->ddl_stack->setCurrentWidget(ddl_tree);
+    ui->plugin_stack->addWidget(ddl_tree);
+    ui->plugin_stack->setCurrentWidget(ddl_tree);
     ddl_tree->setConnection(NULL);
+
+    function_list = new QListWidget(sql);
+    sql->setFunctionList(function_list);
+    ui->function_stack->addWidget(function_list);
+    ui->function_stack->setCurrentWidget(function_list);
 
     connect(ddl_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
 
     for(auto i = interface_list.begin(); i != interface_list.end(); i++)
-        ddl_tree->setPluginElement(i.value());
+        ddl_tree->setPluginElement(sql, i.value());
 
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
@@ -692,8 +696,9 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
         enable_sql_transactions(sql);
         ui->output_stack->setCurrentWidget(sql->getOutputSet());
 
-        ui->ddl_stack->setCurrentWidget(sql->getDDLTree());
-        //ui->sql_stack->setCurrentWidget(sql->getSQLTree());
+        ui->plugin_stack->setCurrentWidget(sql->getDDLTree());
+        ui->function_stack->setCurrentWidget(sql->getFunctionList());
+
     }
     if (model){
         enable_model_actions(model);
@@ -705,7 +710,6 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 void MainWindow::on_actionConnect_triggered()
 {
     PluginTreeWidget *ddl_tree;
-    SQLGenTreeWidget *sql_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
@@ -724,18 +728,23 @@ void MainWindow::on_actionConnect_triggered()
 void MainWindow::on_actionDisconect_triggered()
 {
     PluginTreeWidget *ddl_tree;
-    SQLGenTreeWidget *sql_tree;
+    QListWidget *function_list;
+
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
         sql->databaseDisconnect();
         enable_sql_tool_actions(sql);
         ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getDDLTree());
+        function_list = sql->getFunctionList();
 
         if (ddl_tree) {
             ddl_tree->setConnection(NULL);
             ddl_tree->clear();
         }
+
+        if (function_list)
+            function_list->clear();
 
     }
 }
@@ -769,8 +778,11 @@ void MainWindow::on_actionClose_triggered()
             ui->output_stack->removeWidget(sql->getOutputSet());
             sql->getOutputSet()->deleteLater();
 
-            ui->ddl_stack->removeWidget(sql->getDDLTree());
+            ui->plugin_stack->removeWidget(sql->getDDLTree());
             sql->getDDLTree()->deleteLater();
+
+            ui->function_stack->removeWidget(sql->getFunctionList());
+            sql->getFunctionList()->deleteLater();
         }
     }
 
@@ -1529,8 +1541,12 @@ void MainWindow::on_actionViewMessages_toggled(bool arg1)
     ui->dock_messages->setVisible(arg1);
 }
 
-void MainWindow::on_actionViewDDL_Generation_toggled(bool arg1)
+void MainWindow::on_actionViewCode_Function_toggled(bool arg1)
 {
-    ui->dock_ddl->setVisible(arg1);
+    ui->dock_function->setVisible(arg1);
 }
 
+void MainWindow::on_actionViewCode_Generators_toggled(bool arg1)
+{
+    ui->dock_plugin->setVisible(arg1);
+}

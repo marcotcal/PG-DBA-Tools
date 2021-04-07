@@ -30,7 +30,6 @@
 #include <QClipboard>
 #include <QMimeData>
 #include "plugintreewidget.h"
-#include "sqlgentreewidget.h"
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
@@ -970,6 +969,22 @@ void SqlTool::beginTransaction(QString command) {
 
     ui->led_transaction->setStyleSheet("background-color:#FFE000;border-radius:6;");
     in_transaction = true;
+}
+
+void SqlTool::setDDLTree(QTabWidget *value) {
+    ddl_tree_view = value;
+}
+
+void SqlTool::setFunctionList(QListWidget *value) {
+    function_list = value;
+}
+
+QTabWidget *SqlTool::getDDLTree() {
+    return ddl_tree_view;
+}
+
+QListWidget *SqlTool::getFunctionList() {
+    return function_list;
 }
 
 void SqlTool::executeCurrent(ResultOutput* output, bool show_query)

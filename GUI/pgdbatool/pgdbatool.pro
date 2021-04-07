@@ -80,7 +80,6 @@ SOURCES += \
     frmfindtext.cpp \
     frmprojectscript.cpp \
     plugintreewidget.cpp \
-    sqlgentreewidget.cpp \
     dlgplugins.cpp \
     pluginelement.cpp
 
@@ -121,7 +120,6 @@ HEADERS += \
     frmfindtext.h \
     frmprojectscript.h \
     plugintreewidget.h \
-    sqlgentreewidget.h \
     pgdbaplugininterface.h \
     dlgplugins.h \
     pluginelement.h

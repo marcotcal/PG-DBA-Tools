@@ -18,7 +18,12 @@ void DDLGenerationPlugin::setTreeWidget(QTreeWidget *value)
     tree->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
-    connect(tree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(tree, SIGNAL(itemSelectionChanged()), this, SLOT(treeSelectionChanged()));
+}
+
+void DDLGenerationPlugin::setListWidget(QListWidget *value)
+{
+    list = value;
 }
 
 void DDLGenerationPlugin::createTree(PGconn *value)
@@ -107,59 +112,93 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
     }
 }
 
-void DDLGenerationPlugin::showContextMenu(const QPoint &pos)
+void DDLGenerationPlugin::treeSelectionChanged()
 {
-    QAction *action;
-    QTreeWidgetItem *item = tree->itemAt(pos);
+    QList<QTreeWidgetItem *> items = tree->selectedItems();
+    QTreeWidgetItem *tree_item;
+    QListWidgetItem *list_item;
     int item_type;
 
-    if (!item)
-        return;
-    item_type = item->data(0, ROLE_ITEM_TYPE).toInt();
+    // take only the first item
+    if (items.count() == 1) {
 
-    QMenu menu(item->text(0), tree);
+        tree_item = items.at(0);
+        item_type = tree_item->data(0, ROLE_ITEM_TYPE).toInt();
+        list->clear();
 
-    switch(item_type) {
-    case SCHEMAS_ITEM:
-        action = menu.addAction("Create all schemas");
-        connect(action, SIGNAL(triggered()), this, SLOT(createAllSchemas()));
-        action = menu.addAction("Drop all schemas");
-        break;
-    case SCHEMA_ITEM:
-        action = menu.addAction("Create schema");
-        action = menu.addAction("Drop schema");
-        break;
-    case SEQUENCES_ITEM:
-        action = menu.addAction("Resset Sequences");
-        action = menu.addAction("Update Sequences");
-        break;
-    case SEQUENCE_ITEM:
-        action = menu.addAction("Resset Sequence");
-        action = menu.addAction("Update Sequence");
-        break;
-    case FUNCTIONS_ITEM:
-        action = menu.addAction("Create New Function");
-        action = menu.addAction("Drop all Functions");
-        action = menu.addAction("Create all Functions");
-        break;
-    case FUNCTION_ITEM:
-        action = menu.addAction("Drop Function");
-        action = menu.addAction("Create or Replace Function");
-        action = menu.addAction("Script Alter Function Parameters");
-        break;
-    case TRIGGER_FUNCTIONS_ITEM:
-        action = menu.addAction("Create New Function");
-        action = menu.addAction("Drop all Functions and related triggers");
-        action = menu.addAction("Create all Functions");
-        break;
-    case TRIGGER_FUNCTION_ITEM:
-        action = menu.addAction("Drop Function and related triggers");
-        action = menu.addAction("Create or Replace Function");
-        action = menu.addAction("Script Alter Function Parameters");
-        break;
+        switch(item_type) {
+        case SCHEMAS_ITEM:
+            list_item = new QListWidgetItem("Create all schemas");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Drop all schemas");
+            list->addItem(list_item);
+            break;
+        case SCHEMA_ITEM:
+            list_item = new QListWidgetItem("Create schema");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Drop schema");
+            list->addItem(list_item);
+            break;
+        case SEQUENCES_ITEM:
+            list_item = new QListWidgetItem("Resset Sequences");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Update Sequences");
+            list->addItem(list_item);
+            break;
+        case SEQUENCE_ITEM:
+            list_item = new QListWidgetItem("Resset Sequence");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Update Sequence");
+            list->addItem(list_item);
+            break;
+        case FUNCTIONS_ITEM:
+            list_item = new QListWidgetItem("Create New Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Drop all Functions");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Create all Functions");
+            list->addItem(list_item);
+            break;
+        case FUNCTION_ITEM:
+            list_item = new QListWidgetItem("Drop Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Create or Replace Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Script Alter Function Parameters");
+            list->addItem(list_item);
+            break;
+        case TRIGGER_FUNCTIONS_ITEM:
+            list_item = new QListWidgetItem("Create New Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Drop all Functions and related triggers");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Create all Functions");
+            list->addItem(list_item);
+            break;
+        case TRIGGER_FUNCTION_ITEM:
+            list_item = new QListWidgetItem("Drop Function and related triggers");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Create or Replace Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Script Alter Function Parameters");
+            list->addItem(list_item);
+            break;
+        }
+
     }
 
-    menu.exec(tree->viewport()->mapToGlobal(pos));
 }
 
 void DDLGenerationPlugin::createAllSchemas()

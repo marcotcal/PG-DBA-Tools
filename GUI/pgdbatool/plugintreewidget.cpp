@@ -10,7 +10,7 @@ PluginTreeWidget::PluginTreeWidget(QWidget *parent) :
 
 }
 
-void PluginTreeWidget::setPluginElement(PluginElement *value)
+void PluginTreeWidget::setPluginElement(SqlTool *sql, PluginElement *value)
 {
 
     QJsonArray keys;
@@ -25,8 +25,10 @@ void PluginTreeWidget::setPluginElement(PluginElement *value)
         tree = new QTreeWidget(this);
         tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tree->setHeaderHidden(true);
+
         addTab(tree, value->getMeta().toObject().value("Name").toString());
         value->getInterface()->setTreeWidget(tree);
+        value->getInterface()->setListWidget(sql->getFunctionList());
     }
 
 }

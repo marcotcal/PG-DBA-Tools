@@ -14,7 +14,7 @@ class PluginTreeWidget : public QTabWidget
 public:
 
     PluginTreeWidget(QWidget *parent = Q_NULLPTR);
-    void setPluginElement(PluginElement *value);
+    void setPluginElement(SqlTool *sql, PluginElement *value);
     void setConnection(PGconn *value);
     void createTree();
 

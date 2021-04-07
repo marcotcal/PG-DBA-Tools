@@ -16,30 +16,12 @@ void SQLGenerationPlugin::setMenu(QMenu *menu)
 
 void SQLGenerationPlugin::setTreeWidget(QTreeWidget *value)
 {
-
     tree = value;
+}
 
-    /*
-    QTreeWidgetItem* sql_insert = new QTreeWidgetItem();
-    QTreeWidgetItem* sql_update = new QTreeWidgetItem();
-    QTreeWidgetItem* sql_delete = new QTreeWidgetItem();
-    QTreeWidgetItem* item;
-
-    sql_insert->setText(0,"Insert");
-    sql_update->setText(0,"Update");
-    sql_delete->setText(0,"Delete");
-
-    tree->insertTopLevelItem(0, sql_insert);
-    tree->insertTopLevelItem(1, sql_update);
-    tree->insertTopLevelItem(2, sql_delete);
-
-    item = new QTreeWidgetItem(QStringList() << "Insert (All fields)", SQL_INSERT_ALL);
-    sql_insert->addChild(item);
-
-    item = new QTreeWidgetItem(QStringList() << "Insert (Only mandatory", SQL_INSERT_MANDATORY);
-    sql_insert->addChild(item);
-    */
-
+void SQLGenerationPlugin::setListWidget(QListWidget *value)
+{
+    list = value;
 }
 
 void SQLGenerationPlugin::createTree(PGconn *connection)

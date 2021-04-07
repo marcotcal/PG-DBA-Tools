@@ -45,19 +45,21 @@ public:
     DDLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
     void setTreeWidget(QTreeWidget *value);
+    void setListWidget(QListWidget *value);
     void createTree(PGconn *value);
     bool run(PGconn *connection, int item, EditorItem *editor) override;
 
 private slots:
 
     void processItem(QTreeWidgetItem *item, int column);
-    void showContextMenu(const QPoint &pos);
-
+    void treeSelectionChanged();
     void createAllSchemas();
 
 private:
 
     QTreeWidget *tree;
+    QListWidget *list;
+
     QString file_name;
 
     PGconn *connection;

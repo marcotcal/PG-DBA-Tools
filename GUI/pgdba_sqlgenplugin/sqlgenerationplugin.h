@@ -23,11 +23,13 @@ public:
     SQLGenerationPlugin(QObject *parent = 0);
     void setMenu(QMenu *menu);
     void setTreeWidget(QTreeWidget *value);
+    void setListWidget(QListWidget *value);
     void createTree(PGconn *connection);
     bool run(PGconn *connection, int item, EditorItem *editor) override;
 
 private:
     QTreeWidget *tree;
+    QListWidget *list;
 
     QString error;
     QString file_name;

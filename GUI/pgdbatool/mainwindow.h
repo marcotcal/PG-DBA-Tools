@@ -138,19 +138,14 @@ private slots:
     void on_actionViewSql_Editors_List_toggled(bool arg1);
     void on_actionViewOutputs_toggled(bool arg1);
     void on_actionViewMessages_toggled(bool arg1);
-
-    void on_actionViewDDL_Generation_toggled(bool arg1);
     void on_actionList_of_Table_Fields_triggered();
-
     void on_actionOpen_SQL_Tool_triggered();
-
     void on_actionOpen_Query_Model_triggered();
-
     void on_actionOpen_SQL_File_triggered();
-
     void on_actionSave_SQL_File_triggered();
-
     void on_actionSave_SQL_File_As_triggered();
+    void on_actionViewCode_Function_toggled(bool arg1);
+    void on_actionViewCode_Generators_toggled(bool arg1);
 
 public slots:
 

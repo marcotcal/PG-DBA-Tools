@@ -241,7 +241,8 @@
     <addaction name="actionViewSql_Editors_List"/>
     <addaction name="actionViewOutputs"/>
     <addaction name="actionViewMessages"/>
-    <addaction name="actionViewDDL_Generation"/>
+    <addaction name="actionViewCode_Generators"/>
+    <addaction name="actionViewCode_Function"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -486,7 +487,7 @@ color: rgb(180, 180,180);</string>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dock_ddl">
+  <widget class="QDockWidget" name="dock_plugin">
    <property name="windowTitle">
     <string>Code Generators</string>
    </property>
@@ -511,7 +512,7 @@ color: rgb(180, 180,180);</string>
       <number>2</number>
      </property>
      <item>
-      <widget class="QStackedWidget" name="ddl_stack">
+      <widget class="QStackedWidget" name="plugin_stack">
        <widget class="QWidget" name="ddl_dummy_page">
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <property name="spacing">
@@ -553,9 +554,9 @@ color: rgb(180, 180,180);</string>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dock_sql">
+  <widget class="QDockWidget" name="dock_function">
    <property name="windowTitle">
-    <string>SQL Generation</string>
+    <string>Code Functions</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -578,7 +579,10 @@ color: rgb(180, 180,180);</string>
       <number>2</number>
      </property>
      <item>
-      <widget class="QStackedWidget" name="sql_stack">
+      <widget class="QStackedWidget" name="function_stack">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
        <widget class="QWidget" name="sql_dummy_page">
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <property name="spacing">
@@ -1184,12 +1188,15 @@ color: rgb(180, 180,180);</string>
     <string>Messages</string>
    </property>
   </action>
-  <action name="actionViewDDL_Generation">
+  <action name="actionViewCode_Generators">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>DDL Generation</string>
+    <string>Code Generators</string>
+   </property>
+   <property name="toolTip">
+    <string>Code Generation</string>
    </property>
   </action>
   <action name="actionList_of_Table_Fields">
@@ -1240,6 +1247,14 @@ color: rgb(180, 180,180);</string>
    </property>
    <property name="text">
     <string>Open SQL File</string>
+   </property>
+  </action>
+  <action name="actionViewCode_Function">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Code Function</string>
    </property>
   </action>
  </widget>
