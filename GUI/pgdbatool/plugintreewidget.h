@@ -1,35 +1,35 @@
-#ifndef DDLGENTREEVIEW_H
-#define DDLGENTREEVIEW_H
+#ifndef PLUGINTREEVIEW_H
+#define PLUGINTREEVIEW_H
 
 #include <QTreeWidget>
+#include <QTabWidget>
 #include <pgdbaplugininterface.h>
 #include <pluginelement.h>
 #include <libpq-fe.h>
 
 
-class DDLGenTreeWidget : public QTreeWidget
+class PluginTreeWidget : public QTabWidget
 {    
     Q_OBJECT
 public:
 
-    DDLGenTreeWidget(QWidget *parent = Q_NULLPTR);
+    PluginTreeWidget(QWidget *parent = Q_NULLPTR);
     void setPluginElement(PluginElement *value);
     void setConnection(PGconn *value);
     void createTree();
 
 protected slots:
 
-    void doItemDoubleClicked(QTreeWidgetItem *item, int column);
 
 signals:
 
-    void executeItem(PluginElement *element, int item);
 
 private:
 
     QList<PluginElement *>elements;
+    QList<QTreeWidget *>element_trees;
 
     PGconn *connection;
 };
 
-#endif // DDLGENTREEVIEW_H
+#endif // PLUGINTREEVIEW_H

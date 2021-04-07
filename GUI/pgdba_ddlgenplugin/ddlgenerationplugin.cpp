@@ -122,6 +122,7 @@ void DDLGenerationPlugin::showContextMenu(const QPoint &pos)
     switch(item_type) {
     case SCHEMAS_ITEM:
         action = menu.addAction("Create all schemas");
+        connect(action, SIGNAL(triggered()), this, SLOT(createAllSchemas()));
         action = menu.addAction("Drop all schemas");
         break;
     case SCHEMA_ITEM:
@@ -159,6 +160,11 @@ void DDLGenerationPlugin::showContextMenu(const QPoint &pos)
     }
 
     menu.exec(tree->viewport()->mapToGlobal(pos));
+}
+
+void DDLGenerationPlugin::createAllSchemas()
+{
+    qDebug() << "passei aqui";
 }
 
 QStringList DDLGenerationPlugin::createObjectList(const char *sql, int return_col, int param_count, ...)

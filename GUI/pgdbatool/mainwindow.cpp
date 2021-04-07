@@ -39,7 +39,7 @@
 #include "dlgproject.h"
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
-#include "ddlgentreewidget.h"
+#include "plugintreewidget.h"
 #include "sqlgentreewidget.h"
 
 #ifdef USE_SSH_TUNNELS
@@ -387,7 +387,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 {
     SqlTool *sql;
     OutputSet *out;
-    DDLGenTreeWidget *ddl_tree;
+    PluginTreeWidget *ddl_tree;
     SQLGenTreeWidget *sql_tree;
 
     QListWidgetItem *list_item;
@@ -420,7 +420,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->output_stack->addWidget(out);
     ui->output_stack->setCurrentWidget(out);
 
-    ddl_tree = new DDLGenTreeWidget(sql);
+    ddl_tree = new PluginTreeWidget(sql);
     sql->setDDLTree(ddl_tree);
     ui->ddl_stack->addWidget(ddl_tree);
     ui->ddl_stack->setCurrentWidget(ddl_tree);
@@ -430,17 +430,6 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 
     for(auto i = interface_list.begin(); i != interface_list.end(); i++)
         ddl_tree->setPluginElement(i.value());
-
-    sql_tree = new SQLGenTreeWidget(sql);
-    sql->setSQLTree(sql_tree);
-    ui->sql_stack->addWidget(sql_tree);
-    ui->sql_stack->setCurrentWidget(sql_tree);
-    sql_tree->setConnection(NULL);
-
-    connect(sql_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
-
-    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
-        sql_tree->setPluginElement(i.value());
 
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
@@ -704,7 +693,7 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
         ui->output_stack->setCurrentWidget(sql->getOutputSet());
 
         ui->ddl_stack->setCurrentWidget(sql->getDDLTree());
-        ui->sql_stack->setCurrentWidget(sql->getSQLTree());
+        //ui->sql_stack->setCurrentWidget(sql->getSQLTree());
     }
     if (model){
         enable_model_actions(model);
@@ -715,45 +704,38 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 
 void MainWindow::on_actionConnect_triggered()
 {
-    DDLGenTreeWidget *ddl_tree;
+    PluginTreeWidget *ddl_tree;
     SQLGenTreeWidget *sql_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
         sql->databaseConnect();
         enable_sql_tool_actions(sql);
-        ddl_tree = dynamic_cast<DDLGenTreeWidget *>(sql->getDDLTree());
-        sql_tree = dynamic_cast<SQLGenTreeWidget *>(sql->getSQLTree());
+        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getDDLTree());        
 
         if (ddl_tree) {
             ddl_tree->setConnection(sql->getPostgresConnection());
             ddl_tree->createTree();
         }
 
-        if (sql_tree)
-            sql_tree->setConnection(sql->getPostgresConnection());
-
     }
 }
 
 void MainWindow::on_actionDisconect_triggered()
 {
-    DDLGenTreeWidget *ddl_tree;
+    PluginTreeWidget *ddl_tree;
     SQLGenTreeWidget *sql_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
         sql->databaseDisconnect();
         enable_sql_tool_actions(sql);
-        ddl_tree = dynamic_cast<DDLGenTreeWidget *>(sql->getDDLTree());
-        sql_tree = dynamic_cast<SQLGenTreeWidget *>(sql->getSQLTree());
+        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getDDLTree());
 
         if (ddl_tree) {
             ddl_tree->setConnection(NULL);
             ddl_tree->clear();
         }
-        if (sql_tree)
-            sql_tree->setConnection(NULL);
 
     }
 }
@@ -789,9 +771,6 @@ void MainWindow::on_actionClose_triggered()
 
             ui->ddl_stack->removeWidget(sql->getDDLTree());
             sql->getDDLTree()->deleteLater();
-
-            ui->sql_stack->removeWidget(sql->getSQLTree());
-            sql->getSQLTree()->deleteLater();
         }
     }
 

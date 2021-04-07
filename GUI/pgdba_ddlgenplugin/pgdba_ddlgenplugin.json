@@ -1,5 +1,5 @@
 {
-    "Name" : "PGDBA DDL Generator",
+    "Name" : "DDL Generator",
     "Version" : "1.0.0",
     "CompatVersion" : "1.0.1",
     "Vendor" : "pgdbatools.org",

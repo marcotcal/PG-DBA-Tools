@@ -488,7 +488,7 @@ color: rgb(180, 180,180);</string>
   </widget>
   <widget class="QDockWidget" name="dock_ddl">
    <property name="windowTitle">
-    <string>DDL Generation</string>
+    <string>Code Generators</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>

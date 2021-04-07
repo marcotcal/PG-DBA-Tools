@@ -29,7 +29,7 @@
 #include <QTextEdit>
 #include <QClipboard>
 #include <QMimeData>
-#include "ddlgentreewidget.h"
+#include "plugintreewidget.h"
 #include "sqlgentreewidget.h"
 #include "sqltool.h"
 #include "ui_sqltool.h"
