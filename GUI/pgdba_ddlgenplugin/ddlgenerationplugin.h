@@ -51,7 +51,6 @@ public:
         ROLE_CONSTRAINT_TYPE
     };
     DDLGenerationPlugin(QObject *parent = 0);
-    void setMenu(QMenu *menu) override;
     void setTreeWidget(QTreeWidget *value) override;
     void setListWidget(QListWidget *value) override;
     void createTree(PGconn *value) override;
@@ -72,7 +71,6 @@ private:
 
     QTreeWidget *tree;
     QListWidget *list;
-    SqlTool *sql_tool;
 
     QString file_name;
 

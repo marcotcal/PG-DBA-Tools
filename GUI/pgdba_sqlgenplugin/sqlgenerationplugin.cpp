@@ -11,11 +11,6 @@ SQLGenerationPlugin::SQLGenerationPlugin(QObject *parent) :
     tree = NULL;
 }
 
-void SQLGenerationPlugin::setMenu(QMenu *menu)
-{
-
-}
-
 void SQLGenerationPlugin::setTreeWidget(QTreeWidget *value)
 {
     tree = value;
@@ -26,9 +21,39 @@ void SQLGenerationPlugin::setListWidget(QListWidget *value)
     list = value;
 }
 
-void SQLGenerationPlugin::createTree(PGconn *connection)
+void SQLGenerationPlugin::createTree(PGconn *value)
 {
+    QTreeWidgetItem *root = new QTreeWidgetItem();
+    QTreeWidgetItem *schema_node;
+    QTreeWidgetItem *schema;
+    QStringList schemas_list;
 
+    connection = value;
+
+    if (value) {
+
+        schemas_list = schemas();
+        root->setText(0, QString(PQdb(value)));
+        root->setIcon(0, QIcon(":/icons/images/icons/database.png"));
+        tree->insertTopLevelItem(0, root);
+
+        schema_node = new QTreeWidgetItem();
+        schema_node->setText(0, "Schemas");
+        schema_node->setIcon(0, QIcon(":/icons/images/icons/schemas.png"));
+        schema_node->setData(0, ROLE_ITEM_TYPE, SCHEMAS_ITEM);
+        root->addChild(schema_node);
+
+        for(int i=0; i < schemas_list.count(); i++) {
+
+            schema = new QTreeWidgetItem();
+            schema->setText(0, schemas_list[i]);
+            schema->setIcon(0, QIcon(":/icons/images/icons/schema.png"));
+            schema->setData(0, ROLE_ITEM_TYPE, SCHEMA_ITEM);
+            schema_node->addChild(schema);
+
+        }
+
+    }
 }
 
 bool SQLGenerationPlugin::run(EditorItem *editor, int item)
@@ -64,21 +89,27 @@ void SQLGenerationPlugin::updateFunctionList()
         list->clear();
 }
 
-QStringList SQLGenerationPlugin::schemas(PGconn *connection)
+QStringList SQLGenerationPlugin::createObjectList(const char *sql, int return_col, int param_count, ...)
 {
-    const char *sql =
-        "SELECT schema_name "
-        "FROM information_schema.schemata "
-        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
-
     QStringList list;
-
-    list << "";
-
     int tuples;
+    const char *params[param_count];
+    PGresult *res;
+    va_list vl;
+    va_start(vl, param_count);
+
+    for (int i = 0; i < param_count; i++) {
+        params[i] = va_arg(vl, char *);
+    }
+    va_end(vl);
 
     if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexec(connection, sql);
+
+
+        if (param_count > 0)
+            res =  PQexecParams(connection, sql, param_count, NULL, params, NULL, NULL, 0);
+        else
+            res = PQexec(connection, sql);
 
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
         {
@@ -88,7 +119,7 @@ QStringList SQLGenerationPlugin::schemas(PGconn *connection)
             tuples = PQntuples(res);
 
             for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
+                list << QString::fromStdString(PQgetvalue(res, i, return_col));
 
             PQclear(res);
 
@@ -100,7 +131,7 @@ QStringList SQLGenerationPlugin::schemas(PGconn *connection)
     return QStringList();
 }
 
-QStringList SQLGenerationPlugin::users(PGconn *connection)
+QStringList SQLGenerationPlugin::users()
 {
     const char *sql =
             "SELECT usename AS role_name, "
@@ -116,34 +147,53 @@ QStringList SQLGenerationPlugin::users(PGconn *connection)
             "  END role_attributes "
             "FROM pg_catalog.pg_user "
             "ORDER BY role_name desc ";
+    return createObjectList(sql, 0, 0);
+}
 
-    QStringList list;
+QStringList SQLGenerationPlugin::schemas()
+{
+    const char *sql =
+        "SELECT schema_name "
+        "FROM information_schema.schemata "
+        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
+    return createObjectList(sql, 0, 0);
+}
 
-    list << "";
+QStringList SQLGenerationPlugin::tables(QString schema)
+{
+    const char *sql =
+            "SELECT "
+            "    schemaname, "
+            "    tablename, "
+            "    tableowner, "
+            "    tablespace, "
+            "    hasindexes, "
+            "    hasrules, "
+            "    hastriggers, "
+            "    rowsecurity "
+            "FROM "
+            "    pg_catalog.pg_tables "
+            "WHERE "
+            "    schemaname != 'pg_catalog' "
+            "    AND schemaname != 'information_schema' "
+            "    AND schemaname = $1 ";
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+}
 
-    int tuples;
+QStringList SQLGenerationPlugin::views(QString schema)
+{
 
-    if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexec(connection, sql);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-        } else {
-
-            tuples = PQntuples(res);
-
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-            PQclear(res);
-
-            return list;
-
-        }
-    }
-
-    return QStringList();
+    const char *sql =
+        "SELECT "
+        "    schemaname, "
+        "    viewname, "
+        "    viewowner, "
+        "    definition "
+        "FROM pg_catalog.pg_views "
+        "WHERE "
+        "    schemaname NOT IN ('pg_catalog', 'information_schema') "
+        "    AND schemaname = $1 ";
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 
 QString SQLGenerationPlugin::gen_insert_all(PGconn *connection, int offset)

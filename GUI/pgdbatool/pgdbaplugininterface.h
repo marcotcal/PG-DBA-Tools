@@ -18,7 +18,6 @@ class PGDBAPluginInterface
  {
  public:
     virtual ~PGDBAPluginInterface() {}
-    virtual void setMenu(QMenu *menu) = 0;
     virtual void setTreeWidget(QTreeWidget *tree) = 0;
     virtual void setListWidget(QListWidget *list) = 0;
     virtual void createTree(PGconn *connection) = 0;

@@ -20,11 +20,29 @@ public:
         SQL_INSERT_ALL = 1000,
         SQL_INSERT_MANDATORY
     };
+    enum {
+        DATABAE_ITEM,
+        SCHEMAS_ITEM,
+        SCHEMA_ITEM,
+        TABLES_ITEM,
+        TABLE_ITEM,
+        VIEWS_ITEM,
+        VIEW_ITEM,
+        SEQUENCES_ITEM,
+        SEQUENCE_ITEM,
+        FUNCTIONS_ITEM,
+        FUNCTION_ITEM,
+    };
+    enum {
+        ROLE_ITEM_TYPE = Qt::UserRole,
+        ROLE_SCHEMA_NAME,
+        ROLE_TABLE_NAME,
+        ROLE_CONSTRAINT_TYPE
+    };
     SQLGenerationPlugin(QObject *parent = 0);
-    void setMenu(QMenu *menu) override;
     void setTreeWidget(QTreeWidget *value) override;
     void setListWidget(QListWidget *value) override;
-    void createTree(PGconn *connection) override;
+    void createTree(PGconn *value) override;
     bool run(EditorItem *editor, int item) override;
 
 private slots:
@@ -34,16 +52,19 @@ private slots:
 private:
     QTreeWidget *tree;
     QListWidget *list;
-    QString error;
 
-    SqlTool *sql_tool;
+    QString error;
 
     QString file_name;
 
     PGconn *connection;
 
-    QStringList schemas(PGconn *connection);
-    QStringList users(PGconn *connection);
+    QStringList createObjectList(const char *sql, int return_col, int param_count, ...);
+
+    QStringList users();
+    QStringList schemas();
+    QStringList tables(QString schema);
+    QStringList views(QString schema);
 
     QString gen_insert_all(PGconn *connection, int offset);
     QString gen_insert_mandatory(PGconn *connection, int offset);

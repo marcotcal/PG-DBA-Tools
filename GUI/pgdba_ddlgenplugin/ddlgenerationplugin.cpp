@@ -8,11 +8,6 @@ DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     tree = NULL;
 }
 
-void DDLGenerationPlugin::setMenu(QMenu *menu)
-{
-
-}
-
 void DDLGenerationPlugin::setTreeWidget(QTreeWidget *value)
 {
     tree = value;
