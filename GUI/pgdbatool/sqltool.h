@@ -35,11 +35,14 @@
 #include <QTabWidget>
 #include <QListWidget>
 
+
 namespace Ui {
 class SqlTool;
 }
 
 class SqlTool;
+
+class PluginTreeWidget;
 
 class EditorItem : public QsciScintilla  {
 
@@ -110,10 +113,10 @@ public:
 
     OutputSet *getOutputSet() { return output_set; }
 
-    void setDDLTree(QTabWidget *value);
+    void setPluginWidgetTree(PluginTreeWidget *value);
     void setFunctionList(QListWidget *value);
 
-    QTabWidget *getDDLTree();
+    PluginTreeWidget *getPluginWidgetTree();
     QListWidget *getFunctionList();
 
     void executeCurrent(ResultOutput* output, bool show_query=false);
@@ -184,25 +187,24 @@ private slots:
     void on_from_cursor_toggled(bool checked);
     void on_find_forward_clicked();
     void on_find_backward_clicked();
-
     void on_close_find_clicked();
-
     void on_text_to_find_textChanged(const QString &arg1);
     void on_from_line_valueChanged(const QString &arg1);
+
     void loadDatabaseList(int sel_connection);
 
     void on_query_model_clicked();
     void on_script_mode_clicked();
-
     void on_connection_list_activated(int index);
-
     void do_execute_generator(EditorItem *editor, int gen_sql);
+    void do_execute_plugin_function(QListWidgetItem *item);
 
 signals:
     void beginExecution(SqlTool *sender);
     void endExecution(SqlTool *sender);
     void modeChanged(SqlTool *sender, int current_mode);
     void requestToClose();
+    void run_plugin(EditorItem *editor, int item);
 
 private:
     Ui::SqlTool *ui;
@@ -241,7 +243,7 @@ private:
 
     OutputSet *output_set;
 
-    QTabWidget *ddl_tree_view;
+    PluginTreeWidget *plugin_widget_tree;
     QListWidget *function_list;
 
     ResultOutput *output;

@@ -21,18 +21,26 @@ public:
         SQL_INSERT_MANDATORY
     };
     SQLGenerationPlugin(QObject *parent = 0);
-    void setMenu(QMenu *menu);
-    void setTreeWidget(QTreeWidget *value);
-    void setListWidget(QListWidget *value);
-    void createTree(PGconn *connection);
-    bool run(PGconn *connection, int item, EditorItem *editor) override;
+    void setMenu(QMenu *menu) override;
+    void setTreeWidget(QTreeWidget *value) override;
+    void setListWidget(QListWidget *value) override;
+    void createTree(PGconn *connection) override;
+    bool run(EditorItem *editor, int item) override;
+
+private slots:
+
+    void updateFunctionList() override;
 
 private:
     QTreeWidget *tree;
     QListWidget *list;
-
     QString error;
+
+    SqlTool *sql_tool;
+
     QString file_name;
+
+    PGconn *connection;
 
     QStringList schemas(PGconn *connection);
     QStringList users(PGconn *connection);

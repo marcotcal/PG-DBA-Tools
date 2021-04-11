@@ -3,14 +3,15 @@
 #include <QCoreApplication>
 #include <QPluginLoader>
 #include <QMessageBox>
+#include <QDebug>
 
 PluginTreeWidget::PluginTreeWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(updateFunctionList(int)));
 }
 
-void PluginTreeWidget::setPluginElement(SqlTool *sql, PluginElement *value)
+void PluginTreeWidget::setPluginElement(QListWidget *list, PluginElement *value)
 {
 
     QJsonArray keys;
@@ -28,7 +29,7 @@ void PluginTreeWidget::setPluginElement(SqlTool *sql, PluginElement *value)
 
         addTab(tree, value->getMeta().toObject().value("Name").toString());
         value->getInterface()->setTreeWidget(tree);
-        value->getInterface()->setListWidget(sql->getFunctionList());
+        value->getInterface()->setListWidget(list);
     }
 
 }
@@ -48,4 +49,15 @@ void PluginTreeWidget::createTree()
         element->getInterface()->createTree(connection);
     }
 
+}
+
+void PluginTreeWidget::run_selected_plugin(EditorItem *editor, int item)
+{
+    elements.at(currentIndex())->getInterface()->run(editor, item);
+}
+
+void PluginTreeWidget::updateFunctionList(int page)
+{
+
+    elements.at(currentIndex())->getInterface()->updateFunctionList();
 }

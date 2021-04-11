@@ -1,10 +1,11 @@
-#ifndef PLUGINTREEVIEW_H
-#define PLUGINTREEVIEW_H
+#ifndef PLUGINTREEWIDGET_H
+#define PLUGINTREEWIDGET_H
 
 #include <QTreeWidget>
 #include <QTabWidget>
 #include <pgdbaplugininterface.h>
 #include <pluginelement.h>
+#include <sqltool.h>
 #include <libpq-fe.h>
 
 
@@ -14,15 +15,14 @@ class PluginTreeWidget : public QTabWidget
 public:
 
     PluginTreeWidget(QWidget *parent = Q_NULLPTR);
-    void setPluginElement(SqlTool *sql, PluginElement *value);
+    void setPluginElement(QListWidget *list, PluginElement *value);
     void setConnection(PGconn *value);
     void createTree();
 
-protected slots:
+public slots:
 
-
-signals:
-
+    void run_selected_plugin(EditorItem *editor, int item);
+    void updateFunctionList(int page);
 
 private:
 
@@ -32,4 +32,4 @@ private:
     PGconn *connection;
 };
 
-#endif // PLUGINTREEVIEW_H
+#endif // PLUGINTREEWIDGET_H

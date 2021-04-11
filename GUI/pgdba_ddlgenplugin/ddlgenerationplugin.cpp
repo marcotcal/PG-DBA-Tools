@@ -4,7 +4,8 @@
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
 {
-
+    list = NULL;
+    tree = NULL;
 }
 
 void DDLGenerationPlugin::setMenu(QMenu *menu)
@@ -18,12 +19,12 @@ void DDLGenerationPlugin::setTreeWidget(QTreeWidget *value)
     tree->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
-    connect(tree, SIGNAL(itemSelectionChanged()), this, SLOT(treeSelectionChanged()));
+    connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(updateFunctionList()));
 }
 
 void DDLGenerationPlugin::setListWidget(QListWidget *value)
 {
-    list = value;
+    list = value;    
 }
 
 void DDLGenerationPlugin::createTree(PGconn *value)
@@ -61,7 +62,7 @@ void DDLGenerationPlugin::createTree(PGconn *value)
     }
 }
 
-bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
+bool DDLGenerationPlugin::run(EditorItem *editor, int item)
 {
     int line, index;
 
@@ -73,12 +74,23 @@ bool DDLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
         editor->append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
         editor->append("-- End.\n");
         break;
-
+    case DDL_CREATE_ALL_SCHEMAS:
+        editor->append("-- Creating all schemas.\n");
+        editor->append("-- End.\n");
+        break;
     default:
         return false;
     }
 
     return true;
+}
+
+void DDLGenerationPlugin::updateFunctionList()
+{
+    if (tree)
+        generateFunctionList();
+    else if (list)
+        list->clear();
 }
 
 void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
@@ -112,7 +124,7 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
     }
 }
 
-void DDLGenerationPlugin::treeSelectionChanged()
+void DDLGenerationPlugin::generateFunctionList()
 {
     QList<QTreeWidgetItem *> items = tree->selectedItems();
     QTreeWidgetItem *tree_item;
@@ -130,30 +142,34 @@ void DDLGenerationPlugin::treeSelectionChanged()
         case SCHEMAS_ITEM:
             list_item = new QListWidgetItem("Create all schemas");
             list->addItem(list_item);
-
+            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_ALL_SCHEMAS);
             list_item = new QListWidgetItem("Drop all schemas");
             list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_ALL_SCHEMAS);
             break;
         case SCHEMA_ITEM:
             list_item = new QListWidgetItem("Create schema");
             list->addItem(list_item);
-
+            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_SCHEMA);
             list_item = new QListWidgetItem("Drop schema");
             list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_SCHEMA);
             break;
         case SEQUENCES_ITEM:
-            list_item = new QListWidgetItem("Resset Sequences");
+            list_item = new QListWidgetItem("Resset Sequences");            
             list->addItem(list_item);
-
+            list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCES);
             list_item = new QListWidgetItem("Update Sequences");
             list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCES);
             break;
         case SEQUENCE_ITEM:
             list_item = new QListWidgetItem("Resset Sequence");
             list->addItem(list_item);
-
+            list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCE);
             list_item = new QListWidgetItem("Update Sequence");
             list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCE);
             break;
         case FUNCTIONS_ITEM:
             list_item = new QListWidgetItem("Create New Function");
@@ -203,7 +219,7 @@ void DDLGenerationPlugin::treeSelectionChanged()
 
 void DDLGenerationPlugin::createAllSchemas()
 {
-    qDebug() << "passei aqui";
+
 }
 
 QStringList DDLGenerationPlugin::createObjectList(const char *sql, int return_col, int param_count, ...)
@@ -433,7 +449,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
-        constraint->setData(0, ROLE_CONTRAINT_TYPE, "P");
+        constraint->setData(0, ROLE_CONSTRAINT_TYPE, "P");
         item->addChild(constraint);
     }
 
@@ -446,7 +462,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
-        constraint->setData(0, ROLE_CONTRAINT_TYPE, "U");
+        constraint->setData(0, ROLE_CONSTRAINT_TYPE, "U");
         item->addChild(constraint);
     }
 
@@ -459,7 +475,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
-        constraint->setData(0, ROLE_CONTRAINT_TYPE, "F");
+        constraint->setData(0, ROLE_CONSTRAINT_TYPE, "F");
         item->addChild(constraint);
     }
 
@@ -472,7 +488,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
-        constraint->setData(0, ROLE_CONTRAINT_TYPE, "C");
+        constraint->setData(0, ROLE_CONSTRAINT_TYPE, "C");
         item->addChild(constraint);
     }
 }
@@ -493,7 +509,7 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
         trigger->setData(0, ROLE_ITEM_TYPE, TRIGGER_ITEM);
         trigger->setData(0, ROLE_TABLE_NAME, table);
         trigger->setData(0, ROLE_SCHEMA_NAME, schema);
-        trigger->setData(0, ROLE_CONTRAINT_TYPE, "C");
+        trigger->setData(0, ROLE_CONSTRAINT_TYPE, "C");
         item->addChild(trigger);
     }
 

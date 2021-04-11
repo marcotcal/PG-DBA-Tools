@@ -413,14 +413,13 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->editor_list->clearSelection();
     sql->setGroupName(name);
 
-
     out = new OutputSet(sql);
     sql->setOutputSet(out);
     ui->output_stack->addWidget(out);
     ui->output_stack->setCurrentWidget(out);
 
     ddl_tree = new PluginTreeWidget(sql);
-    sql->setDDLTree(ddl_tree);
+    sql->setPluginWidgetTree(ddl_tree);
     ui->plugin_stack->addWidget(ddl_tree);
     ui->plugin_stack->setCurrentWidget(ddl_tree);
     ddl_tree->setConnection(NULL);
@@ -430,10 +429,10 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->function_stack->addWidget(function_list);
     ui->function_stack->setCurrentWidget(function_list);
 
-    connect(ddl_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
+    //connect(ddl_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
 
     for(auto i = interface_list.begin(); i != interface_list.end(); i++)
-        ddl_tree->setPluginElement(sql, i.value());
+        ddl_tree->setPluginElement(function_list, i.value());
 
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());
@@ -688,6 +687,8 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->widget(arg1));
     QueryModel *model = dynamic_cast<QueryModel*>(ui->main_stack->currentWidget());
+    QTabWidget *tree;
+    QListWidget *list;
 
     disable_actions();
 
@@ -696,8 +697,13 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
         enable_sql_transactions(sql);
         ui->output_stack->setCurrentWidget(sql->getOutputSet());
 
-        ui->plugin_stack->setCurrentWidget(sql->getDDLTree());
-        ui->function_stack->setCurrentWidget(sql->getFunctionList());
+        tree = sql->getPluginWidgetTree();
+        list = sql->getFunctionList();
+
+        if (tree)
+            ui->plugin_stack->setCurrentWidget(tree);
+        if (list)
+            ui->function_stack->setCurrentWidget(list);
 
     }
     if (model){
@@ -715,7 +721,7 @@ void MainWindow::on_actionConnect_triggered()
     if (sql) {
         sql->databaseConnect();
         enable_sql_tool_actions(sql);
-        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getDDLTree());        
+        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getPluginWidgetTree());
 
         if (ddl_tree) {
             ddl_tree->setConnection(sql->getPostgresConnection());
@@ -735,7 +741,7 @@ void MainWindow::on_actionDisconect_triggered()
     if (sql) {
         sql->databaseDisconnect();
         enable_sql_tool_actions(sql);
-        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getDDLTree());
+        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getPluginWidgetTree());
         function_list = sql->getFunctionList();
 
         if (ddl_tree) {
@@ -778,8 +784,8 @@ void MainWindow::on_actionClose_triggered()
             ui->output_stack->removeWidget(sql->getOutputSet());
             sql->getOutputSet()->deleteLater();
 
-            ui->plugin_stack->removeWidget(sql->getDDLTree());
-            sql->getDDLTree()->deleteLater();
+            ui->plugin_stack->removeWidget(sql->getPluginWidgetTree());
+            sql->getPluginWidgetTree()->deleteLater();
 
             ui->function_stack->removeWidget(sql->getFunctionList());
             sql->getFunctionList()->deleteLater();
@@ -1033,7 +1039,7 @@ void MainWindow::executePlugin(PluginElement *element, int item)
     if (sql) {
         editor = sql->getCurrentEditor();
         if (sql->connected()) {
-            element->getInterface()->run(sql->getPostgresConnection(), item, editor);
+            element->getInterface()->run(editor, item);
         } else {
             QMessageBox::warning(this, "Connection", "Please open choose the connection "
                                  "and open the database before generate sentence.");

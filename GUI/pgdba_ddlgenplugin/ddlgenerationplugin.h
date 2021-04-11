@@ -17,6 +17,14 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
 public:
     enum {
         DDL_TEST = 0,
+        DDL_CREATE_ALL_SCHEMAS,
+        DDL_DROP_ALL_SCHEMAS,
+        DDL_CREATE_SCHEMA,
+        DDL_DROP_SCHEMA,
+        DDL_RESET_SEQUENCES,
+        DDL_UPDATE_SEQUENCES,
+        DDL_RESET_SEQUENCE,
+        DDL_UPDATE_SEQUENCE
     };
     enum {
         DATABAE_ITEM,
@@ -40,25 +48,31 @@ public:
         ROLE_ITEM_TYPE = Qt::UserRole,
         ROLE_SCHEMA_NAME,
         ROLE_TABLE_NAME,
-        ROLE_CONTRAINT_TYPE
+        ROLE_CONSTRAINT_TYPE
     };
     DDLGenerationPlugin(QObject *parent = 0);
-    void setMenu(QMenu *menu);
-    void setTreeWidget(QTreeWidget *value);
-    void setListWidget(QListWidget *value);
-    void createTree(PGconn *value);
-    bool run(PGconn *connection, int item, EditorItem *editor) override;
+    void setMenu(QMenu *menu) override;
+    void setTreeWidget(QTreeWidget *value) override;
+    void setListWidget(QListWidget *value) override;
+    void createTree(PGconn *value) override;
+    bool run(EditorItem *editor, int item) override;
+
+    void generateFunctionList();
+
+public slots:
+
+    void updateFunctionList() override;
 
 private slots:
 
     void processItem(QTreeWidgetItem *item, int column);
-    void treeSelectionChanged();
     void createAllSchemas();
 
 private:
 
     QTreeWidget *tree;
     QListWidget *list;
+    SqlTool *sql_tool;
 
     QString file_name;
 

@@ -39,6 +39,7 @@
 #include "dlgparallelsettings.h"
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
+#include "plugintreewidget.h"
 
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
@@ -254,6 +255,8 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
 
     last_search_path = "public,pg_catalog";
     group_modified = false;
+    function_list = NULL;
+    plugin_widget_tree = NULL;
 }
 
 SqlTool::~SqlTool()
@@ -971,16 +974,21 @@ void SqlTool::beginTransaction(QString command) {
     in_transaction = true;
 }
 
-void SqlTool::setDDLTree(QTabWidget *value) {
-    ddl_tree_view = value;
+void SqlTool::setPluginWidgetTree(PluginTreeWidget *value) {
+    plugin_widget_tree = value;
+    connect(this, SIGNAL(run_plugin(EditorItem*,int)),plugin_widget_tree,SLOT(run_selected_plugin(EditorItem*,int)));
 }
 
 void SqlTool::setFunctionList(QListWidget *value) {
     function_list = value;
+    connect(function_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+            this, SLOT(do_execute_plugin_function(QListWidgetItem*)));
+    connect(function_list, SIGNAL(itemEntered(QListWidgetItem*)),
+            this, SLOT(do_execute_plugin_function(QListWidgetItem*)));
 }
 
-QTabWidget *SqlTool::getDDLTree() {
-    return ddl_tree_view;
+PluginTreeWidget *SqlTool::getPluginWidgetTree() {
+    return plugin_widget_tree;
 }
 
 QListWidget *SqlTool::getFunctionList() {
@@ -1410,4 +1418,9 @@ void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
         break;
     }
     */
+}
+
+void SqlTool::do_execute_plugin_function(QListWidgetItem *item)
+{
+    emit(run_plugin(getCurrentEditor(), item->data(Qt::UserRole).toInt()));
 }

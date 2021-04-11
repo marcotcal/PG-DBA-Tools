@@ -7,6 +7,8 @@
 SQLGenerationPlugin::SQLGenerationPlugin(QObject *parent) :
     QObject(parent)
 {
+    list = NULL;
+    tree = NULL;
 }
 
 void SQLGenerationPlugin::setMenu(QMenu *menu)
@@ -29,7 +31,7 @@ void SQLGenerationPlugin::createTree(PGconn *connection)
 
 }
 
-bool SQLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
+bool SQLGenerationPlugin::run(EditorItem *editor, int item)
 {
     int line, index;
 
@@ -54,6 +56,12 @@ bool SQLGenerationPlugin::run(PGconn *connection, int item, EditorItem *editor)
 
     return true;
 
+}
+
+void SQLGenerationPlugin::updateFunctionList()
+{
+    if (list)
+        list->clear();
 }
 
 QStringList SQLGenerationPlugin::schemas(PGconn *connection)
