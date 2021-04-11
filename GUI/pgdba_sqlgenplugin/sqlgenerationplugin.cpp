@@ -14,6 +14,9 @@ SQLGenerationPlugin::SQLGenerationPlugin(QObject *parent) :
 void SQLGenerationPlugin::setTreeWidget(QTreeWidget *value)
 {
     tree = value;
+    connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
+    connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
+    connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(updateFunctionList()));
 }
 
 void SQLGenerationPlugin::setListWidget(QListWidget *value)
@@ -83,10 +86,76 @@ bool SQLGenerationPlugin::run(EditorItem *editor, int item)
 
 }
 
+void SQLGenerationPlugin::generateFunctionList()
+{
+    QList<QTreeWidgetItem *> items = tree->selectedItems();
+    QTreeWidgetItem *tree_item;
+    QListWidgetItem *list_item;
+    int item_type;
+
+    // take only the first item
+    if (items.count() == 1) {
+
+        tree_item = items.at(0);
+        item_type = tree_item->data(0, ROLE_ITEM_TYPE).toInt();
+        list->clear();
+
+        switch(item_type) {
+        case TABLE_ITEM:
+            list_item = new QListWidgetItem("Select first 100 rows");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Select all rows");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Insert only mandatory fields");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Insert all fields");
+            list->addItem(list_item);
+
+            break;
+        case FUNCTION_ITEM:
+            list_item = new QListWidgetItem("Drop Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Create or Replace Function");
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Script Alter Function Parameters");
+            list->addItem(list_item);
+            break;
+        }
+
+    } else
+        list->clear();
+
+}
+
 void SQLGenerationPlugin::updateFunctionList()
 {
-    if (list)
+    if (tree)
+        generateFunctionList();
+    else if (list)
         list->clear();
+}
+
+void SQLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
+{
+    switch(item->data(0, ROLE_ITEM_TYPE).toInt()) {
+    case SCHEMA_ITEM:
+        if(item->childCount() == 0) processSchemas(item);
+        break;
+    case TABLES_ITEM:
+        if(item->childCount() == 0) processTables(item);
+        break;
+    case VIEWS_ITEM:
+        if(item->childCount() == 0) processViews(item);
+        break;
+    case FUNCTIONS_ITEM:
+        if(item->childCount() == 0) processFunctions(item);
+        break;
+    }
 }
 
 QStringList SQLGenerationPlugin::createObjectList(const char *sql, int return_col, int param_count, ...)
@@ -129,6 +198,99 @@ QStringList SQLGenerationPlugin::createObjectList(const char *sql, int return_co
     }
 
     return QStringList();
+}
+
+void SQLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
+
+
+    QTreeWidgetItem *table_node;
+    QTreeWidgetItem *view_node;
+    QTreeWidgetItem *function_node;
+
+
+    if (item->childCount() > 0)
+        return;
+
+    function_node = new QTreeWidgetItem();
+    function_node->setText(0, "Functions");
+    function_node->setIcon(0, QIcon(":/icons/images/icons/functions.png"));
+    function_node->setData(0, ROLE_ITEM_TYPE, FUNCTIONS_ITEM);
+    function_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+    item->addChild(function_node);
+
+    table_node = new QTreeWidgetItem();
+    table_node->setText(0, "Tables");
+    table_node->setIcon(0, QIcon(":/icons/images/icons/tables.png"));
+    table_node->setData(0, ROLE_ITEM_TYPE, TABLES_ITEM);
+    table_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+    item->addChild(table_node);
+
+    view_node = new QTreeWidgetItem();
+    view_node->setText(0, "Views");
+    view_node->setIcon(0, QIcon(":/icons/images/icons/views.png"));
+    view_node->setData(0, ROLE_ITEM_TYPE, VIEWS_ITEM);
+    view_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+    item->addChild(view_node);
+
+}
+
+void SQLGenerationPlugin::processTables(QTreeWidgetItem *item)
+{
+
+    //QTreeWidgetItem *index_node;
+    QTreeWidgetItem *constraints_node;
+    QTreeWidgetItem *triggers_node;
+    QTreeWidgetItem *table;
+    QStringList table_list;
+
+    table_list = tables(item->data(0, ROLE_SCHEMA_NAME).toString());
+
+    for(int j=0; j < table_list.count(); j++) {
+
+        table = new QTreeWidgetItem();
+        table->setText(0, table_list[j]);
+        table->setIcon(0, QIcon(":/icons/images/icons/table.png"));
+        table->setData(0, Qt::UserRole, TABLE_ITEM);
+        item->addChild(table);
+
+    }
+}
+
+void SQLGenerationPlugin::processViews(QTreeWidgetItem *item)
+{
+    QTreeWidgetItem *triggers_node;
+    QTreeWidgetItem *view;
+    QStringList view_list;
+
+    view_list = views(item->data(0, ROLE_SCHEMA_NAME).toString());
+
+    for(int j=0; j < view_list.count(); j++) {
+
+        view = new QTreeWidgetItem();
+        view->setText(0, view_list[j]);
+        view->setIcon(0, QIcon(":/icons/images/icons/view.png"));
+        view->setData(0, Qt::UserRole, VIEW_ITEM);
+        item->addChild(view);
+
+    }
+}
+
+void SQLGenerationPlugin::processFunctions(QTreeWidgetItem *item)
+{
+    QStringList function_list;
+    QTreeWidgetItem *function;
+
+    function_list = functions(item->data(0, ROLE_SCHEMA_NAME).toString());
+
+    for(int j=0; j < function_list.count(); j++) {
+
+        function = new QTreeWidgetItem();
+        function->setText(0, function_list[j]);
+        function->setIcon(0, QIcon(":/icons/images/icons/function.png"));
+        function->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        item->addChild(function);
+
+    }
 }
 
 QStringList SQLGenerationPlugin::users()
@@ -193,6 +355,23 @@ QStringList SQLGenerationPlugin::views(QString schema)
         "WHERE "
         "    schemaname NOT IN ('pg_catalog', 'information_schema') "
         "    AND schemaname = $1 ";
+    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+}
+
+QStringList SQLGenerationPlugin::functions(QString schema)
+{
+    const char *sql =
+        "SELECT "
+        "    n.nspname, "
+        "    p.proname, "
+        "    pg_catalog.pg_get_function_identity_arguments(p.oid) as arguments, "
+        "    t.typname "
+        "FROM   pg_catalog.pg_proc p "
+        "       JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "       JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+        "WHERE "
+        "    t.typname != 'trigger' AND "
+        "    n.nspname = $1 ";
     return createObjectList(sql, 1, 1, schema.toStdString().c_str());
 }
 

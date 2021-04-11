@@ -45,9 +45,16 @@ public:
     void createTree(PGconn *value) override;
     bool run(EditorItem *editor, int item) override;
 
-private slots:
+    void generateFunctionList();
+
+public slots:
 
     void updateFunctionList() override;
+
+private slots:
+
+    void processItem(QTreeWidgetItem *item, int column);
+
 
 private:
     QTreeWidget *tree;
@@ -65,9 +72,15 @@ private:
     QStringList schemas();
     QStringList tables(QString schema);
     QStringList views(QString schema);
+    QStringList functions(QString schema);
 
     QString gen_insert_all(PGconn *connection, int offset);
     QString gen_insert_mandatory(PGconn *connection, int offset);
+
+    void processSchemas(QTreeWidgetItem *item);
+    void processTables(QTreeWidgetItem *item);
+    void processViews(QTreeWidgetItem *item);
+    void processFunctions(QTreeWidgetItem *item);
 
 };
 

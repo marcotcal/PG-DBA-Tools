@@ -11,7 +11,6 @@ DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
 void DDLGenerationPlugin::setTreeWidget(QTreeWidget *value)
 {
     tree = value;
-    tree->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(updateFunctionList()));
@@ -208,7 +207,8 @@ void DDLGenerationPlugin::generateFunctionList()
             break;
         }
 
-    }
+    } else
+        list->clear();
 
 }
 
