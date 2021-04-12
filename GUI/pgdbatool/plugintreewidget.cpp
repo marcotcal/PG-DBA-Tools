@@ -51,6 +51,16 @@ void PluginTreeWidget::createTree()
 
 }
 
+void PluginTreeWidget::clearTrees()
+{
+    QTreeWidget *tree;
+
+    for(int i = 0; i < count(); i++) {
+         tree = dynamic_cast<QTreeWidget *>(widget(i));
+         tree->clear();
+    }
+}
+
 void PluginTreeWidget::run_selected_plugin(EditorItem *editor, int item)
 {
     elements.at(currentIndex())->getInterface()->run(editor, item);
@@ -58,6 +68,6 @@ void PluginTreeWidget::run_selected_plugin(EditorItem *editor, int item)
 
 void PluginTreeWidget::updateFunctionList(int page)
 {
-
-    elements.at(currentIndex())->getInterface()->updateFunctionList();
+    if (page >= 0)
+        elements.at(currentIndex())->getInterface()->updateFunctionList();
 }

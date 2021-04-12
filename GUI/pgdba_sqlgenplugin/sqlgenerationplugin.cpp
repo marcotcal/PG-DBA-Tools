@@ -63,18 +63,18 @@ bool SQLGenerationPlugin::run(EditorItem *editor, int item)
 {
     int line, index;
 
+    editor->getCursorPosition(&line, &index);
+
     switch(item) {
     case SQL_TEST:
         editor->append("-- Plugin Test.\n");
         editor->append("SELECT 'TESTING SQL GENERATION PLUGIN'\n");
         editor->append("-- End.\n");
         break;
-    case SQL_INSERT_ALL:
-        editor->getCursorPosition(&line, &index);
+    case SQL_INSERT_ALL:        
         editor->insertAt(gen_insert_all(connection, index), line, index);
         break;
-    case SQL_INSERT_MANDATORY:
-        editor->getCursorPosition(&line, &index);
+    case SQL_INSERT_MANDATORY:        
         editor->insertAt(gen_insert_mandatory(connection, index), line, index);
         break;
 
@@ -103,28 +103,49 @@ void SQLGenerationPlugin::generateFunctionList()
         switch(item_type) {
         case TABLE_ITEM:
             list_item = new QListWidgetItem("Select first 100 rows");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FIRST_100);
             list->addItem(list_item);
 
             list_item = new QListWidgetItem("Select all rows");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
             list->addItem(list_item);
 
             list_item = new QListWidgetItem("Insert only mandatory fields");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_MANDATORY);
             list->addItem(list_item);
 
             list_item = new QListWidgetItem("Insert all fields");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_ALL);
             list->addItem(list_item);
 
             break;
+
+        case VIEW_ITEM:
+            list_item = new QListWidgetItem("Select first 100 rows");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FIRST_100);
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Select all rows");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
+            list->addItem(list_item);
+
+            list_item = new QListWidgetItem("Insert all fields");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_ALL);
+            list->addItem(list_item);
+
+            break;
+
         case FUNCTION_ITEM:
-            list_item = new QListWidgetItem("Drop Function");
+            list_item = new QListWidgetItem("Select first 100 rows");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FIRST_100);
             list->addItem(list_item);
 
-            list_item = new QListWidgetItem("Create or Replace Function");
+            list_item = new QListWidgetItem("Select all rows");
+            list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
             list->addItem(list_item);
 
-            list_item = new QListWidgetItem("Script Alter Function Parameters");
-            list->addItem(list_item);
             break;
+
         }
 
     } else

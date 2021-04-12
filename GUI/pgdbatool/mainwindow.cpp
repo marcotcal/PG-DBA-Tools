@@ -746,7 +746,7 @@ void MainWindow::on_actionDisconect_triggered()
 
         if (ddl_tree) {
             ddl_tree->setConnection(NULL);
-            ddl_tree->clear();
+            ddl_tree->clearTrees();
         }
 
         if (function_list)

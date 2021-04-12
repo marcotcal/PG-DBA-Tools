@@ -18,7 +18,7 @@ public:
     void setPluginElement(QListWidget *list, PluginElement *value);
     void setConnection(PGconn *value);
     void createTree();
-
+    void clearTrees();
 public slots:
 
     void run_selected_plugin(EditorItem *editor, int item);

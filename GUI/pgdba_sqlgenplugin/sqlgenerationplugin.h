@@ -17,8 +17,10 @@ class SQLGenerationPlugin : public QObject, PGDBAPluginInterface {
 public:
     enum {
         SQL_TEST = 0,
-        SQL_INSERT_ALL = 1000,
-        SQL_INSERT_MANDATORY
+        SQL_SELECT_FIRST_100 = 1000,
+        SQL_SELECT_ALL,
+        SQL_INSERT_MANDATORY,
+        SQL_INSERT_ALL
     };
     enum {
         DATABAE_ITEM,
