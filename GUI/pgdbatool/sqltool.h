@@ -44,6 +44,8 @@ class SqlTool;
 
 class PluginTreeWidget;
 
+class PluginElement;
+
 class EditorItem : public QsciScintilla  {
 
     Q_OBJECT
@@ -118,6 +120,8 @@ public:
 
     PluginTreeWidget *getPluginWidgetTree();
     QListWidget *getFunctionList();
+
+    void setInterfaceList(QMap<QString, PluginElement *> list);
 
     void executeCurrent(ResultOutput* output, bool show_query=false);
     void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
@@ -245,6 +249,8 @@ private:
 
     PluginTreeWidget *plugin_widget_tree;
     QListWidget *function_list;
+
+    QMap<QString, PluginElement *> interface_list;
 
     ResultOutput *output;
     bool query_running;

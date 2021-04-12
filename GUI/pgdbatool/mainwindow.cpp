@@ -407,6 +407,7 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     }
 
     sql->setMode(mode);
+    sql->setInterfaceList(interface_list);
 
     ui->main_stack->addWidget(sql);
     ui->main_stack->setCurrentWidget(ui->main_stack);
@@ -418,21 +419,25 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->output_stack->addWidget(out);
     ui->output_stack->setCurrentWidget(out);
 
-    ddl_tree = new PluginTreeWidget(sql);
-    sql->setPluginWidgetTree(ddl_tree);
-    ui->plugin_stack->addWidget(ddl_tree);
-    ui->plugin_stack->setCurrentWidget(ddl_tree);
-    ddl_tree->setConnection(NULL);
+    //ddl_tree = new PluginTreeWidget(sql);
+    //sql->setPluginWidgetTree(ddl_tree);
+    //ui->plugin_stack->addWidget(ddl_tree);
+    //ui->plugin_stack->setCurrentWidget(ddl_tree);
+    //ddl_tree->setConnection(NULL);
+    ui->plugin_stack->addWidget(sql->getPluginWidgetTree());
+    ui->plugin_stack->setCurrentWidget(sql->getPluginWidgetTree());
 
-    function_list = new QListWidget(sql);
-    sql->setFunctionList(function_list);
-    ui->function_stack->addWidget(function_list);
-    ui->function_stack->setCurrentWidget(function_list);
+    //function_list = new QListWidget(sql);
+    //sql->setFunctionList(function_list);
+    //ui->function_stack->addWidget(function_list);
+    //ui->function_stack->setCurrentWidget(function_list);
+    ui->function_stack->addWidget(sql->getFunctionList());
+    ui->function_stack->setCurrentWidget(sql->getFunctionList());
 
     //connect(ddl_tree, SIGNAL(executeItem(PluginElement*,int)), this, SLOT(executePlugin(PluginElement*,int)));
 
-    for(auto i = interface_list.begin(); i != interface_list.end(); i++)
-        ddl_tree->setPluginElement(function_list, i.value());
+    //for(auto i = interface_list.begin(); i != interface_list.end(); i++)
+    //    ddl_tree->setPluginElement(function_list, i.value());
 
     ui->main_stack->setCurrentWidget(sql);
     ui->editor_list->setCurrentRow(ui->main_stack->currentIndex());

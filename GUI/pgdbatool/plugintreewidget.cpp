@@ -8,7 +8,7 @@
 PluginTreeWidget::PluginTreeWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    connect(this, SIGNAL(currentChanged(int)), this, SLOT(updateFunctionList(int)));
+    //connect(this, SIGNAL(currentChanged(int)), this, SLOT(updateFunctionList(int)));
 }
 
 void PluginTreeWidget::setPluginElement(QListWidget *list, PluginElement *value)

@@ -39,7 +39,7 @@
 #include "dlgparallelsettings.h"
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
-#include "plugintreewidget.h"
+#include "pluginelement.h"
 
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
@@ -993,6 +993,48 @@ PluginTreeWidget *SqlTool::getPluginWidgetTree() {
 
 QListWidget *SqlTool::getFunctionList() {
     return function_list;
+}
+
+void SqlTool::setInterfaceList(QMap<QString, PluginElement *> list)
+{
+    interface_list = list;
+    QJsonArray keys;
+    QTreeWidget *tree;
+    PluginElement *element;
+    QString name;
+
+    plugin_widget_tree = new PluginTreeWidget(this);
+    plugin_widget_tree->setConnection(NULL);
+
+    function_list = new QListWidget(this);
+
+    for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
+
+        element = i.value();
+
+        keys = element->getMeta().toObject().value("Keys").toArray();
+
+        if (keys.contains(QJsonValue("PGDBATOOLS")) &&
+                (keys.contains(QJsonValue("DDL")) || keys.contains(QJsonValue("SQL"))) &&
+                (keys.contains(QJsonValue("DDL_TREE")) || keys.contains(QJsonValue("SQL_TREE")))) {
+
+            //elements.append(value);
+
+            tree = new QTreeWidget(this);
+            tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
+            tree->setHeaderHidden(true);
+
+            name = element->getMeta().toObject().value("Name").toString();
+
+            plugin_widget_tree->addTab(tree, name);
+            element->getInterface()->setTreeWidget(tree);
+            element->getInterface()->setListWidget(function_list);
+
+        }
+
+    }
+
+
 }
 
 void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
