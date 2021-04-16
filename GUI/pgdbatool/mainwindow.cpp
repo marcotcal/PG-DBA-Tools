@@ -530,6 +530,7 @@ void MainWindow::on_actionOpen_SQL_File_triggered()
     QString query_path;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     QFile file;
+    EditorItem *editor;
 
     if(sql) {
 
@@ -543,7 +544,8 @@ void MainWindow::on_actionOpen_SQL_File_triggered()
                                                  "SQL files (*.sql);;All files (*.*)");
         if (file_name != "") {
             file.setFileName(file_name);
-            if (sql->getCurrentEditor()->isModified())
+            editor = sql->getCurrentEditor();
+            if (editor && editor->isModified())
                 sql->openFileOnNew(file);
             else
                 sql->openFileOnCurrent(file);
