@@ -18,7 +18,7 @@ public:
     explicit DlgPlugins(QMap<QString, PluginElement *> &interface_list, QWidget *parent = 0);
     ~DlgPlugins();
 
-    void setEditor(EditorItem *value);
+    void setEditor(SqlTool *value);
 private slots:
 
     void on_bt_close_clicked();
@@ -27,7 +27,7 @@ private slots:
 private:
     Ui::DlgPlugins *ui;
     QMap<QString, PluginElement *> &interface_list;
-    EditorItem *editor;
+    SqlTool *sql_tool;
 
     void loadTable();
 };

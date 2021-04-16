@@ -42,39 +42,28 @@ public:
         ROLE_CONSTRAINT_TYPE
     };
     SQLGenerationPlugin(QObject *parent = 0);
-    void setTreeWidget(QTreeWidget *value) override;
-    void setListWidget(QListWidget *value) override;
-    void createTree(PGconn *value) override;
-    bool run(EditorItem *editor, int item) override;
-
-    void generateFunctionList();
+    void createTree(PGconn *connection, QTreeWidget *tree) override;
+    QStringList run(int item) override;
 
 public slots:
 
-    void updateFunctionList() override;
+    void updateFunctionList(QTreeWidgetItem* item,  QListWidget *list) override;
 
 private slots:
 
     void processItem(QTreeWidgetItem *item, int column);
 
-
 private:
-    QTreeWidget *tree;
-    QListWidget *list;
 
-    QString error;
+    QMap<QTreeWidget *, PGconn *> trees;
 
-    QString file_name;
+    QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
 
-    PGconn *connection;
-
-    QStringList createObjectList(const char *sql, int return_col, int param_count, ...);
-
-    QStringList users();
-    QStringList schemas();
-    QStringList tables(QString schema);
-    QStringList views(QString schema);
-    QStringList functions(QString schema);
+    QStringList users(PGconn *connection);
+    QStringList schemas(PGconn *connection);
+    QStringList tables(PGconn *connection, QString schema);
+    QStringList views(PGconn *connection, QString schema);
+    QStringList functions(PGconn *connection, QString schema);
 
     QString gen_insert_all(PGconn *connection, int offset);
     QString gen_insert_mandatory(PGconn *connection, int offset);

@@ -42,7 +42,7 @@ class SqlTool;
 
 class SqlTool;
 
-class PluginTreeWidget;
+class PluginTabWidget;
 
 class PluginElement;
 
@@ -115,13 +115,14 @@ public:
 
     OutputSet *getOutputSet() { return output_set; }
 
-    void setPluginWidgetTree(PluginTreeWidget *value);
+    void setInterfaceList(QMap<QString, PluginElement *> *list);
+    QMap<QString, PluginElement *> *getInterfaceList();
+
+    void setPluginWidgetTree(PluginTabWidget *value);
     void setFunctionList(QListWidget *value);
 
-    PluginTreeWidget *getPluginWidgetTree();
+    PluginTabWidget *getPluginWidgetTree();
     QListWidget *getFunctionList();
-
-    void setInterfaceList(QMap<QString, PluginElement *> list);
 
     void executeCurrent(ResultOutput* output, bool show_query=false);
     void executeCurrent(ResultOutput* output, QString explain = "", bool show_query=false);
@@ -208,7 +209,7 @@ signals:
     void endExecution(SqlTool *sender);
     void modeChanged(SqlTool *sender, int current_mode);
     void requestToClose();
-    void run_plugin(EditorItem *editor, int item);
+    void runPlugin(EditorItem *editor, int item);
 
 private:
     Ui::SqlTool *ui;
@@ -247,10 +248,10 @@ private:
 
     OutputSet *output_set;
 
-    PluginTreeWidget *plugin_widget_tree;
+    PluginTabWidget *plugin_widget_tree;
     QListWidget *function_list;
 
-    QMap<QString, PluginElement *> interface_list;
+    QMap<QString, PluginElement *> *interface_list;
 
     ResultOutput *output;
     bool query_running;

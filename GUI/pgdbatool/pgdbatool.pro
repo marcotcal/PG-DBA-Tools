@@ -79,9 +79,10 @@ SOURCES += \
     dlgcreatescript.cpp \
     frmfindtext.cpp \
     frmprojectscript.cpp \
-    plugintreewidget.cpp \
+    plugintabwidget.cpp \
     dlgplugins.cpp \
-    pluginelement.cpp
+    pluginelement.cpp \
+    plugintreewidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -119,10 +120,11 @@ HEADERS += \
     dlgcreatescript.h \
     frmfindtext.h \
     frmprojectscript.h \
-    plugintreewidget.h \
+    plugintabwidget.h \
     pgdbaplugininterface.h \
     dlgplugins.h \
-    pluginelement.h
+    pluginelement.h \
+    plugintreewidget.h
 
 FORMS += \
     mainwindow.ui \

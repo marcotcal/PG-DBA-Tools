@@ -1,39 +1,29 @@
 #include "ddlgenerationplugin.h"
 #include <QDebug>
+#include <plugintabwidget.h>
 
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
 {
-    list = NULL;
-    tree = NULL;
+
 }
 
-void DDLGenerationPlugin::setTreeWidget(QTreeWidget *value)
-{
-    tree = value;
-    connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
-    connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
-    connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(updateFunctionList()));
-}
-
-void DDLGenerationPlugin::setListWidget(QListWidget *value)
-{
-    list = value;    
-}
-
-void DDLGenerationPlugin::createTree(PGconn *value)
+void DDLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
 {
     QTreeWidgetItem *root = new QTreeWidgetItem();
     QTreeWidgetItem *schema_node;
     QTreeWidgetItem *schema;
     QStringList schemas_list;
 
-    connection = value;
+    trees[tree] = connection;
 
-    if (value) {
+    connect(tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
+    connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(processItem(QTreeWidgetItem*,int)));
 
-        schemas_list = schemas();
-        root->setText(0, QString(PQdb(value)));
+    if (connection) {
+
+        schemas_list = schemas(connection);
+        root->setText(0, QString(PQdb(connection)));
         root->setIcon(0, QIcon(":/icons/images/icons/database.png"));
         tree->insertTopLevelItem(0, root);
 
@@ -56,35 +46,111 @@ void DDLGenerationPlugin::createTree(PGconn *value)
     }
 }
 
-bool DDLGenerationPlugin::run(EditorItem *editor, int item)
+QStringList DDLGenerationPlugin::run(int item)
 {
-    int line, index;
 
-    editor->getCursorPosition(&line, &index);
+    QStringList resp;
 
     switch(item) {
     case DDL_TEST:
-        editor->append("-- Plugin Test.\n");
-        editor->append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
-        editor->append("-- End.\n");
+        resp.append("-- Plugin Test.\n");
+        resp.append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
+        resp.append("-- End.\n");
         break;
     case DDL_CREATE_ALL_SCHEMAS:
-        editor->append("-- Creating all schemas.\n");
-        editor->append("-- End.\n");
+        resp.append("-- Creating all schemas.\n");
+        resp.append("-- End.\n");
         break;
     default:
-        return false;
+        return QStringList();
     }
 
-    return true;
+    return resp;
 }
 
-void DDLGenerationPlugin::updateFunctionList()
-{
-    if (tree)
-        generateFunctionList();
-    else if (list)
-        list->clear();
+void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget *list)
+{        
+    QListWidgetItem *list_item;
+    int item_type;
+
+    item_type = item->data(0, ROLE_ITEM_TYPE).toInt();
+
+    list->clear();
+
+    switch(item_type) {
+    case SCHEMAS_ITEM:
+        list_item = new QListWidgetItem("Create all schemas");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_ALL_SCHEMAS);
+        list_item = new QListWidgetItem("Drop all schemas");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_ALL_SCHEMAS);
+        break;
+    case SCHEMA_ITEM:
+        list_item = new QListWidgetItem("Create schema");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_SCHEMA);
+        list_item = new QListWidgetItem("Drop schema");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_SCHEMA);
+        break;
+    case SEQUENCES_ITEM:
+        list_item = new QListWidgetItem("Resset Sequences");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCES);
+        list_item = new QListWidgetItem("Update Sequences");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCES);
+        break;
+    case SEQUENCE_ITEM:
+        list_item = new QListWidgetItem("Resset Sequence");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCE);
+        list_item = new QListWidgetItem("Update Sequence");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCE);
+        break;
+    case FUNCTIONS_ITEM:
+        list_item = new QListWidgetItem("Create New Function");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Drop all Functions");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Create all Functions");
+        list->addItem(list_item);
+        break;
+    case FUNCTION_ITEM:
+        list_item = new QListWidgetItem("Drop Function");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Create or Replace Function");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Script Alter Function Parameters");
+        list->addItem(list_item);
+        break;
+    case TRIGGER_FUNCTIONS_ITEM:
+        list_item = new QListWidgetItem("Create New Function");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Drop all Functions and related triggers");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Create all Functions");
+        list->addItem(list_item);
+        break;
+    case TRIGGER_FUNCTION_ITEM:
+        list_item = new QListWidgetItem("Drop Function and related triggers");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Create or Replace Function");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Script Alter Function Parameters");
+        list->addItem(list_item);
+        break;
+    }
 }
 
 void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
@@ -118,106 +184,8 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
     }
 }
 
-void DDLGenerationPlugin::generateFunctionList()
-{
-    QList<QTreeWidgetItem *> items = tree->selectedItems();
-    QTreeWidgetItem *tree_item;
-    QListWidgetItem *list_item;
-    int item_type;
 
-    // take only the first item
-    if (items.count() == 1) {
-
-        tree_item = items.at(0);
-        item_type = tree_item->data(0, ROLE_ITEM_TYPE).toInt();
-        list->clear();
-
-        switch(item_type) {
-        case SCHEMAS_ITEM:
-            list_item = new QListWidgetItem("Create all schemas");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_ALL_SCHEMAS);
-            list_item = new QListWidgetItem("Drop all schemas");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_ALL_SCHEMAS);
-            break;
-        case SCHEMA_ITEM:
-            list_item = new QListWidgetItem("Create schema");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_SCHEMA);
-            list_item = new QListWidgetItem("Drop schema");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_SCHEMA);
-            break;
-        case SEQUENCES_ITEM:
-            list_item = new QListWidgetItem("Resset Sequences");            
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCES);
-            list_item = new QListWidgetItem("Update Sequences");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCES);
-            break;
-        case SEQUENCE_ITEM:
-            list_item = new QListWidgetItem("Resset Sequence");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCE);
-            list_item = new QListWidgetItem("Update Sequence");
-            list->addItem(list_item);
-            list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCE);
-            break;
-        case FUNCTIONS_ITEM:
-            list_item = new QListWidgetItem("Create New Function");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Drop all Functions");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Create all Functions");
-            list->addItem(list_item);
-            break;
-        case FUNCTION_ITEM:
-            list_item = new QListWidgetItem("Drop Function");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Create or Replace Function");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Script Alter Function Parameters");
-            list->addItem(list_item);
-            break;
-        case TRIGGER_FUNCTIONS_ITEM:
-            list_item = new QListWidgetItem("Create New Function");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Drop all Functions and related triggers");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Create all Functions");
-            list->addItem(list_item);
-            break;
-        case TRIGGER_FUNCTION_ITEM:
-            list_item = new QListWidgetItem("Drop Function and related triggers");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Create or Replace Function");
-            list->addItem(list_item);
-
-            list_item = new QListWidgetItem("Script Alter Function Parameters");
-            list->addItem(list_item);
-            break;
-        }
-
-    } else
-        list->clear();
-
-}
-
-void DDLGenerationPlugin::createAllSchemas()
-{
-
-}
-
-QStringList DDLGenerationPlugin::createObjectList(const char *sql, int return_col, int param_count, ...)
+QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...)
 {
     QStringList list;
     int tuples;
@@ -268,7 +236,6 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     QTreeWidgetItem *sequence_node;
     QTreeWidgetItem *trigger_function_node;
 
-
     if (item->childCount() > 0)
         return;
 
@@ -318,7 +285,9 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
     QTreeWidgetItem *table;
     QStringList table_list;
 
-    table_list = tables(item->data(0, ROLE_SCHEMA_NAME).toString());
+    PGconn *connection = trees[item->treeWidget()];
+
+    table_list = tables(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < table_list.count(); j++) {
 
@@ -353,7 +322,9 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
     QTreeWidgetItem *view;
     QStringList view_list;
 
-    view_list = views(item->data(0, ROLE_SCHEMA_NAME).toString());
+    PGconn *connection = trees[item->treeWidget()];
+
+    view_list = views(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < view_list.count(); j++) {
 
@@ -379,7 +350,9 @@ void DDLGenerationPlugin::processSequences(QTreeWidgetItem *item)
     QStringList sequence_list;
     QTreeWidgetItem *sequence;
 
-    sequence_list = sequences(item->data(0, ROLE_SCHEMA_NAME).toString());
+    PGconn *connection = trees[item->treeWidget()];
+
+    sequence_list = sequences(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < sequence_list.count(); j++) {
 
@@ -397,7 +370,9 @@ void DDLGenerationPlugin::processFunctions(QTreeWidgetItem *item)
     QStringList function_list;
     QTreeWidgetItem *function;
 
-    function_list = functions(item->data(0, ROLE_SCHEMA_NAME).toString());
+    PGconn *connection = trees[item->treeWidget()];
+
+    function_list = functions(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < function_list.count(); j++) {
 
@@ -415,7 +390,9 @@ void DDLGenerationPlugin::processTrigerFunctions(QTreeWidgetItem *item)
     QStringList function_list;
     QTreeWidgetItem *function;
 
-    function_list = triggerFunctions(item->data(0, ROLE_SCHEMA_NAME).toString());
+    PGconn *connection = trees[item->treeWidget()];
+
+    function_list = triggerFunctions(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < function_list.count(); j++) {
 
@@ -435,8 +412,10 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     QStringList constr;
     QTreeWidgetItem *constraint;
 
+    PGconn *connection = trees[item->treeWidget()];
+
     // primary key
-    constr = constraints(schema, table, "p");
+    constr = constraints(connection, schema, table, "p");
     if (constr.count() > 0) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[0]);
@@ -449,7 +428,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     }
 
     // unique key
-    constr = constraints(schema, table, "u");
+    constr = constraints(connection, schema, table, "u");
     for(int j=0; j < constr.count(); j++) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
@@ -462,7 +441,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     }
 
     // foreign key
-    constr = constraints(schema, table, "f");
+    constr = constraints(connection, schema, table, "f");
     for(int j=0; j < constr.count(); j++) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
@@ -475,7 +454,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
     }
 
     // check constraint
-    constr = constraints(schema, table, "c");
+    constr = constraints(connection, schema, table, "c");
     for(int j=0; j < constr.count(); j++) {
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
@@ -495,7 +474,9 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
     QStringList trigger_list;
     QTreeWidgetItem *trigger;
 
-    trigger_list = triggers(schema, table);
+    PGconn *connection = trees[item->treeWidget()];
+
+    trigger_list = triggers(connection, schema, table);
 
     for(int j=0; j < trigger_list.count(); j++) {
         trigger = new QTreeWidgetItem();
@@ -510,7 +491,7 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
 
 }
 
-QStringList DDLGenerationPlugin::users()
+QStringList DDLGenerationPlugin::users(PGconn *connection)
 {
     const char *sql =
             "SELECT usename AS role_name, "
@@ -526,19 +507,19 @@ QStringList DDLGenerationPlugin::users()
             "  END role_attributes "
             "FROM pg_catalog.pg_user "
             "ORDER BY role_name desc ";
-    return createObjectList(sql, 0, 0);
+    return createObjectList(connection, sql, 0, 0);
 }
 
-QStringList DDLGenerationPlugin::schemas()
+QStringList DDLGenerationPlugin::schemas(PGconn *connection)
 {
     const char *sql =
         "SELECT schema_name "
         "FROM information_schema.schemata "
         "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
-    return createObjectList(sql, 0, 0);
+    return createObjectList(connection, sql, 0, 0);
 }
 
-QStringList DDLGenerationPlugin::tables(QString schema)
+QStringList DDLGenerationPlugin::tables(PGconn *connection, QString schema)
 {
     const char *sql =
             "SELECT "
@@ -556,10 +537,10 @@ QStringList DDLGenerationPlugin::tables(QString schema)
             "    schemaname != 'pg_catalog' "
             "    AND schemaname != 'information_schema' "
             "    AND schemaname = $1 ";
-    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::views(QString schema)
+QStringList DDLGenerationPlugin::views(PGconn *connection, QString schema)
 {
 
     const char *sql =
@@ -572,10 +553,10 @@ QStringList DDLGenerationPlugin::views(QString schema)
         "WHERE "
         "    schemaname NOT IN ('pg_catalog', 'information_schema') "
         "    AND schemaname = $1 ";
-    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::sequences(QString schema)
+QStringList DDLGenerationPlugin::sequences(PGconn *connection, QString schema)
 {
     const char *sql =
         "SELECT "
@@ -583,10 +564,10 @@ QStringList DDLGenerationPlugin::sequences(QString schema)
         "  sequence_name "
         "FROM information_schema.sequences "
         "WHERE sequence_schema = $1 ";
-    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::functions(QString schema)
+QStringList DDLGenerationPlugin::functions(PGconn *connection, QString schema)
 {
     const char *sql =
         "SELECT "
@@ -600,10 +581,10 @@ QStringList DDLGenerationPlugin::functions(QString schema)
         "WHERE "
         "    t.typname != 'trigger' AND "
         "    n.nspname = $1 ";
-    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::triggerFunctions(QString schema)
+QStringList DDLGenerationPlugin::triggerFunctions(PGconn *connection, QString schema)
 {
     const char *sql =
             "SELECT "
@@ -617,10 +598,10 @@ QStringList DDLGenerationPlugin::triggerFunctions(QString schema)
             "WHERE "
             "    t.typname = 'trigger' AND "
             "    n.nspname = $1 ";
-    return createObjectList(sql, 1, 1, schema.toStdString().c_str());
+    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char *ctype)
+QStringList DDLGenerationPlugin::constraints(PGconn *connection, QString schema, QString table, char *ctype)
 {
     /*
      * u = unique
@@ -639,13 +620,14 @@ QStringList DDLGenerationPlugin::constraints(QString schema, QString table, char
             "    nsp.nspname = $1 "
             "    AND rel.relname = $2 "
             "    AND con.contype = $3 ";
-    return createObjectList(sql, 0, 3,
+    return createObjectList(connection,
+                            sql, 0, 3,
                             schema.toStdString().c_str(),
                             table.toStdString().c_str(),
                             ctype);
 }
 
-QStringList DDLGenerationPlugin::triggers(QString schema, QString table)
+QStringList DDLGenerationPlugin::triggers(PGconn *connection, QString schema, QString table)
 {
     /* for detailed use
     const char *sql =
@@ -675,7 +657,8 @@ QStringList DDLGenerationPlugin::triggers(QString schema, QString table)
             "    AND tgisinternal = FALSE "
             "    AND n.nspname = $1 "
             "    AND tbl.relname = $2 ";
-    return createObjectList(sql, 0, 2,
+    return createObjectList(connection,
+                            sql, 0, 2,
                             schema.toStdString().c_str(),
                             table.toStdString().c_str());
 

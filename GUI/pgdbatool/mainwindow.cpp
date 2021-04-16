@@ -39,7 +39,7 @@
 #include "dlgproject.h"
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
-#include "plugintreewidget.h"
+#include "plugintabwidget.h"
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -387,8 +387,6 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 {
     SqlTool *sql;
     OutputSet *out;
-    PluginTreeWidget *ddl_tree;
-    QListWidget *function_list;
     QListWidgetItem *list_item;
 
     list_item = new QListWidgetItem(name, ui->editor_list);
@@ -406,8 +404,9 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
         return nullptr;
     }
 
+    sql->setInterfaceList(&interface_list);
+
     sql->setMode(mode);
-    sql->setInterfaceList(interface_list);
 
     ui->main_stack->addWidget(sql);
     ui->main_stack->setCurrentWidget(ui->main_stack);
@@ -419,18 +418,9 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
     ui->output_stack->addWidget(out);
     ui->output_stack->setCurrentWidget(out);
 
-    //ddl_tree = new PluginTreeWidget(sql);
-    //sql->setPluginWidgetTree(ddl_tree);
-    //ui->plugin_stack->addWidget(ddl_tree);
-    //ui->plugin_stack->setCurrentWidget(ddl_tree);
-    //ddl_tree->setConnection(NULL);
     ui->plugin_stack->addWidget(sql->getPluginWidgetTree());
     ui->plugin_stack->setCurrentWidget(sql->getPluginWidgetTree());
 
-    //function_list = new QListWidget(sql);
-    //sql->setFunctionList(function_list);
-    //ui->function_stack->addWidget(function_list);
-    //ui->function_stack->setCurrentWidget(function_list);
     ui->function_stack->addWidget(sql->getFunctionList());
     ui->function_stack->setCurrentWidget(sql->getFunctionList());
 
@@ -683,7 +673,7 @@ void MainWindow::on_actionManage_Plugins_triggered()
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     DlgPlugins dlg(interface_list);
     if (sql) {
-        dlg.setEditor(sql->getCurrentEditor());
+        dlg.setEditor(sql);
     }
     dlg.exec();
 }
@@ -720,25 +710,18 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 
 void MainWindow::on_actionConnect_triggered()
 {
-    PluginTreeWidget *ddl_tree;
+    PluginTabWidget *ddl_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {
         sql->databaseConnect();
         enable_sql_tool_actions(sql);
-        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getPluginWidgetTree());
-
-        if (ddl_tree) {
-            ddl_tree->setConnection(sql->getPostgresConnection());
-            ddl_tree->createTree();
-        }
-
     }
 }
 
 void MainWindow::on_actionDisconect_triggered()
 {
-    PluginTreeWidget *ddl_tree;
+    PluginTabWidget *ddl_tree;
     QListWidget *function_list;
 
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
@@ -746,11 +729,10 @@ void MainWindow::on_actionDisconect_triggered()
     if (sql) {
         sql->databaseDisconnect();
         enable_sql_tool_actions(sql);
-        ddl_tree = dynamic_cast<PluginTreeWidget *>(sql->getPluginWidgetTree());
+        ddl_tree = dynamic_cast<PluginTabWidget *>(sql->getPluginWidgetTree());
         function_list = sql->getFunctionList();
 
         if (ddl_tree) {
-            ddl_tree->setConnection(NULL);
             ddl_tree->clearTrees();
         }
 
@@ -1040,11 +1022,16 @@ void MainWindow::executeModel(QString resource_name)
 void MainWindow::executePlugin(PluginElement *element, int item)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    QStringList response;
     EditorItem *editor;
     if (sql) {
         editor = sql->getCurrentEditor();
         if (sql->connected()) {
-            element->getInterface()->run(editor, item);
+            response = element->getInterface()->run(item);
+            foreach(QString str, response) {
+                sql->getCurrentEditor()->append(str);
+            }
+
         } else {
             QMessageBox::warning(this, "Connection", "Please open choose the connection "
                                  "and open the database before generate sentence.");

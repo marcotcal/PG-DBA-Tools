@@ -46,47 +46,38 @@ public:
     };
     enum {
         ROLE_ITEM_TYPE = Qt::UserRole,
+        ROLE_CONNECTION,
         ROLE_SCHEMA_NAME,
         ROLE_TABLE_NAME,
         ROLE_CONSTRAINT_TYPE
     };
     DDLGenerationPlugin(QObject *parent = 0);
-    void setTreeWidget(QTreeWidget *value) override;
-    void setListWidget(QListWidget *value) override;
-    void createTree(PGconn *value) override;
-    bool run(EditorItem *editor, int item) override;
-
-    void generateFunctionList();
+    void createTree(PGconn *connection, QTreeWidget *tree) override;
+    QStringList run(int item) override;
 
 public slots:
 
-    void updateFunctionList() override;
+    void updateFunctionList(QTreeWidgetItem* item,  QListWidget *list) override;
 
 private slots:
 
     void processItem(QTreeWidgetItem *item, int column);
-    void createAllSchemas();
 
 private:
 
-    QTreeWidget *tree;
-    QListWidget *list;
+    QMap<QTreeWidget *, PGconn *> trees;
 
-    QString file_name;
+    QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
 
-    PGconn *connection;
-
-    QStringList createObjectList(const char *sql, int return_col, int param_count, ...);
-
-    QStringList users();
-    QStringList schemas();
-    QStringList tables(QString schema);
-    QStringList views(QString schema);
-    QStringList sequences(QString schema);
-    QStringList functions(QString schema);
-    QStringList triggerFunctions(QString schema);
-    QStringList constraints(QString schema, QString table, char *ctype);
-    QStringList triggers(QString schema, QString table);
+    QStringList users(PGconn *connection);
+    QStringList schemas(PGconn *connection);
+    QStringList tables(PGconn *connection, QString schema);
+    QStringList views(PGconn *connection, QString schema);
+    QStringList sequences(PGconn *connection, QString schema);
+    QStringList functions(PGconn *connection, QString schema);
+    QStringList triggerFunctions(PGconn *connection, QString schema);
+    QStringList constraints(PGconn *connection, QString schema, QString table, char *ctype);
+    QStringList triggers(PGconn *connection, QString schema, QString table);
 
     void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);

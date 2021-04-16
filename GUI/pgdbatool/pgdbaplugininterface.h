@@ -18,18 +18,17 @@ class PGDBAPluginInterface
  {
  public:
     virtual ~PGDBAPluginInterface() {}
-    virtual void setTreeWidget(QTreeWidget *tree) = 0;
-    virtual void setListWidget(QListWidget *list) = 0;
-    virtual void createTree(PGconn *connection) = 0;
-    virtual bool run(EditorItem *editor, int item) = 0;
+    virtual void createTree(PGconn *connection, QTreeWidget *tree) = 0;
+    virtual QStringList run(int item) = 0;
 
 public slots:
 
-    virtual void updateFunctionList() = 0;
+    virtual void updateFunctionList(QTreeWidgetItem* item, QListWidget *list) = 0;
 
- };
+};
 
 #define PGDBAPluginInterface_iid "org.pgdbatools.PGDBAPluginInterface"
+
 
 Q_DECLARE_INTERFACE(PGDBAPluginInterface, PGDBAPluginInterface_iid)
 

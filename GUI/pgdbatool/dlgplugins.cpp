@@ -16,14 +16,14 @@ DlgPlugins::~DlgPlugins()
     delete ui;
 }
 
-void DlgPlugins::setEditor(EditorItem *value)
+void DlgPlugins::setEditor(SqlTool *value)
 {
     if (value) {
         ui->bt_test->setEnabled(true);
     } else {
         ui->bt_test->setEnabled(false);
     }
-    editor = value;
+    sql_tool = value;
 }
 
 void DlgPlugins::on_bt_close_clicked()
@@ -35,12 +35,16 @@ void DlgPlugins::on_bt_test_clicked()
 {
     QString name;
     int row_sel = ui->plugin_table->currentRow();
+    QStringList response;
 
     QMapIterator<QString, PluginElement*> i(interface_list);
     name = ui->plugin_table->item(row_sel,0)->text();
     for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
         if(name == i.value()->getMeta().toObject().value("Name").toString()) {
-            i.value()->getInterface()->run(editor, 0);
+            response = i.value()->getInterface()->run(0);
+            foreach(QString str, response) {
+                sql_tool->getCurrentEditor()->append(str);
+            }
         }
     }
 }

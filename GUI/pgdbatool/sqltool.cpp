@@ -29,7 +29,7 @@
 #include <QTextEdit>
 #include <QClipboard>
 #include <QMimeData>
-#include "plugintreewidget.h"
+#include "plugintabwidget.h"
 #include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
@@ -869,6 +869,7 @@ void SqlTool::databaseConnect() {
     QString conn_str;
     QString database_name;
     QStringList schemas;
+    PluginTabWidget *tree;
     int connection_index;
 
     switch(mode) {
@@ -929,6 +930,8 @@ void SqlTool::databaseConnect() {
         ui->schema_list->addItems(schemas);
         ui->schema_list->setEnabled(true);
 
+        plugin_widget_tree->createTree();
+
         return;
     }
     msg.setText(QString("Fail to Connect - %1").arg(PQerrorMessage(conn)));
@@ -974,9 +977,9 @@ void SqlTool::beginTransaction(QString command) {
     in_transaction = true;
 }
 
-void SqlTool::setPluginWidgetTree(PluginTreeWidget *value) {
+void SqlTool::setPluginWidgetTree(PluginTabWidget *value) {
     plugin_widget_tree = value;
-    connect(this, SIGNAL(run_plugin(EditorItem*,int)),plugin_widget_tree,SLOT(run_selected_plugin(EditorItem*,int)));
+    connect(this, SIGNAL(runPlugin(EditorItem*,int)),plugin_widget_tree,SLOT(run_selected_plugin(EditorItem*,int)));
 }
 
 void SqlTool::setFunctionList(QListWidget *value) {
@@ -987,7 +990,7 @@ void SqlTool::setFunctionList(QListWidget *value) {
             this, SLOT(do_execute_plugin_function(QListWidgetItem*)));
 }
 
-PluginTreeWidget *SqlTool::getPluginWidgetTree() {
+PluginTabWidget *SqlTool::getPluginWidgetTree() {
     return plugin_widget_tree;
 }
 
@@ -995,46 +998,18 @@ QListWidget *SqlTool::getFunctionList() {
     return function_list;
 }
 
-void SqlTool::setInterfaceList(QMap<QString, PluginElement *> list)
+void SqlTool::setInterfaceList(QMap<QString, PluginElement *> *list)
 {
     interface_list = list;
-    QJsonArray keys;
-    QTreeWidget *tree;
-    PluginElement *element;
-    QString name;
-
-    plugin_widget_tree = new PluginTreeWidget(this);
-    plugin_widget_tree->setConnection(NULL);
-
+    plugin_widget_tree = new PluginTabWidget(this);
+    plugin_widget_tree->setSqlTool(this);
     function_list = new QListWidget(this);
+    plugin_widget_tree->initializePluginTrees(function_list);
+}
 
-    for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
-
-        element = i.value();
-
-        keys = element->getMeta().toObject().value("Keys").toArray();
-
-        if (keys.contains(QJsonValue("PGDBATOOLS")) &&
-                (keys.contains(QJsonValue("DDL")) || keys.contains(QJsonValue("SQL"))) &&
-                (keys.contains(QJsonValue("DDL_TREE")) || keys.contains(QJsonValue("SQL_TREE")))) {
-
-            //elements.append(value);
-
-            tree = new QTreeWidget(this);
-            tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
-            tree->setHeaderHidden(true);
-
-            name = element->getMeta().toObject().value("Name").toString();
-
-            plugin_widget_tree->addTab(tree, name);
-            element->getInterface()->setTreeWidget(tree);
-            element->getInterface()->setListWidget(function_list);
-
-        }
-
-    }
-
-
+QMap<QString, PluginElement *> *SqlTool::getInterfaceList()
+{
+    return interface_list;
 }
 
 void SqlTool::executeCurrent(ResultOutput* output, bool show_query)
@@ -1464,5 +1439,5 @@ void SqlTool::do_execute_generator(EditorItem *editor, int gen_sql)
 
 void SqlTool::do_execute_plugin_function(QListWidgetItem *item)
 {
-    emit(run_plugin(getCurrentEditor(), item->data(Qt::UserRole).toInt()));
+    emit(runPlugin(getCurrentEditor(), item->data(Qt::UserRole).toInt()));
 }
