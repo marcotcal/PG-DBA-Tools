@@ -8,6 +8,7 @@
 #include <Qsci/qscilexersql.h>
 #include <Qsci/qscilexer.h>
 #include <sqltool.h>
+#include <plugintreewidget.h>
 
 class SQLGenerationPlugin : public QObject, PGDBAPluginInterface {
     Q_OBJECT
@@ -43,7 +44,7 @@ public:
     };
     SQLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
-    QStringList run(PGconn *connection, int item) override;
+    QStringList run(QTreeWidgetItem *tree_item, PGconn *connection, int command) override;
 
 public slots:
 

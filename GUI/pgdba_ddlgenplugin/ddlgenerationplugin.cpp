@@ -39,6 +39,7 @@ void DDLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
             schema->setText(0, schemas_list[i]);
             schema->setIcon(0, QIcon(":/icons/images/icons/schema.png"));
             schema->setData(0, ROLE_ITEM_TYPE, SCHEMA_ITEM);
+            schema->setData(0, ROLE_SCHEMA_NAME, schemas_list[i]);
             schema_node->addChild(schema);
 
         }
@@ -46,12 +47,13 @@ void DDLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
     }
 }
 
-QStringList DDLGenerationPlugin::run(PGconn *connection, int item)
+QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connection, int command)
 {
 
     QStringList resp;
+    QString schema_name = tree_item->data(0, ROLE_SCHEMA_NAME).toString();
 
-    switch(item) {
+    switch(command) {
     case DDL_TEST:
         resp.append("-- Plugin Test.\n");
         resp.append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
@@ -62,6 +64,9 @@ QStringList DDLGenerationPlugin::run(PGconn *connection, int item)
         break;
     case DDL_DROP_ALL_SCHEMAS:
         resp = dropAllSchemas(connection);
+        break;
+    case DDL_CREATE_SCHEMA:
+        resp = createSchema(connection, schema_name);
         break;
     default:
         return QStringList();
@@ -523,6 +528,16 @@ QStringList DDLGenerationPlugin::dropAllSchemas(PGconn *connection)
         "FROM information_schema.schemata "
         "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
     return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::createSchema(PGconn *connection, QString schema)
+{
+    const char *sql =
+        "SELECT "
+        "    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || E';\n' AS create_schema "
+        "FROM information_schema.schemata "
+        "WHERE schema_name = $1 ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)

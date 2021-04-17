@@ -96,7 +96,8 @@ void PluginTabWidget::run_selected_plugin(int item)
     sql_tool->getCurrentEditor()->getCursorPosition(&line, &index);
 
     if(tree) {
-        response = tree->getElement()->getInterface()->run(sql_tool->getPostgresConnection(), item);
+        response = tree->getElement()->getInterface()->run(
+                    tree->firstSelected(), sql_tool->getPostgresConnection(), item);
         foreach(QString str, response) {
             sql_tool->getCurrentEditor()->insertAt(QString(" ").repeated(index) + str, line, -1);
             line++;

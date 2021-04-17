@@ -41,7 +41,7 @@ void DlgPlugins::on_bt_test_clicked()
     name = ui->plugin_table->item(row_sel,0)->text();
     for(auto i = interface_list.begin(); i != interface_list.end(); i++) {
         if(name == i.value()->getMeta().toObject().value("Name").toString()) {
-            response = i.value()->getInterface()->run(NULL, 0);
+            response = i.value()->getInterface()->run(nullptr, nullptr, 0);
             foreach(QString str, response) {
                 sql_tool->getCurrentEditor()->append(str);
             }

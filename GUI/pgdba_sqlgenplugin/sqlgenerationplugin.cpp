@@ -48,11 +48,11 @@ void SQLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
     }
 }
 
-QStringList SQLGenerationPlugin::run(PGconn *connection, int item)
+QStringList SQLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connection, int command)
 {
     QStringList resp;
 
-    switch(item) {
+    switch(command) {
     case SQL_TEST:
         resp.append("-- Plugin Test.\n");
         resp.append("SELECT 'TESTING SQL GENERATION PLUGIN'\n");
@@ -73,7 +73,7 @@ QStringList SQLGenerationPlugin::run(PGconn *connection, int item)
 
 }
 
-void SQLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget *list)
+void SQLGenerationPlugin::updateFunctionList(QTreeWidgetItem* item,  QListWidget *list)
 {
 
     QListWidgetItem *list_item;

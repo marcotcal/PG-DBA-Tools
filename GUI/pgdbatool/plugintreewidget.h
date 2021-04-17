@@ -20,6 +20,8 @@ public:
     PluginElement *getElement() const;
     void setElement(PluginElement *value);
 
+    QTreeWidgetItem *firstSelected();
+
 private:
     QListWidget *list_widget;
     PluginElement *element;

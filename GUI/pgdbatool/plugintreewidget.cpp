@@ -24,3 +24,12 @@ void PluginTreeWidget::setElement(PluginElement *value)
 {
     element = value;
 }
+
+QTreeWidgetItem *PluginTreeWidget::firstSelected()
+{
+    QList<QTreeWidgetItem *> selected = selectedItems();
+    if (selected.count() > 0)
+        return selected.at(0);
+    else
+        return nullptr;
+}
