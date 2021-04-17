@@ -89,6 +89,7 @@ private:
     void processTriggers(QTreeWidgetItem *item);
 
     QStringList createAllSchemas(PGconn *connection);
+    QStringList dropAllSchemas(PGconn *connection);
 
 };
 

@@ -60,6 +60,9 @@ QStringList DDLGenerationPlugin::run(PGconn *connection, int item)
     case DDL_CREATE_ALL_SCHEMAS:
         resp = createAllSchemas(connection);
         break;
+    case DDL_DROP_ALL_SCHEMAS:
+        resp = dropAllSchemas(connection);
+        break;
     default:
         return QStringList();
     }
@@ -78,36 +81,48 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
 
     switch(item_type) {
     case SCHEMAS_ITEM:
+
         list_item = new QListWidgetItem("Create all schemas");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_ALL_SCHEMAS);
+
         list_item = new QListWidgetItem("Drop all schemas");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_ALL_SCHEMAS);
+
         break;
     case SCHEMA_ITEM:
+
         list_item = new QListWidgetItem("Create schema");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_SCHEMA);
+
         list_item = new QListWidgetItem("Drop schema");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_SCHEMA);
+
         break;
     case SEQUENCES_ITEM:
+
         list_item = new QListWidgetItem("Resset Sequences");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCES);
+
         list_item = new QListWidgetItem("Update Sequences");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCES);
+
         break;
     case SEQUENCE_ITEM:
+
         list_item = new QListWidgetItem("Resset Sequence");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_SEQUENCE);
+
         list_item = new QListWidgetItem("Update Sequence");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCE);
+
         break;
     case FUNCTIONS_ITEM:
         list_item = new QListWidgetItem("Create New Function");
@@ -495,6 +510,16 @@ QStringList DDLGenerationPlugin::createAllSchemas(PGconn *connection)
     const char *sql =
         "SELECT "
         "    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || E';\n' AS create_schema "
+        "FROM information_schema.schemata "
+        "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
+    return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::dropAllSchemas(PGconn *connection)
+{
+    const char *sql =
+        "SELECT "
+        "    'DROP SCHEMA IF EXISTS ' || schema_name || E';\n' AS create_schema "
         "FROM information_schema.schemata "
         "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
     return createObjectList(connection, sql, 0, 0);
