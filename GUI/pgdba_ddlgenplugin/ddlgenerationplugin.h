@@ -53,7 +53,7 @@ public:
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
-    QStringList run(int item) override;
+    QStringList run(PGconn *connection, int item) override;
 
 public slots:
 
@@ -87,6 +87,8 @@ private:
     void processTrigerFunctions(QTreeWidgetItem *item);
     void processConstraints(QTreeWidgetItem *item);
     void processTriggers(QTreeWidgetItem *item);
+
+    QStringList createAllSchemas(PGconn *connection);
 
 };
 

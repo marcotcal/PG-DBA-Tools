@@ -48,7 +48,7 @@ void SQLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
     }
 }
 
-QStringList SQLGenerationPlugin::run(int item)
+QStringList SQLGenerationPlugin::run(PGconn *connection, int item)
 {
     QStringList resp;
 

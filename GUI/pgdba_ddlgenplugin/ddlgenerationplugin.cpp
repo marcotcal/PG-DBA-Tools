@@ -46,7 +46,7 @@ void DDLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
     }
 }
 
-QStringList DDLGenerationPlugin::run(int item)
+QStringList DDLGenerationPlugin::run(PGconn *connection, int item)
 {
 
     QStringList resp;
@@ -58,8 +58,7 @@ QStringList DDLGenerationPlugin::run(int item)
         resp.append("-- End.\n");
         break;
     case DDL_CREATE_ALL_SCHEMAS:
-        resp.append("-- Creating all schemas.\n");
-        resp.append("-- End.\n");
+        resp = createAllSchemas(connection);
         break;
     default:
         return QStringList();
@@ -489,6 +488,16 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
         item->addChild(trigger);
     }
 
+}
+
+QStringList DDLGenerationPlugin::createAllSchemas(PGconn *connection)
+{
+    const char *sql =
+        "SELECT "
+        "    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || E';\n' AS create_schema "
+        "FROM information_schema.schemata "
+        "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
+    return createObjectList(connection, sql, 0, 0);
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)
