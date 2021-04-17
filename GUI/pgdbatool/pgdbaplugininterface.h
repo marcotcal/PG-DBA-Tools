@@ -19,7 +19,7 @@ class PGDBAPluginInterface
  public:
     virtual ~PGDBAPluginInterface() {}
     virtual void createTree(PGconn *connection, QTreeWidget *tree) = 0;
-    virtual QStringList run(int item) = 0;
+    virtual QStringList run(PGconn *connection, int item) = 0;
 
 public slots:
 

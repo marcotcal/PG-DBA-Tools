@@ -43,7 +43,7 @@ public:
     };
     SQLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
-    QStringList run(int item) override;
+    QStringList run(PGconn *connection, int item) override;
 
 public slots:
 

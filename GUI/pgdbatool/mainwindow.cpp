@@ -1019,28 +1019,6 @@ void MainWindow::executeModel(QString resource_name)
     }
 }
 
-void MainWindow::executePlugin(PluginElement *element, int item)
-{
-    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
-    QStringList response;
-    EditorItem *editor;
-    if (sql) {
-        editor = sql->getCurrentEditor();
-        if (sql->connected()) {
-            response = element->getInterface()->run(item);
-            foreach(QString str, response) {
-                sql->getCurrentEditor()->append(str);
-            }
-
-        } else {
-            QMessageBox::warning(this, "Connection", "Please open choose the connection "
-                                 "and open the database before generate sentence.");
-        }
-    } else {
-        QMessageBox::warning(this, "Connection", "The current view is not a SQL Tool");
-    }
-}
-
 void MainWindow::do_beginExecuteQuery(SqlTool *sender)
 {
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
