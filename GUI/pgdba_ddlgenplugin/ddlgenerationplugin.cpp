@@ -68,6 +68,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_CREATE_SCHEMA:
         resp = createSchema(connection, schema_name);
         break;
+    case DDL_DROP_SCHEMA:
+        resp = dropSchema(connection, schema_name);
+        break;
     default:
         return QStringList();
     }
@@ -535,6 +538,16 @@ QStringList DDLGenerationPlugin::createSchema(PGconn *connection, QString schema
     const char *sql =
         "SELECT "
         "    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || E';\n' AS create_schema "
+        "FROM information_schema.schemata "
+        "WHERE schema_name = $1 ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropSchema(PGconn *connection, QString schema)
+{
+    const char *sql =
+        "SELECT "
+        "    'DROP SCHEMA IF EXISTS ' || schema_name || E';\n' AS create_schema "
         "FROM information_schema.schemata "
         "WHERE schema_name = $1 ";
     return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());

@@ -91,6 +91,7 @@ private:
     QStringList createAllSchemas(PGconn *connection);
     QStringList dropAllSchemas(PGconn *connection);
     QStringList createSchema(PGconn *connection, QString schema);
+    QStringList dropSchema(PGconn *connection, QString schema);
 
 };
 
