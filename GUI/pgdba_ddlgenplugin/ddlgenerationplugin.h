@@ -21,6 +21,8 @@ public:
         DDL_DROP_ALL_SCHEMAS,
         DDL_CREATE_SCHEMA,
         DDL_DROP_SCHEMA,
+        DDL_RESET_ALL_SEQUENCES,
+        DDL_UPDATE_ALL_SEQUENCES,
         DDL_RESET_SEQUENCES,
         DDL_UPDATE_SEQUENCES,
         DDL_RESET_SEQUENCE,
@@ -49,6 +51,7 @@ public:
         ROLE_CONNECTION,
         ROLE_SCHEMA_NAME,
         ROLE_TABLE_NAME,
+        ROLE_SEQUENCE_NAME,
         ROLE_CONSTRAINT_TYPE
     };
     DDLGenerationPlugin(QObject *parent = 0);
@@ -92,6 +95,12 @@ private:
     QStringList dropAllSchemas(PGconn *connection);
     QStringList createSchema(PGconn *connection, QString schema);
     QStringList dropSchema(PGconn *connection, QString schema);
+    QStringList resetAllSequences(PGconn *connection);
+    QStringList updatetAllSequences(PGconn *connection);
+    QStringList resetSequences(PGconn *connection, QString schema);
+    QStringList updateSequences(PGconn *connection, QString schema);
+    QStringList resetSequence(PGconn *connection, QString schema, QString sequence);
+    QStringList updateSequence(PGconn *connection, QString schema,QString sequence);
 
 };
 

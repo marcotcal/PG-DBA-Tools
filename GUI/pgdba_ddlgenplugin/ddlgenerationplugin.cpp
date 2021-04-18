@@ -52,6 +52,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
 
     QStringList resp;
     QString schema_name = tree_item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString sequence_name = tree_item->data(0, ROLE_SEQUENCE_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -71,7 +72,25 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DROP_SCHEMA:
         resp = dropSchema(connection, schema_name);
         break;
-    default:
+    case DDL_RESET_ALL_SEQUENCES:
+        resp = resetAllSequences(connection);
+        break;
+    case DDL_UPDATE_ALL_SEQUENCES:
+        resp = updatetAllSequences(connection);
+        break;
+    case DDL_RESET_SEQUENCES:
+        resp = resetSequences(connection, schema_name);
+        break;
+    case DDL_UPDATE_SEQUENCES:
+        resp = updateSequences(connection, schema_name);
+        break;
+    case DDL_RESET_SEQUENCE:
+        resp = resetSequence(connection, schema_name, sequence_name);
+        break;
+    case DDL_UPDATE_SEQUENCE:
+        resp = updateSequence(connection, schema_name, sequence_name);
+        break;
+    default:        
         return QStringList();
     }
 
@@ -97,6 +116,14 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Drop all schemas");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_ALL_SCHEMAS);
+
+        list_item = new QListWidgetItem("Reset all sequences in all schemas");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_RESET_ALL_SEQUENCES);
+
+        list_item = new QListWidgetItem("Update all sequences in all schemas");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_ALL_SEQUENCES);
 
         break;
     case SCHEMA_ITEM:
@@ -223,7 +250,6 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
 
     if (PQstatus(connection) == CONNECTION_OK) {
 
-
         if (param_count > 0)
             res =  PQexecParams(connection, sql, param_count, NULL, params, NULL, NULL, 0);
         else
@@ -231,6 +257,7 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
 
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
         {
+            list << PQerrorMessage(connection);
             PQclear(res);
         } else {
 
@@ -240,13 +267,10 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
                 list << QString::fromStdString(PQgetvalue(res, i, return_col));
 
             PQclear(res);
-
-            return list;
-
         }
     }
 
-    return QStringList();
+    return list;
 }
 
 void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
@@ -371,10 +395,11 @@ void DDLGenerationPlugin::processSequences(QTreeWidgetItem *item)
 {
     QStringList sequence_list;
     QTreeWidgetItem *sequence;
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
 
     PGconn *connection = trees[item->treeWidget()];
 
-    sequence_list = sequences(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
+    sequence_list = sequences(connection, schema);
 
     for(int j=0; j < sequence_list.count(); j++) {
 
@@ -382,6 +407,8 @@ void DDLGenerationPlugin::processSequences(QTreeWidgetItem *item)
         sequence->setText(0, sequence_list[j]);
         sequence->setIcon(0, QIcon(":/icons/images/icons/sequence.png"));
         sequence->setData(0, ROLE_ITEM_TYPE, SEQUENCE_ITEM);
+        sequence->setData(0, ROLE_SEQUENCE_NAME, sequence_list[j]);
+        sequence->setData(0, ROLE_SCHEMA_NAME, schema);
         item->addChild(sequence);
 
     }
@@ -551,6 +578,174 @@ QStringList DDLGenerationPlugin::dropSchema(PGconn *connection, QString schema)
         "FROM information_schema.schemata "
         "WHERE schema_name = $1 ";
     return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::resetAllSequences(PGconn *connection)
+{
+    const char *sql =
+        "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
+        "FROM information_schema.sequences ";
+    return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::updatetAllSequences(PGconn *connection)
+{
+    const char *sql =
+        "DO "
+        "$$ "
+        "DECLARE "
+        "    seq record; "
+        "    val integer; "
+        "BEGIN "
+        "    DROP TABLE IF EXISTS sequences; "
+        "    CREATE TEMPORARY TABLE sequences ON COMMIT DROP AS "
+        "        SELECT DISTINCT "
+        "            d.refobjid::regclass AS table_name, "
+        "            c.relname, "
+        "            n.nspname, "
+        "            a.attname AS field_name, "
+        "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) AS sequence_name, "
+        "            0 AS value_to_update "
+        "        FROM  "
+        "            pg_depend d "
+        "            INNER JOIN pg_class c ON c.oid = d.refobjid "
+        "            INNER JOIN pg_namespace n ON c.relnamespace = n.oid "
+        "            INNER JOIN pg_attribute a ON a.attrelid = d.refobjid AND a.attnum = d.refobjsubid "
+        "        WHERE "
+        "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) IS NOT NULL; "
+
+        "    FOR seq IN "
+        "        SELECT *  FROM sequences "
+        "    LOOP "
+        "        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.table_name INTO val; "
+        "        UPDATE sequences SET "
+        "            value_to_update = val "
+        "        WHERE table_name = seq.table_name AND field_name = seq.field_name; "
+        "    END LOOP; "
+        "END; "
+        "$$; "
+        " "
+        "SELECT "
+        "    CASE "
+        "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n' "
+        "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n' "
+        "    END "
+        "FROM sequences ";
+    return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::resetSequences(PGconn *connection, QString schema)
+{
+    const char *sql =
+        "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
+        "FROM information_schema.sequences "
+        "WHERE sequence_schema = $1 ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::updateSequences(PGconn *connection, QString schema)
+{
+    QString sql =
+        "DO "
+        "$BODY$ "
+        "DECLARE "
+        "    seq record; "
+        "    val integer; "
+        "BEGIN "
+        "    DROP TABLE IF EXISTS sequences; "
+        "    CREATE TEMPORARY TABLE sequences ON COMMIT DROP AS "
+        "        SELECT DISTINCT "
+        "            d.refobjid::regclass AS table_name, "
+        "            c.relname, "
+        "            n.nspname, "
+        "            a.attname AS field_name, "
+        "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) AS sequence_name, "
+        "            0 AS value_to_update "
+        "        FROM  "
+        "            pg_depend d "
+        "            INNER JOIN pg_class c ON c.oid = d.refobjid "
+        "            INNER JOIN pg_namespace n ON c.relnamespace = n.oid "
+        "            INNER JOIN pg_attribute a ON a.attrelid = d.refobjid AND a.attnum = d.refobjsubid "
+        "        WHERE "
+        "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) IS NOT NULL  AND "
+        "            n.nspname = '%1';"
+        "    FOR seq IN "
+        "        SELECT *  FROM sequences "
+        "    LOOP "
+        "        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.table_name INTO val; "
+        "        UPDATE sequences SET "
+        "            value_to_update = val "
+        "        WHERE table_name = seq.table_name AND field_name = seq.field_name; "
+        "    END LOOP; "
+        "END; "
+        "$BODY$; "
+        " "
+        "SELECT "
+        "    CASE "
+        "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n' "
+        "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n' "
+        "    END "
+        "FROM sequences ";
+    sql = sql.arg(schema);
+    return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
+}
+
+QStringList DDLGenerationPlugin::resetSequence(PGconn *connection, QString schema, QString sequence)
+{
+    const char *sql =
+        "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
+        "FROM information_schema.sequences "
+        "WHERE sequence_schema = $1 AND sequence_name = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), sequence.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::updateSequence(PGconn *connection, QString schema, QString sequence)
+{
+    QString sql =
+            QString (
+                "DO "
+                "$BODY$ "
+                "DECLARE "
+                "    seq record; "
+                "    val integer; "
+                "BEGIN "
+                "    DROP TABLE IF EXISTS sequences; "
+                "    CREATE TEMPORARY TABLE sequences ON COMMIT DROP AS "
+                "        SELECT DISTINCT "
+                "            d.refobjid::regclass AS table_name, "
+                "            c.relname, "
+                "            n.nspname, "
+                "            a.attname AS field_name, "
+                "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) AS sequence_name, "
+                "            0 AS value_to_update "
+                "        FROM  "
+                "            pg_depend d "
+                "            INNER JOIN pg_class c ON c.oid = d.refobjid "
+                "            INNER JOIN pg_namespace n ON c.relnamespace = n.oid "
+                "            INNER JOIN pg_attribute a ON a.attrelid = d.refobjid AND a.attnum = d.refobjsubid "
+                "        WHERE "
+                "            pg_get_serial_sequence(d.refobjid::regclass::text, a.attname::text) IS NOT NULL; "
+                "    FOR seq IN "
+                "        SELECT *  FROM sequences "
+                "    LOOP "
+                "        EXECUTE 'SELECT MAX(' || seq.field_name || ') FROM ' || seq.table_name INTO val; "
+                "        UPDATE sequences SET "
+                "            value_to_update = val "
+                "        WHERE table_name = seq.table_name AND field_name = seq.field_name; "
+                "    END LOOP; "
+                "END; "
+                "$BODY$; "
+                " "
+                "SELECT "
+                "    CASE "
+                "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n' "
+                "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n' "
+                "    END "
+                "FROM sequences "
+                "WHERE sequence_name = '%1.%2' "
+            ).arg(schema).arg(sequence);
+
+    return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)
