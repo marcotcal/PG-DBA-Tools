@@ -20,7 +20,6 @@ public:
         SQL_TEST = 0,
         SQL_SELECT_FIRST_100 = 1000,
         SQL_SELECT_ALL,
-        SQL_INSERT_MANDATORY,
         SQL_INSERT_ALL
     };
     enum {
@@ -59,6 +58,7 @@ private:
     QMap<QTreeWidget *, PGconn *> trees;
 
     QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
+    PGresult *createObjectList(PGconn *connection, const char *sql, int param_count, ...);
 
     QStringList users(PGconn *connection);
     QStringList schemas(PGconn *connection);
@@ -66,8 +66,7 @@ private:
     QStringList views(PGconn *connection, QString schema);
     QStringList functions(PGconn *connection, QString schema);
 
-    QString gen_insert_all(PGconn *connection, int offset);
-    QString gen_insert_mandatory(PGconn *connection, int offset);
+    QStringList insert_all(PGconn *connection, QString schema, QString table);
 
     void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);

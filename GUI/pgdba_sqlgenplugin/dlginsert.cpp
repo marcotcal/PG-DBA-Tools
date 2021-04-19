@@ -1,13 +1,12 @@
 #include "dlginsert.h"
 #include "ui_dlginsert.h"
 
-DlgInsert::DlgInsert(PGconn *connection, QWidget *parent) :
+DlgInsert::DlgInsert(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DlgInsert),
-    connection(connection)
+    ui(new Ui::DlgInsert)
 {
     ui->setupUi(this);
-    getSchemas();
+
 }
 
 DlgInsert::~DlgInsert()
@@ -15,144 +14,37 @@ DlgInsert::~DlgInsert()
     delete ui;
 }
 
-QString DlgInsert::schema()
+bool DlgInsert::getAddComments()
 {
-    return ui->schemas->itemText(ui->schemas->currentIndex());
+    return ui->add_comments->isChecked();
 }
 
-QString DlgInsert::table()
+bool DlgInsert::getFieldTypes()
 {
-    return ui->tables->itemText(ui->tables->currentIndex());
+    return ui->show_types->isChecked();
 }
 
-void DlgInsert::getSchemas()
+bool DlgInsert::getOnlyMandatory()
 {
-    const char *sql =
-        "SELECT schema_name "
-        "FROM information_schema.schemata "
-        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
-
-    QStringList list;
-    int tuples;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexec(connection, sql);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-            return;
-        }
-
-        tuples = PQntuples(res);
-
-        for (int i = 0; i < tuples; i++)
-            list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-        ui->schemas->clear();
-        ui->schemas->addItems(list);
-
-        PQclear(res);
-
-    }
-
+    return ui->only_mandatory->isChecked();
 }
 
-void DlgInsert::getTables(const char *schema)
+bool DlgInsert::getRemoveMandatoryWithDefaults()
 {
-    const char *sql =
-            "SELECT "
-            "   tablename "
-            "FROM pg_catalog.pg_tables "
-            "WHERE "
-            "   schemaname NOT IN ('pg_catalog', 'information_schema') AND schemaname = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-            return;
-        }
-
-        tuples = PQntuples(res);
-
-        for (int i = 0; i < tuples; i++)
-            list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-        ui->tables->addItems(list);
-
-        PQclear(res);
-
-    }
-
+    return ui->remove_mandatory_with_defaults->isChecked();
 }
 
-void DlgInsert::getViews(const char *schema)
+int DlgInsert::getOnConflict()
 {
-    const char *sql =
-        "SELECT "
-        "   viewname "
-        "FROM pg_catalog.pg_views "
-        "WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND schemaname = $1 ";
-    const char *params[1];
-    QStringList list;
-    int tuples;
-
-    params[0] = schema;
-
-    if (PQstatus(connection) == CONNECTION_OK) {
-        PGresult *res = PQexecParams(connection, sql, 1, NULL, params, NULL, NULL, 0);
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-            return;
-        }
-
-        tuples = PQntuples(res);
-
-        for (int i = 0; i < tuples; i++)
-            list << QString::fromStdString(PQgetvalue(res, i, 0));
-
-        ui->tables->addItems(list);
-
-        PQclear(res);
-
-    }
-
+    if(ui->no_on_conflict_clause->isChecked()) return NO_CONFLICT_CLAUSE;
+    else if(ui->do_nothing->isChecked()) return ON_CONFLICT_DO_NOTHING;
+    else if(ui->update->isChecked()) return ON_CONFLICT_UPDATE;
+    return -1;
 }
 
-void DlgInsert::on_schemas_currentTextChanged(const QString &arg1)
-{
-    ui->tables->clear();
-    if (ui->show_tables->isChecked())
-        getTables(arg1.toStdString().c_str());
-    if (ui->show_views->isChecked())
-        getViews(arg1.toStdString().c_str());
 
-}
-
-void DlgInsert::on_show_views_clicked()
+void DlgInsert::on_add_comments_toggled(bool checked)
 {
-    ui->tables->clear();
-    if (ui->show_tables->isChecked())
-        getTables(ui->schemas->itemText(ui->schemas->currentIndex()).toStdString().c_str());
-    if (ui->show_views->isChecked())
-        getViews(ui->schemas->itemText(ui->schemas->currentIndex()).toStdString().c_str());
-}
-
-void DlgInsert::on_show_tables_clicked()
-{
-    ui->tables->clear();
-    if (ui->show_tables->isChecked())
-        getTables(ui->schemas->itemText(ui->schemas->currentIndex()).toStdString().c_str());
-    if (ui->show_views->isChecked())
-        getViews(ui->schemas->itemText(ui->schemas->currentIndex()).toStdString().c_str());
+    ui->show_types->setEnabled(checked);
+    ui->show_types->setChecked(checked);
 }

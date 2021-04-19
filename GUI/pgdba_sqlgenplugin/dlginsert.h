@@ -16,31 +16,25 @@ public:
     enum {
         NO_CONFLICT_CLAUSE,
         ON_CONFLICT_DO_NOTHING,
-        ON_ONFLICT_UPDATE
+        ON_CONFLICT_UPDATE
     };
-    explicit DlgInsert(PGconn *connection, QWidget *parent = 0);
+    explicit DlgInsert(QWidget *parent = 0);
     ~DlgInsert();
 
-    QString schema();
-    QString table();
-    bool addComments();
-    bool removeMandatoryWithDefaults();
-
+   bool getAddComments();
+   bool getFieldTypes();
+   bool getOnlyMandatory();
+   bool getRemoveMandatoryWithDefaults();
+   int getOnConflict();
 
 private slots:
 
-    void on_schemas_currentTextChanged(const QString &arg1);
-    void on_show_views_clicked();
 
-    void on_show_tables_clicked();
+   void on_add_comments_toggled(bool checked);
 
 private:
     Ui::DlgInsert *ui;
-    PGconn *connection;
 
-    void getSchemas();
-    void getViews(const char *schema);
-    void getTables(const char *schema);
 };
 
 #endif // DLGINSERT_H

@@ -41,6 +41,7 @@ void SQLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
             schema->setText(0, schemas_list[i]);
             schema->setIcon(0, QIcon(":/icons/images/icons/schema.png"));
             schema->setData(0, ROLE_ITEM_TYPE, SCHEMA_ITEM);
+            schema->setData(0, ROLE_SCHEMA_NAME, schemas_list[i]);
             schema_node->addChild(schema);
 
         }
@@ -51,6 +52,8 @@ void SQLGenerationPlugin::createTree(PGconn *connection, QTreeWidget *tree)
 QStringList SQLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connection, int command)
 {
     QStringList resp;
+    QString schema_name = tree_item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString table_name = tree_item->data(0, ROLE_TABLE_NAME).toString();
 
     switch(command) {
     case SQL_TEST:
@@ -59,10 +62,7 @@ QStringList SQLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp.append("-- End.\n");
         break;
     case SQL_INSERT_ALL:        
-        //resp.insertAt(gen_insert_all(connection, index), line, index);
-        break;
-    case SQL_INSERT_MANDATORY:        
-        //resp.insertAt(gen_insert_mandatory(connection, index), line, index);
+        resp = insert_all(connection, schema_name, table_name);
         break;
 
     default:
@@ -91,10 +91,6 @@ void SQLGenerationPlugin::updateFunctionList(QTreeWidgetItem* item,  QListWidget
 
         list_item = new QListWidgetItem("Select all rows");
         list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
-        list->addItem(list_item);
-
-        list_item = new QListWidgetItem("Insert only mandatory fields");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_MANDATORY);
         list->addItem(list_item);
 
         list_item = new QListWidgetItem("Insert all fields");
@@ -193,13 +189,44 @@ QStringList SQLGenerationPlugin::createObjectList(PGconn *connection, const char
     return QStringList();
 }
 
+PGresult *SQLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int param_count, ...)
+{
+
+    const char *params[param_count];
+    PGresult *res;
+    va_list vl;
+    va_start(vl, param_count);
+
+    for (int i = 0; i < param_count; i++) {
+        params[i] = va_arg(vl, char *);
+    }
+    va_end(vl);
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+
+
+        if (param_count > 0)
+            res =  PQexecParams(connection, sql, param_count, NULL, params, NULL, NULL, 0);
+        else
+            res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+            return res;
+        }
+    }
+
+    return nullptr;
+}
+
 void SQLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
 
 
     QTreeWidgetItem *table_node;
     QTreeWidgetItem *view_node;
-    QTreeWidgetItem *function_node;
-
+    QTreeWidgetItem *function_node;    
 
     if (item->childCount() > 0)
         return;
@@ -231,19 +258,21 @@ void SQLGenerationPlugin::processTables(QTreeWidgetItem *item)
 {
     QTreeWidgetItem *table;
     QStringList table_list;
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
 
     PGconn *connection = trees[item->treeWidget()];
 
-    table_list = tables(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
+    table_list = tables(connection, schema);
 
     for(int j=0; j < table_list.count(); j++) {
 
         table = new QTreeWidgetItem();
         table->setText(0, table_list[j]);
         table->setIcon(0, QIcon(":/icons/images/icons/table.png"));
-        table->setData(0, Qt::UserRole, TABLE_ITEM);
+        table->setData(0, ROLE_ITEM_TYPE, TABLE_ITEM);
+        table->setData(0, ROLE_TABLE_NAME, table_list[j]);
+        table->setData(0, ROLE_SCHEMA_NAME, schema);
         item->addChild(table);
-
     }
 }
 
@@ -369,19 +398,17 @@ QStringList SQLGenerationPlugin::functions(PGconn *connection, QString schema)
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QString SQLGenerationPlugin::gen_insert_all(PGconn *connection, int offset)
+QStringList SQLGenerationPlugin::insert_all(PGconn *connection, QString schema, QString table)
 {
-    QStringList columns;
-        QStringList values;
         QString column_name;
+        QString comment;
         QString column_default;
         QString data_type;
         QString is_mandatory;
-        int tuples;
-        QString offset_space = QString(" ").repeated(offset);
-        char *error;
-        const char *params[2];
-        QString insert_stmt;
+        int tuples;        
+        QStringList insert_stmt;
+        DlgInsert dlg;
+
         const char *sql_list_fields =
             "SELECT column_name, column_default, data_type, is_nullable "
             "FROM information_schema.columns "
@@ -389,65 +416,79 @@ QString SQLGenerationPlugin::gen_insert_all(PGconn *connection, int offset)
             "   table_schema = $1 "
             "   AND table_name = $2 ";
 
-        DlgInsert dlg(connection);
+        if(dlg.exec()) {
 
-        if (dlg.exec()) {
+            insert_stmt << QString("INSERT INTO %1.%2 ( \n").arg(schema).arg(table);
 
-            insert_stmt = QString("INSERT INTO %1.%2 ( \n").arg(dlg.schema()).arg(dlg.table());
+            PGresult *res = createObjectList(connection, sql_list_fields, 2, schema.toStdString().c_str(),
+                                             table.toStdString().c_str());
 
-            params[0] = dlg.schema().toStdString().c_str();
-            params[1] = dlg.table().toStdString().c_str();
+            if (PQresultStatus(res) != PGRES_TUPLES_OK)
+            {
+                insert_stmt << PQerrorMessage(connection);
+                PQclear(res);
+            } else {
 
-            if (PQstatus(connection) == CONNECTION_OK) {
+                tuples = PQntuples(res);
 
-                PGresult *res =  PQexecParams(connection, sql_list_fields, 2, NULL, params, NULL, NULL, 0);
-
-                if (PQresultStatus(res) != PGRES_TUPLES_OK)
-                {
-
-                    error = PQerrorMessage(connection);
-                    PQclear(res);
-
-                } else {
-
-                    tuples = PQntuples(res);
-
-                    for (int i = 0; i < tuples; i++) {
-
-                        column_name = QString::fromStdString(PQgetvalue(res, i, 0));
-                        column_default = QString::fromStdString(PQgetvalue(res, i, 1));
-                        data_type = QString::fromStdString(PQgetvalue(res, i, 2));
-                        is_mandatory = QString::fromStdString(PQgetvalue(res, i, 3));
-                        //if (mandatory && is_mandatory == "NO")
-                        //    continue;
-                        if (column_default != "")
-                            values << offset_space + "   " + column_default + "  /* " + column_name + " */";
-                        else if (data_type == "character varying")
-                            values << offset_space + "   '' /* " + column_name + " */";
-                        else
-                            values << offset_space + "      /* " + column_name + " */";
-                        columns << offset_space + "   " + column_name;
-
-                    }
-
-                    PQclear(res);
+                for (int i = 0; i < tuples; i++) {
+                    column_name = QString::fromStdString(PQgetvalue(res, i, 0));
+                        insert_stmt <<  (i == 0 ? "    ":"   ,") + column_name + "\n";
                 }
+
+                insert_stmt << ") VALUES ( \n";
+
+                for (int i = 0; i < tuples; i++) {
+                    column_name = QString::fromStdString(PQgetvalue(res, i, 0));
+                    data_type = QString::fromStdString(PQgetvalue(res, i, 2));
+                    if (dlg.getAddComments()) {
+                        comment = "/* " + column_name + ( dlg.getFieldTypes() ? " (" + data_type + ") */ \n": " */\n");
+                    } else {
+                        comment = "\n";
+                    }
+                    column_default = QString::fromStdString(PQgetvalue(res, i, 1));
+
+                    is_mandatory = QString::fromStdString(PQgetvalue(res, i, 3));
+                    if (dlg.getOnlyMandatory() && is_mandatory == "NO")
+                        continue;
+                    if (is_mandatory != "NO" && column_default != "" && dlg.getRemoveMandatoryWithDefaults())
+                        continue;
+                    if (column_default != "")
+                        insert_stmt << (i == 0 ? "    ":"   ,") + column_default + " " + comment;
+                    else if (data_type == "character varying")
+                        insert_stmt << (i == 0 ? "    '' ":"   ,'' ") + comment;
+                    else if (data_type == "character")
+                        insert_stmt << (i == 0 ? "    '' ":"   ,'' ") + comment;
+                    else if (data_type == "date")
+                        insert_stmt << (i == 0 ? "    '' ":"   ,'' ") + comment;
+                    else if (data_type == "timestamp")
+                        insert_stmt << (i == 0 ? "    '' ":"   ,'' ") + comment;
+                    else if (data_type == "interval")
+                        insert_stmt << (i == 0 ? "    '' ":"   ,'' ") + comment;
+                    else if (data_type == "text")
+                        insert_stmt << (i == 0 ? "    '' ":"   ,'' ") + comment;
+                    else
+                        insert_stmt << (i == 0 ? "       ":"   ,   ") + comment;
+                }
+
+                PQclear(res);
+            }
+
+            switch(dlg.getOnConflict()) {
+            case DlgInsert::ON_CONFLICT_DO_NOTHING:
+                insert_stmt << ") ON CONFLICT DO NOTHING;";
+                break;
+            case DlgInsert::ON_CONFLICT_UPDATE:
+                insert_stmt << ") ON CONFLICT DO UPDATE SET \n<field>=<value>\n;";
+                break;
+            case DlgInsert::NO_CONFLICT_CLAUSE:
+                insert_stmt << ");";
+                break;
             }
 
         }
 
-        insert_stmt += columns.join(QByteArray(",\n"));
-        insert_stmt += "\n" + offset_space + ") VALUES (\n";
-        insert_stmt += values.join(QByteArray(",\n"));
-        insert_stmt += "\n" + offset_space + ");";
-
         return insert_stmt;
-}
-
-QString SQLGenerationPlugin::gen_insert_mandatory(PGconn *connection, int offset)
-{
-
-
 }
 
 #if QT_VERSION < 0x050000

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>312</height>
+    <width>414</width>
+    <height>268</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,58 +19,7 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Schema Name</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="schemas"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Table Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="tables"/>
-     </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="show_views">
-       <property name="text">
-        <string>Show Views</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="show_tables">
-       <property name="text">
-        <string>Show Tables</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>On Conflict  Clause</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QRadioButton" name="update">
-       <property name="text">
-        <string>UPDATE</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
       <widget class="QCheckBox" name="add_comments">
        <property name="text">
         <string>Add Comments</string>
@@ -80,14 +29,28 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="only_mandatory">
+       <property name="text">
+        <string>Only Mandatory Fields</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
       <widget class="QCheckBox" name="remove_mandatory_with_defaults">
        <property name="text">
         <string>Remove Mandatory With Default Values</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>On Conflict  Clause</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
       <widget class="QRadioButton" name="no_on_conflict_clause">
        <property name="text">
         <string>No Clause</string>
@@ -97,7 +60,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="5" column="1">
       <widget class="QRadioButton" name="do_nothing">
        <property name="text">
         <string>DO NOTHING</string>
@@ -107,10 +70,20 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QCheckBox" name="only_mandatory">
+     <item row="6" column="1">
+      <widget class="QRadioButton" name="update">
        <property name="text">
-        <string>Only Mandatory Fields</string>
+        <string>UPDATE</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="show_types">
+       <property name="text">
+        <string>Field Types on Comments</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
