@@ -1,7 +1,6 @@
 #include "sqlgenerationplugin.h"
-#include <dlgparametersschema.h>
-#include <dlgparameterobject.h>
 #include <dlginsert.h>
+#include <dlgupdate.h>
 
 
 SQLGenerationPlugin::SQLGenerationPlugin(QObject *parent) :
@@ -61,10 +60,18 @@ QStringList SQLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp.append("SELECT 'TESTING SQL GENERATION PLUGIN'\n");
         resp.append("-- End.\n");
         break;
-    case SQL_INSERT_ALL:        
-        resp = insert_all(connection, schema_name, table_name);
+    case SQL_INSERT_IN_TABLE:
+        resp = insert_record(connection, schema_name, table_name);
         break;
-
+    case SQL_UPDATE_IN_TABLE:
+        resp = update_record(connection, schema_name, table_name);
+        break;
+    case SQL_SELECT_TABLE:
+        resp = select_in_table(connection, schema_name, table_name, -1);
+        break;
+    case SQL_SELECT_TABLE_FIRST_100:
+        resp = select_in_table(connection, schema_name, table_name, 100);
+        break;
     default:
         return QStringList();
     }
@@ -86,41 +93,49 @@ void SQLGenerationPlugin::updateFunctionList(QTreeWidgetItem* item,  QListWidget
     switch(item_type) {
     case TABLE_ITEM:
         list_item = new QListWidgetItem("Select first 100 rows");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FIRST_100);
+        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_TABLE_FIRST_100);
         list->addItem(list_item);
 
         list_item = new QListWidgetItem("Select all rows");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
+        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_TABLE);
         list->addItem(list_item);
 
-        list_item = new QListWidgetItem("Insert all fields");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_ALL);
+        list_item = new QListWidgetItem("Insert record");
+        list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_IN_TABLE);
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Udate record");
+        list_item->setData(ROLE_ITEM_TYPE, SQL_UPDATE_IN_TABLE);
         list->addItem(list_item);
 
         break;
 
     case VIEW_ITEM:
         list_item = new QListWidgetItem("Select first 100 rows");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FIRST_100);
+        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_VIEW_FIRST_100);
         list->addItem(list_item);
 
         list_item = new QListWidgetItem("Select all rows");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
+        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_VIEW);
         list->addItem(list_item);
 
-        list_item = new QListWidgetItem("Insert all fields");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_ALL);
+        list_item = new QListWidgetItem("Insert record");
+        list_item->setData(ROLE_ITEM_TYPE, SQL_INSERT_IN_TABLE);
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Udate record");
+        list_item->setData(ROLE_ITEM_TYPE, SQL_UPDATE_IN_VIEW);
         list->addItem(list_item);
 
         break;
 
     case FUNCTION_ITEM:
         list_item = new QListWidgetItem("Select first 100 rows");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FIRST_100);
+        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FUNCTION_FIRST_100);
         list->addItem(list_item);
 
         list_item = new QListWidgetItem("Select all rows");
-        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_ALL);
+        list_item->setData(ROLE_ITEM_TYPE, SQL_SELECT_FUNCTION);
         list->addItem(list_item);
 
         break;
@@ -398,7 +413,7 @@ QStringList SQLGenerationPlugin::functions(PGconn *connection, QString schema)
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList SQLGenerationPlugin::insert_all(PGconn *connection, QString schema, QString table)
+QStringList SQLGenerationPlugin::insert_record(PGconn *connection, QString schema, QString table)
 {
         QString column_name;
         QString comment;
@@ -489,6 +504,119 @@ QStringList SQLGenerationPlugin::insert_all(PGconn *connection, QString schema, 
         }
 
         return insert_stmt;
+}
+
+QStringList SQLGenerationPlugin::update_record(PGconn *connection, QString schema, QString table)
+{
+    QString column_name;
+    QString comment;
+    QString column_default;
+    QString data_type;
+    QString is_mandatory;
+    int tuples;
+    QStringList stmt;
+    DlgUpdate dlg;
+
+    const char *sql_list_fields =
+        "SELECT column_name, column_default, data_type, is_nullable "
+        "FROM information_schema.columns "
+        "WHERE "
+        "   table_schema = $1 "
+        "   AND table_name = $2 ";
+
+    if(dlg.exec()) {
+
+        stmt << QString("UPDATE %1.%2 SET \n").arg(schema).arg(table);
+
+        PGresult *res = createObjectList(connection, sql_list_fields, 2, schema.toStdString().c_str(),
+                                         table.toStdString().c_str());
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            stmt << PQerrorMessage(connection);
+            PQclear(res);
+        } else {
+
+            tuples = PQntuples(res);
+
+            for (int i = 0; i < tuples; i++) {
+                column_name = QString::fromStdString(PQgetvalue(res, i, 0));
+                data_type = QString::fromStdString(PQgetvalue(res, i, 2));
+                if (dlg.getAddComments()) {
+                    comment = "/* " + column_name + ( dlg.getFieldTypes() ? " (" + data_type + ") */ \n": " */\n");
+                } else {
+                    comment = "\n";
+                }
+                column_default = QString::fromStdString(PQgetvalue(res, i, 1));
+                is_mandatory = QString::fromStdString(PQgetvalue(res, i, 3));
+
+                if (data_type == "character varying")
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = ''" + comment;
+                else if (data_type == "character")
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = ''" + comment;
+                else if (data_type == "date")
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = ''" + comment;
+                else if (data_type == "timestamp")
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = ''" + comment;
+                else if (data_type == "interval")
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = ''" + comment;
+                else if (data_type == "text")
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = ''" + comment;
+                else
+                    stmt << (i == 0 ? "     ":"    ,") + column_name + " = " + comment;
+            }
+
+            stmt << "WHERE <condition>; \n";
+
+            PQclear(res);
+        }
+
+    }
+
+    return stmt;
+}
+
+QStringList SQLGenerationPlugin::select_in_table(PGconn *connection, QString schema, QString table, int limit)
+{
+    QString column_name;
+    int tuples;
+    QStringList stmt;
+    DlgInsert dlg;
+
+    const char *sql_list_fields =
+        "SELECT column_name, column_default, data_type, is_nullable "
+        "FROM information_schema.columns "
+        "WHERE "
+        "   table_schema = $1 "
+        "   AND table_name = $2 ";
+
+    stmt << QString("SELECT \n");
+
+    PGresult *res = createObjectList(connection, sql_list_fields, 2, schema.toStdString().c_str(),
+                                     table.toStdString().c_str());
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        stmt << PQerrorMessage(connection);
+        PQclear(res);
+    } else {
+
+        tuples = PQntuples(res);
+
+        for (int i = 0; i < tuples; i++) {
+            column_name = QString::fromStdString(PQgetvalue(res, i, 0));
+                stmt <<  (i == 0 ? "    ":"   ,") + column_name + "\n";
+        }
+
+        if (limit == -1)
+            stmt << QString("FROM %1.%2; \n").arg(schema).arg(table);
+        else
+            stmt << QString("FROM %1.%2 \nLIMIT %3; \n").arg(schema).arg(table).arg(limit);
+
+        PQclear(res);
+    }
+
+    return stmt;
 }
 
 #if QT_VERSION < 0x050000

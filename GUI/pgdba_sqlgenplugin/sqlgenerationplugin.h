@@ -18,9 +18,16 @@ class SQLGenerationPlugin : public QObject, PGDBAPluginInterface {
 public:
     enum {
         SQL_TEST = 0,
-        SQL_SELECT_FIRST_100 = 1000,
-        SQL_SELECT_ALL,
-        SQL_INSERT_ALL
+        SQL_SELECT_TABLE_FIRST_100 = 1000,
+        SQL_SELECT_TABLE,
+        SQL_INSERT_IN_TABLE,
+        SQL_UPDATE_IN_TABLE,
+        SQL_SELECT_VIEW_FIRST_100,
+        SQL_SELECT_VIEW,
+        SQL_INSERT_IN_VIEW,
+        SQL_UPDATE_IN_VIEW,
+        SQL_SELECT_FUNCTION_FIRST_100,
+        SQL_SELECT_FUNCTION
     };
     enum {
         DATABAE_ITEM,
@@ -66,7 +73,9 @@ private:
     QStringList views(PGconn *connection, QString schema);
     QStringList functions(PGconn *connection, QString schema);
 
-    QStringList insert_all(PGconn *connection, QString schema, QString table);
+    QStringList insert_record(PGconn *connection, QString schema, QString table);
+    QStringList update_record(PGconn *connection, QString schema, QString table);
+    QStringList select_in_table(PGconn *connection, QString schema, QString table, int limit);
 
     void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);

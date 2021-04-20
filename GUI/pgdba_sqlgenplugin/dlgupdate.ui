@@ -1,45 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgParametersSchema</class>
- <widget class="QDialog" name="DlgParametersSchema">
+ <class>DlgUpdate</class>
+ <widget class="QDialog" name="DlgUpdate">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>489</width>
-    <height>122</height>
+    <width>400</width>
+    <height>110</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Parameters</string>
+   <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Shema Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Owner</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="schema_name">
-       <property name="editable">
+      <widget class="QCheckBox" name="add_comments">
+       <property name="text">
+        <string>Add Comments</string>
+       </property>
+       <property name="checked">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="schema_owner">
-       <property name="editable">
+      <widget class="QCheckBox" name="show_types">
+       <property name="text">
+        <string>Field Types on Comments</string>
+       </property>
+       <property name="checked">
         <bool>true</bool>
        </property>
       </widget>
@@ -63,7 +55,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>DlgParametersSchema</receiver>
+   <receiver>DlgUpdate</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -79,7 +71,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>DlgParametersSchema</receiver>
+   <receiver>DlgUpdate</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
