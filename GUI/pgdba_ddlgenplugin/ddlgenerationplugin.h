@@ -26,7 +26,19 @@ public:
         DDL_RESET_SEQUENCES,
         DDL_UPDATE_SEQUENCES,
         DDL_RESET_SEQUENCE,
-        DDL_UPDATE_SEQUENCE
+        DDL_UPDATE_SEQUENCE,
+        DDL_CREATE_ALL_TRIGGERS,
+        DDL_DROP_ALL_TRIGGERS,
+        DDL_ENABLE_ALL_TRIGGERS,
+        DDL_DISABLE_ALL_TRIGGERS,
+        DDL_CREATE_TRIGGERS,
+        DDL_DROP_TRIGGERS,
+        DDL_ENABLE_TRIGGERS,
+        DDL_DISABLE_TRIGGERS,
+        DDL_CREATE_TRIGGER,
+        DDL_DROP_TRIGGER,
+        DDL_ENABLE_TRIGGER,
+        DDL_DISABLE_TRIGGER
     };
     enum {
         DATABAE_ITEM,
@@ -101,6 +113,10 @@ private:
     QStringList updateSequences(PGconn *connection, QString schema);
     QStringList resetSequence(PGconn *connection, QString schema, QString sequence);
     QStringList updateSequence(PGconn *connection, QString schema,QString sequence);
+    QStringList createAllTriggers(PGconn *connection);
+    QStringList dropAllTriggers(PGconn *connection);
+    QStringList enableAllTriggers(PGconn *connection);
+    QStringList disableAllTriggers(PGconn *connection);
 
 };
 
