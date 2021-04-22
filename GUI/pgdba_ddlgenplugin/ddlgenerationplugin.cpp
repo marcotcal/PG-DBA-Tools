@@ -100,7 +100,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp = enableAllTriggers(connection);
         break;
     case DDL_DISABLE_ALL_TRIGGERS:
-        resp = enableAllTriggers(connection);
+        resp = disableAllTriggers(connection);
         break;
 
     default:        
@@ -266,6 +266,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
 QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...)
 {
     QStringList list;
+    QString field_value;
+    int next_pos;
+    QString line;
     int tuples;
     const char *params[param_count];
     PGresult *res;
@@ -292,8 +295,21 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
 
             tuples = PQntuples(res);
 
-            for (int i = 0; i < tuples; i++)
-                list << QString::fromStdString(PQgetvalue(res, i, return_col));
+            for (int i = 0; i < tuples; i++) {
+                field_value = QString::fromStdString(PQgetvalue(res, i, return_col));
+                next_pos = field_value.indexOf(QRegExp("\n|\r\n|\r"));
+                if(next_pos == -1)
+                    list << field_value;
+                else {
+                    while (next_pos !=-1) {
+                        line = field_value.left(next_pos+1);
+                        field_value = field_value.mid(next_pos+1);
+                        list << line;
+                        next_pos = field_value.indexOf(QRegExp("\n|\r\n|\r"));
+                    }
+
+                }
+            }
 
             PQclear(res);
         }
@@ -810,45 +826,54 @@ QStringList DDLGenerationPlugin::createAllTriggers(PGconn *connection)
         "                    ), 'FOR ', E'\n    FOR ' "
         "                ), 'EXECUTE', E'\n    EXECUTE' "
         "            ), 'WHEN ', E'\n    WHEN ' "
-        "        ) || E';\n' AS create_trigger "
+        "        ) || E';\n\n' AS create_trigger "
         "    FROM triggers t ";
-    // TODO - NOT WORKING
     return createObjectList(connection, sql, 0, 0);
 }
 
 QStringList DDLGenerationPlugin::dropAllTriggers(PGconn *connection)
 {
-
+    const char *sql =
+        "SELECT "
+        "    'DROP TRIGGER ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE ";
+    return createObjectList(connection, sql, 0, 0);
 }
 
 QStringList DDLGenerationPlugin::enableAllTriggers(PGconn *connection)
 {
     const char *sql =
-    "SELECT  "
-    "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' ENABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
-    "FROM "
-    "    pg_trigger trg "
-    "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
-    "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
-    "WHERE "
-    "    tbl.relname !~ '^pg_' "
-    "    AND tgisinternal = FALSE ";
-    return createObjectList(connection, sql, 0, 0);
+        "SELECT  "
+        "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' ENABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE ";
+        return createObjectList(connection, sql, 0, 0);
 }
 
 QStringList DDLGenerationPlugin::disableAllTriggers(PGconn *connection)
 {
     const char *sql =
-    "SELECT  "
-    "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' DISABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
-    "FROM "
-    "    pg_trigger trg "
-    "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
-    "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
-    "WHERE "
-    "    tbl.relname !~ '^pg_' "
-    "    AND tgisinternal = FALSE ";
-    return createObjectList(connection, sql, 0, 0);
+        "SELECT  "
+        "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' DISABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE ";
+        return createObjectList(connection, sql, 0, 0);
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)
