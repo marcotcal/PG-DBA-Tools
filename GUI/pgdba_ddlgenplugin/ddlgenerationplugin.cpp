@@ -53,6 +53,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QStringList resp;
     QString schema_name = tree_item->data(0, ROLE_SCHEMA_NAME).toString();
     QString sequence_name = tree_item->data(0, ROLE_SEQUENCE_NAME).toString();
+    QString function_name = tree_item->data(0, ROLE_FUNCTION_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -102,7 +103,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DISABLE_ALL_TRIGGERS:
         resp = disableAllTriggers(connection);
         break;
-
+    case DDL_CREATE_FUNCTION:
+        resp = createFunction(connection, schema_name, function_name);
+        break;
     default:        
         return QStringList();
     }
@@ -204,6 +207,7 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
 
         list_item = new QListWidgetItem("Create or Replace Function");
         list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTION);
 
         list_item = new QListWidgetItem("Script Alter Function Parameters");
         list->addItem(list_item);
@@ -463,10 +467,11 @@ void DDLGenerationPlugin::processFunctions(QTreeWidgetItem *item)
 {
     QStringList function_list;
     QTreeWidgetItem *function;
-
+    QString schema;
     PGconn *connection = trees[item->treeWidget()];
 
-    function_list = functions(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
+    schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    function_list = functions(connection, schema);
 
     for(int j=0; j < function_list.count(); j++) {
 
@@ -474,6 +479,8 @@ void DDLGenerationPlugin::processFunctions(QTreeWidgetItem *item)
         function->setText(0, function_list[j]);
         function->setIcon(0, QIcon(":/icons/images/icons/function.png"));
         function->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        function->setData(0, ROLE_FUNCTION_NAME, function_list[j]);
+        function->setData(0, ROLE_SCHEMA_NAME, schema);
         item->addChild(function);
 
     }
@@ -873,7 +880,57 @@ QStringList DDLGenerationPlugin::disableAllTriggers(PGconn *connection)
         "WHERE "
         "    tbl.relname !~ '^pg_' "
         "    AND tgisinternal = FALSE ";
-        return createObjectList(connection, sql, 0, 0);
+    return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString schema, QString func_name)
+{
+    const char *sql =
+        "WITH "
+        "    func_def AS ( "
+        "        SELECT "
+        "            quote_ident(n.nspname) AS schema_name, "
+        "            quote_ident(p.proname) AS function_name, "
+        "            pg_catalog.pg_get_function_identity_arguments(p.oid) AS arguments, "
+        "            t.typname AS return_type, "
+        "            l.lanname AS language_name, "
+        "            p.procost AS estimated_cost, "
+        "            p.prorows AS estimated_rows, "
+        "            CASE "
+        "                WHEN p.provolatile = 'v' THEN 'VOLATILE' "
+        "                WHEN p.provolatile = 'i' THEN 'IMMUTABLE' "
+        "                WHEN p.provolatile = 's' THEN 'STABLE' "
+        "            END behavior, "
+        "            CASE "
+        "                WHEN p.prosecdef = TRUE THEN 'SECURITY DEFINER' "
+        "                ELSE 'SECURITY INVOKER' "
+        "            END AS security, "
+        "            CASE "
+        "                WHEN p.proisstrict THEN 'RETURNS NULL ON NULL INPUT' "
+        "                ELSE 'CALLED ON NULL INPUT' "
+        "            END AS null_parameters, "
+        "            p.prosrc AS code "
+        "        FROM   pg_catalog.pg_proc p "
+        "           JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "           JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+        "           JOIN pg_catalog.pg_language l ON p.prolang = l.oid "
+        "        WHERE "
+        "            t.typname != 'trigger' "
+        "    ) "
+        "    SELECT "
+        "        'CREATE OR REPLACE FUNCTION ' || schema_name || '.' || function_name || '(' || arguments || E')\n' || "
+        "        'LANGUAGE ' || language_name || ' RETURNS ' || return_type || E' AS \n' || "
+        "        E'$BODY$\n' || "
+        "        code || E'\n' || "
+        "        E'$BODY$\n' || "
+        "        behavior || E'\n' || security || ' ' || null_parameters || E'\n' || "
+        "        'COST ' || estimated_cost || E'\n' || "
+        "        'ROWS ' || estimated_rows || E';\n' AS definition "
+        "    FROM func_def "
+        "    WHERE "
+        "        schema_name  = $1 AND "
+        "        function_name = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)
