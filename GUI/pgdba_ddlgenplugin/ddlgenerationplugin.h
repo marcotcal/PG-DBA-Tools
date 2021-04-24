@@ -39,7 +39,10 @@ public:
         DDL_DROP_TRIGGER,
         DDL_ENABLE_TRIGGER,
         DDL_DISABLE_TRIGGER,
-        DDL_CREATE_FUNCTION
+        DDL_CREATE_FUNCTIONS,
+        DDL_CREATE_FUNCTION,
+        DDL_DROP_FUNCTIONS,
+        DDL_DROP_FUNCTION
     };
     enum {
         DATABAE_ITEM,
@@ -122,7 +125,10 @@ private:
     QStringList enableAllTriggers(PGconn *connection);
     QStringList disableAllTriggers(PGconn *connection);
 
+    QStringList createFunctions(PGconn *connection, QString schema);
     QStringList createFunction(PGconn *connection, QString schema, QString func_name);
+    QStringList dropFunctions(PGconn *connection, QString schema);
+    QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
 
 
 };

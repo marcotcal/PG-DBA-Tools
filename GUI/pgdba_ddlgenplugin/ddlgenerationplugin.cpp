@@ -103,8 +103,17 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DISABLE_ALL_TRIGGERS:
         resp = disableAllTriggers(connection);
         break;
+    case DDL_CREATE_FUNCTIONS:
+        resp = createFunctions(connection, schema_name);
+        break;
     case DDL_CREATE_FUNCTION:
         resp = createFunction(connection, schema_name, function_name);
+        break;
+    case DDL_DROP_FUNCTIONS:
+        resp = dropFunctions(connection, schema_name);
+        break;
+    case DDL_DROP_FUNCTION:
+        resp = dropFunction(connection, schema_name, function_name);
         break;
     default:        
         return QStringList();
@@ -195,15 +204,19 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Create New Function");
         list->addItem(list_item);
 
-        list_item = new QListWidgetItem("Drop all Functions");
+        list_item = new QListWidgetItem("Create Functions");
         list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTIONS);
 
-        list_item = new QListWidgetItem("Create all Functions");
+        list_item = new QListWidgetItem("Drop Functions");
         list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FUNCTIONS);
+
         break;
     case FUNCTION_ITEM:
         list_item = new QListWidgetItem("Drop Function");
         list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FUNCTION);
 
         list_item = new QListWidgetItem("Create or Replace Function");
         list->addItem(list_item);
@@ -883,8 +896,60 @@ QStringList DDLGenerationPlugin::disableAllTriggers(PGconn *connection)
     return createObjectList(connection, sql, 0, 0);
 }
 
+QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString schema)
+{
+    /* more complete than pg_get_functiondef */
+    const char *sql =
+        "WITH "
+        "    func_def AS ( "
+        "        SELECT "
+        "            quote_ident(n.nspname) AS schema_name, "
+        "            quote_ident(p.proname) AS function_name, "
+        "            pg_catalog.pg_get_function_identity_arguments(p.oid) AS arguments, "
+        "            t.typname AS return_type, "
+        "            l.lanname AS language_name, "
+        "            p.procost AS estimated_cost, "
+        "            p.prorows AS estimated_rows, "
+        "            CASE "
+        "                WHEN p.provolatile = 'v' THEN 'VOLATILE' "
+        "                WHEN p.provolatile = 'i' THEN 'IMMUTABLE' "
+        "                WHEN p.provolatile = 's' THEN 'STABLE' "
+        "            END behavior, "
+        "            CASE "
+        "                WHEN p.prosecdef = TRUE THEN 'SECURITY DEFINER' "
+        "                ELSE 'SECURITY INVOKER' "
+        "            END AS security, "
+        "            CASE "
+        "                WHEN p.proisstrict THEN 'RETURNS NULL ON NULL INPUT' "
+        "                ELSE 'CALLED ON NULL INPUT' "
+        "            END AS null_parameters, "
+        "            p.prosrc AS code "
+        "        FROM   pg_catalog.pg_proc p "
+        "           JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "           JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+        "           JOIN pg_catalog.pg_language l ON p.prolang = l.oid "
+        "        WHERE "
+        "            t.typname != 'trigger' "
+        "    ) "
+        "    SELECT "
+        "        E'/**\n  FUNCTION ' || schema_name || '.' || function_name || E'\n**/\n\n' || "
+        "        'CREATE OR REPLACE FUNCTION ' || schema_name || '.' || function_name || '(' || arguments || E')\n' || "
+        "        'LANGUAGE ' || language_name || ' RETURNS ' || return_type || E' AS \n' || "
+        "        E'$BODY$\n' || "
+        "        code || E'\n' || "
+        "        E'$BODY$\n' || "
+        "        behavior || E'\n' || security || ' ' || null_parameters || E'\n' || "
+        "        'COST ' || estimated_cost || E'\n' || "
+        "        'ROWS ' || estimated_rows || E';\n\n' AS definition "
+        "    FROM func_def "
+        "    WHERE "
+        "        schema_name  = $1 ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+}
+
 QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString schema, QString func_name)
 {
+    /* more complete than pg_get_functiondef */
     const char *sql =
         "WITH "
         "    func_def AS ( "
@@ -930,6 +995,37 @@ QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString sche
         "    WHERE "
         "        schema_name  = $1 AND "
         "        function_name = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropFunctions(PGconn *connection, QString schema)
+{
+    const char *sql =
+        "SELECT format(E'DROP %s %s;\n' "
+        "            , CASE WHEN p.proisagg THEN 'AGGREGATE' ELSE 'FUNCTION' END "
+        "            , p.oid::regprocedure "
+        "             ) AS stmt "
+        "FROM   "
+        "   pg_catalog.pg_proc p "
+        "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "WHERE  quote_ident(n.nspname) = $1 "
+        "ORDER  BY 1 ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema, QString func_name)
+{
+    const char *sql =
+        "SELECT format('DROP %s %s;' "
+        "            , CASE WHEN p.proisagg THEN 'AGGREGATE' ELSE 'FUNCTION' END "
+        "            , p.oid::regprocedure "
+        "             ) AS stmt "
+        "FROM   "
+        "   pg_catalog.pg_proc p "
+        "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "WHERE  quote_ident(n.nspname) = $1 "
+        "       AND quote_ident(p.proname) = $2"
+        "ORDER  BY 1 ";
     return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
 
