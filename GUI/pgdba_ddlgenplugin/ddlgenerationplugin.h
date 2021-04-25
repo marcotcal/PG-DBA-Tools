@@ -60,7 +60,9 @@ public:
         TRIGGER_FUNCTION_ITEM,
         CONSTRAINTS_ITEM,
         TRIGGERS_ITEM,
-        TRIGGER_ITEM
+        TRIGGER_ITEM,
+        TABLE_COLUMNS_ITEM,
+        TABLE_COLUMN_ITEM
     };
     enum {
         ROLE_ITEM_TYPE = Qt::UserRole,
@@ -69,7 +71,8 @@ public:
         ROLE_TABLE_NAME,
         ROLE_SEQUENCE_NAME,
         ROLE_CONSTRAINT_TYPE,
-        ROLE_FUNCTION_NAME
+        ROLE_FUNCTION_NAME,
+        ROLE_TABLE_COLUMN_NAME
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
@@ -98,6 +101,7 @@ private:
     QStringList triggerFunctions(PGconn *connection, QString schema);
     QStringList constraints(PGconn *connection, QString schema, QString table, char *ctype);
     QStringList triggers(PGconn *connection, QString schema, QString table);
+    QStringList table_columns(PGconn *connection, QString schema, QString table);
 
     void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);
@@ -107,6 +111,7 @@ private:
     void processTrigerFunctions(QTreeWidgetItem *item);
     void processConstraints(QTreeWidgetItem *item);
     void processTriggers(QTreeWidgetItem *item);
+    void processTableColumns(QTreeWidgetItem *item);
 
     QStringList createAllSchemas(PGconn *connection);
     QStringList dropAllSchemas(PGconn *connection);
@@ -130,6 +135,7 @@ private:
     QStringList dropFunctions(PGconn *connection, QString schema);
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
 
+    QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 
 };
 
