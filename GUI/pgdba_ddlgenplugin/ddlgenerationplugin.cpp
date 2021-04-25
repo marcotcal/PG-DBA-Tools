@@ -54,6 +54,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QString schema_name = tree_item->data(0, ROLE_SCHEMA_NAME).toString();
     QString sequence_name = tree_item->data(0, ROLE_SEQUENCE_NAME).toString();
     QString function_name = tree_item->data(0, ROLE_FUNCTION_NAME).toString();
+    QString table_name = tree_item->data(0, ROLE_TABLE_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -117,6 +118,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         break;
     case DDL_CREATE_TRIGGER_FUNCTIONS:
         resp = createFunctions(connection, schema_name, true);
+        break;
+    case DDL_CREATE_TABLE:
+        resp = createTable(connection, schema_name, table_name);
         break;
     default:        
         return QStringList();
@@ -250,6 +254,11 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Script Alter Function Parameters");
         list->addItem(list_item);
         break;
+    case TABLE_ITEM:
+        list_item = new QListWidgetItem("Create Table");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TABLE);
+
     }
 }
 
@@ -343,6 +352,38 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
     return list;
 }
 
+PGresult *DDLGenerationPlugin::createObjectList(PGconn *connection, const char *sql, int param_count, ...)
+{
+
+    const char *params[param_count];
+    PGresult *res;
+    va_list vl;
+    va_start(vl, param_count);
+
+    for (int i = 0; i < param_count; i++) {
+        params[i] = va_arg(vl, char *);
+    }
+    va_end(vl);
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+
+
+        if (param_count > 0)
+            res =  PQexecParams(connection, sql, param_count, NULL, params, NULL, NULL, 0);
+        else
+            res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+        } else {
+            return res;
+        }
+    }
+
+    return nullptr;
+}
+
 void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
 
 
@@ -412,6 +453,9 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
         table->setText(0, table_list[j]);
         table->setIcon(0, QIcon(":/icons/images/icons/table.png"));
         table->setData(0, Qt::UserRole, TABLE_ITEM);
+        table->setData(0, ROLE_TABLE_NAME, table_list[j]);
+        table->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+
         item->addChild(table);
 
         constraints_node = new QTreeWidgetItem();
@@ -1076,6 +1120,75 @@ QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema
         "       AND quote_ident(p.proname) = $2"
         "ORDER  BY 1 ";
     return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema, QString table_name)
+{
+    QStringList resp;
+    QString colname;
+    QString coltype;
+    QString inherited;
+    int tuples;
+
+    char *sql_col =
+            "SELECT "
+            "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS field_type,  "
+            "    EXISTS ( "
+            "      SELECT 1 "
+            "      FROM pg_inherits AS i "
+            "         JOIN pg_attribute AS a2 "
+            "            ON i.inhparent = a2.attrelid "
+            "         WHERE i.inhrelid = a.attrelid "
+            "           AND a.attname = a2.attname "
+            "   ) AS inherited, "
+            "    a.attname "
+            "FROM "
+            "    pg_catalog.pg_attribute a "
+            "    INNER JOIN pg_catalog.pg_class c ON a.attrelid = c.oid "
+            "    INNER JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace "
+            "WHERE "
+            "    a.attnum > 0 "
+            "    AND NOT a.attisdropped "
+            "    AND n.nspname = $1 "
+            "    AND c.relname = $2 ";
+
+    const char *sql =
+        "SELECT 'CREATE TABLE ' || c.relname || '.' || c.relname || E'(\n' "
+        "FROM pg_class c "
+        "     INNER JOIN pg_namespace n ON c.relnamespace = n.oid "
+        "WHERE "
+        "   n.nspname = $1 "
+        "   AND c.relname = $2 ";
+
+    resp = createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), table_name.toStdString().c_str());
+
+    PGresult *res = createObjectList(connection, sql_col, 2, schema.toStdString().c_str(),
+                                     table_name.toStdString().c_str());
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        resp << PQerrorMessage(connection);
+        PQclear(res);
+    } else {
+
+        tuples = PQntuples(res);
+
+        for (int i = 0; i < tuples; i++) {
+            colname = QString::fromStdString(PQgetvalue(res, i, 2));
+            coltype = QString::fromStdString(PQgetvalue(res, i, 0));
+            inherited = QString::fromStdString(PQgetvalue(res, i, 1));
+            if (inherited != "t")
+                resp <<  (i == 0 ? "    ":"   ,") + colname + ' ' + coltype + "\n";
+            else
+                resp <<  (i == 0 ? "   -- ":"   -- ,") + colname + ' ' + coltype + "\n";
+        }
+
+        PQclear(res);
+    }
+
+    resp << ");\n";
+
+    return resp;
 }
 
 QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema, QString column_name)

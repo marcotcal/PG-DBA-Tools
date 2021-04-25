@@ -43,7 +43,8 @@ public:
         DDL_CREATE_FUNCTION,
         DDL_DROP_FUNCTIONS,
         DDL_DROP_FUNCTION,
-        DDL_CREATE_TRIGGER_FUNCTIONS
+        DDL_CREATE_TRIGGER_FUNCTIONS,
+        DDL_CREATE_TABLE
     };
     enum {
         DATABAE_ITEM,
@@ -92,6 +93,7 @@ private:
     QMap<QTreeWidget *, PGconn *> trees;
 
     QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
+    PGresult *createObjectList(PGconn *connection, const char *sql, int param_count, ...);
 
     QStringList users(PGconn *connection);
     QStringList schemas(PGconn *connection);
@@ -135,6 +137,8 @@ private:
     QStringList createFunction(PGconn *connection, QString schema, QString func_name);
     QStringList dropFunctions(PGconn *connection, QString schema);
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
+
+    QStringList createTable(PGconn *connection, QString schema, QString table_name);
 
     QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 
