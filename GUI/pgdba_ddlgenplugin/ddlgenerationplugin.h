@@ -42,7 +42,8 @@ public:
         DDL_CREATE_FUNCTIONS,
         DDL_CREATE_FUNCTION,
         DDL_DROP_FUNCTIONS,
-        DDL_DROP_FUNCTION
+        DDL_DROP_FUNCTION,
+        DDL_CREATE_TRIGGER_FUNCTIONS
     };
     enum {
         DATABAE_ITEM,
@@ -125,7 +126,7 @@ private:
     QStringList enableAllTriggers(PGconn *connection);
     QStringList disableAllTriggers(PGconn *connection);
 
-    QStringList createFunctions(PGconn *connection, QString schema);
+    QStringList createFunctions(PGconn *connection, QString schema, bool trigger);
     QStringList createFunction(PGconn *connection, QString schema, QString func_name);
     QStringList dropFunctions(PGconn *connection, QString schema);
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);

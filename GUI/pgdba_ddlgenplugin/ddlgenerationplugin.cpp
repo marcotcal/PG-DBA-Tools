@@ -104,7 +104,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp = disableAllTriggers(connection);
         break;
     case DDL_CREATE_FUNCTIONS:
-        resp = createFunctions(connection, schema_name);
+        resp = createFunctions(connection, schema_name, false);
         break;
     case DDL_CREATE_FUNCTION:
         resp = createFunction(connection, schema_name, function_name);
@@ -114,6 +114,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         break;
     case DDL_DROP_FUNCTION:
         resp = dropFunction(connection, schema_name, function_name);
+        break;
+    case DDL_CREATE_TRIGGER_FUNCTIONS:
+        resp = createFunctions(connection, schema_name, true);
         break;
     default:        
         return QStringList();
@@ -234,12 +237,14 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
 
         list_item = new QListWidgetItem("Create all Functions");
         list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TRIGGER_FUNCTIONS);
         break;
     case TRIGGER_FUNCTION_ITEM:
         list_item = new QListWidgetItem("Drop Function and related triggers");
         list->addItem(list_item);
 
         list_item = new QListWidgetItem("Create or Replace Function");
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTION);
         list->addItem(list_item);
 
         list_item = new QListWidgetItem("Script Alter Function Parameters");
@@ -503,9 +508,11 @@ void DDLGenerationPlugin::processTrigerFunctions(QTreeWidgetItem *item)
 {
     QStringList function_list;
     QTreeWidgetItem *function;
+    QString schema;
 
     PGconn *connection = trees[item->treeWidget()];
 
+    schema = item->data(0, ROLE_SCHEMA_NAME).toString();
     function_list = triggerFunctions(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
 
     for(int j=0; j < function_list.count(); j++) {
@@ -514,6 +521,8 @@ void DDLGenerationPlugin::processTrigerFunctions(QTreeWidgetItem *item)
         function->setText(0, function_list[j]);
         function->setIcon(0, QIcon(":/icons/images/icons/trigger_function.png"));
         function->setData(0, ROLE_ITEM_TYPE, TRIGGER_FUNCTION_ITEM);
+        function->setData(0, ROLE_FUNCTION_NAME, function_list[j]);
+        function->setData(0, ROLE_SCHEMA_NAME, schema);
         item->addChild(function);
 
     }
@@ -896,10 +905,11 @@ QStringList DDLGenerationPlugin::disableAllTriggers(PGconn *connection)
     return createObjectList(connection, sql, 0, 0);
 }
 
-QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString schema)
+QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString schema, bool trigger)
 {
     /* more complete than pg_get_functiondef */
-    const char *sql =
+    QString sql =
+        QString(
         "WITH "
         "    func_def AS ( "
         "        SELECT "
@@ -929,7 +939,7 @@ QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString sch
         "           JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
         "           JOIN pg_catalog.pg_language l ON p.prolang = l.oid "
         "        WHERE "
-        "            t.typname != 'trigger' "
+        "           t.typname %1 'trigger' "
         "    ) "
         "    SELECT "
         "        E'/**\n  FUNCTION ' || schema_name || '.' || function_name || E'\n**/\n\n' || "
@@ -943,8 +953,9 @@ QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString sch
         "        'ROWS ' || estimated_rows || E';\n\n' AS definition "
         "    FROM func_def "
         "    WHERE "
-        "        schema_name  = $1 ";
-    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+        "        schema_name  = $1 ").arg(trigger ? "=" : "!=");
+
+    return createObjectList(connection, sql.toStdString().c_str(), 0, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString schema, QString func_name)
