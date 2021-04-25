@@ -144,6 +144,9 @@
         <file>images/icons/sequence.png</file>
         <file>images/icons/primary_key.png</file>
         <file>images/icons/check_constraint.png</file>
+        <file>images/icons/column.png</file>
+        <file>images/icons/columns.png</file>
+        <file>images/icons/column_inherited.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>

@@ -281,6 +281,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
     case TRIGGERS_ITEM:
         if(item->childCount() == 0) processTriggers(item);
         break;
+    case TABLE_COLUMNS_ITEM:
+        if(item->childCount() == 0) processTableColumns(item);
+        break;
     }
 }
 
@@ -395,6 +398,7 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
     //QTreeWidgetItem *index_node;
     QTreeWidgetItem *constraints_node;
     QTreeWidgetItem *triggers_node;
+    QTreeWidgetItem *columns_node;
     QTreeWidgetItem *table;
     QStringList table_list;
 
@@ -425,6 +429,14 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
         triggers_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
         triggers_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
         table->addChild(triggers_node);
+
+        columns_node = new QTreeWidgetItem();
+        columns_node->setText(0, "Columns");
+        columns_node->setIcon(0, QIcon(":/icons/images/icons/columns.png"));
+        columns_node->setData(0, ROLE_ITEM_TYPE, TABLE_COLUMNS_ITEM);
+        columns_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        columns_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
+        table->addChild(columns_node);
 
     }
 }
@@ -608,10 +620,38 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
         trigger->setData(0, ROLE_ITEM_TYPE, TRIGGER_ITEM);
         trigger->setData(0, ROLE_TABLE_NAME, table);
         trigger->setData(0, ROLE_SCHEMA_NAME, schema);
-        trigger->setData(0, ROLE_CONSTRAINT_TYPE, "C");
         item->addChild(trigger);
     }
 
+}
+
+void DDLGenerationPlugin::processTableColumns(QTreeWidgetItem *item)
+{
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString table = item->data(0, ROLE_TABLE_NAME).toString();
+    QStringList column_list;
+    QTreeWidgetItem *column;
+    QString column_name;
+
+    PGconn *connection = trees[item->treeWidget()];
+
+    column_list = table_columns(connection, schema, table);
+
+    for(int j=0; j < column_list.count(); j++) {
+        column = new QTreeWidgetItem();
+        column_name = column_list[j];
+        column->setText(0, column_name.mid(1));
+        if (column_name[0] == QChar('*')) {
+            column->setIcon(0, QIcon(":/icons/images/icons/column_inherited.png"));
+        } else {
+            column->setIcon(0, QIcon(":/icons/images/icons/column.png"));
+        }
+
+        column->setData(0, ROLE_ITEM_TYPE, TABLE_COLUMN_ITEM);
+        column->setData(0, ROLE_TABLE_NAME, table);
+        column->setData(0, ROLE_SCHEMA_NAME, schema);
+        item->addChild(column);
+    }
 }
 
 QStringList DDLGenerationPlugin::createAllSchemas(PGconn *connection)
@@ -1038,6 +1078,12 @@ QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema
     return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
 
+QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema, QString column_name)
+{
+    /* TODO */
+    return QStringList();
+}
+
 QStringList DDLGenerationPlugin::users(PGconn *connection)
 {
     const char *sql =
@@ -1176,7 +1222,7 @@ QStringList DDLGenerationPlugin::constraints(PGconn *connection, QString schema,
 
 QStringList DDLGenerationPlugin::triggers(PGconn *connection, QString schema, QString table)
 {
-    /* for detailed use
+    /* for detailed use split lines
     const char *sql =
             "SELECT event_object_schema, "
             "       event_object_table, "
@@ -1209,6 +1255,37 @@ QStringList DDLGenerationPlugin::triggers(PGconn *connection, QString schema, QS
                             schema.toStdString().c_str(),
                             table.toStdString().c_str());
 
+}
+
+QStringList DDLGenerationPlugin::table_columns(PGconn *connection, QString schema, QString table)
+{
+    const char *sql =
+        "SELECT "
+        "    CASE "
+        "    WHEN EXISTS ( "
+        "          SELECT 1 "
+        "          FROM pg_inherits AS i "
+        "             JOIN pg_attribute AS a2 "
+        "                ON i.inhparent = a2.attrelid "
+        "             WHERE i.inhrelid = a.attrelid "
+        "               AND a.attname = a2.attname "
+        "       ) THEN '*'"
+        "     ELSE ' ' "
+        "    END || "
+        "    a.attname "
+        "FROM "
+        "    pg_catalog.pg_attribute a "
+        "    INNER JOIN pg_catalog.pg_class c ON a.attrelid = c.oid "
+        "    INNER JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace "
+        "WHERE "
+        "    a.attnum > 0 "
+        "    AND NOT a.attisdropped "
+        "    AND n.nspname = $1 "
+        "    AND c.relname = $2 ";
+    return createObjectList(connection,
+                            sql, 0, 2,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str());
 }
 
 #if QT_VERSION < 0x050000
