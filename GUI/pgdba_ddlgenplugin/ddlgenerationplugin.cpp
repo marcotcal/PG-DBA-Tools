@@ -55,6 +55,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QString sequence_name = tree_item->data(0, ROLE_SEQUENCE_NAME).toString();
     QString function_name = tree_item->data(0, ROLE_FUNCTION_NAME).toString();
     QString table_name = tree_item->data(0, ROLE_TABLE_NAME).toString();
+    QString constraint_name = tree_item->data(0, ROLE_CONSTRAINT_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -122,6 +123,18 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_CREATE_TABLE:
         resp = createTable(connection, schema_name, table_name);
         break;
+    case DDL_CREATE_PRIMARY_KEY:
+        resp = createPrimaryKey(connection, schema_name, table_name, constraint_name);
+        break;
+    case DDL_DROP_PRIMARY_KEY:
+        resp = dropPrimaryKey(connection, schema_name, table_name, constraint_name);
+        break;
+    case DDL_CREATE_UNIQUE_KEY:
+        resp = createUniqueKey(connection, schema_name, table_name, constraint_name);
+        break;
+    case DDL_DROP_UNIQUE_KEY:
+        resp = dropUniqueKey(connection, schema_name, table_name, constraint_name);
+        break;
     default:        
         return QStringList();
     }
@@ -133,8 +146,12 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
 {        
     QListWidgetItem *list_item;
     int item_type;
+    QString const_type;
 
     item_type = item->data(0, ROLE_ITEM_TYPE).toInt();
+    if (item_type = CONSTRAINTS_ITEM) {
+        const_type = item->data(0, ROLE_CONSTRAINT_TYPE).toString();
+    }
 
     list->clear();
 
@@ -258,6 +275,25 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Create Table");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TABLE);
+    case CONSTRAINTS_ITEM:
+        if (const_type == "P") {
+            list_item = new QListWidgetItem("Create Primary Key");
+            list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_PRIMARY_KEY);
+
+            list_item = new QListWidgetItem("Drop Primary Key");
+            list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_PRIMARY_KEY);
+        } else if (const_type == "U") {
+            list_item = new QListWidgetItem("Create Unique Key");
+            list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_UNIQUE_KEY);
+
+            list_item = new QListWidgetItem("Drop Unique Key");
+            list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_UNIQUE_KEY);
+        }
+        break;
 
     }
 }
@@ -602,6 +638,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[0]);
         constraint->setData(0, ROLE_CONSTRAINT_TYPE, "P");
         item->addChild(constraint);
     }
@@ -615,6 +652,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[j]);
         constraint->setData(0, ROLE_CONSTRAINT_TYPE, "U");
         item->addChild(constraint);
     }
@@ -628,6 +666,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[j]);
         constraint->setData(0, ROLE_CONSTRAINT_TYPE, "F");
         item->addChild(constraint);
     }
@@ -641,6 +680,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
+        constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[j]);
         constraint->setData(0, ROLE_CONSTRAINT_TYPE, "C");
         item->addChild(constraint);
     }
@@ -904,6 +944,98 @@ QStringList DDLGenerationPlugin::updateSequence(PGconn *connection, QString sche
             ).arg(schema).arg(sequence);
 
     return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
+}
+
+QStringList DDLGenerationPlugin::createPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key)
+{
+    const char *sql =
+            "SELECT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' ADD CONSTRAINT ' || "
+            "       t.constraint_name || ' PRIMARY KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E');\n' "
+            "FROM information_schema.table_constraints t "
+            "JOIN information_schema.key_column_usage c "
+            "     ON c.constraint_name = t.constraint_name "
+            "     AND c.constraint_schema = t.constraint_schema "
+            "     AND c.constraint_name = t.constraint_name "
+            "WHERE "
+            "    t.constraint_type = 'PRIMARY KEY' AND "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 AND "
+            "    c.constraint_name = $3 "
+            "GROUP BY "
+            "    c.table_schema, "
+            "    c.table_name, "
+            "    t.constraint_name ";
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            primary_key.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key)
+{
+    const char *sql =
+            "select DISTINCT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' DROP CONSTRAINT ' || "
+            "       t.constraint_name || E';\n' "
+            "from information_schema.table_constraints t "
+            "join information_schema.key_column_usage c "
+            "     on c.constraint_name = t.constraint_name "
+            "     and c.constraint_schema = t.constraint_schema "
+            "     and c.constraint_name = t.constraint_name "
+            "where "
+            "    t.constraint_type = 'PRIMARY KEY' AND "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 AND "
+            "    c.constraint_name = $3 ";
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            primary_key.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::createUniqueKey(PGconn *connection, QString schema, QString table, QString unique_key)
+{
+    const char *sql =
+            "SELECT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' ADD CONSTRAINT ' || "
+            "       t.constraint_name || ' UNIQUE KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E');\n' "
+            "FROM information_schema.table_constraints t "
+            "JOIN information_schema.key_column_usage c "
+            "     ON c.constraint_name = t.constraint_name "
+            "     AND c.constraint_schema = t.constraint_schema "
+            "     AND c.constraint_name = t.constraint_name "
+            "WHERE "
+            "    t.constraint_type = 'UNIQUE' AND "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 AND "
+            "    c.constraint_name = $3 "
+            "GROUP BY "
+            "    c.table_schema, "
+            "    c.table_name, "
+            "    t.constraint_name ";
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            unique_key.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropUniqueKey(PGconn *connection, QString schema, QString table, QString unique_key)
+{
+    const char *sql =
+            "select DISTINCT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' DROP CONSTRAINT ' || "
+            "       t.constraint_name || E';\n' "
+            "from information_schema.table_constraints t "
+            "join information_schema.key_column_usage c "
+            "     on c.constraint_name = t.constraint_name "
+            "     and c.constraint_schema = t.constraint_schema "
+            "     and c.constraint_name = t.constraint_name "
+            "where "
+            "    t.constraint_type = 'UNIQUE' AND "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 AND "
+            "    c.constraint_name = $3 ";
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            unique_key.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createAllTriggers(PGconn *connection)

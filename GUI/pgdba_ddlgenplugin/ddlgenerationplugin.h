@@ -44,7 +44,11 @@ public:
         DDL_DROP_FUNCTIONS,
         DDL_DROP_FUNCTION,
         DDL_CREATE_TRIGGER_FUNCTIONS,
-        DDL_CREATE_TABLE
+        DDL_CREATE_TABLE,
+        DDL_CREATE_PRIMARY_KEY,
+        DDL_DROP_PRIMARY_KEY,
+        DDL_CREATE_UNIQUE_KEY,
+        DDL_DROP_UNIQUE_KEY
     };
     enum {
         DATABAE_ITEM,
@@ -74,7 +78,8 @@ public:
         ROLE_SEQUENCE_NAME,
         ROLE_CONSTRAINT_TYPE,
         ROLE_FUNCTION_NAME,
-        ROLE_TABLE_COLUMN_NAME
+        ROLE_TABLE_COLUMN_NAME,
+        ROLE_CONSTRAINT_NAME,
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
@@ -127,6 +132,11 @@ private:
     QStringList updateSequences(PGconn *connection, QString schema);
     QStringList resetSequence(PGconn *connection, QString schema, QString sequence);
     QStringList updateSequence(PGconn *connection, QString schema,QString sequence);
+
+    QStringList createPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key);
+    QStringList dropPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key);
+    QStringList createUniqueKey(PGconn *connection, QString schema, QString table, QString unique_key);
+    QStringList dropUniqueKey(PGconn *connection, QString schema, QString table, QString unique_key);
 
     QStringList createAllTriggers(PGconn *connection);
     QStringList dropAllTriggers(PGconn *connection);
