@@ -1038,6 +1038,60 @@ QStringList DDLGenerationPlugin::dropUniqueKey(PGconn *connection, QString schem
                             unique_key.toStdString().c_str());
 }
 
+QStringList DDLGenerationPlugin::createForeignKey(PGconn *connection, QString schema, QString table, QString foreign_key)
+{
+    const char *sql=
+            "SELECT 'ALTER TABLE ' || c.table_schema || '.' ||c.table_name || ' ADD CONSTRAINT ' || "
+            "       c.constraint_name || E' FOREIGN KEY (' || string_agg(c.column_name, ', ') || E')\n' || "
+            "       'REFERENCES ' || "
+            "       t2.table_schema || '.' || t2.table_name, "
+            "       r.unique_constraint_schema, "
+            "       r.unique_constraint_name "
+            "FROM information_schema.table_constraints t "
+            "JOIN information_schema.key_column_usage c "
+            "          ON t.constraint_schema = c.constraint_schema "
+            "          AND t.constraint_name = c.constraint_name "
+            "JOIN information_schema.referential_constraints r "
+            "          ON t.constraint_schema = r.constraint_schema "
+            "          AND t.constraint_name = r.constraint_name "
+            "JOIN information_schema.table_constraints t2 "
+            "          ON r.unique_constraint_schema = t2.constraint_schema "
+            "          AND r.unique_constraint_name = t2.constraint_name "
+            "WHERE t.constraint_type = 'FOREIGN KEY' "
+            "GROUP BY c.table_schema, "
+            "         c.table_name, "
+            "         t2.table_name, "
+            "         t2.table_schema,"
+            "         c.constraint_name, "
+            "         r.unique_constraint_schema, "
+            "         r.unique_constraint_name "
+            "ORDER BY c.table_schema, "
+            "         c.table_name; ";
+    /* TODO - FINISH QUERY */
+
+}
+
+QStringList DDLGenerationPlugin::dropForeignKey(PGconn *connection, QString schema, QString table, QString foreign_key)
+{
+    const char *sql =
+            "select DISTINCT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' DROP CONSTRAINT ' || "
+            "       t.constraint_name || E';\n' "
+            "from information_schema.table_constraints t "
+            "join information_schema.key_column_usage c "
+            "     on c.constraint_name = t.constraint_name "
+            "     and c.constraint_schema = t.constraint_schema "
+            "     and c.constraint_name = t.constraint_name "
+            "where "
+            "    t.constraint_type = 'FOREIGN KEY' AND "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 AND "
+            "    c.constraint_name = $3 ";
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            foreign_key.toStdString().c_str());
+}
+
 QStringList DDLGenerationPlugin::createAllTriggers(PGconn *connection)
 {
     const char *sql =

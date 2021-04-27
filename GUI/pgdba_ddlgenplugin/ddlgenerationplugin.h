@@ -137,6 +137,8 @@ private:
     QStringList dropPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key);
     QStringList createUniqueKey(PGconn *connection, QString schema, QString table, QString unique_key);
     QStringList dropUniqueKey(PGconn *connection, QString schema, QString table, QString unique_key);
+    QStringList createForeignKey(PGconn *connection, QString schema, QString table, QString foreign_key);
+    QStringList dropForeignKey(PGconn *connection, QString schema, QString table, QString foreign_key);
 
     QStringList createAllTriggers(PGconn *connection);
     QStringList dropAllTriggers(PGconn *connection);
