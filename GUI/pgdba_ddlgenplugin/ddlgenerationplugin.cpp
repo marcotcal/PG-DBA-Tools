@@ -149,7 +149,7 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
     QString const_type;
 
     item_type = item->data(0, ROLE_ITEM_TYPE).toInt();
-    if (item_type = CONSTRAINTS_ITEM) {
+    if (item_type == CONSTRAINTS_ITEM) {
         const_type = item->data(0, ROLE_CONSTRAINT_TYPE).toString();
     }
 
@@ -996,7 +996,7 @@ QStringList DDLGenerationPlugin::createUniqueKey(PGconn *connection, QString sch
 {
     const char *sql =
             "SELECT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' ADD CONSTRAINT ' || "
-            "       t.constraint_name || ' UNIQUE KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E');\n' "
+            "       t.constraint_name || ' UNIQUE (' || array_to_string(array_agg(c.column_name::text),', ') || E');\n' "
             "FROM information_schema.table_constraints t "
             "JOIN information_schema.key_column_usage c "
             "     ON c.constraint_name = t.constraint_name "
@@ -1260,7 +1260,43 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
     QString colname;
     QString coltype;
     QString inherited;
+    QStringList keys;
     int tuples;
+
+    char *sql_pk =
+        "SELECT '   ,CONSTRAINT ' || "
+        "       t.constraint_name || ' PRIMARY KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E')\n' "
+        "FROM information_schema.table_constraints t "
+        "JOIN information_schema.key_column_usage c "
+        "     ON c.constraint_name = t.constraint_name "
+        "     AND c.constraint_schema = t.constraint_schema "
+        "     AND c.constraint_name = t.constraint_name "
+        "WHERE "
+        "    t.constraint_type = 'PRIMARY KEY' AND "
+        "    c.table_schema = $1  AND "
+        "    c.table_name = $2 "
+        "GROUP BY "
+        "    c.table_schema, "
+        "    c.table_name, "
+        "    t.constraint_name ";
+
+    char *sql_uk =
+        "SELECT '   ,CONSTRAINT ' || "
+        "       t.constraint_name || ' UNIQUE (' || array_to_string(array_agg(c.column_name::text),', ') || E')\n' "
+        "FROM information_schema.table_constraints t "
+        "JOIN information_schema.key_column_usage c "
+        "     ON c.constraint_name = t.constraint_name "
+        "     AND c.constraint_schema = t.constraint_schema "
+        "     AND c.constraint_name = t.constraint_name "
+        "WHERE "
+        "    t.constraint_type = 'UNIQUE' AND "
+        "    c.table_schema = $1  AND "
+        "    c.table_name = $2 "
+        "GROUP BY "
+        "    c.table_schema, "
+        "    c.table_name, "
+        "    t.constraint_name ";
+
 
     char *sql_col =
             "SELECT "
@@ -1317,6 +1353,18 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
 
         PQclear(res);
     }
+
+    keys = createObjectList(connection, sql_pk, 0, 2,
+                                     schema.toStdString().c_str(),
+                                     table_name.toStdString().c_str());
+
+    resp += keys;
+
+    keys = createObjectList(connection, sql_uk, 0, 2,
+                                     schema.toStdString().c_str(),
+                                     table_name.toStdString().c_str());
+
+    resp += keys;
 
     resp << ");\n";
 
