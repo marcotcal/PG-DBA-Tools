@@ -581,7 +581,6 @@ QStringList SQLGenerationPlugin::select_in_table(PGconn *connection, QString sch
     QString column_name;
     int tuples;
     QStringList stmt;
-    DlgInsert dlg;
 
     const char *sql_list_fields =
         "SELECT column_name, column_default, data_type, is_nullable "

@@ -48,7 +48,9 @@ public:
         DDL_CREATE_PRIMARY_KEY,
         DDL_DROP_PRIMARY_KEY,
         DDL_CREATE_UNIQUE_KEY,
-        DDL_DROP_UNIQUE_KEY
+        DDL_DROP_UNIQUE_KEY,
+        DDL_CREATE_FOREIGN_KEY,
+        DDL_DROP_FOREIGN_KEY
     };
     enum {
         DATABAE_ITEM,
@@ -65,6 +67,7 @@ public:
         TRIGGER_FUNCTIONS_ITEM,
         TRIGGER_FUNCTION_ITEM,
         CONSTRAINTS_ITEM,
+        CONSTRAINT_ITEM,
         TRIGGERS_ITEM,
         TRIGGER_ITEM,
         TABLE_COLUMNS_ITEM,

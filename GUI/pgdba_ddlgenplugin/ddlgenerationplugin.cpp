@@ -135,6 +135,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DROP_UNIQUE_KEY:
         resp = dropUniqueKey(connection, schema_name, table_name, constraint_name);
         break;
+    case DDL_CREATE_FOREIGN_KEY:
+        resp = createForeignKey(connection, schema_name, table_name, constraint_name);
+        break;
     default:        
         return QStringList();
     }
@@ -149,7 +152,7 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
     QString const_type;
 
     item_type = item->data(0, ROLE_ITEM_TYPE).toInt();
-    if (item_type == CONSTRAINTS_ITEM) {
+    if (item_type == CONSTRAINT_ITEM) {
         const_type = item->data(0, ROLE_CONSTRAINT_TYPE).toString();
     }
 
@@ -275,7 +278,8 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Create Table");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TABLE);
-    case CONSTRAINTS_ITEM:
+        break;
+    case CONSTRAINT_ITEM:
         if (const_type == "P") {
             list_item = new QListWidgetItem("Create Primary Key");
             list->addItem(list_item);
@@ -292,6 +296,14 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
             list_item = new QListWidgetItem("Drop Unique Key");
             list->addItem(list_item);
             list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_UNIQUE_KEY);
+        } else if (const_type == "F") {
+            list_item = new QListWidgetItem("Create Foreign Key");
+            list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FOREIGN_KEY);
+
+            list_item = new QListWidgetItem("Drop Foreign Key");
+            list->addItem(list_item);
+            list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FOREIGN_KEY);
         }
         break;
 
@@ -635,7 +647,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[0]);
         constraint->setIcon(0, QIcon(":/icons/images/icons/primary_key.png"));
-        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_ITEM_TYPE, CONSTRAINT_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
         constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[0]);
@@ -649,7 +661,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
         constraint->setIcon(0, QIcon(":/icons/images/icons/unique_key.png"));
-        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_ITEM_TYPE, CONSTRAINT_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
         constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[j]);
@@ -663,7 +675,7 @@ void DDLGenerationPlugin::processConstraints(QTreeWidgetItem *item)
         constraint = new QTreeWidgetItem();
         constraint->setText(0, constr[j]);
         constraint->setIcon(0, QIcon(":/icons/images/icons/foreign_key.png"));
-        constraint->setData(0, ROLE_ITEM_TYPE, FUNCTION_ITEM);
+        constraint->setData(0, ROLE_ITEM_TYPE, CONSTRAINT_ITEM);
         constraint->setData(0, ROLE_TABLE_NAME, table);
         constraint->setData(0, ROLE_SCHEMA_NAME, schema);
         constraint->setData(0, ROLE_CONSTRAINT_NAME, constr[j]);
@@ -950,7 +962,7 @@ QStringList DDLGenerationPlugin::createPrimaryKey(PGconn *connection, QString sc
 {
     const char *sql =
             "SELECT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' ADD CONSTRAINT ' || "
-            "       t.constraint_name || ' PRIMARY KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E');\n' "
+            "       t.constraint_name || ' PRIMARY KEY (' || string_agg(c.column_name::text,', ') || E');\n' "
             "FROM information_schema.table_constraints t "
             "JOIN information_schema.key_column_usage c "
             "     ON c.constraint_name = t.constraint_name "
@@ -996,7 +1008,7 @@ QStringList DDLGenerationPlugin::createUniqueKey(PGconn *connection, QString sch
 {
     const char *sql =
             "SELECT 'ALTER TABLE ' || c.table_schema || '.' || c.table_name || ' ADD CONSTRAINT ' || "
-            "       t.constraint_name || ' UNIQUE (' || array_to_string(array_agg(c.column_name::text),', ') || E');\n' "
+            "       t.constraint_name || ' UNIQUE (' || string_agg(c.column_name::text,', ') || E');\n' "
             "FROM information_schema.table_constraints t "
             "JOIN information_schema.key_column_usage c "
             "     ON c.constraint_name = t.constraint_name "
@@ -1041,12 +1053,31 @@ QStringList DDLGenerationPlugin::dropUniqueKey(PGconn *connection, QString schem
 QStringList DDLGenerationPlugin::createForeignKey(PGconn *connection, QString schema, QString table, QString foreign_key)
 {
     const char *sql=
-            "SELECT 'ALTER TABLE ' || c.table_schema || '.' ||c.table_name || ' ADD CONSTRAINT ' || "
-            "       c.constraint_name || E' FOREIGN KEY (' || string_agg(c.column_name, ', ') || E')\n' || "
-            "       'REFERENCES ' || "
-            "       t2.table_schema || '.' || t2.table_name, "
-            "       r.unique_constraint_schema, "
-            "       r.unique_constraint_name "
+            "SELECT 'ALTER TABLE ' || c.table_schema || '.' ||c.table_name || E'\n    ADD CONSTRAINT ' || "
+            "    c.constraint_name || E' FOREIGN KEY (' || string_agg(c.column_name, ', ') || E')\n' || "
+            "    '    REFERENCES ' || "
+            "    t2.table_schema || '.' || t2.table_name || "
+            "    ("
+            "       SELECT ' (' || string_agg(column_name,', ') || ')'  "
+            "       FROM information_schema.key_column_usage "
+            "       WHERE "
+            "           table_name = t2.table_name "
+            "           AND table_schema = r.unique_constraint_schema "
+            "           AND constraint_name = r.unique_constraint_name "
+            "       GROUP BY table_schema, table_name, constraint_name ) || E'\n' || "
+            "       '    ON UPDATE ' || r.update_rule || ' ON DELETE ' || r.delete_rule || "
+            "       ( "
+            "           CASE "
+            "               WHEN t.is_deferrable = 'YES' THEN 'E'\n    'DEFERRABLE ' "
+            "               ELSE '' "
+            "           END"
+            "       ) || ("
+            "           CASE "
+            "               WHEN t.initially_deferred = 'YES' THEN 'INITIALLY IMEDIATE '  "
+            "               ELSE '' "
+            "           END "
+            "       ) || E';\n'  "
+            ""
             "FROM information_schema.table_constraints t "
             "JOIN information_schema.key_column_usage c "
             "          ON t.constraint_schema = c.constraint_schema "
@@ -1057,17 +1088,28 @@ QStringList DDLGenerationPlugin::createForeignKey(PGconn *connection, QString sc
             "JOIN information_schema.table_constraints t2 "
             "          ON r.unique_constraint_schema = t2.constraint_schema "
             "          AND r.unique_constraint_name = t2.constraint_name "
-            "WHERE t.constraint_type = 'FOREIGN KEY' "
-            "GROUP BY c.table_schema, "
-            "         c.table_name, "
-            "         t2.table_name, "
-            "         t2.table_schema,"
-            "         c.constraint_name, "
-            "         r.unique_constraint_schema, "
-            "         r.unique_constraint_name "
+            "WHERE t.constraint_type = 'FOREIGN KEY' AND "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 AND "
+            "    c.constraint_name = $3 "
+            "GROUP BY "
+            "    c.table_schema, "
+            "    c.table_name, "
+            "    t2.table_name, "
+            "    t2.table_schema,"
+            "    c.constraint_name, "
+            "    r.unique_constraint_schema, "
+            "    r.unique_constraint_name, "
+            "    r.update_rule, "
+            "    r.delete_rule, "
+            "    t.is_deferrable, "
+            "    t.initially_deferred "
             "ORDER BY c.table_schema, "
             "         c.table_name; ";
-    /* TODO - FINISH QUERY */
+    return createObjectList(connection, sql, 0, 3,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str(),
+                            foreign_key.toStdString().c_str());
 
 }
 
