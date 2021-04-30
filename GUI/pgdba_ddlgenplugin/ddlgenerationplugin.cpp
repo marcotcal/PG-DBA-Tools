@@ -56,6 +56,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QString function_name = tree_item->data(0, ROLE_FUNCTION_NAME).toString();
     QString table_name = tree_item->data(0, ROLE_TABLE_NAME).toString();
     QString constraint_name = tree_item->data(0, ROLE_CONSTRAINT_NAME).toString();
+    QString trigger_name = tree_item->data(0, ROLE_TRIGGER_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -104,6 +105,30 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         break;
     case DDL_DISABLE_ALL_TRIGGERS:
         resp = disableAllTriggers(connection);
+        break;
+    case DDL_CREATE_TRIGGERS:
+        resp = createTriggers(connection, schema_name, table_name);
+        break;
+    case DDL_DROP_TRIGGERS:
+        resp = dropTriggers(connection, schema_name, table_name);
+        break;
+    case DDL_ENABLE_TRIGGERS:
+        resp = enableTriggers(connection, schema_name, table_name);
+        break;
+    case DDL_DISABLE_TRIGGERS:
+        resp = disableTriggers(connection, schema_name, table_name);
+        break;
+    case DDL_CREATE_TRIGGER:
+        resp = createTrigger(connection, schema_name, table_name, trigger_name);
+        break;
+    case DDL_DROP_TRIGGER:
+        resp = dropTrigger(connection, schema_name, table_name, trigger_name);
+        break;
+    case DDL_ENABLE_TRIGGER:
+        resp = enableTrigger(connection, schema_name, table_name, trigger_name);
+        break;
+    case DDL_DISABLE_TRIGGER:
+        resp = disableTrigger(connection, schema_name, table_name, trigger_name);
         break;
     case DDL_CREATE_FUNCTIONS:
         resp = createFunctions(connection, schema_name, false);
@@ -324,7 +349,40 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
             list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FOREIGN_KEY);
         }
         break;
+    case TRIGGERS_ITEM:
+        list_item = new QListWidgetItem("Create Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TRIGGERS);
 
+        list_item = new QListWidgetItem("Drop Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TRIGGERS);
+
+        list_item = new QListWidgetItem("Enable Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_ENABLE_TRIGGERS);
+
+        list_item = new QListWidgetItem("Disable Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DISABLE_TRIGGERS);
+        break;
+    case TRIGGER_ITEM:
+        list_item = new QListWidgetItem("Create Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TRIGGER);
+
+        list_item = new QListWidgetItem("Drop Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TRIGGER);
+
+        list_item = new QListWidgetItem("Enable Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_ENABLE_TRIGGER);
+
+        list_item = new QListWidgetItem("Disable Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DISABLE_TRIGGER);
+        break;
     }
 }
 
@@ -1329,6 +1387,118 @@ QStringList DDLGenerationPlugin::disableAllTriggers(PGconn *connection)
         "    tbl.relname !~ '^pg_' "
         "    AND tgisinternal = FALSE ";
     return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::createTriggers(PGconn *connection, QString schema, QString table)
+{
+    const char *sql =
+        "WITH "
+        "    triggers as ( "
+        "        SELECT "
+        "            pg_get_triggerdef(trg.oid) AS create_trigger "
+        "        FROM "
+        "            pg_trigger trg "
+        "            INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "            INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "        WHERE "
+        "            tbl.relname !~ '^pg_' "
+        "            AND tgisinternal = FALSE "
+        "            AND n.nspname = $1 "
+        "            AND tbl.relname = $2"
+        "    ) "
+        "    SELECT "
+        "        replace( "
+        "            replace( "
+        "                replace( "
+        "                    replace( "
+        "                        replace( "
+        "                            replace( "
+        "                                replace( "
+        "                                    replace( "
+        "                                        replace(create_trigger, 'BEFORE ', E'\n    BEFORE ' "
+        "                                        ), 'AFTER', E'\n    AFTER' "
+        "                                    ), 'ON ', E'\n    ON ' "
+        "                                ), 'FROM', E'\n    FROM' "
+        "                            ), 'NOT DEFERRABLE', E'\n    NOT DEFERRABLE' "
+        "                        ), 'INITIALLY', E'\n    INITIALLY' "
+        "                    ), 'FOR ', E'\n    FOR ' "
+        "                ), 'EXECUTE', E'\n    EXECUTE' "
+        "            ), 'WHEN ', E'\n    WHEN ' "
+        "        ) || E';\n\n' AS create_trigger "
+        "    FROM triggers t ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), table.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropTriggers(PGconn *connection, QString schema, QString table)
+{
+
+}
+
+QStringList DDLGenerationPlugin::enableTriggers(PGconn *connection, QString schema, QString table)
+{
+
+}
+
+QStringList DDLGenerationPlugin::disableTriggers(PGconn *connection, QString schema, QString table)
+{
+
+}
+
+QStringList DDLGenerationPlugin::createTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
+{
+    const char *sql =
+        "WITH "
+        "    triggers as ( "
+        "        SELECT "
+        "            pg_get_triggerdef(trg.oid) AS create_trigger "
+        "        FROM "
+        "            pg_trigger trg "
+        "            INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "            INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "        WHERE "
+        "            tbl.relname !~ '^pg_' "
+        "            AND tgisinternal = FALSE "
+        "            AND n.nspname = $1 "
+        "            AND tbl.relname = $2 "
+        "            ASD trg.tgname = $3 "
+        "    ) "
+        "    SELECT "
+        "        replace( "
+        "            replace( "
+        "                replace( "
+        "                    replace( "
+        "                        replace( "
+        "                            replace( "
+        "                                replace( "
+        "                                    replace( "
+        "                                        replace(create_trigger, 'BEFORE ', E'\n    BEFORE ' "
+        "                                        ), 'AFTER', E'\n    AFTER' "
+        "                                    ), 'ON ', E'\n    ON ' "
+        "                                ), 'FROM', E'\n    FROM' "
+        "                            ), 'NOT DEFERRABLE', E'\n    NOT DEFERRABLE' "
+        "                        ), 'INITIALLY', E'\n    INITIALLY' "
+        "                    ), 'FOR ', E'\n    FOR ' "
+        "                ), 'EXECUTE', E'\n    EXECUTE' "
+        "            ), 'WHEN ', E'\n    WHEN ' "
+        "        ) || E';\n\n' AS create_trigger "
+        "    FROM triggers t ";
+    return createObjectList(connection, sql, 0, 3, schema.toStdString().c_str(), table.toStdString().c_str(),
+                            trigger_name.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
+{
+
+}
+
+QStringList DDLGenerationPlugin::enableTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
+{
+
+}
+
+QStringList DDLGenerationPlugin::disableTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
+{
+
 }
 
 QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString schema, bool trigger)

@@ -85,6 +85,7 @@ public:
         ROLE_FUNCTION_NAME,
         ROLE_TABLE_COLUMN_NAME,
         ROLE_CONSTRAINT_NAME,
+        ROLE_TRIGGER_NAME
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
@@ -152,6 +153,16 @@ private:
     QStringList dropAllTriggers(PGconn *connection);
     QStringList enableAllTriggers(PGconn *connection);
     QStringList disableAllTriggers(PGconn *connection);
+
+    QStringList createTriggers(PGconn *connection, QString schema, QString table);
+    QStringList dropTriggers(PGconn *connection, QString schema, QString table);
+    QStringList enableTriggers(PGconn *connection, QString schema, QString table);
+    QStringList disableTriggers(PGconn *connection, QString schema, QString table);
+
+    QStringList createTrigger(PGconn *connection, QString schema, QString table, QString trigger_name);
+    QStringList dropTrigger(PGconn *connection, QString schema, QString table, QString trigger_name);
+    QStringList enableTrigger(PGconn *connection, QString schema, QString table, QString trigger_name);
+    QStringList disableTrigger(PGconn *connection, QString schema, QString table, QString trigger_name);
 
     QStringList createFunctions(PGconn *connection, QString schema, bool trigger);
     QStringList createFunction(PGconn *connection, QString schema, QString func_name);
