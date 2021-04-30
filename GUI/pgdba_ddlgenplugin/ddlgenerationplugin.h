@@ -45,6 +45,8 @@ public:
         DDL_DROP_FUNCTION,
         DDL_CREATE_TRIGGER_FUNCTIONS,
         DDL_CREATE_TABLE,
+        DDL_CREATE_CONSTRAINTS,
+        DDL_DROP_CONSTRAINTS,
         DDL_CREATE_PRIMARY_KEY,
         DDL_DROP_PRIMARY_KEY,
         DDL_CREATE_UNIQUE_KEY,
@@ -135,6 +137,9 @@ private:
     QStringList updateSequences(PGconn *connection, QString schema);
     QStringList resetSequence(PGconn *connection, QString schema, QString sequence);
     QStringList updateSequence(PGconn *connection, QString schema,QString sequence);
+
+    QStringList createConstraints(PGconn *connection, QString schema, QString table);
+    QStringList dropConstraints(PGconn *connection, QString schema, QString table);
 
     QStringList createPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key);
     QStringList dropPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key);

@@ -138,6 +138,15 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_CREATE_FOREIGN_KEY:
         resp = createForeignKey(connection, schema_name, table_name, constraint_name);
         break;
+    case DDL_DROP_FOREIGN_KEY:
+        resp = dropForeignKey(connection, schema_name, table_name, constraint_name);
+        break;
+    case DDL_CREATE_CONSTRAINTS:
+        resp = createConstraints(connection, schema_name, table_name);
+        break;
+    case DDL_DROP_CONSTRAINTS:
+        resp = dropConstraints(connection, schema_name, table_name);
+        break;
     default:        
         return QStringList();
     }
@@ -278,6 +287,15 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Create Table");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TABLE);
+        break;
+    case CONSTRAINTS_ITEM:
+        list_item = new QListWidgetItem("Create Constraints");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_CONSTRAINTS);
+
+        list_item = new QListWidgetItem("Drop Constraints");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_CONSTRAINTS);
         break;
     case CONSTRAINT_ITEM:
         if (const_type == "P") {
@@ -956,6 +974,102 @@ QStringList DDLGenerationPlugin::updateSequence(PGconn *connection, QString sche
             ).arg(schema).arg(sequence);
 
     return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
+}
+
+QStringList DDLGenerationPlugin::createConstraints(PGconn *connection, QString schema, QString table)
+{
+    const char *sql =
+            "SELECT DISTINCT c.table_schema, c.table_name, t.constraint_name, t.constraint_type "
+            "FROM information_schema.table_constraints t "
+            "JOIN information_schema.key_column_usage c "
+            "     ON c.constraint_name = t.constraint_name "
+            "     AND c.constraint_schema = t.constraint_schema "
+            "     AND c.constraint_name = t.constraint_name "
+            "WHERE "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 "
+            "ORDER BY  t.constraint_type, t.constraint_name ";
+    int tuples;
+    QStringList resp;
+    char *constr_name;
+    char *constr_type;
+
+    PGresult *res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
+                                     table.toStdString().c_str());
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        resp << PQerrorMessage(connection);
+        PQclear(res);
+    } else {
+
+        tuples = PQntuples(res);
+
+        for (int i = 0; i < tuples; i++) {
+            constr_name = PQgetvalue(res, i, 2);
+            constr_type = PQgetvalue(res, i, 3);
+
+            if (strcmp(constr_type, "PRIMARY KEY") == 0) {
+                resp = resp + createPrimaryKey(connection, schema, table, QString(constr_name));
+            } else if (strcmp(constr_type, "UNIQUE") == 0) {
+                resp = resp + createUniqueKey(connection, schema, table, QString(constr_name));
+            } else if (strcmp(constr_type, "FOREIGN KEY") == 0) {
+                resp = resp + createForeignKey(connection, schema, table, QString(constr_name));
+            }
+        }
+
+        PQclear(res);
+    }
+
+    return resp;
+}
+
+QStringList DDLGenerationPlugin::dropConstraints(PGconn *connection, QString schema, QString table)
+{
+    const char *sql =
+            "SELECT DISTINCT c.table_schema, c.table_name, t.constraint_name, t.constraint_type "
+            "FROM information_schema.table_constraints t "
+            "JOIN information_schema.key_column_usage c "
+            "     ON c.constraint_name = t.constraint_name "
+            "     AND c.constraint_schema = t.constraint_schema "
+            "     AND c.constraint_name = t.constraint_name "
+            "WHERE "
+            "    c.table_schema = $1  AND "
+            "    c.table_name = $2 "
+            "ORDER BY  t.constraint_type, t.constraint_name ";
+    int tuples;
+    QStringList resp;
+    char *constr_name;
+    char *constr_type;
+
+    PGresult *res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
+                                     table.toStdString().c_str());
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        resp << PQerrorMessage(connection);
+        PQclear(res);
+    } else {
+
+        tuples = PQntuples(res);
+
+        for (int i = 0; i < tuples; i++) {
+            constr_name = PQgetvalue(res, i, 2);
+            constr_type = PQgetvalue(res, i, 3);
+
+            if (strcmp(constr_type, "PRIMARY KEY") == 0) {
+                resp = resp + dropPrimaryKey(connection, schema, table, QString(constr_name));
+            } else if (strcmp(constr_type, "UNIQUE") == 0) {
+                resp = resp + dropUniqueKey(connection, schema, table, QString(constr_name));
+            } else if (strcmp(constr_type, "FOREIGN KEY") == 0) {
+                resp = resp + dropForeignKey(connection, schema, table, QString(constr_name));
+            }
+        }
+
+        PQclear(res);
+    }
+
+    return resp;
 }
 
 QStringList DDLGenerationPlugin::createPrimaryKey(PGconn *connection, QString schema, QString table, QString primary_key)
