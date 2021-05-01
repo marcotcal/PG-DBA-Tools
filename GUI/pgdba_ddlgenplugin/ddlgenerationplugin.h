@@ -52,7 +52,9 @@ public:
         DDL_CREATE_UNIQUE_KEY,
         DDL_DROP_UNIQUE_KEY,
         DDL_CREATE_FOREIGN_KEY,
-        DDL_DROP_FOREIGN_KEY
+        DDL_DROP_FOREIGN_KEY,
+        DDL_CREATE_TYPE,
+        DDL_DROP_TYPE
     };
     enum {
         DATABAE_ITEM,
@@ -73,7 +75,9 @@ public:
         TRIGGERS_ITEM,
         TRIGGER_ITEM,
         TABLE_COLUMNS_ITEM,
-        TABLE_COLUMN_ITEM
+        TABLE_COLUMN_ITEM,
+        TYPES_ITEM,
+        TYPE_ITEM
     };
     enum {
         ROLE_ITEM_TYPE = Qt::UserRole,
@@ -85,7 +89,8 @@ public:
         ROLE_FUNCTION_NAME,
         ROLE_TABLE_COLUMN_NAME,
         ROLE_CONSTRAINT_NAME,
-        ROLE_TRIGGER_NAME
+        ROLE_TRIGGER_NAME,
+        ROLE_TYPE_NAME
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
@@ -109,6 +114,7 @@ private:
     QStringList users(PGconn *connection);
     QStringList schemas(PGconn *connection);
     QStringList tables(PGconn *connection, QString schema);
+    QStringList types(PGconn *connection, QString schema);
     QStringList views(PGconn *connection, QString schema);
     QStringList sequences(PGconn *connection, QString schema);
     QStringList functions(PGconn *connection, QString schema);
@@ -119,6 +125,7 @@ private:
 
     void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);
+    void processTypes(QTreeWidgetItem *item);
     void processViews(QTreeWidgetItem *item);
     void processSequences(QTreeWidgetItem *item);
     void processFunctions(QTreeWidgetItem *item);
@@ -173,6 +180,9 @@ private:
 
     QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 
+    QStringList createAllTypes(PGconn *connection);
+    QStringList createTypes(PGconn *connection, QString schema);
+    QStringList createType(PGconn *connection, QString schema, QString type_name);
 };
 
 #endif // DDLGENERATIONPLUGIN_H

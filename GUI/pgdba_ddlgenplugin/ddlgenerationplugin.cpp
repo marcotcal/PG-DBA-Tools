@@ -417,6 +417,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
     case TABLE_COLUMNS_ITEM:
         if(item->childCount() == 0) processTableColumns(item);
         break;
+    case TYPES_ITEM:
+        if(item->childCount() == 0) processTypes(item);
+        break;
     }
 }
 
@@ -516,6 +519,7 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     QTreeWidgetItem *function_node;
     QTreeWidgetItem *sequence_node;
     QTreeWidgetItem *trigger_function_node;
+    QTreeWidgetItem *type_node;
 
     if (item->childCount() > 0)
         return;
@@ -526,6 +530,13 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     sequence_node->setData(0, ROLE_ITEM_TYPE, SEQUENCES_ITEM);
     sequence_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
     item->addChild(sequence_node);
+
+    type_node = new QTreeWidgetItem();
+    type_node->setText(0, "Types");
+    type_node->setIcon(0, QIcon(":/icons/images/icons/types.png"));
+    type_node->setData(0, ROLE_ITEM_TYPE, TYPES_ITEM);
+    type_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+    item->addChild(type_node);
 
     function_node = new QTreeWidgetItem();
     function_node->setText(0, "Functions");
@@ -605,6 +616,28 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
         columns_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
         columns_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
         table->addChild(columns_node);
+
+    }
+}
+
+void DDLGenerationPlugin::processTypes(QTreeWidgetItem *item)
+{
+    QTreeWidgetItem *type;
+    QStringList type_list;
+
+    PGconn *connection = trees[item->treeWidget()];
+
+    type_list = types(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
+
+    for(int j=0; j < type_list.count(); j++) {
+
+        type = new QTreeWidgetItem();
+        type->setText(0, type_list[j]);
+        type->setIcon(0, QIcon(":/icons/images/icons/type.png"));
+        type->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        type->setData(0, Qt::UserRole, TYPE_ITEM);
+        type->setData(0, ROLE_TABLE_NAME, type_list[j]);
+        item->addChild(type);
 
     }
 }
@@ -792,6 +825,7 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
         trigger->setData(0, ROLE_ITEM_TYPE, TRIGGER_ITEM);
         trigger->setData(0, ROLE_TABLE_NAME, table);
         trigger->setData(0, ROLE_SCHEMA_NAME, schema);
+        trigger->setData(0, ROLE_TRIGGER_NAME, trigger_list[j]);
         item->addChild(trigger);
     }
 
@@ -1431,17 +1465,53 @@ QStringList DDLGenerationPlugin::createTriggers(PGconn *connection, QString sche
 
 QStringList DDLGenerationPlugin::dropTriggers(PGconn *connection, QString schema, QString table)
 {
-
+    const char *sql =
+        "SELECT "
+        "    'DROP TRIGGER ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE "
+        "    AND n.nspname = $1 "
+        "    AND tbl.relname = $2";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), table.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::enableTriggers(PGconn *connection, QString schema, QString table)
 {
-
+    const char *sql =
+        "SELECT  "
+        "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' ENABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE "
+        "    AND n.nspname = $1 "
+        "    AND tbl.relname = $2";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), table.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::disableTriggers(PGconn *connection, QString schema, QString table)
 {
-
+    const char *sql =
+        "SELECT  "
+        "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' DISABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE "
+        "    AND n.nspname = $1 "
+        "    AND tbl.relname = $2";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), table.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
@@ -1460,7 +1530,7 @@ QStringList DDLGenerationPlugin::createTrigger(PGconn *connection, QString schem
         "            AND tgisinternal = FALSE "
         "            AND n.nspname = $1 "
         "            AND tbl.relname = $2 "
-        "            ASD trg.tgname = $3 "
+        "            AND trg.tgname = $3 "
         "    ) "
         "    SELECT "
         "        replace( "
@@ -1488,17 +1558,59 @@ QStringList DDLGenerationPlugin::createTrigger(PGconn *connection, QString schem
 
 QStringList DDLGenerationPlugin::dropTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
 {
-
+    const char *sql =
+        "SELECT "
+        "    'DROP TRIGGER ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE "
+        "    AND n.nspname = $1 "
+        "    AND tbl.relname = $2"
+        "    AND trg.tgname = $3 ";
+    return createObjectList(connection, sql, 0, 3, schema.toStdString().c_str(), table.toStdString().c_str(),
+                            trigger_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::enableTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
 {
-
+    const char *sql =
+        "SELECT  "
+        "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' ENABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE "
+        "    AND n.nspname = $1 "
+        "    AND tbl.relname = $2"
+        "    AND trg.tgname = $3 ";
+    return createObjectList(connection, sql, 0, 3, schema.toStdString().c_str(), table.toStdString().c_str(),
+                            trigger_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::disableTrigger(PGconn *connection, QString schema, QString table, QString trigger_name)
 {
-
+    const char *sql =
+        "SELECT  "
+        "    'ALTER TABLE ' || n.nspname || '.' || tbl.relname || ' DISABLE TRIGGER ' || trg.tgname || E';\n' AS disable_trigger "
+        "FROM "
+        "    pg_trigger trg "
+        "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
+        "    INNER JOIN pg_namespace n ON tbl.relnamespace = n.oid "
+        "WHERE "
+        "    tbl.relname !~ '^pg_' "
+        "    AND tgisinternal = FALSE "
+        "    AND n.nspname = $1 "
+        "    AND tbl.relname = $2"
+        "    AND trg.tgname = $3 ";
+    return createObjectList(connection, sql, 0, 3, schema.toStdString().c_str(), table.toStdString().c_str(),
+                            trigger_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString schema, bool trigger)
@@ -1757,6 +1869,42 @@ QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema,
     return QStringList();
 }
 
+QStringList DDLGenerationPlugin::createAllTypes(PGconn *connection)
+{
+    const char *sql =
+            "SELECT t.typname "
+            "FROM "
+            "    pg_type t "
+            "    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace "
+            "WHERE "
+            "    ( "
+            "        t.typrelid = 0 OR "
+            "        ( "
+            "            SELECT c.relkind = 'c' "
+            "            FROM pg_catalog.pg_class c "
+            "            WHERE c.oid = t.typrelid "
+            "        ) "
+            "    ) "
+            "   AND NOT EXISTS ( "
+            "       SELECT 1 "
+            "       FROM pg_catalog.pg_type el "
+            "       WHERE el.oid = t.typelem AND el.typarray = t.oid "
+            "   ) "
+            "   AND n.nspname NOT IN ('pg_catalog', 'information_schema') ";
+
+    return createObjectList(connection, sql, 0, 0);
+}
+
+QStringList DDLGenerationPlugin::createTypes(PGconn *connection, QString schema)
+{
+
+}
+
+QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, QString type_name)
+{
+
+}
+
 QStringList DDLGenerationPlugin::users(PGconn *connection)
 {
     const char *sql =
@@ -1804,6 +1952,34 @@ QStringList DDLGenerationPlugin::tables(PGconn *connection, QString schema)
             "    AND schemaname != 'information_schema' "
             "    AND schemaname = $1 ";
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::types(PGconn *connection, QString schema)
+{
+    const char *sql =
+            "SELECT t.typname "
+            "FROM "
+            "    pg_type t "
+            "    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace "
+            "WHERE "
+            "    ( "
+            "        t.typrelid = 0 OR "
+            "        ( "
+            "            SELECT c.relkind = 'c' "
+            "            FROM pg_catalog.pg_class c "
+            "            WHERE c.oid = t.typrelid "
+            "        ) "
+            "    ) "
+            "   AND NOT EXISTS ( "
+            "       SELECT 1 "
+            "       FROM pg_catalog.pg_type el "
+            "       WHERE el.oid = t.typelem AND el.typarray = t.oid "
+            "   ) "
+            "   AND n.nspname = $1 ";
+
+    /* AND n.nspname NOT IN ('pg_catalog', 'information_schema') */
+
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::views(PGconn *connection, QString schema)
