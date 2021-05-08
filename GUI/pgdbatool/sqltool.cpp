@@ -483,6 +483,11 @@ PGconn *SqlTool::getPostgresConnection() {
     return conn;
 }
 
+PGconn *SqlTool::getPostgresServiceConnection()
+{
+    return srv_conn;
+}
+
 bool SqlTool::isRedoAvailable()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());
@@ -869,7 +874,6 @@ void SqlTool::databaseConnect() {
     QString conn_str;
     QString database_name;
     QStringList schemas;
-    PluginTabWidget *tree;
     int connection_index;
 
     switch(mode) {
@@ -907,6 +911,7 @@ void SqlTool::databaseConnect() {
                 ->connectStr(ui->ed_user->text(), ui->ed_password->text(), database_name);
     }
 
+    srv_conn = PQconnectdb(conn_str.toStdString().c_str());
     conn = PQconnectdb(conn_str.toStdString().c_str());
 
     if (PQstatus(conn) == CONNECTION_OK) {
@@ -941,6 +946,7 @@ void SqlTool::databaseConnect() {
 void SqlTool::databaseDisconnect() {
 
     delete conn_settings;
+    PQfinish(srv_conn);
     PQfinish(conn);
     ui->database_list->setEnabled(true);
     ui->connection_list->setEnabled(true);
