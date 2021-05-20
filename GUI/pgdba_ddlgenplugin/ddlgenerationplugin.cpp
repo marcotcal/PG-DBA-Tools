@@ -184,6 +184,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DROP_TYPE:
 
         break;
+    case DDL_DESCRIBE_TABLE_FIELDS:
+        resp = describeTableFields(connection, schema_name, table_name);
+        break;
     default:        
         return QStringList();
     }
@@ -324,6 +327,10 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Create Table");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TABLE);
+
+        list_item = new QListWidgetItem("Describe Table Fields");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DESCRIBE_TABLE_FIELDS);
         break;
     case CONSTRAINTS_ITEM:
         list_item = new QListWidgetItem("Create Constraints");
@@ -539,6 +546,85 @@ PGresult *DDLGenerationPlugin::createObjectList(PGconn *connection, const char *
     }
 
     return nullptr;
+}
+
+QStringList DDLGenerationPlugin::formatOutputToTable(PGresult *res, QString title, bool comments)
+{
+    int tuples = PQntuples(res);
+    int columns = PQnfields(res);
+    QString line_separator = "";
+    QList<QVariant> row;
+    QList<QList<QVariant>> rows;
+    QList<QString> fields;
+    QList<int> max_field_lengths;
+    QStringList resp;
+    QString line;
+
+    if(comments)
+        resp << "/**\n";
+
+    if (title.length() != 0) {
+        resp << (comments ? "  " : "") + title + "\n";
+    }
+
+    // get field names
+    for (int i = 0; i < columns; i++) {
+        fields.append(QString::fromStdString(PQfname(res, i)));
+        max_field_lengths.append(QString::fromStdString(PQfname(res, i)).length());
+    }
+
+    // get values
+    for (int i = 0; i < tuples; i++)
+    {
+        row.clear();
+        for (int j = 0; j < columns; j++) {
+            QVariant value = QString::fromStdString(PQgetvalue(res, i, j));
+            row.append(value);
+        }
+        rows.append(row);
+    }
+
+    for (int c = 0; c < fields.count(); c++) {
+        for(int r = 0; r < rows.count(); r++) {
+            if (max_field_lengths.at(c) < rows.at(r).at(c).toString().length())
+                max_field_lengths.replace(c, rows.at(r).at(c).toString().length());
+        }
+    }
+
+    line_separator += "+";
+    for(int c = 0; c < fields.count(); c++) {
+        QString rep = "-";
+        line_separator += rep.repeated(max_field_lengths.at(c))+"+";
+    }
+
+    line_separator += "\n";
+
+    resp << (comments ? "  " : "") + line_separator;
+
+    line = (comments ? "  |" : "|");
+    for(int c = 0; c < fields.count(); c++) {
+        line += fields.at(c).leftJustified(max_field_lengths.at(c)) + "|";
+    }
+    line += "\n";
+    resp << line;
+
+    resp << (comments ? "  " : "") + line_separator;
+
+    for (int r = 0; r < rows.count(); r++) {
+        line = (comments ? "  |" : "|");
+        for (int c = 0; c < rows.at(r).count(); c++) {
+            line += rows.at(r).at(c).toString().leftJustified(max_field_lengths.at(c)) + "|";
+        }
+        line += "\n";
+        resp << line;
+    }
+
+    resp << (comments ? "  " : "") + line_separator;
+
+    if(comments)
+        resp << "**/\n";
+
+    return resp;
 }
 
 void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
@@ -1966,6 +2052,45 @@ QStringList DDLGenerationPlugin::dropTypes(PGconn *connection, QString schema)
 QStringList DDLGenerationPlugin::dropType(PGconn *connection, QString schema, QString type_name)
 {
 
+}
+
+QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString schema, QString table)
+{
+    QStringList resp;
+
+    const char *sql =
+        "SELECT "
+        "    a.attname AS \"Field Name\", "
+        "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS \"Type\",  "
+        "    EXISTS ( "
+        "      SELECT 1 "
+        "      FROM pg_inherits AS i "
+        "         JOIN pg_attribute AS a2 "
+        "            ON i.inhparent = a2.attrelid "
+        "         WHERE i.inhrelid = a.attrelid "
+        "           AND a.attname = a2.attname "
+        "   ) AS \"Inherited\", "
+        "   a.attnotnull AS \"Not Null\", "
+        "   d.adsrc AS \"Default\" "
+        "FROM "
+        "    pg_catalog.pg_attribute a "
+        "    INNER JOIN pg_catalog.pg_class c ON a.attrelid = c.oid "
+        "    INNER JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace "
+        "    LEFT  JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum "
+        "WHERE "
+        "    a.attnum > 0 "
+        "    AND NOT a.attisdropped "
+        "    AND n.nspname = $1 "
+        "    AND c.relname = $2 ";
+
+    PGresult *res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
+                                     table.toStdString().c_str());
+
+    resp = formatOutputToTable(res, QString("Table: %1.%2").arg(schema).arg(table), true);
+
+    PQclear(res);
+
+    return resp;
 }
 
 QStringList DDLGenerationPlugin::users(PGconn *connection)

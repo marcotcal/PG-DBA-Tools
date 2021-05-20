@@ -56,7 +56,8 @@ public:
         DDL_CREATE_TYPES,
         DDL_DROP_TYPES,
         DDL_CREATE_TYPE,
-        DDL_DROP_TYPE
+        DDL_DROP_TYPE,
+        DDL_DESCRIBE_TABLE_FIELDS
     };
     enum {
         DATABAE_ITEM,
@@ -112,7 +113,7 @@ private:
 
     QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
     PGresult *createObjectList(PGconn *connection, const char *sql, int param_count, ...);
-
+    QStringList formatOutputToTable(PGresult *res, QString title, bool comments = true);
     QStringList users(PGconn *connection);
     QStringList schemas(PGconn *connection);
     QStringList tables(PGconn *connection, QString schema);
@@ -186,8 +187,12 @@ private:
 
     QStringList createTypes(PGconn *connection, QString schema);
     QStringList createType(PGconn *connection, QString schema, QString type_name);
+
     QStringList dropTypes(PGconn *connection, QString schema);
     QStringList dropType(PGconn *connection, QString schema, QString type_name);
+
+    QStringList describeTableFields(PGconn *connection, QString schema, QString table);
+
 };
 
 #endif // DDLGENERATIONPLUGIN_H
