@@ -53,6 +53,8 @@ public:
         DDL_DROP_UNIQUE_KEY,
         DDL_CREATE_FOREIGN_KEY,
         DDL_DROP_FOREIGN_KEY,
+        DDL_CREATE_TYPES,
+        DDL_DROP_TYPES,
         DDL_CREATE_TYPE,
         DDL_DROP_TYPE
     };
@@ -181,8 +183,11 @@ private:
     QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 
     QStringList createAllTypes(PGconn *connection);
+
     QStringList createTypes(PGconn *connection, QString schema);
     QStringList createType(PGconn *connection, QString schema, QString type_name);
+    QStringList dropTypes(PGconn *connection, QString schema);
+    QStringList dropType(PGconn *connection, QString schema, QString type_name);
 };
 
 #endif // DDLGENERATIONPLUGIN_H

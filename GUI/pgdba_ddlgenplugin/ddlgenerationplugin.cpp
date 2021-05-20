@@ -172,6 +172,18 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DROP_CONSTRAINTS:
         resp = dropConstraints(connection, schema_name, table_name);
         break;
+    case DDL_CREATE_TYPES:
+
+        break;
+    case DDL_CREATE_TYPE:
+
+        break;
+    case DDL_DROP_TYPES:
+
+        break;
+    case DDL_DROP_TYPE:
+
+        break;
     default:        
         return QStringList();
     }
@@ -382,6 +394,24 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Disable Trigger");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DISABLE_TRIGGER);
+        break;
+    case TYPES_ITEM:
+        list_item = new QListWidgetItem("Create Types");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TYPES);
+
+        list_item = new QListWidgetItem("Drop Types");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TYPES);
+        break;
+    case TYPE_ITEM:
+        list_item = new QListWidgetItem("Create Type");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TYPE);
+
+        list_item = new QListWidgetItem("Drop Type");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TYPE);
         break;
     }
 }
@@ -1924,6 +1954,16 @@ QStringList DDLGenerationPlugin::createTypes(PGconn *connection, QString schema)
 }
 
 QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, QString type_name)
+{
+
+}
+
+QStringList DDLGenerationPlugin::dropTypes(PGconn *connection, QString schema)
+{
+
+}
+
+QStringList DDLGenerationPlugin::dropType(PGconn *connection, QString schema, QString type_name)
 {
 
 }
