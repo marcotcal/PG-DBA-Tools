@@ -152,6 +152,7 @@ public:
     int getSelectedConnectionIndex();
 
     PGconn *getPostgresConnection();
+    PGconn *getPostgresServiceConnection();
 
     // Methods related to menu edit
     // All this methods will get info from the active editor
@@ -241,7 +242,10 @@ private:
 
     ConnectionsData &connections;
     ProjectData &project;
+
     PGconn *conn;
+    PGconn *srv_conn;
+
     QString default_path;
     QString group_name;
     QString group_file_name;

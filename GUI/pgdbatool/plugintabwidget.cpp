@@ -71,7 +71,7 @@ void PluginTabWidget::createTree()
         tree = dynamic_cast<QTreeWidget *>(widget(index));
 
         if (sql_tool->connected()) {
-            connection = sql_tool->getPostgresConnection();
+            connection = sql_tool->getPostgresServiceConnection();
             element->getInterface()->createTree(connection, tree);
         }
     }
