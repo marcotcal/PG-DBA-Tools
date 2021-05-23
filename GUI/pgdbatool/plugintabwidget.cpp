@@ -99,7 +99,7 @@ void PluginTabWidget::run_selected_plugin(int item)
         response = tree->getElement()->getInterface()->run(
                     tree->firstSelected(), sql_tool->getPostgresConnection(), item);
         foreach(QString str, response) {
-            sql_tool->getCurrentEditor()->insertAt(QString(" ").repeated(index) + str, line, -1);
+            sql_tool->getCurrentEditor()->insertAt(QString(" ").repeated(index) + str, line, 0);
             line++;
         }
     }

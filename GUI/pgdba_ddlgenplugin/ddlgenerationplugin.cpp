@@ -57,6 +57,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QString table_name = tree_item->data(0, ROLE_TABLE_NAME).toString();
     QString constraint_name = tree_item->data(0, ROLE_CONSTRAINT_NAME).toString();
     QString trigger_name = tree_item->data(0, ROLE_TRIGGER_NAME).toString();
+    QString type_name = tree_item->data(0, ROLE_TYPE_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -176,13 +177,13 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
 
         break;
     case DDL_CREATE_TYPE:
-
+        resp = createType(connection, "pg_catalog", "bool");
         break;
     case DDL_DROP_TYPES:
-
+        resp = dropTypes(connection, schema_name);
         break;
     case DDL_DROP_TYPE:
-
+        resp = dropType(connection, schema_name, type_name);
         break;
     case DDL_DESCRIBE_TABLE_FIELDS:
         resp = describeTableFields(connection, schema_name, table_name);
@@ -751,8 +752,8 @@ void DDLGenerationPlugin::processTypes(QTreeWidgetItem *item)
         type->setText(0, type_list[j]);
         type->setIcon(0, QIcon(":/icons/images/icons/type.png"));
         type->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
-        type->setData(0, Qt::UserRole, TYPE_ITEM);
-        type->setData(0, ROLE_TABLE_NAME, type_list[j]);
+        type->setData(0, Qt::UserRole, TYPE_ITEM);        
+        type->setData(0, ROLE_TYPE_NAME, type_list[j]);
         item->addChild(type);
 
     }
@@ -1583,7 +1584,7 @@ QStringList DDLGenerationPlugin::dropTriggers(PGconn *connection, QString schema
 {
     const char *sql =
         "SELECT "
-        "    'DROP TRIGGER ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
+        "    'DROP TRIGGER IF EXISTS ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
         "FROM "
         "    pg_trigger trg "
         "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
@@ -1676,7 +1677,7 @@ QStringList DDLGenerationPlugin::dropTrigger(PGconn *connection, QString schema,
 {
     const char *sql =
         "SELECT "
-        "    'DROP TRIGGER ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
+        "    'DROP TRIGGER IF EXISTS ' || trg.tgname || ' ON ' || n.nspname || '.' || tbl.relname || E';\n' AS drop_trigger "
         "FROM "
         "    pg_trigger trg "
         "    INNER JOIN pg_class tbl ON trg.tgrelid = tbl.oid "
@@ -2041,17 +2042,191 @@ QStringList DDLGenerationPlugin::createTypes(PGconn *connection, QString schema)
 
 QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, QString type_name)
 {
+    QStringList resp;
+    int tuples;
+    QString t_type;
+    QString t_input;
+    QString t_output;
+    QString t_receive;
+    QString t_send;
+    QString t_analyse;
+    QString t_category;
+    QString t_preferred;
+    QString t_passed_by_val;
+    QString t_type_default_bin;
+    QString t_default;
+    QString t_length;
+    QString t_align;
+    QString t_storage;
 
+    const char *sql =
+        "SELECT"
+        "   n.nspname, "
+        "   t.typtype, "
+        "   t.typinput, "
+        "   t.typoutput, "
+        "   t.typreceive, "
+        "   t.typsend, "
+        "   t.typanalyze, "
+        "   t.typcategory, "
+        "   t.typispreferred, "
+        "   t.typbyval, "
+        "   t.typdefaultbin, "
+        "   t.typdefault, "
+        "   t.typlen, "
+        "   t.typalign, "
+        "   t.typstorage "
+        "FROM "
+        "   pg_type t "
+        "   LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace "
+        "WHERE "
+        "   n.nspname = $1 "
+        "   AND t.typname = $2 ";
+
+    PGresult *res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
+                                     type_name.toStdString().c_str());
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        resp << PQerrorMessage(connection);
+        PQclear(res);
+    } else {
+
+        tuples = PQntuples(res);
+
+        if (tuples == 0)  {
+            PQclear(res);
+            return resp;
+        }
+
+        for (int i = 0; i < tuples; i++) {
+
+            t_type = QString::fromStdString(PQgetvalue(res, i, 1));
+            t_input = QString::fromStdString(PQgetvalue(res, i, 2));
+            t_output = QString::fromStdString(PQgetvalue(res, i, 3));
+            t_receive = QString::fromStdString(PQgetvalue(res, i, 4));
+            t_send = QString::fromStdString(PQgetvalue(res, i, 5));
+            t_analyse = QString::fromStdString(PQgetvalue(res, i, 6));
+            t_category = QString::fromStdString(PQgetvalue(res, i, 7));
+            t_preferred = QString::fromStdString(PQgetvalue(res, i, 8));
+            if (t_preferred == "t")
+                t_preferred = "TRUE";
+            else
+                t_preferred = "FALSE";
+            t_passed_by_val = QString::fromStdString(PQgetvalue(res, i, 9));
+
+            if (!PQgetisnull(res, i, 10)) {
+                t_type_default_bin = QString::fromStdString(PQgetvalue(res, i, 10));
+                t_default = QString::fromStdString(PQgetvalue(res, i, 11));
+            } else {
+                t_default = "''";
+            }
+
+            t_length = QString::fromStdString(PQgetvalue(res, i, 12));
+            t_align = QString::fromStdString(PQgetvalue(res, i, 13));
+            if (t_align == "c")
+                t_align = "char";
+            else if (t_align == "s")
+                t_align = "int2";
+            else if (t_align == "i")
+                t_align = "int4";
+            else if (t_align == "s")
+                t_align = "double";
+
+            t_storage = QString::fromStdString(PQgetvalue(res, i, 14));
+
+            if (t_storage == "p")
+                t_storage = "PLAIN";
+            else if (t_storage == "e")
+                t_storage = "EXTERNAL";
+            else if (t_storage == "m")
+                t_storage = "MAIN";
+            else if (t_storage == "x")
+                t_storage = "EXTENDED";
+            /*
+             * Check type to format the output
+             *      b = base type;
+             *      c = composit type;
+             *      d = domain type;
+             *      e = enum type;
+             *      p = pseudo type;
+             */
+            if (t_type == "b") {
+                resp << "CREATE TYPE " + type_name + "(\n";
+                resp << "   INPUT=" + t_input + ",\n";
+                resp << "   OUTPUT=" + t_output + "\n";
+                resp << "   RECEIVE=" + t_receive + ",\n";
+                resp << "   SEND=" + t_send + ",\n";
+                resp << "   ANALYSE=" + t_analyse + ",\n";
+                resp << "   CATEGORY=" + t_category + ",\n";
+                resp << "   PREFERRED=" + t_preferred + ",\n";
+                if (t_passed_by_val == "t") {
+                    resp << "   PASSEDBYVALUE,\n";
+                }
+                resp << "   DEFAULT=" + t_default + ",\n";
+                resp << "   INTERNAL LENGTH=" + t_length + ",\n";
+                resp << "   ALIGNMENT=" + t_align + ",\n";
+                resp << "   STORAGE=" + t_storage + "\n";
+                resp << ");\n";
+
+            }
+        }
+
+        PQclear(res);
+    }
+
+    return resp;
 }
+
 
 QStringList DDLGenerationPlugin::dropTypes(PGconn *connection, QString schema)
 {
-
+    const char *sql =
+            "SELECT 'DROP TYPE IF EXISTS ' || n.nspname  || '.' || t.typname || E';\n' "
+            "FROM "
+            "    pg_type t "
+            "    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace "
+            "WHERE ( "
+            "        t.typrelid = 0 OR ( "
+            "            SELECT c.relkind = 'c' "
+            "            FROM pg_catalog.pg_class c "
+            "            WHERE c.oid = t.typrelid "
+            "        ) "
+            "    ) "
+            "    AND NOT EXISTS ( "
+            "        SELECT 1 "
+            "        FROM pg_catalog.pg_type el "
+            "        WHERE "
+            "            el.oid = t.typelem AND el.typarray = t.oid "
+            "    ) "
+            "    AND n.nspname NOT IN ('pg_catalog', 'information_schema') "
+            "    AND n.nspname = $1 ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::dropType(PGconn *connection, QString schema, QString type_name)
 {
-
+    const char *sql =
+            "SELECT 'DROP TYPE IF EXISTS ' || n.nspname  || '.' || t.typname || E';\n' "
+            "FROM "
+            "    pg_type t "
+            "    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace "
+            "WHERE ( "
+            "        t.typrelid = 0 OR ( "
+            "            SELECT c.relkind = 'c' "
+            "            FROM pg_catalog.pg_class c "
+            "            WHERE c.oid = t.typrelid "
+            "        ) "
+            "    ) "
+            "    AND NOT EXISTS ( "
+            "        SELECT 1 "
+            "        FROM pg_catalog.pg_type el "
+            "        WHERE "
+            "            el.oid = t.typelem AND el.typarray = t.oid "
+            "    ) "
+            "    AND n.nspname NOT IN ('pg_catalog', 'information_schema') "
+            "    AND n.nspname = $1 AND t.typname = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), type_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString schema, QString table)
