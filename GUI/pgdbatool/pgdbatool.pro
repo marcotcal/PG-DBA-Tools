@@ -12,6 +12,11 @@ TARGET = pgdbatool
 
 TEMPLATE = app
 
+# This flag is necessary to mark the program as an executable.
+# The behavior is occurring because newer ubuntu distros set GCC default link flag -pie, which marks
+# e_type as ET_DYN on the binary file. Consequently, the Operating System recognizes as Shared Library.
+QMAKE_LFLAGS += -no-pie
+
 DEFINES += QT_DEPRECATED_WARNINGS
 
 # disables all the APIs deprecated before Qt 6.0.0
