@@ -14,9 +14,6 @@ TEMPLATE = app
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-# disables all the APIs deprecated before Qt 6.0.0
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
-
 CONFIG += c++11
 
 CONFIG(debug, debug|release) {
@@ -25,16 +22,6 @@ CONFIG(debug, debug|release) {
 
 CONFIG(release, debug|release) {
     DESTDIR = ../build/release
-}
-
-win32-* {
-    TUNNELS=FALSE
-} else {
-    TUNNELS=TRUE
-}
-
-contains(TUNNELS, TRUE) {
-    DEFINES += USE_SSH_TUNNELS
 }
 
 OBJECTS_DIR = $$DESTDIR/.obj
@@ -150,11 +137,6 @@ FORMS += \
     frmprojectscript.ui \
     dlgplugins.ui
 
-contains(TUNNELS, TRUE) {
-    SOURCES += sshconnector.cpp
-    HEADERS += sshconnector.h
-}
-
 INCLUDEPATH += ../pgdba_generators
 
 LIBS += -lqscintilla2_qt5
@@ -164,10 +146,7 @@ unix:INCLUDEPATH += $$system(pg_config --includedir)
 unix:LIBS += -L$$system(pg_config --libdir)
 unix:LIBS +=  -lpq
 
-#include libssh2
-contains(TUNNELS, TRUE) {
-    unix:LIBS += -lssh2
-}
+# Include QSsh Libs
 
 RESOURCES += \
     pgdbatool.qrc
@@ -175,9 +154,3 @@ RESOURCES += \
 DISTFILES += \
     connections.xml \
     modelo.xml
-
-contains(TUNNELS, TRUE) {
-    message("compiled using ssh tunneling")
-} else {
-    message("compiled without using ssh tunneling")
-}
