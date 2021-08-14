@@ -1,5 +1,5 @@
 #include "htmloutput.h"
-#include <qwebengineview.h>
+#include <qtextbrowser.h>
 
 HtmlOutput::HtmlOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent) :
     ResultOutput(output, messages, parent)
@@ -13,8 +13,8 @@ void HtmlOutput::generateOutput(PGresult *res)
     int columns = PQnfields(res);
     QList<QVariant> row;
     QList<QList<QVariant>> rows;
-    QList<QString> fields;
-    QWebEngineView *view = dynamic_cast<QWebEngineView *>(output);
+    QList<QString> fields;    
+    QTextBrowser *view = dynamic_cast<QTextBrowser *>(output);
     QString html = "";
 
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
@@ -37,7 +37,7 @@ void HtmlOutput::generateOutput(PGresult *res)
         rows.append(row);
     }
 
-    html += "<html><body>";
+    html += "<html>";
     html += "<head>"
             "<style>"
             "table {"
@@ -49,7 +49,9 @@ void HtmlOutput::generateOutput(PGresult *res)
             "table, td, th {"
             "  border: 1px solid #cccccc;"
             "}"
-            "</style>";
+            "</style>"
+            "</head>"
+            "<body>";
 
     QMap<QString, QVariant>::iterator it = getInformationMap().begin();
 
@@ -97,11 +99,11 @@ void HtmlOutput::generateOutput(PGresult *res)
 
     html += "</table></body></html>";
 
-    view->page()->setHtml(html);
+    view->setHtml(html);
 }
 
 void HtmlOutput::clearOutput()
 {
-    QWebEngineView *view = dynamic_cast<QWebEngineView *>(output);
-    view->page()->setHtml("<html><body></body></html>");
+    QTextBrowser *view = dynamic_cast<QTextBrowser *>(output);
+    view->setHtml("<html><body></body></html>");
 }

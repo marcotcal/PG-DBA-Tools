@@ -17,7 +17,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
-#include <QWebEngineView>
+#include <QTextBrowser>
 #include <QMenu>
 #include <QLibrary>
 #include "dlgmenunew.h"
@@ -972,7 +972,7 @@ void MainWindow::executeModel(QString resource_name)
 
                     new QListWidgetItem(model_data->getDescription(), ui->editor_list);
 
-                    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
+                    QTextBrowser *editor = new QTextBrowser(ui->main_stack);
                     ui->main_stack->addWidget(editor);
                     ui->main_stack->setCurrentWidget(editor);
                     ui->editor_list->clearSelection();

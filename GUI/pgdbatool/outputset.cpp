@@ -7,6 +7,7 @@ OutputSet::OutputSet(QWidget *parent) :
 {
     ui->setupUi(this);
     type = OP_TEXT;
+    ui->output_stack->setCurrentIndex(0);
 }
 
 OutputSet::~OutputSet()

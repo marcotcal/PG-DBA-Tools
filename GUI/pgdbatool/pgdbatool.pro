@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml webenginewidgets
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -152,6 +152,7 @@ unix:LIBS += -L$$system(pg_config --libdir)
 unix:LIBS +=  -lpq
 
 # Include QSsh Libs
+#unix:LIBS += lQssh
 
 RESOURCES += \
     pgdbatool.qrc
