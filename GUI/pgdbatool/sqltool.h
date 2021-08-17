@@ -154,6 +154,8 @@ public:
     PGconn *getPostgresConnection();
     PGconn *getPostgresServiceConnection();
 
+    void executeSelectedFunction();
+
     // Methods related to menu edit
     // All this methods will get info from the active editor
 

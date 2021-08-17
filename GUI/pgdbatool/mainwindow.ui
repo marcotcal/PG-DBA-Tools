@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1085</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -578,6 +578,37 @@ color: rgb(180, 180,180);</string>
      <property name="bottomMargin">
       <number>2</number>
      </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QToolButton" name="bt_execute">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pgdbatool.qrc">
+           <normaloff>:/icons/images/icons/icons8-automation-48.png</normaloff>:/icons/images/icons/icons8-automation-48.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item>
       <widget class="QStackedWidget" name="function_stack">
        <property name="currentIndex">

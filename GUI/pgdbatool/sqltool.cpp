@@ -488,6 +488,14 @@ PGconn *SqlTool::getPostgresServiceConnection()
     return srv_conn;
 }
 
+void SqlTool::executeSelectedFunction()
+{
+    QListWidgetItem *item = function_list->currentItem();
+    if (item) {
+        plugin_widget_tree->run_selected_plugin(item->data(Qt::UserRole).toInt());
+    }
+}
+
 bool SqlTool::isRedoAvailable()
 {
     EditorItem *editor = dynamic_cast<EditorItem *>(ui->editors_tabs->currentWidget());

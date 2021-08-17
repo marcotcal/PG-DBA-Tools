@@ -1528,3 +1528,11 @@ void MainWindow::on_actionViewCode_Generators_toggled(bool arg1)
 {
     ui->dock_plugin->setVisible(arg1);
 }
+
+void MainWindow::on_bt_execute_clicked()
+{
+    SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
+    if(sql) {
+        sql->executeSelectedFunction();
+    }
+}

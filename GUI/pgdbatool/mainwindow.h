@@ -147,6 +147,7 @@ private slots:
     void on_actionSave_SQL_File_As_triggered();
     void on_actionViewCode_Function_toggled(bool arg1);
     void on_actionViewCode_Generators_toggled(bool arg1);
+    void on_bt_execute_clicked();
 
 public slots:
 
