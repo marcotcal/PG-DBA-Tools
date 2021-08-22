@@ -387,9 +387,6 @@ SqlTool *MainWindow::openNewSQLTool(QString name, int mode)
 {
     SqlTool *sql;
     OutputSet *out;
-    QListWidgetItem *list_item;
-
-    list_item = new QListWidgetItem(name, ui->editor_list);
 
     switch(mode) {
     case SqlTool::MODE_INTERNAL_DEVELOPMENT:
@@ -712,7 +709,6 @@ void MainWindow::on_main_stack_currentChanged(int arg1)
 
 void MainWindow::on_actionConnect_triggered()
 {
-    PluginTabWidget *ddl_tree;
     SqlTool *sql = dynamic_cast<SqlTool*>(ui->main_stack->currentWidget());
     disable_actions();
     if (sql) {

@@ -146,6 +146,8 @@ void SQLGenerationPlugin::updateFunctionList(QTreeWidgetItem* item,  QListWidget
 
 void SQLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(column)
+
     switch(item->data(0, ROLE_ITEM_TYPE).toInt()) {
     case SCHEMA_ITEM:
         if(item->childCount() == 0) processSchemas(item);

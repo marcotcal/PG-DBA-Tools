@@ -27,7 +27,7 @@ public:
     QString getDescription() { return description; }
     QString getMenuPath() { return menu_path; }
     QString getFileName() { return file_name; }
-    QStringList getMenuParts() { return menu_path.split("/", QString::SkipEmptyParts); }
+    QStringList getMenuParts() { return menu_path.split("/", Qt::SkipEmptyParts); }
 private:
     QString code;
     QString description;

@@ -122,7 +122,7 @@ private:
     QStringList sequences(PGconn *connection, QString schema);
     QStringList functions(PGconn *connection, QString schema);
     QStringList triggerFunctions(PGconn *connection, QString schema);
-    QStringList constraints(PGconn *connection, QString schema, QString table, char *ctype);
+    QStringList constraints(PGconn *connection, QString schema, QString table, const char *ctype);
     QStringList triggers(PGconn *connection, QString schema, QString table);
     QStringList table_columns(PGconn *connection, QString schema, QString table);
 

@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pgdba_ddlgenplugin
 TEMPLATE = lib
 CONFIG += plugin
+CONFIG += c++11
 
 CONFIG(debug, debug|release) {
     DESTDIR = ../build/debug/plugins

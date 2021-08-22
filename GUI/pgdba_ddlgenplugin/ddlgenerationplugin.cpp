@@ -426,6 +426,7 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
 
 void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(column)
 
     switch(item->data(0, ROLE_ITEM_TYPE).toInt()) {
     case SCHEMA_ITEM:
@@ -1895,7 +1896,7 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
     QStringList keys;
     int tuples;
 
-    char *sql_pk =
+    const char *sql_pk =
         "SELECT '   ,CONSTRAINT ' || "
         "       t.constraint_name || ' PRIMARY KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E')\n' "
         "FROM information_schema.table_constraints t "
@@ -1912,7 +1913,7 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
         "    c.table_name, "
         "    t.constraint_name ";
 
-    char *sql_uk =
+    const char *sql_uk =
         "SELECT '   ,CONSTRAINT ' || "
         "       t.constraint_name || ' UNIQUE (' || array_to_string(array_agg(c.column_name::text),', ') || E')\n' "
         "FROM information_schema.table_constraints t "
@@ -1930,7 +1931,7 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
         "    t.constraint_name ";
 
 
-    char *sql_col =
+    const char *sql_col =
             "SELECT "
             "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS field_type,  "
             "    EXISTS ( "
@@ -2005,6 +2006,9 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
 
 QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema, QString column_name)
 {
+    Q_UNUSED(connection)
+    Q_UNUSED(schema)
+    Q_UNUSED(column_name)
     /* TODO */
     return QStringList();
 }
@@ -2037,7 +2041,10 @@ QStringList DDLGenerationPlugin::createAllTypes(PGconn *connection)
 
 QStringList DDLGenerationPlugin::createTypes(PGconn *connection, QString schema)
 {
+    Q_UNUSED(connection)
+    Q_UNUSED(schema)
 
+    return QStringList();
 }
 
 QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, QString type_name)
@@ -2406,7 +2413,7 @@ QStringList DDLGenerationPlugin::triggerFunctions(PGconn *connection, QString sc
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::constraints(PGconn *connection, QString schema, QString table, char *ctype)
+QStringList DDLGenerationPlugin::constraints(PGconn *connection, QString schema, QString table, const char *ctype)
 {
     /*
      * u = unique
