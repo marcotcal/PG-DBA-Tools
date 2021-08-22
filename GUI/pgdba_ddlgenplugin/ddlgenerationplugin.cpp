@@ -1,6 +1,7 @@
 #include "ddlgenerationplugin.h"
 #include <QDebug>
 #include <plugintabwidget.h>
+#include <QRegularExpression>
 
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
@@ -497,7 +498,7 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
 
             for (int i = 0; i < tuples; i++) {
                 field_value = QString::fromStdString(PQgetvalue(res, i, return_col));
-                next_pos = field_value.indexOf(QRegExp("\n|\r\n|\r"));
+                next_pos = field_value.indexOf(QRegularExpression("\n|\r\n|\r"));
                 if(next_pos == -1)
                     list << field_value;
                 else {
@@ -505,7 +506,7 @@ QStringList DDLGenerationPlugin::createObjectList(PGconn *connection, const char
                         line = field_value.left(next_pos+1);
                         field_value = field_value.mid(next_pos+1);
                         list << line;
-                        next_pos = field_value.indexOf(QRegExp("\n|\r\n|\r"));
+                        next_pos = field_value.indexOf(QRegularExpression("\n|\r\n|\r"));
                     }
 
                 }

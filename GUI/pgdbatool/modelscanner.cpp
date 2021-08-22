@@ -53,14 +53,14 @@ bool ModelScanner::checkFile(const QString &file_name)
 
             if (reader.isStartElement()) {
 
-                if (reader.name() == "model") {
+                if (reader.name() == QString("model")) {
                     QXmlStreamAttributes attributes = reader.attributes();
                     if(attributes.hasAttribute("code"))
                          code = attributes.value("code").toString();
                     if(attributes.hasAttribute("description"))
                          description = attributes.value("description").toString();
 
-                } else if (reader.name() == "model_path") {
+                } else if (reader.name() == QString("model_path")) {
                     model_path = reader.readElementText().trimmed();
                 }
             }

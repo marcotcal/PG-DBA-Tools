@@ -40,6 +40,7 @@
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
 #include "plugintabwidget.h"
+#include <QScreen>
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -71,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
 bool MainWindow::loadPlugins()
 {
 
-    PGDBAPluginInterface *interface;
+    PGDBAPluginInterface *pl_interface;
     QDir pluginsDir(QCoreApplication::applicationDirPath());
     bool plugin_loaded = false;
     QJsonValue meta;
@@ -97,10 +98,10 @@ bool MainWindow::loadPlugins()
             meta = pluginLoader.metaData().value("MetaData");
             keys = pluginLoader.metaData().value("MetaData").toObject().value("Keys").toArray();
 
-            interface = qobject_cast<PGDBAPluginInterface *>(plugin);
-            if (interface) {
+            pl_interface = qobject_cast<PGDBAPluginInterface *>(plugin);
+            if (pl_interface) {
                 interface_list[meta.toObject().value("Name").toString()] =
-                        new PluginElement(interface, pluginLoader.metaData().value("MetaData"), this);
+                        new PluginElement(pl_interface, pluginLoader.metaData().value("MetaData"), this);
                 plugin_loaded = true;
             }
         } else {
@@ -232,7 +233,8 @@ void MainWindow::readSettings()
 
     restoreState(settings.value("DOCK_LOCATIONS").toByteArray(),1);
     if (geometry.isEmpty()) {
-        const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
+        QScreen *screen = QGuiApplication::primaryScreen();
+        QRect availableGeometry = screen->geometry();
         resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
         move((availableGeometry.width() - width()) / 2,
              (availableGeometry.height() - height()) / 2);

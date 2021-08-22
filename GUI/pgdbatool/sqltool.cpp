@@ -1206,7 +1206,7 @@ void SqlTool::do_query_ended(PGresult *res)
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
-            stream << error << endl;
+            stream << error << Qt::endl;
         }
         file.close();
 
@@ -1258,7 +1258,7 @@ void SqlTool::do_query_ended(PGresult *res)
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
-            stream << error << endl;
+            stream << error << Qt::endl;
         }
         file.close();
 

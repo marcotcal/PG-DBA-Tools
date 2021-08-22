@@ -258,27 +258,27 @@ bool ProjectData::readConfig()
 
             if (reader.isStartElement()) {
 
-                if (reader.name() == "project_name") {
+                if (reader.name() == QString("project_name")) {
                     project_name = reader.readElementText().trimmed();
-                } else if (reader.name() == "project_path") {
+                } else if (reader.name() == QString("project_path")) {
                     project_path = reader.readElementText().trimmed();
-                } else if (reader.name() == "query_path") {
+                } else if (reader.name() == QString("query_path")) {
                     query_path = reader.readElementText().trimmed();
-                }  else if (reader.name() == "model_path") {
+                }  else if (reader.name() == QString("model_path")) {
                     model_path = reader.readElementText().trimmed();
-                } else if (reader.name() == "description") {
+                } else if (reader.name() == QString("description")) {
                     description = reader.readElementText().trimmed();
-                } else if (reader.name() == "development") {
+                } else if (reader.name() == QString("development")) {
                     development = reader.readElementText().trimmed();
-                } else if (reader.name() == "staging") {
+                } else if (reader.name() == QString("staging")) {
                     staging = reader.readElementText().trimmed();
-                } else if (reader.name() == "production") {
+                } else if (reader.name() == QString("production")) {
                     production = reader.readElementText().trimmed();
-                } else if (reader.name() == "development_database") {
+                } else if (reader.name() == QString("development_database")) {
                     development_database = reader.readElementText().trimmed();
-                } else if (reader.name() == "staging_database") {
+                } else if (reader.name() == QString("staging_database")) {
                     staging_database = reader.readElementText().trimmed();
-                } else if (reader.name() == "production_database") {
+                } else if (reader.name() == QString("production_database")) {
                     production_database = reader.readElementText().trimmed();
                 }
             }

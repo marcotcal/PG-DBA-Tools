@@ -46,7 +46,7 @@ unix:INCLUDEPATH += $$system(pg_config --includedir)
 unix:LIBS += -L$$system(pg_config --libdir)
 unix:LIBS +=  -lpq
 
-LIBS += -lqscintilla2_qt5
+unix:LIBS += -lqscintilla2_qt5
 
 INCLUDEPATH += ../pgdbatool
 
@@ -58,3 +58,17 @@ unix {
 FORMS += \
     dlginsert.ui \
     dlgupdate.ui
+
+# test windows compilation
+
+# Include postgres lib
+win32:INCLUDEPATH += $$system(pg_config --includedir)
+win32:LIBS += -L$$system(pg_config --libdir)
+win32:LIBS +=  -llibpq
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../Qt/6.1.2/msvc2019_64/lib/ -lqscintilla2_qt6
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../Qt/6.1.2/msvc2019_64/lib/ -lqscintilla2_qt6d
+
+INCLUDEPATH += $$PWD/../../../../Qt/6.1.2/msvc2019_64/include
+DEPENDPATH += $$PWD/../../../../Qt/6.1.2/msvc2019_64/include

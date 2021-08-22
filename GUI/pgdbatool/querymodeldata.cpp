@@ -36,7 +36,7 @@ void QueryModelData::readXML()
                 break;
 
             if (reader.isEndElement()) {
-                if (reader.name() == "parameter") {
+                if (reader.name() == QString("parameter")) {
                     is_reading_parameter = false;
                     param = nullptr;
                 }
@@ -45,32 +45,32 @@ void QueryModelData::readXML()
             if (reader.isStartElement()) {
 
                 if (is_reading_parameter) {
-                    if (reader.name() == "expression") {
+                    if (reader.name() == QString("expression")) {
                          param->setExpression(reader.readElementText().trimmed());
                     }
-                    if (reader.name() == "param_type") {
+                    if (reader.name() == QString("param_type")) {
                          param->setType(reader.readElementText().trimmed());
                     }
-                    if (reader.name() == "param_sub_type") {
+                    if (reader.name() == QString("param_sub_type")) {
                          param->setSubType(reader.readElementText().trimmed());
                     }
                 }
 
-                if (reader.name() == "model") {
+                if (reader.name() == QString("model")) {
                     QXmlStreamAttributes attributes = reader.attributes();
                     if(attributes.hasAttribute("code"))
                          code = attributes.value("code").toString();
                     if(attributes.hasAttribute("description"))
                          description = attributes.value("description").toString();
-                } else if (reader.name() == "query_text") {
+                } else if (reader.name() == QString("query_text")) {
                     query_text = reader.readElementText().trimmed();
-                } else if (reader.name() == "output_type") {
+                } else if (reader.name() == QString("output_type")) {
                     output_type = reader.readElementText().trimmed();
-                } else if (reader.name() == "model_path") {
+                } else if (reader.name() == QString("model_path")) {
                     model_path = reader.readElementText().trimmed();
-                } else if (reader.name() == "database_request") {
-                    database_request = (reader.readElementText().trimmed() == "yes");
-                } else if (reader.name() == "parameter") {
+                } else if (reader.name() == QString("database_request")) {
+                    database_request = (reader.readElementText().trimmed() == QString("yes"));
+                } else if (reader.name() == QString("parameter")) {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString code;
                     QString description;
@@ -84,7 +84,7 @@ void QueryModelData::readXML()
                     param = new QueryParameter(code, description, (mandatory == "true"));
                     parameters.append(param);
                     is_reading_parameter = true;
-                } else if (reader.name() == "order") {
+                } else if (reader.name() == QString("order")) {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString fields;
                     QString description;
@@ -94,7 +94,7 @@ void QueryModelData::readXML()
                     if(attributes.hasAttribute("fields"))
                         fields = attributes.value("fields").toString();
                     orders.append(new QueryOrder(description, fields));
-                }  else if (reader.name() == "column") {
+                }  else if (reader.name() == QString("column")) {
                     QXmlStreamAttributes attributes = reader.attributes();
                     QString title;
                     int width = 100;
@@ -454,7 +454,7 @@ void QueryModelData::readModels()
                 break;
 
             if (reader.isEndElement()) {
-                if (reader.name() == "model") {
+                if (reader.name() == QString("model")) {
 
                     items.append(new ModelItem(code, description, model_path, file_name, this));
                     code = "";
@@ -466,16 +466,16 @@ void QueryModelData::readModels()
 
             if (reader.isStartElement()) {
 
-                if (reader.name() == "model") {
+                if (reader.name() == QString("model")) {
                     QXmlStreamAttributes attributes = reader.attributes();
                     if(attributes.hasAttribute("code"))
                          code = attributes.value("code").toString();
                     if(attributes.hasAttribute("description"))
                          description = attributes.value("description").toString();
 
-                } else if (reader.name() == "model_path") {
+                } else if (reader.name() == QString("model_path")) {
                     model_path = reader.readElementText().trimmed();
-                } else if (reader.name() == "file_name") {
+                } else if (reader.name() == QString("file_name")) {
                     file_name = reader.readElementText().trimmed();
                 }
 
