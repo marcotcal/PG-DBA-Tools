@@ -54,7 +54,7 @@ void DlgParameters::loadParameters()
             item = new QTableWidgetItem(model_data->getParameters().at(i)->getDescription());
             item->setFlags(item->flags() ^ (Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled));
             item->setBackground(this->palette().color(QPalette::Button));
-            item->setTextColor(this->palette().color(QPalette::ButtonText));
+            item->setForeground(this->palette().color(QPalette::ButtonText));
             ui->parameter_table->setItem(i, 0, item);
             ui->parameter_table->setItem(i, 1, new QTableWidgetItem(""));
         }
