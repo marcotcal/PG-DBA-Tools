@@ -19,7 +19,6 @@
 
 #include <QMainWindow>
 #include <QTreeWidgetItem>
-#include <QSsh/sftpchannel.h>
 #include "sqltool.h"
 #include "querymodel.h"
 #include "connectionsdata.h"
