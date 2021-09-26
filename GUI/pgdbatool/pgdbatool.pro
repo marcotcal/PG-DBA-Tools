@@ -78,6 +78,7 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
+    pgdba_global.h \
     sqltool.h \
     postgresqllexer.h \
     dlgconnections.h \

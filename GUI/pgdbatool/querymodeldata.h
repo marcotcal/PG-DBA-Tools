@@ -6,6 +6,7 @@
 #include <connectionsdata.h>
 #include "resultoutput.h"
 #include "projectdata.h"
+#include "pgdba_global.h"
 
 class ModelItem : public QObject
 {
