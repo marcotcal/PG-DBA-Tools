@@ -30,7 +30,6 @@
 #include <QClipboard>
 #include <QMimeData>
 #include "plugintabwidget.h"
-#include "sqltool.h"
 #include "ui_sqltool.h"
 #include "postgresqllexer.h"
 #include "queryexecutor.h"
@@ -40,6 +39,7 @@
 #include "dlgworkers.h"
 #include "dlgotherplanningsettings.h"
 #include "pluginelement.h"
+#include "sqltool.h"
 
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
@@ -590,8 +590,6 @@ bool SqlTool::isModified()
 
     if (group_modified)
         return true;
-
-    int count;
 
     foreach (EditorItem *editor, editors) {
         if (editor->isModified())

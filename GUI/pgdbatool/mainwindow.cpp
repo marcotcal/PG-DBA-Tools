@@ -17,7 +17,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
-#include <QTextBrowser>
 #include <QMenu>
 #include <QLibrary>
 #include "dlgmenunew.h"
@@ -40,6 +39,13 @@
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
 #include "plugintabwidget.h"
+#if defined HML_USE_WEBENGINE
+    #include <QWebEngineView>
+#elif defined HML_USE_WEBKIT
+    #include <QWebView>
+#else
+    #include <qtextbrowser.h>
+#endif
 
 #ifdef USE_SSH_TUNNELS
 #include "sshconnector.h"
@@ -972,7 +978,18 @@ void MainWindow::executeModel(QString resource_name)
 
                     new QListWidgetItem(model_data->getDescription(), ui->editor_list);
 
+#ifdef HML_USE_WEBENGINE
+                    QWebEngineView *editor = new QWebEngineView(ui->main_stack);
+#endif
+#ifndef HML_USE_WEBENGINE
+#ifdef HML_USE_WEBKIT
+                    QWebView *editor = new QWebView(ui->main_stack);
+#endif
+#ifndef HML_USE_WEBKIT
                     QTextBrowser *editor = new QTextBrowser(ui->main_stack);
+#endif
+#endif
+
                     ui->main_stack->addWidget(editor);
                     ui->main_stack->setCurrentWidget(editor);
                     ui->editor_list->clearSelection();

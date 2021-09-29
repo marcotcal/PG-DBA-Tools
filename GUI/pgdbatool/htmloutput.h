@@ -1,8 +1,8 @@
 #ifndef HTMLOUTPUT_H
 #define HTMLOUTPUT_H
 
-#include <QObject>
 #include "resultoutput.h"
+#include <qobjectdefs.h>
 
 class HtmlOutput : public ResultOutput
 {

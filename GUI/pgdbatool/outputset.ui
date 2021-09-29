@@ -180,7 +180,7 @@
    <item>
     <widget class="QStackedWidget" name="output_stack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pg_text">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -245,7 +245,7 @@
       </layout>
      </widget>
      <widget class="QWidget" name="pg_html">
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <layout class="QHBoxLayout" name="html_layout">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -261,13 +261,6 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
-        <widget class="QTextBrowser" name="html_output">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </widget>

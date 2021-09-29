@@ -3,6 +3,15 @@
 
 #include <QWidget>
 
+#if defined HML_USE_WEBENGINE
+    #include <QWebEngineView>
+#elif defined HML_USE_WEBKIT
+    #include <QWebView>
+#else
+    #include <qtextbrowser.h>
+#endif
+
+
 namespace Ui {
 class OutputSet;
 }
@@ -34,6 +43,19 @@ private slots:
 private:
     Ui::OutputSet *ui;
     OutputType type;
+
+#ifdef HML_USE_WEBENGINE
+    QWebEngineView *html_output;
+#endif
+#ifndef HML_USE_WEBENGINE
+#ifdef HML_USE_WEBKIT
+    QWebView *html_output;
+#endif
+#ifndef HML_USE_WEBKIT
+    QTextBrowser *html_output;
+#endif
+#endif
+
 };
 
 #endif // OUTPUTSET_H

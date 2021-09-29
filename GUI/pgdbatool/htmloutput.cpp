@@ -1,5 +1,12 @@
 #include "htmloutput.h"
-#include <qtextbrowser.h>
+#if defined HML_USE_WEBENGINE
+    #include <QWebEngineView>
+#elif defined HML_USE_WEBKIT
+    #include <QWebView>
+#else
+    #include <qtextbrowser.h>
+#endif
+
 
 HtmlOutput::HtmlOutput(QWidget *output, QPlainTextEdit *messages, QObject *parent) :
     ResultOutput(output, messages, parent)
@@ -14,7 +21,18 @@ void HtmlOutput::generateOutput(PGresult *res)
     QList<QVariant> row;
     QList<QList<QVariant>> rows;
     QList<QString> fields;    
+#ifdef HML_USE_WEBENGINE
+    QWebEngineView *view = dynamic_cast<QWebEngineView *>(output);
+#endif
+#ifndef HML_USE_WEBENGINE
+#ifdef HML_USE_WEBKIT
+    QWebView *view = dynamic_cast<QWebView *>(output);
+#endif
+#ifndef HML_USE_WEBKIT
     QTextBrowser *view = dynamic_cast<QTextBrowser *>(output);
+#endif
+#endif
+
     QString html = "";
 
     messages->insertPlainText(QString("Number of rows returned by the last command: %1\n").arg(tuples));
@@ -41,13 +59,14 @@ void HtmlOutput::generateOutput(PGresult *res)
     html += "<head>"
             "<style>"
             "table {"
-            "  border-collapse: collapse;"
-            "}"
+            "  border-collapse: collapse;"            
+            "}"                          
             "table th {"
             "  background-color: #aaaaaa;"
             "}"
             "table, td, th {"
             "  border: 1px solid #cccccc;"
+            "  border-collapse: collapse;"
             "}"
             "</style>"
             "</head>"
@@ -104,6 +123,16 @@ void HtmlOutput::generateOutput(PGresult *res)
 
 void HtmlOutput::clearOutput()
 {
+#ifdef HML_USE_WEBENGINE
+    QWebEngineView *view = dynamic_cast<QWebEngineView *>(output);
+#endif
+#ifndef HML_USE_WEBENGINE
+#ifdef HML_USE_WEBKIT
+    QWebView *view = dynamic_cast<QWebView *>(output);
+#endif
+#ifndef HML_USE_WEBKIT
     QTextBrowser *view = dynamic_cast<QTextBrowser *>(output);
+#endif
+#endif
     view->setHtml("<html><body></body></html>");
 }

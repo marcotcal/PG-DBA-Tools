@@ -8,6 +8,22 @@ OutputSet::OutputSet(QWidget *parent) :
     ui->setupUi(this);
     type = OP_TEXT;
     ui->output_stack->setCurrentIndex(0);
+
+#ifdef HML_USE_WEBENGINE
+    html_output = new QWebEngineView(ui->pg_html);
+#endif
+#ifndef HML_USE_WEBENGINE
+#ifdef HML_USE_WEBKIT
+    html_output = new QWebView(ui->pg_html);
+#endif
+#ifndef HML_USE_WEBKIT
+    html_output = new QTextBrowser(ui->pg_html);
+    html_output->setReadOnly(true);
+#endif
+#endif
+
+    html_output->setObjectName(QString::fromUtf8("html_output"));
+    ui->html_layout->addWidget(html_output);
 }
 
 OutputSet::~OutputSet()
@@ -25,7 +41,7 @@ QWidget *OutputSet::getOutput()
         return ui->grid_output;
         break;
     case 2:
-        return ui->html_output;
+        return html_output;
         break;
     default:
         return nullptr;

@@ -8,6 +8,28 @@ QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+# Widget to be used as HML output ( if no option is selected QTexBrowser wil be used )
+#HTML = QWebView
+HTML = QWebEngineView
+
+
+QT += webkit
+
+equals(HTML, "QWebEngineView") {
+    message("Use QWebEngineView widget on HML output")
+    QT += webenginewidgets
+    DEFINES += HML_USE_WEBENGINE
+} else {
+    equals(HTML, "QWebView") {
+        message("Use QWebView widget on HML output")
+        QT += webkitwidgets
+        DEFINES += HML_USE_WEBKIT
+    } else {
+        message("Use QTextBrowser widget on HML output")
+        DEFINES += HML_USE_TEXTBROWSER
+    }
+}
+
 TARGET = pgdbatool
 
 TEMPLATE = app
