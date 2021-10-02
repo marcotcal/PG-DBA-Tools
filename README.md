@@ -1,5 +1,4 @@
-# PG-DBA-Tools
- <img src="https://github.com/marcotcal/PG-DBA-Tools/blob/master/GUI/icon.svg" width="128">
+<img src="https://github.com/marcotcal/PG-DBA-Tools/blob/master/GUI/icon.svg" width="128">
 A graphical tool for managing Postgresql servers
 
 
