@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -110,7 +110,7 @@
      id="namedview8"
      showgrid="false"
      inkscape:zoom="5.2149125"
-     inkscape:cx="92.201291"
+     inkscape:cx="50.97337"
      inkscape:cy="46.336787"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -159,13 +159,13 @@
      y="99.000549" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:24px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#c8c4b7;fill-opacity:1;stroke:none"
-     x="4.9857016"
-     y="121.28848"
+     style="font-style:normal;font-weight:normal;font-size:21.27449989px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#c8c4b7;fill-opacity:1;stroke:none;stroke-width:0.88643748"
+     x="5.2358942"
+     y="119.21774"
      id="text3200"><tspan
        sodipodi:role="line"
-       x="4.9857016"
-       y="121.28848"
+       x="5.2358942"
+       y="119.21774"
        id="tspan3202"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'">DBA Tool</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.88643748">DBA Tools</tspan></text>
 </svg>
