@@ -1,5 +1,7 @@
 # PG-DBA-Tools
+ <img src="https://github.com/marcotcal/PG-DBA-Tools/blob/master/GUI/icon.svg" width="128">
 A graphical tool for managing Postgresql servers
+
 
 This tool is based on Melvin Davidson queries found on postgres-general mailing list.
 I found it on https://github.com/JohnArchieMckown/PostgreSQL-DBA-tools (you can find
