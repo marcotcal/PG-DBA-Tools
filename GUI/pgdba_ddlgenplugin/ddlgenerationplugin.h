@@ -57,7 +57,13 @@ public:
         DDL_DROP_TYPES,
         DDL_CREATE_TYPE,
         DDL_DROP_TYPE,
-        DDL_DESCRIBE_TABLE_FIELDS
+        DDL_DESCRIBE_TABLE_FIELDS,
+        DDL_CREATE_VIEWS,
+        DDL_DROP_VIEWS,
+        DDL_VIEWS_OWNERS,
+        DDL_CREATE_VIEW,
+        DDL_DROP_VIEW,
+        DDL_VIEW_OWNER,
     };
     enum {
         DATABAE_ITEM,
@@ -93,7 +99,8 @@ public:
         ROLE_TABLE_COLUMN_NAME,
         ROLE_CONSTRAINT_NAME,
         ROLE_TRIGGER_NAME,
-        ROLE_TYPE_NAME
+        ROLE_TYPE_NAME,
+        ROLE_VIEW_NAME
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
@@ -180,6 +187,10 @@ private:
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
 
     QStringList createTable(PGconn *connection, QString schema, QString table_name);
+
+    QStringList createView(PGconn *connection, QString schema, QString view_name);
+    QStringList dropView(PGconn *connection, QString schema, QString view_name);
+    QStringList viewOwner(PGconn *connection, QString schema, QString view_name);
 
     QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 

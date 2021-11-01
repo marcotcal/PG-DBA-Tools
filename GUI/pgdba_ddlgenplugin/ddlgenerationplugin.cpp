@@ -58,6 +58,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QString constraint_name = tree_item->data(0, ROLE_CONSTRAINT_NAME).toString();
     QString trigger_name = tree_item->data(0, ROLE_TRIGGER_NAME).toString();
     QString type_name = tree_item->data(0, ROLE_TYPE_NAME).toString();
+    QString view_name = tree_item->data(0, ROLE_VIEW_NAME).toString();
 
     switch(command) {
     case DDL_TEST:
@@ -174,7 +175,6 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp = dropConstraints(connection, schema_name, table_name);
         break;
     case DDL_CREATE_TYPES:
-
         break;
     case DDL_CREATE_TYPE:
         resp = createType(connection, "pg_catalog", "bool");
@@ -187,6 +187,15 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         break;
     case DDL_DESCRIBE_TABLE_FIELDS:
         resp = describeTableFields(connection, schema_name, table_name);
+        break;
+    case DDL_CREATE_VIEW:
+        resp = createView(connection, schema_name, view_name);
+        break;
+    case DDL_DROP_VIEW:
+        resp = dropView(connection, schema_name, view_name);
+        break;
+    case DDL_VIEW_OWNER:
+        resp = viewOwner(connection, schema_name, view_name);
         break;
     default:        
         return QStringList();
@@ -420,6 +429,28 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Drop Type");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TYPE);
+        break;
+    case VIEWS_ITEM:
+        list_item = new QListWidgetItem("Create Views");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_VIEWS);
+
+        list_item = new QListWidgetItem("Drop Views");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_VIEWS);
+        break;
+    case VIEW_ITEM:
+        list_item = new QListWidgetItem("Create View");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_VIEW);
+
+        list_item = new QListWidgetItem("Drop View");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_VIEW);
+
+        list_item = new QListWidgetItem("View Owner");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_VIEW_OWNER);
         break;
     }
 }
@@ -775,6 +806,8 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
         view->setText(0, view_list[j]);
         view->setIcon(0, QIcon(":/icons/images/icons/view.png"));
         view->setData(0, Qt::UserRole, VIEW_ITEM);
+        view->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        view->setData(0, ROLE_VIEW_NAME, view_list[j]);
         item->addChild(view);
 
         triggers_node = new QTreeWidgetItem();
@@ -782,7 +815,7 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
         triggers_node->setIcon(0, QIcon(":/icons/images/icons/triggers.png"));
         triggers_node->setData(0, ROLE_ITEM_TYPE, TRIGGERS_ITEM);
         triggers_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
-        triggers_node->setData(0, ROLE_TABLE_NAME, view_list[j]);
+        triggers_node->setData(0, ROLE_VIEW_NAME, view_list[j]);
         view->addChild(triggers_node);
 
     }
@@ -2001,6 +2034,43 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
     resp << ");\n";
 
     return resp;
+}
+
+QStringList DDLGenerationPlugin::createView(PGconn *connection, QString schema, QString view_name)
+{
+    const char *sql =
+            "SELECT "
+            "    'CREATE OR REPLACE VIEW ' || schemaname || '.' || viewname || E' AS \n' || "
+            "     definition || E'\n' "
+            "FROM pg_catalog.pg_views "
+            "WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND "
+            "      schemaname = $1 AND "
+            "      viewname = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), view_name.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::dropView(PGconn *connection, QString schema, QString view_name)
+{
+    const char *sql =
+            "SELECT "
+            "    'DROP VIEW IF EXISTS ' || schemaname || '.' || viewname || E';\n' "
+            "FROM pg_catalog.pg_views "
+            "WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND "
+            "      schemaname = $1 AND "
+            "      viewname = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), view_name.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::viewOwner(PGconn *connection, QString schema, QString view_name)
+{
+    const char *sql =
+            "SELECT "
+            "    'ALTER VIEW ' || schemaname || '.' || viewname || ' OWNER TO ' || viewowner || E';\n' "
+            "FROM pg_catalog.pg_views "
+            "WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND "
+            "      schemaname = $1 AND "
+            "      viewname = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), view_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema, QString column_name)
