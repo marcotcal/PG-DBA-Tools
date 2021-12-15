@@ -66,6 +66,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp.append("SELECT 'TESTING DDL GENERATION PLUGIN'\n");
         resp.append("-- End.\n");
         break;
+    case DDL_VERSION:
+        resp << "-- " + getDatabaseVersionString(connection) + "\n";
+        break;
     case DDL_CREATE_ALL_SCHEMAS:
         resp = createAllSchemas(connection);
         break;
@@ -218,6 +221,14 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
     list->clear();
 
     switch(item_type) {
+    case DATABASE_ITEM:
+
+        list_item = new QListWidgetItem("PostgreSQL Server Version");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_VERSION);
+
+        break;
+
     case SCHEMAS_ITEM:
 
         list_item = new QListWidgetItem("Create all schemas");
@@ -490,6 +501,57 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         if(item->childCount() == 0) processTypes(item);
         break;
     }
+}
+
+double DDLGenerationPlugin::getDatabaseVersion(PGconn *connection)
+{
+    QString resp;
+    const char *sql =
+            "SELECT version() ";
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+        PGresult *res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            return 0.0;
+        }
+
+        int tuples = PQntuples(res);
+
+        resp = QString::fromStdString(PQgetvalue(res, 0, 0));
+
+        PQclear(res);
+
+        return resp.toDouble();
+    }
+
+    return 0.0;
+}
+
+QString DDLGenerationPlugin::getDatabaseVersionString(PGconn *connection)
+{
+    QString resp;
+    const char *sql =
+            "select version()";
+
+    if (PQstatus(connection) == CONNECTION_OK) {
+        PGresult *res = PQexec(connection, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            return QString();
+        }
+        resp = QString::fromStdString(PQgetvalue(res, 0, 0));
+
+        PQclear(res);
+
+        return resp;
+    }
+
+    return QString();
 }
 
 
@@ -1016,7 +1078,8 @@ QStringList DDLGenerationPlugin::createAllSchemas(PGconn *connection)
         "SELECT "
         "    'CREATE SCHEMA IF NOT EXISTS ' || schema_name || ' AUTHORIZATION ' || schema_owner || E';\n' AS create_schema "
         "FROM information_schema.schemata "
-        "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
+        "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' "
+        "ORDER BY schema_name ";
     return createObjectList(connection, sql, 0, 0);
 }
 
@@ -1026,7 +1089,8 @@ QStringList DDLGenerationPlugin::dropAllSchemas(PGconn *connection)
         "SELECT "
         "    'DROP SCHEMA IF EXISTS ' || schema_name || E';\n' AS create_schema "
         "FROM information_schema.schemata "
-        "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' ";
+        "WHERE schema_name NOT IN ('public', 'information_schema') AND schema_name !~ '^pg_' "
+        "ORDER BY schema_name ";
     return createObjectList(connection, sql, 0, 0);
 }
 
@@ -1054,7 +1118,8 @@ QStringList DDLGenerationPlugin::resetAllSequences(PGconn *connection)
 {
     const char *sql =
         "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
-        "FROM information_schema.sequences ";
+        "FROM information_schema.sequences "
+        "ORDER BY sequence_schema, sequence_name ";
     return createObjectList(connection, sql, 0, 0);
 }
 
@@ -1100,7 +1165,8 @@ QStringList DDLGenerationPlugin::updatetAllSequences(PGconn *connection)
         "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n' "
         "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n' "
         "    END "
-        "FROM sequences ";
+        "FROM sequences "
+        "ORDER BY sequence_name ";
     return createObjectList(connection, sql, 0, 0);
 }
 
@@ -1109,7 +1175,8 @@ QStringList DDLGenerationPlugin::resetSequences(PGconn *connection, QString sche
     const char *sql =
         "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || E' RESTART;\n' "
         "FROM information_schema.sequences "
-        "WHERE sequence_schema = $1 ";
+        "WHERE sequence_schema = $1 "
+        "ORDER BY sequence_schema, sequence_name ";
     return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
 }
 
@@ -1155,7 +1222,8 @@ QStringList DDLGenerationPlugin::updateSequences(PGconn *connection, QString sch
         "        WHEN value_to_update IS NULL THEN 'ALTER SEQUENCE ' || sequence_name || E' RESTART;\n' "
         "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n' "
         "    END "
-        "FROM sequences ";
+        "FROM sequences "
+        "ORDER BY sequence_nane ";
     sql = sql.arg(schema);
     return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
 }
@@ -2302,8 +2370,35 @@ QStringList DDLGenerationPlugin::dropType(PGconn *connection, QString schema, QS
 QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString schema, QString table)
 {
     QStringList resp;
+    double database_version = getDatabaseVersion(connection);
+    PGresult *res;
 
-    const char *sql =
+    const char *sql_gt_12 =
+        "SELECT "
+        "    a.attname AS \"Field Name\", "
+        "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS \"Type\",  "
+        "    EXISTS ( "
+        "      SELECT 1 "
+        "      FROM pg_inherits AS i "
+        "         JOIN pg_attribute AS a2 "
+        "            ON i.inhparent = a2.attrelid "
+        "         WHERE i.inhrelid = a.attrelid "
+        "           AND a.attname = a2.attname "
+        "   ) AS \"Inherited\", "
+        "   a.attnotnull AS \"Not Null\", "
+        "   pg_get_expr(d.adbn, d.adrelid) AS \"Default\" "
+        "FROM "
+        "    pg_catalog.pg_attribute a "
+        "    INNER JOIN pg_catalog.pg_class c ON a.attrelid = c.oid "
+        "    INNER JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace "
+        "    LEFT  JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum "
+        "WHERE "
+        "    a.attnum > 0 "
+        "    AND NOT a.attisdropped "
+        "    AND n.nspname = $1 "
+        "    AND c.relname = $2 ";
+
+    const char *sql_lt_12 =
         "SELECT "
         "    a.attname AS \"Field Name\", "
         "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS \"Type\",  "
@@ -2328,9 +2423,12 @@ QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString
         "    AND n.nspname = $1 "
         "    AND c.relname = $2 ";
 
-    PGresult *res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
-                                     table.toStdString().c_str());
-
+    if (database_version >= 12)
+         res = createObjectList(connection, sql_gt_12, 2, schema.toStdString().c_str(),
+                                         table.toStdString().c_str());
+    else
+         res = createObjectList(connection, sql_lt_12, 2, schema.toStdString().c_str(),
+                                         table.toStdString().c_str());
     resp = formatOutputToTable(res, QString("Table: %1.%2").arg(schema).arg(table), true);
 
     PQclear(res);
@@ -2362,7 +2460,8 @@ QStringList DDLGenerationPlugin::schemas(PGconn *connection)
     const char *sql =
         "SELECT schema_name "
         "FROM information_schema.schemata "
-        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
+        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' "
+        "ORDER BY schema_name ";
     return createObjectList(connection, sql, 0, 0);
 }
 
@@ -2383,7 +2482,8 @@ QStringList DDLGenerationPlugin::tables(PGconn *connection, QString schema)
             "WHERE "
             "    schemaname != 'pg_catalog' "
             "    AND schemaname != 'information_schema' "
-            "    AND schemaname = $1 ";
+            "    AND schemaname = $1 "
+            "ORDER BY tablename ";
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
@@ -2408,7 +2508,8 @@ QStringList DDLGenerationPlugin::types(PGconn *connection, QString schema)
             "       FROM pg_catalog.pg_type el "
             "       WHERE el.oid = t.typelem AND el.typarray = t.oid "
             "   ) "
-            "   AND n.nspname = $1 ";
+            "   AND n.nspname = $1 "
+            "ORDER BY t.typename ";
 
     /* AND n.nspname NOT IN ('pg_catalog', 'information_schema') */
 
@@ -2427,7 +2528,8 @@ QStringList DDLGenerationPlugin::views(PGconn *connection, QString schema)
         "FROM pg_catalog.pg_views "
         "WHERE "
         "    schemaname NOT IN ('pg_catalog', 'information_schema') "
-        "    AND schemaname = $1 ";
+        "    AND schemaname = $1 "
+        "ORDER BY viewname ";
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
@@ -2438,7 +2540,8 @@ QStringList DDLGenerationPlugin::sequences(PGconn *connection, QString schema)
         "  sequence_schema, "
         "  sequence_name "
         "FROM information_schema.sequences "
-        "WHERE sequence_schema = $1 ";
+        "WHERE sequence_schema = $1 "
+        "ORDER BY sequence_name ";
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
@@ -2455,7 +2558,8 @@ QStringList DDLGenerationPlugin::functions(PGconn *connection, QString schema)
         "       JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
         "WHERE "
         "    t.typname != 'trigger' AND "
-        "    n.nspname = $1 ";
+        "    n.nspname = $1 "
+        "ORDER BY p.proname ";
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
@@ -2472,7 +2576,8 @@ QStringList DDLGenerationPlugin::triggerFunctions(PGconn *connection, QString sc
             "       JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
             "WHERE "
             "    t.typname = 'trigger' AND "
-            "    n.nspname = $1 ";
+            "    n.nspname = $1 "
+            "ORDER BY p.proname ";
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 

@@ -106,6 +106,38 @@ QStringList ConnectionElement::getDatabaseList()
     return QStringList();
 }
 
+double ConnectionElement::getDatabaseVersion()
+{
+    QString conn_str;
+    double resp;
+    const char *sql =
+            "select (regexp_matches(version(), '\d+\.\d+'))[1]::double precision";
+    PGconn *conn;
+
+    conn_str = connectStr();
+
+    conn = PQconnectdb(conn_str.toStdString().c_str());
+
+    if (PQstatus(conn) == CONNECTION_OK) {
+        PGresult *res = PQexec(conn, sql);
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            PQfinish(conn);
+            return 0.0;
+        }
+        resp = QString::fromStdString(PQgetvalue(res, 0, 0)).toDouble();
+
+        PQclear(res);
+        PQfinish(conn);
+
+        return resp;
+    }
+
+    return 0.0;
+}
+
 QStringList ConnectionElement::getSchemaList(QString database_name)
 {
     const char *sql =

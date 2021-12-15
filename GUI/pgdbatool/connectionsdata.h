@@ -18,6 +18,7 @@ public:
     bool isInvalid() { return invalid; }
     void setInvalid(bool value) { invalid = value; }
     QStringList getDatabaseList();
+    double getDatabaseVersion();
     QStringList getSchemaList(QString database_name);
 private:    
     QString connection_name;

@@ -17,6 +17,7 @@ class DDLGenerationPlugin : public QObject, PGDBAPluginInterface {
 public:
     enum {
         DDL_TEST = 0,
+        DDL_VERSION,
         DDL_CREATE_ALL_SCHEMAS,
         DDL_DROP_ALL_SCHEMAS,
         DDL_CREATE_SCHEMA,
@@ -66,7 +67,7 @@ public:
         DDL_VIEW_OWNER,
     };
     enum {
-        DATABAE_ITEM,
+        DATABASE_ITEM,
         SCHEMAS_ITEM,
         SCHEMA_ITEM,
         TABLES_ITEM,
@@ -117,6 +118,9 @@ private slots:
 private:
 
     QMap<QTreeWidget *, PGconn *> trees;
+
+    double getDatabaseVersion(PGconn *connection);
+    QString getDatabaseVersionString(PGconn *connection);
 
     QStringList createObjectList(PGconn *connection, const char *sql, int return_col, int param_count, ...);
     PGresult *createObjectList(PGconn *connection, const char *sql, int param_count, ...);

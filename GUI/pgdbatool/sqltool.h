@@ -72,6 +72,7 @@ public slots:
 
     void find_triggered();
     void do_execute_generator(int gen_sql);
+    void resize_left_margin();
 
 signals:
 

@@ -46,6 +46,7 @@ EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
     file_name = "";    
     signal_mapper = new QSignalMapper(this);
     connect(signal_mapper, SIGNAL(mapped(int)), this, SLOT(do_execute_generator(int)));
+    connect(this, SIGNAL(linesChanged()), this, SLOT(resize_left_margin()));
 }
 
 void EditorItem::setFileName(QString value)
@@ -186,6 +187,14 @@ void EditorItem::find_triggered()
 void EditorItem::do_execute_generator(int gen_sql)
 {
     emit execute_generator(this, gen_sql);
+}
+
+void EditorItem::resize_left_margin()
+{
+    QFont font = lexer()->defaultFont();
+    QFontMetrics fm(font);
+    QRectF rc = fm.boundingRect(QString("%1").arg(lines()));
+    setMarginWidth(0, rc.width() + 23);
 }
 
 QString EditorItem::getLabel() const
@@ -696,7 +705,7 @@ void SqlTool::initializeEditor(EditorItem *editor) {
     fixedFont.setPointSize(12);
 
     lex->setFont(fixedFont);
-    editor->setMarginsBackgroundColor(QColor(100,100,100,255));
+    // editor->setMarginsBackgroundColor(QColor(100,100,100,255));
     editor->setMarginLineNumbers(0, true);
     editor->setMarginWidth(0, 30);    
     editor->setTabWidth(4);
@@ -1393,8 +1402,7 @@ void SqlTool::loadDatabaseList(int sel_connection)
     QStringList databases;
 
     if (sel_connection != -1) {
-        databases = connections.getConnections().at(sel_connection)->getDatabaseList();
-
+        databases = connections.getConnections().at(sel_connection)->getDatabaseList();        
         ui->database_list->clear();
         ui->database_list->addItems(databases);
     }
