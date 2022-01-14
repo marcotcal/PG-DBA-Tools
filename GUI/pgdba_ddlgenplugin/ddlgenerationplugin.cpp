@@ -1958,7 +1958,24 @@ QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString sche
 
 QStringList DDLGenerationPlugin::dropFunctions(PGconn *connection, QString schema)
 {
-    const char *sql =
+    double version = getDatabaseVersion(connection);
+    const char *sql_gt_11 =
+        "SELECT format(E'DROP %s %s;\n' "
+        "            , CASE "
+        "                 WHEN p.prokind = 'a' THEN 'AGGREGATE' "
+        "                 WHEN p.prokind = 'f' THEN 'FUNCTION' "
+        "                 WHEN p.prokind = 'p' THEN 'PROCEDURE' "
+        "                 ELSE 'FUNCTION' "
+        "               END "
+        "            , p.oid::regprocedure "
+        "             ) AS stmt "
+        "FROM   "
+        "   pg_catalog.pg_proc p "
+        "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "WHERE  quote_ident(n.nspname) = $1 "
+        "ORDER  BY 1 ";
+
+    const char *sql_lt_11 =
         "SELECT format(E'DROP %s %s;\n' "
         "            , CASE WHEN p.proisagg THEN 'AGGREGATE' ELSE 'FUNCTION' END "
         "            , p.oid::regprocedure "
@@ -1968,7 +1985,10 @@ QStringList DDLGenerationPlugin::dropFunctions(PGconn *connection, QString schem
         "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
         "WHERE  quote_ident(n.nspname) = $1 "
         "ORDER  BY 1 ";
-    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+    if (version >= 11)
+        return createObjectList(connection, sql_gt_11, 0, 1, schema.toStdString().c_str());
+    else
+        return createObjectList(connection, sql_lt_11, 0, 1, schema.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema, QString func_name)
