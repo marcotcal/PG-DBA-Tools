@@ -507,7 +507,7 @@ double DDLGenerationPlugin::getDatabaseVersion(PGconn *connection)
 {
     QString resp;
     const char *sql =
-            "SELECT version() ";
+            "SELECT (regexp_match(version(), '\\d+\\.\\d+?'))[1]  ";
 
     if (PQstatus(connection) == CONNECTION_OK) {
         PGresult *res = PQexec(connection, sql);
@@ -2386,7 +2386,7 @@ QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString
         "           AND a.attname = a2.attname "
         "   ) AS \"Inherited\", "
         "   a.attnotnull AS \"Not Null\", "
-        "   pg_get_expr(d.adbn, d.adrelid) AS \"Default\" "
+        "   pg_get_expr(d.adbin, d.adrelid) AS \"Default\" "
         "FROM "
         "    pg_catalog.pg_attribute a "
         "    INNER JOIN pg_catalog.pg_class c ON a.attrelid = c.oid "
