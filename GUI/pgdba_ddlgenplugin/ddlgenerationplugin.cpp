@@ -2373,7 +2373,7 @@ QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString
     double database_version = getDatabaseVersion(connection);
     PGresult *res;
 
-    const char *sql_gt_12 =
+    const char *sql_gt_91 =
         "SELECT "
         "    a.attname AS \"Field Name\", "
         "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS \"Type\",  "
@@ -2398,7 +2398,7 @@ QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString
         "    AND n.nspname = $1 "
         "    AND c.relname = $2 ";
 
-    const char *sql_lt_12 =
+    const char *sql_lt_91 =
         "SELECT "
         "    a.attname AS \"Field Name\", "
         "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS \"Type\",  "
@@ -2423,11 +2423,11 @@ QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString
         "    AND n.nspname = $1 "
         "    AND c.relname = $2 ";
 
-    if (database_version >= 12)
-         res = createObjectList(connection, sql_gt_12, 2, schema.toStdString().c_str(),
+    if (database_version >= 9.1)
+         res = createObjectList(connection, sql_gt_91, 2, schema.toStdString().c_str(),
                                          table.toStdString().c_str());
     else
-         res = createObjectList(connection, sql_lt_12, 2, schema.toStdString().c_str(),
+         res = createObjectList(connection, sql_lt_91, 2, schema.toStdString().c_str(),
                                          table.toStdString().c_str());
     resp = formatOutputToTable(res, QString("Table: %1.%2").arg(schema).arg(table), true);
 
