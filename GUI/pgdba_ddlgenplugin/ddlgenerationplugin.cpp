@@ -2529,7 +2529,7 @@ QStringList DDLGenerationPlugin::types(PGconn *connection, QString schema)
             "       WHERE el.oid = t.typelem AND el.typarray = t.oid "
             "   ) "
             "   AND n.nspname = $1 "
-            "ORDER BY t.typename ";
+            "ORDER BY t.typname ";
 
     /* AND n.nspname NOT IN ('pg_catalog', 'information_schema') */
 
