@@ -180,7 +180,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_CREATE_TYPES:
         break;
     case DDL_CREATE_TYPE:
-        resp = createType(connection, "pg_catalog", "bool");
+        resp = createType(connection, schema_name, type_name);
         break;
     case DDL_DROP_TYPES:
         resp = dropTypes(connection, schema_name);
@@ -2202,6 +2202,7 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
 {
     QStringList resp;
     int tuples;
+    int cols_tuples;
     QString t_type;
     QString t_input;
     QString t_output;
@@ -2216,6 +2217,9 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
     QString t_length;
     QString t_align;
     QString t_storage;
+
+    QString t_col_name;
+    QString t_col_data_type;
 
     const char *sql_cols =
             "WITH "
@@ -2300,6 +2304,7 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
         "   n.nspname = $1 "
         "   AND t.typname = $2 ";
 
+    PGresult *cols;
     PGresult *res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
                                      type_name.toStdString().c_str());
 
@@ -2369,6 +2374,40 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
              *      p = pseudo type;
              */
             if (t_type == 'c') {
+
+                cols = createObjectList(connection, sql_cols, 2, schema.toStdString().c_str(),
+                                                     type_name.toStdString().c_str());
+
+                resp << "CREATE TYPE " + schema + '.' + type_name + " AS (\n\n";
+
+                if (PQresultStatus(cols) != PGRES_TUPLES_OK)
+                {
+                    resp << PQerrorMessage(connection);
+                    PQclear(cols);
+                } else {
+
+                    cols_tuples = PQntuples(cols);
+
+                    if (cols_tuples == 0)  {
+                        PQclear(cols);
+                        return resp;
+                    }
+
+                    for (int i = 0; i < cols_tuples; i++) {
+
+                        t_col_name = QString::fromStdString(PQgetvalue(cols, i, 2));
+                        t_col_data_type = QString::fromStdString(PQgetvalue(cols, i, 3));
+                        if (i ==0)
+                            resp << "   " + t_col_name + " " +  t_col_data_type + "\n";
+                        else
+                            resp << "  ," + t_col_name + " " +  t_col_data_type + "\n";
+                    }
+
+                    resp << ");\n\n";
+
+                    PQclear(cols);
+                }
+
 
             } else if (t_type == "b") {
                 resp << "CREATE TYPE " + type_name + "(\n";
