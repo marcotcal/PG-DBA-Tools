@@ -2250,13 +2250,14 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
             "    ), "
             "    cols AS ( "
             "        SELECT n.nspname::text AS schema_name, "
-            "                pg_catalog.format_type ( t.oid, NULL ) AS obj_name, "
+            "                cl.relname, "
             "                a.attname::text AS column_name, "
             "                pg_catalog.format_type ( a.atttypid, a.atttypmod ) AS data_type, "
             "                a.attnotnull AS is_required, "
             "                a.attnum AS ordinal_position, "
             "                pg_catalog.col_description ( a.attrelid, a.attnum ) AS description "
             "            FROM pg_catalog.pg_attribute a "
+            "            JOIN pg_catalog.pg_class cl ON cl.oid = a.attrelid "
             "            JOIN pg_catalog.pg_type t "
             "                ON a.attrelid = t.typrelid "
             "            JOIN pg_catalog.pg_namespace n "
@@ -2268,17 +2269,17 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
             "                AND NOT a.attisdropped "
             "    ) "
             "SELECT cols.schema_name, "
-            "        cols.obj_name, "
+            "        cols.relname, "
             "        cols.column_name, "
             "        cols.data_type, "
             "        cols.ordinal_position, "
             "        cols.is_required, "
             "        coalesce ( cols.description, '' ) AS description "
             "    FROM cols "
-            "    WHERE schema_name = $1 AND obj_name = $2 "
-            "    ORDER BY cols.schema_name, "
-            "            cols.obj_name, "
-            "            cols.ordinal_position ";
+            "    WHERE schema_name = $1 AND relname = $2 "
+            "    ORDER BY cols.schema_name, "            
+            "             cols.relname, "
+            "             cols.ordinal_position ";
 
     const char *sql =
         "SELECT"
@@ -2398,9 +2399,9 @@ QStringList DDLGenerationPlugin::createType(PGconn *connection, QString schema, 
                         t_col_name = QString::fromStdString(PQgetvalue(cols, i, 2));
                         t_col_data_type = QString::fromStdString(PQgetvalue(cols, i, 3));
                         if (i ==0)
-                            resp << "   " + t_col_name + " " +  t_col_data_type + "\n";
+                            resp << "    " + t_col_name + " " +  t_col_data_type + "\n";
                         else
-                            resp << "  ," + t_col_name + " " +  t_col_data_type + "\n";
+                            resp << "   ," + t_col_name + " " +  t_col_data_type + "\n";
                     }
 
                     resp << ");\n\n";
@@ -2543,7 +2544,7 @@ QStringList DDLGenerationPlugin::describeTableFields(PGconn *connection, QString
         "    AND n.nspname = $1 "
         "    AND c.relname = $2 ";
 
-    if (database_version >= 9.1)
+    if (database_version     >= 9.1)
          res = createObjectList(connection, sql_gt_91, 2, schema.toStdString().c_str(),
                                          table.toStdString().c_str());
     else
