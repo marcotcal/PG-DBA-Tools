@@ -9,8 +9,8 @@ QT       += core gui xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # Widget to be used as HML output ( if no option is selected QTexBrowser wil be used )
-#HTML = QWebView
-HTML = QWebEngineView
+HTML = QWebView
+#HTML = QWebEngineView
 
 
 QT += webkit

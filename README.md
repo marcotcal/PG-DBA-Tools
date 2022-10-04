@@ -19,5 +19,5 @@ Any sugestion are wellcome!
 **Notes:**
 
 About some false positives on QtCreator - Q_Object (incomplete type) - Please disable clang options on menu /help/about plugins
-
+See configuration to choose the web engine
 
