@@ -1993,8 +1993,25 @@ QStringList DDLGenerationPlugin::dropFunctions(PGconn *connection, QString schem
 
 QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema, QString func_name)
 {
-    const char *sql =
-        "SELECT format('DROP %s %s;' "
+    double version = getDatabaseVersion(connection);
+    const char *sql_gt_11 =
+            "SELECT format(E'DROP %s %s;\n' "
+            "            , CASE "
+            "                 WHEN p.prokind = 'a' THEN 'AGGREGATE' "
+            "                 WHEN p.prokind = 'f' THEN 'FUNCTION' "
+            "                 WHEN p.prokind = 'p' THEN 'PROCEDURE' "
+            "                 ELSE 'FUNCTION' "
+            "               END "
+            "            , p.oid::regprocedure "
+            "             ) AS stmt "
+            "FROM   "
+            "   pg_catalog.pg_proc p "
+            "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+            "WHERE  quote_ident(n.nspname) = $1 "
+            "       AND quote_ident(p.proname) = $2";
+
+    const char *sql_lt_11 =
+        "SELECT format(E'DROP %s %s;\n' "
         "            , CASE WHEN p.proisagg THEN 'AGGREGATE' ELSE 'FUNCTION' END "
         "            , p.oid::regprocedure "
         "             ) AS stmt "
@@ -2002,9 +2019,11 @@ QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema
         "   pg_catalog.pg_proc p "
         "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
         "WHERE  quote_ident(n.nspname) = $1 "
-        "       AND quote_ident(p.proname) = $2"
-        "ORDER  BY 1 ";
-    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+            "       AND quote_ident(p.proname) = $2";
+    if (version >= 11)
+        return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+    else
+        return createObjectList(connection, sql_lt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema, QString table_name)
