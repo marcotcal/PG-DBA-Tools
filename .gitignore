@@ -9,3 +9,4 @@
 **/moc_*.o
 **/Makefile
 **/.qmake.stash
+**/.qtc_clangd/
