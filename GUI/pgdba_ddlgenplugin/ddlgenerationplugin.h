@@ -42,6 +42,8 @@ public:
         DDL_DISABLE_TRIGGER,
         DDL_CREATE_FUNCTIONS,
         DDL_CREATE_FUNCTION,
+        DDL_CREATE_PROCEDURES,
+        DDL_CREATE_PROCEDURE,
         DDL_DROP_FUNCTIONS,
         DDL_DROP_FUNCTION,
         DDL_CREATE_TRIGGER_FUNCTIONS,
@@ -78,6 +80,8 @@ public:
         SEQUENCE_ITEM,
         FUNCTIONS_ITEM,
         FUNCTION_ITEM,
+        PROCEDURES_ITEM,
+        PROCEDURE_ITEM,
         TRIGGER_FUNCTIONS_ITEM,
         TRIGGER_FUNCTION_ITEM,
         CONSTRAINTS_ITEM,
@@ -97,6 +101,7 @@ public:
         ROLE_SEQUENCE_NAME,
         ROLE_CONSTRAINT_TYPE,
         ROLE_FUNCTION_NAME,
+        ROLE_PROCEDURE_NAME,
         ROLE_TABLE_COLUMN_NAME,
         ROLE_CONSTRAINT_NAME,
         ROLE_TRIGGER_NAME,
@@ -132,6 +137,7 @@ private:
     QStringList views(PGconn *connection, QString schema);
     QStringList sequences(PGconn *connection, QString schema);
     QStringList functions(PGconn *connection, QString schema);
+    QStringList procedures(PGconn *connection, QString schema);
     QStringList triggerFunctions(PGconn *connection, QString schema);
     QStringList constraints(PGconn *connection, QString schema, QString table, char *ctype);
     QStringList triggers(PGconn *connection, QString schema, QString table);
@@ -143,6 +149,7 @@ private:
     void processViews(QTreeWidgetItem *item);
     void processSequences(QTreeWidgetItem *item);
     void processFunctions(QTreeWidgetItem *item);
+    void processProcedures(QTreeWidgetItem *item);
     void processTrigerFunctions(QTreeWidgetItem *item);
     void processConstraints(QTreeWidgetItem *item);
     void processTriggers(QTreeWidgetItem *item);

@@ -2,6 +2,45 @@
 #include <QDebug>
 #include <plugintabwidget.h>
 
+/**
+   pg_proc change history from https://pgpedia.info/p/pg_proc.html
+
+    Change history
+    Note: may not show all changes prior to PostgreSQL 8.2.
+
+    PostgreSQL 14
+    column prosqlbody added (commit e717a9a1)
+    PostgreSQL 12
+    column protransform renamed to prosupport (commit 74dfe58a)
+    PostgreSQL 11
+    columns proisagg and proiswindow replaced by prokind (commit fd1a421f)
+    PostgreSQL 9.6
+    column proparallel added (commit 7aea8e4f)
+    PostgreSQL 9.5
+    column protrftypes added (commit cac76582)
+    PostgreSQL 9.2
+    column protransform added (commit 8f9fe6ed)
+    column proleakproof added (commit cd30728f)
+    PostgreSQL 9.1
+    column proargdefaults changed to type pg_node_tree (commit 303696c3)
+    PostgreSQL 8.4
+    column procost added (commit 5a7471c3)
+    column prorows added (commit 5a7471c3)
+    column provariadic added (commit 6563e9e2)
+    PostgreSQL 8.3
+    column procost added (commit 5a7471c3)
+    column prorows added (commit 5a7471c3)
+    column proconfig added (commit 2abae34a)
+    PostgreSQL 7.3
+    following columns removed (commit 739adf32):
+    proimplicit
+    probyte_pct
+    properbyte_cpu
+    propercall_cpu
+    prooutin_ratio
+
+**/
+
 DDLGenerationPlugin::DDLGenerationPlugin(QObject *parent) :
     QObject(parent)
 {
@@ -309,7 +348,7 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FUNCTIONS);
 
-        break;
+        break;    
     case FUNCTION_ITEM:
         list_item = new QListWidgetItem("Drop Function");
         list->addItem(list_item);
@@ -320,6 +359,31 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTION);
 
         list_item = new QListWidgetItem("Script Alter Function Parameters");
+        list->addItem(list_item);
+        break;
+    case PROCEDURES_ITEM:
+        list_item = new QListWidgetItem("Create New Procedure");
+        list->addItem(list_item);
+
+        list_item = new QListWidgetItem("Create Procedures");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTIONS);
+
+        list_item = new QListWidgetItem("Drop Procedures");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FUNCTIONS);
+
+        break;
+    case PROCEDURE_ITEM:
+        list_item = new QListWidgetItem("Drop Procedure");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FUNCTION);
+
+        list_item = new QListWidgetItem("Create or Replace Procedure");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTION);
+
+        list_item = new QListWidgetItem("Script Alter Procedure Parameters");
         list->addItem(list_item);
         break;
     case TRIGGER_FUNCTIONS_ITEM:
@@ -484,6 +548,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         break;
     case FUNCTIONS_ITEM:
         if(item->childCount() == 0) processFunctions(item);
+        break;
+    case PROCEDURES_ITEM:
+        if(item->childCount() == 0) processProcedures(item);
         break;
     case TRIGGER_FUNCTIONS_ITEM:
         if(item->childCount() == 0) processTrigerFunctions(item);
@@ -727,6 +794,7 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     QTreeWidgetItem *table_node;
     QTreeWidgetItem *view_node;
     QTreeWidgetItem *function_node;
+    QTreeWidgetItem *procedure_node;
     QTreeWidgetItem *sequence_node;
     QTreeWidgetItem *trigger_function_node;
     QTreeWidgetItem *type_node;
@@ -754,6 +822,13 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     function_node->setData(0, ROLE_ITEM_TYPE, FUNCTIONS_ITEM);
     function_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
     item->addChild(function_node);
+
+    procedure_node = new QTreeWidgetItem();
+    procedure_node->setText(0, "Procedures");
+    procedure_node->setIcon(0, QIcon(":/icons/images/icons/functions.png"));
+    procedure_node->setData(0, ROLE_ITEM_TYPE, PROCEDURES_ITEM);
+    procedure_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+    item->addChild(procedure_node);
 
     trigger_function_node = new QTreeWidgetItem();
     trigger_function_node->setText(0, "Trigger Functions");
@@ -925,6 +1000,29 @@ void DDLGenerationPlugin::processFunctions(QTreeWidgetItem *item)
         function->setData(0, ROLE_FUNCTION_NAME, function_list[j]);
         function->setData(0, ROLE_SCHEMA_NAME, schema);
         item->addChild(function);
+
+    }
+}
+
+void DDLGenerationPlugin::processProcedures(QTreeWidgetItem *item)
+{
+    QStringList procedure_list;
+    QTreeWidgetItem *procedure;
+    QString schema;
+    PGconn *connection = trees[item->treeWidget()];
+
+    schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    procedure_list = procedures(connection, schema);
+
+    for(int j=0; j < procedure_list.count(); j++) {
+
+        procedure = new QTreeWidgetItem();
+        procedure->setText(0, procedure_list[j]);
+        procedure->setIcon(0, QIcon(":/icons/images/icons/function.png"));
+        procedure->setData(0, ROLE_ITEM_TYPE, PROCEDURE_ITEM);
+        procedure->setData(0, ROLE_PROCEDURE_NAME, procedure_list[j]);
+        procedure->setData(0, ROLE_SCHEMA_NAME, schema);
+        item->addChild(procedure);
 
     }
 }
@@ -1898,7 +1996,9 @@ QStringList DDLGenerationPlugin::createFunctions(PGconn *connection, QString sch
 QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString schema, QString func_name)
 {
     /* more complete than pg_get_functiondef */
-    const char *sql =
+    double version = getDatabaseVersion(connection);
+
+    const char *sql_gt_11 =
             "WITH "
             "    func_def AS ( "
             "        SELECT "
@@ -1953,7 +2053,65 @@ QStringList DDLGenerationPlugin::createFunction(PGconn *connection, QString sche
             "    WHERE "
             "        schema_name  = $1 AND "
             "        function_name = $2 ";
-    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+    const char *sql_lt_11 =
+            "WITH "
+            "    func_def AS ( "
+            "        SELECT "
+            "            quote_ident(n.nspname) AS schema_name, "
+            "            quote_ident(p.proname) AS function_name, "
+            "            pg_catalog.pg_get_function_identity_arguments(p.oid) AS arguments, "
+            "            CASE "
+            "               WHEN proretset THEN 'SETOF ' || coalesce(nullif(quote_ident(tn.nspname),'pg_catalog') || '.', '') "
+            "               ELSE coalesce(nullif(quote_ident(tn.nspname),'pg_catalog') || '.', '') "
+            "            END AS return_schema, "
+            "            CASE "
+            "                WHEN t.typname = 'timestamp' THEN 'timestamp without time zone' "
+            "                WHEN t.typname = 'timestampz' THEN 'timestamp with time zone' "
+            "                ELSE quote_ident(t.typname) "
+            "           END AS return_type, "
+            "            l.lanname AS language_name, "
+            "            CASE "
+            "               WHEN proretset THEN 'COST ' || procost || E'\n' || 'ROWS ' || p.prorows || E';\n' "
+            "               ELSE 'COST ' || p.procost || E';\n' "
+            "            END AS estimated_cost_rows, "
+            "            CASE "
+            "                WHEN p.provolatile = 'v' THEN 'VOLATILE' "
+            "                WHEN p.provolatile = 'i' THEN 'IMMUTABLE' "
+            "                WHEN p.provolatile = 's' THEN 'STABLE' "
+            "            END behavior, "
+            "            CASE "
+            "                WHEN p.prosecdef = TRUE THEN 'SECURITY DEFINER' "
+            "                ELSE 'SECURITY INVOKER' "
+            "            END AS security, "
+            "            CASE "
+            "                WHEN p.proisstrict THEN 'RETURNS NULL ON NULL INPUT' "
+            "               ELSE 'CALLED ON NULL INPUT' "
+            "            END AS null_parameters, "
+            "            p.prosrc AS code "
+            "        FROM   pg_catalog.pg_proc p "
+            "           JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+            "           JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+            "           JOIN pg_catalog.pg_namespace tn ON t.typnamespace = tn.oid "
+            "           JOIN pg_catalog.pg_language l ON p.prolang = l.oid "
+            "    ) "
+            "    SELECT "
+            "        'CREATE OR REPLACE FUNCTION ' || schema_name || '.' || function_name || '(' || arguments || E')\n' || "
+            "        '   RETURNS ' || return_schema || return_type || E'\n' || "
+            "        '   LANGUAGE ' || language_name || E'\n' || "
+            "        E'AS \n' || "
+            "        E'$BODY$' || "
+            "        code || "
+            "        E'$BODY$\n' || "
+            "        behavior || E'\n' || security || E'\n' || null_parameters || E'\n' || "
+            "        estimated_cost_rows AS definition "
+            "    FROM func_def "
+            "    WHERE "
+            "        schema_name  = $1 AND "
+            "        function_name = $2 ";
+    if (version >= 11)
+        return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+    else
+        return createObjectList(connection, sql_lt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::dropFunctions(PGconn *connection, QString schema)
@@ -2035,7 +2193,7 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
     QStringList keys;
     int tuples;
 
-    char *sql_pk =
+    const char *sql_pk =
         "SELECT '   ,CONSTRAINT ' || "
         "       t.constraint_name || ' PRIMARY KEY (' || array_to_string(array_agg(c.column_name::text),', ') || E')\n' "
         "FROM information_schema.table_constraints t "
@@ -2052,7 +2210,7 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
         "    c.table_name, "
         "    t.constraint_name ";
 
-    char *sql_uk =
+    const char *sql_uk =
         "SELECT '   ,CONSTRAINT ' || "
         "       t.constraint_name || ' UNIQUE (' || array_to_string(array_agg(c.column_name::text),', ') || E')\n' "
         "FROM information_schema.table_constraints t "
@@ -2070,7 +2228,7 @@ QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema,
         "    t.constraint_name ";
 
 
-    char *sql_col =
+    const char *sql_col =
             "SELECT "
             "    pg_catalog.format_type(a.atttypid, a.atttypmod) AS field_type,  "
             "    EXISTS ( "
@@ -2687,7 +2845,22 @@ QStringList DDLGenerationPlugin::sequences(PGconn *connection, QString schema)
 
 QStringList DDLGenerationPlugin::functions(PGconn *connection, QString schema)
 {
-    const char *sql =
+    double database_version = getDatabaseVersion(connection);
+
+    const char *sql_gt_11 =
+        "SELECT "
+        "    n.nspname, "
+        "    p.proname, "
+        "    pg_catalog.pg_get_function_identity_arguments(p.oid) as arguments, "
+        "    t.typname "
+        "FROM   pg_catalog.pg_proc p "
+        "       JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "       JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+        "WHERE "
+        "    t.typname != 'trigger' AND p.prokind = 'f' AND "
+        "    n.nspname = $1 "
+        "ORDER BY p.proname ";
+    const char *sql_lt_11 =
         "SELECT "
         "    n.nspname, "
         "    p.proname, "
@@ -2700,7 +2873,36 @@ QStringList DDLGenerationPlugin::functions(PGconn *connection, QString schema)
         "    t.typname != 'trigger' AND "
         "    n.nspname = $1 "
         "ORDER BY p.proname ";
-    return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
+
+    if (database_version >= 11)
+        return createObjectList(connection, sql_gt_11, 1, 1, schema.toStdString().c_str());
+    else
+        return createObjectList(connection, sql_lt_11, 1, 1, schema.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::procedures(PGconn *connection, QString schema)
+{
+    double database_version = getDatabaseVersion(connection);
+
+    const char *sql_gt_11 =
+        "SELECT "
+        "    n.nspname, "
+        "    p.proname, "
+        "    pg_catalog.pg_get_function_identity_arguments(p.oid) as arguments, "
+        "    t.typname "
+        "FROM   pg_catalog.pg_proc p "
+        "       JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "       JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+        "WHERE "
+        "    t.typname != 'trigger' AND p.prokind = 'p' AND "
+        "    n.nspname = $1 "
+        "ORDER BY p.proname ";
+
+    if (database_version >= 11)
+        return createObjectList(connection, sql_gt_11, 1, 1, schema.toStdString().c_str());
+    else
+        return QStringList(); // there is no procedure before version 11
+
 }
 
 QStringList DDLGenerationPlugin::triggerFunctions(PGconn *connection, QString schema)
