@@ -200,6 +200,7 @@ private:
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
 
     QStringList createProcedure(PGconn *connection, QString schema, QString proc_name);
+    QStringList dropProcedure(PGconn *connection, QString schema, QString proc_name);
 
     QStringList createTable(PGconn *connection, QString schema, QString table_name);
 

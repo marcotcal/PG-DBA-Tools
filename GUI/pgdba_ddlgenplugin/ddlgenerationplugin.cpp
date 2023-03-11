@@ -194,7 +194,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         resp = createProcedure(connection, schema_name, procedure_name);
         break;
    case DDL_DROP_PROCEDURE:
-
+        resp = dropProcedure(connection, schema_name, procedure_name);
         break;
     case DDL_CREATE_TRIGGER_FUNCTIONS:
         resp = createFunctions(connection, schema_name, true);
@@ -387,11 +387,11 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
     case PROCEDURE_ITEM:
         list_item = new QListWidgetItem("Drop Procedure");
         list->addItem(list_item);
-        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_FUNCTION);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_PROCEDURE);
 
         list_item = new QListWidgetItem("Create or Replace Procedure");
         list->addItem(list_item);
-        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTION);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_PROCEDURE);
 
         list_item = new QListWidgetItem("Script Alter Procedure Parameters");
         list->addItem(list_item);
@@ -2262,6 +2262,19 @@ QStringList DDLGenerationPlugin::createProcedure(PGconn *connection, QString sch
     return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), proc_name.toStdString().c_str());
 }
 
+QStringList DDLGenerationPlugin::dropProcedure(PGconn *connection, QString schema, QString proc_name)
+{
+    const char *sql_gt_11 =
+            "SELECT format(E'DROP PROCEDURE IF EXISTS %s;\n' "
+            "            , p.oid::regprocedure "
+            "             ) AS stmt "
+            "FROM   "
+            "   pg_catalog.pg_proc p "
+            "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+            "WHERE  quote_ident(n.nspname) = $1 "
+            "       AND quote_ident(p.proname) = $2";
+        return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), proc_name.toStdString().c_str());
+}
 
 QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema, QString table_name)
 {
