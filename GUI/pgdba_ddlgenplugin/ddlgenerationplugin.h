@@ -41,11 +41,13 @@ public:
         DDL_ENABLE_TRIGGER,
         DDL_DISABLE_TRIGGER,
         DDL_CREATE_FUNCTIONS,
-        DDL_CREATE_FUNCTION,
-        DDL_CREATE_PROCEDURES,
-        DDL_CREATE_PROCEDURE,
+        DDL_CREATE_FUNCTION,        
         DDL_DROP_FUNCTIONS,
         DDL_DROP_FUNCTION,
+        DDL_CREATE_PROCEDURES,
+        DDL_CREATE_PROCEDURE,
+        DDL_DROP_PROCEDURES,
+        DDL_DROP_PROCEDURE,
         DDL_CREATE_TRIGGER_FUNCTIONS,
         DDL_CREATE_TABLE,
         DDL_CREATE_CONSTRAINTS,
@@ -196,6 +198,8 @@ private:
     QStringList createFunction(PGconn *connection, QString schema, QString func_name);
     QStringList dropFunctions(PGconn *connection, QString schema);
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
+
+    QStringList createProcedure(PGconn *connection, QString schema, QString proc_name);
 
     QStringList createTable(PGconn *connection, QString schema, QString table_name);
 

@@ -93,6 +93,7 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     QString schema_name = tree_item->data(0, ROLE_SCHEMA_NAME).toString();
     QString sequence_name = tree_item->data(0, ROLE_SEQUENCE_NAME).toString();
     QString function_name = tree_item->data(0, ROLE_FUNCTION_NAME).toString();
+    QString procedure_name = tree_item->data(0, ROLE_PROCEDURE_NAME).toString();
     QString table_name = tree_item->data(0, ROLE_TABLE_NAME).toString();
     QString constraint_name = tree_item->data(0, ROLE_CONSTRAINT_NAME).toString();
     QString trigger_name = tree_item->data(0, ROLE_TRIGGER_NAME).toString();
@@ -185,6 +186,15 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         break;
     case DDL_DROP_FUNCTION:
         resp = dropFunction(connection, schema_name, function_name);
+        break;
+   case DDL_CREATE_PROCEDURES:
+
+        break;
+   case DDL_CREATE_PROCEDURE:
+        resp = createProcedure(connection, schema_name, procedure_name);
+        break;
+   case DDL_DROP_PROCEDURE:
+
         break;
     case DDL_CREATE_TRIGGER_FUNCTIONS:
         resp = createFunctions(connection, schema_name, true);
@@ -548,8 +558,8 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         break;
     case FUNCTIONS_ITEM:
         if(item->childCount() == 0) processFunctions(item);
-        break;
-    case PROCEDURES_ITEM:
+        break;    
+    case PROCEDURES_ITEM:        
         if(item->childCount() == 0) processProcedures(item);
         break;
     case TRIGGER_FUNCTIONS_ITEM:
@@ -790,6 +800,8 @@ QStringList DDLGenerationPlugin::formatOutputToTable(PGresult *res, QString titl
 
 void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
 
+    PGconn *connection = trees[item->treeWidget()];
+    double version = getDatabaseVersion(connection);
 
     QTreeWidgetItem *table_node;
     QTreeWidgetItem *view_node;
@@ -823,12 +835,17 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     function_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
     item->addChild(function_node);
 
-    procedure_node = new QTreeWidgetItem();
-    procedure_node->setText(0, "Procedures");
-    procedure_node->setIcon(0, QIcon(":/icons/images/icons/functions.png"));
-    procedure_node->setData(0, ROLE_ITEM_TYPE, PROCEDURES_ITEM);
-    procedure_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
-    item->addChild(procedure_node);
+    if (version >= 11) {
+
+        // Procedures can be created only from Version 11
+
+        procedure_node = new QTreeWidgetItem();
+        procedure_node->setText(0, "Procedures");
+        procedure_node->setIcon(0, QIcon(":/icons/images/icons/functions.png"));
+        procedure_node->setData(0, ROLE_ITEM_TYPE, PROCEDURES_ITEM);
+        procedure_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+        item->addChild(procedure_node);
+    }
 
     trigger_function_node = new QTreeWidgetItem();
     trigger_function_node->setText(0, "Trigger Functions");
@@ -2183,6 +2200,68 @@ QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema
     else
         return createObjectList(connection, sql_lt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
+
+QStringList DDLGenerationPlugin::createProcedure(PGconn *connection, QString schema, QString proc_name)
+{
+    /* more complete than pg_get_functiondef */
+
+    const char *sql_gt_11 =
+            "WITH "
+            "    func_def AS ( "
+            "        SELECT "
+            "            quote_ident(n.nspname) AS schema_name, "
+            "            quote_ident(p.proname) AS function_name, "
+            "            pg_catalog.pg_get_function_identity_arguments(p.oid) AS arguments, "
+            "            CASE "
+            "               WHEN proretset THEN 'SETOF ' || coalesce(nullif(quote_ident(tn.nspname),'pg_catalog') || '.', '') "
+            "               ELSE coalesce(nullif(quote_ident(tn.nspname),'pg_catalog') || '.', '') "
+            "            END AS return_schema, "
+            "            CASE "
+            "                WHEN t.typname = 'timestamp' THEN 'timestamp without time zone' "
+            "                WHEN t.typname = 'timestampz' THEN 'timestamp with time zone' "
+            "                ELSE quote_ident(t.typname) "
+            "           END AS return_type, "
+            "            l.lanname AS language_name, "
+            "            CASE "
+            "               WHEN proretset THEN 'COST ' || procost || E'\n' || 'ROWS ' || p.prorows || E';\n' "
+            "               ELSE 'COST ' || p.procost || E';\n' "
+            "            END AS estimated_cost_rows, "
+            "            CASE "
+            "                WHEN p.provolatile = 'v' THEN 'VOLATILE' "
+            "                WHEN p.provolatile = 'i' THEN 'IMMUTABLE' "
+            "                WHEN p.provolatile = 's' THEN 'STABLE' "
+            "            END behavior, "
+            "            CASE "
+            "                WHEN p.prosecdef = TRUE THEN 'SECURITY DEFINER' "
+            "                ELSE 'SECURITY INVOKER' "
+            "            END AS security, "
+            "            CASE "
+            "                WHEN p.proisstrict THEN 'RETURNS NULL ON NULL INPUT' "
+            "               ELSE 'CALLED ON NULL INPUT' "
+            "            END AS null_parameters, "
+            "            p.prosrc AS code "
+            "        FROM   pg_catalog.pg_proc p "
+            "           JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+            "           JOIN pg_catalog.pg_type t ON p.prorettype = t.oid "
+            "           JOIN pg_catalog.pg_namespace tn ON t.typnamespace = tn.oid "
+            "           JOIN pg_catalog.pg_language l ON p.prolang = l.oid "
+            "    ) "
+            "    SELECT "
+            "        'CREATE OR REPLACE PROCEDURE ' || schema_name || '.' || function_name || '(' || arguments || E')\n' || "
+            "        '   LANGUAGE ' || language_name || E'\n' || "
+            "        E'AS \n' || "
+            "        E'$BODY$' || "
+            "        code || "
+            "        E'$BODY$\n' || "
+            "        behavior || E'\n' || security || E'\n' || null_parameters || E'\n' || "
+            "        estimated_cost_rows AS definition "
+            "    FROM func_def "
+            "    WHERE "
+            "        schema_name  = $1 AND "
+            "        function_name = $2 ";
+    return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), proc_name.toStdString().c_str());
+}
+
 
 QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema, QString table_name)
 {
