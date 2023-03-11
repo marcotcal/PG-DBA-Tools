@@ -21,3 +21,4 @@ Any sugestion are wellcome!
 About some false positives on QtCreator - Q_Object (incomplete type) - Please disable clang options on menu /help/about plugins
 See configuration to choose the web engine
 
+As each sql tool have a separated connection it is possible to open independent transactions. Also the sentings for query optimazations are applied only in the selected SQL Tool. 
