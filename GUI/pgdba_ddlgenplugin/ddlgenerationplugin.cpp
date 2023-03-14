@@ -186,16 +186,22 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
         break;
     case DDL_DROP_FUNCTION:
         resp = dropFunction(connection, schema_name, function_name);
-        break;
-   case DDL_CREATE_PROCEDURES:
+        break;    
+    case DDL_FUNCTION_OWNER:
+         resp = functionOwner(connection, schema_name, function_name);
+         break;
+    case DDL_CREATE_PROCEDURES:
 
         break;
-   case DDL_CREATE_PROCEDURE:
+    case DDL_CREATE_PROCEDURE:
         resp = createProcedure(connection, schema_name, procedure_name);
         break;
-   case DDL_DROP_PROCEDURE:
+    case DDL_DROP_PROCEDURE:
         resp = dropProcedure(connection, schema_name, procedure_name);
         break;
+    case DDL_PROCEDURE_OWNER:
+         resp = procedureOwner(connection, schema_name, procedure_name);
+         break;
     case DDL_CREATE_TRIGGER_FUNCTIONS:
         resp = createFunctions(connection, schema_name, true);
         break;
@@ -368,8 +374,9 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_FUNCTION);
 
-        list_item = new QListWidgetItem("Script Alter Function Parameters");
+        list_item = new QListWidgetItem("Function Owner");
         list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_FUNCTION_OWNER);
         break;
     case PROCEDURES_ITEM:
         list_item = new QListWidgetItem("Create New Procedure");
@@ -393,7 +400,8 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_PROCEDURE);
 
-        list_item = new QListWidgetItem("Script Alter Procedure Parameters");
+        list_item = new QListWidgetItem("Procedure Owner");
+        list_item->setData(ROLE_ITEM_TYPE, DDL_PROCEDURE_OWNER);
         list->addItem(list_item);
         break;
     case TRIGGER_FUNCTIONS_ITEM:
@@ -2201,6 +2209,43 @@ QStringList DDLGenerationPlugin::dropFunction(PGconn *connection, QString schema
         return createObjectList(connection, sql_lt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
 }
 
+QStringList DDLGenerationPlugin::functionOwner(PGconn *connection, QString schema, QString func_name)
+{
+    double version = getDatabaseVersion(connection);
+    const char *sql_gt_11 =
+            "SELECT format(E'ALTER %s %s OWNER TO %s;\n' "
+            "            , CASE "
+            "                 WHEN p.prokind = 'a' THEN 'AGGREGATE' "
+            "                 WHEN p.prokind = 'f' THEN 'FUNCTION' "
+            "                 WHEN p.prokind = 'p' THEN 'PROCEDURE' "
+            "                 ELSE 'FUNCTION' "
+            "               END "
+            "            , p.oid::regprocedure "
+            "            , p.proowner::regrole "
+            "             ) AS stmt "
+            "FROM   "
+            "   pg_catalog.pg_proc p "
+            "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+            "WHERE  quote_ident(n.nspname) = $1 "
+            "       AND quote_ident(p.proname) = $2";
+
+    const char *sql_lt_11 =
+        "SELECT format(E'DROP %s %s OWNER TO %s;\n' "
+        "            , CASE WHEN p.proisagg THEN 'AGGREGATE' ELSE 'FUNCTION' END "
+        "            , p.oid::regprocedure "
+        "            , p.proowner::regrole "
+        "             ) AS stmt "
+        "FROM   "
+        "   pg_catalog.pg_proc p "
+        "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+        "WHERE  quote_ident(n.nspname) = $1 "
+            "       AND quote_ident(p.proname) = $2";
+    if (version >= 11)
+        return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+    else
+        return createObjectList(connection, sql_lt_11, 0, 2, schema.toStdString().c_str(), func_name.toStdString().c_str());
+}
+
 QStringList DDLGenerationPlugin::createProcedure(PGconn *connection, QString schema, QString proc_name)
 {
     /* more complete than pg_get_functiondef */
@@ -2223,22 +2268,9 @@ QStringList DDLGenerationPlugin::createProcedure(PGconn *connection, QString sch
             "           END AS return_type, "
             "            l.lanname AS language_name, "
             "            CASE "
-            "               WHEN proretset THEN 'COST ' || procost || E'\n' || 'ROWS ' || p.prorows || E';\n' "
-            "               ELSE 'COST ' || p.procost || E';\n' "
-            "            END AS estimated_cost_rows, "
-            "            CASE "
-            "                WHEN p.provolatile = 'v' THEN 'VOLATILE' "
-            "                WHEN p.provolatile = 'i' THEN 'IMMUTABLE' "
-            "                WHEN p.provolatile = 's' THEN 'STABLE' "
-            "            END behavior, "
-            "            CASE "
             "                WHEN p.prosecdef = TRUE THEN 'SECURITY DEFINER' "
             "                ELSE 'SECURITY INVOKER' "
-            "            END AS security, "
-            "            CASE "
-            "                WHEN p.proisstrict THEN 'RETURNS NULL ON NULL INPUT' "
-            "               ELSE 'CALLED ON NULL INPUT' "
-            "            END AS null_parameters, "
+            "            END AS security, "            
             "            p.prosrc AS code "
             "        FROM   pg_catalog.pg_proc p "
             "           JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
@@ -2253,8 +2285,7 @@ QStringList DDLGenerationPlugin::createProcedure(PGconn *connection, QString sch
             "        E'$BODY$' || "
             "        code || "
             "        E'$BODY$\n' || "
-            "        behavior || E'\n' || security || E'\n' || null_parameters || E'\n' || "
-            "        estimated_cost_rows AS definition "
+            "        security || E';\n' AS definition "
             "    FROM func_def "
             "    WHERE "
             "        schema_name  = $1 AND "
@@ -2273,7 +2304,22 @@ QStringList DDLGenerationPlugin::dropProcedure(PGconn *connection, QString schem
             "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
             "WHERE  quote_ident(n.nspname) = $1 "
             "       AND quote_ident(p.proname) = $2";
-        return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), proc_name.toStdString().c_str());
+    return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), proc_name.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::procedureOwner(PGconn *connection, QString schema, QString proc_name)
+{
+    const char *sql_gt_11 =
+            "SELECT format(E'ALTER PROCEDURE %s OWNER TO %s;\n' "
+            "            , p.oid::regprocedure "
+            "            , p.proowner::regrole "
+            "             ) AS stmt "
+            "FROM   "
+            "   pg_catalog.pg_proc p "
+            "   JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace "
+            "WHERE  quote_ident(n.nspname) = $1 "
+            "       AND quote_ident(p.proname) = $2";
+    return createObjectList(connection, sql_gt_11, 0, 2, schema.toStdString().c_str(), proc_name.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createTable(PGconn *connection, QString schema, QString table_name)

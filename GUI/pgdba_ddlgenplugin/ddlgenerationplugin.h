@@ -44,10 +44,12 @@ public:
         DDL_CREATE_FUNCTION,        
         DDL_DROP_FUNCTIONS,
         DDL_DROP_FUNCTION,
+        DDL_FUNCTION_OWNER,
         DDL_CREATE_PROCEDURES,
         DDL_CREATE_PROCEDURE,
         DDL_DROP_PROCEDURES,
         DDL_DROP_PROCEDURE,
+        DDL_PROCEDURE_OWNER,
         DDL_CREATE_TRIGGER_FUNCTIONS,
         DDL_CREATE_TABLE,
         DDL_CREATE_CONSTRAINTS,
@@ -198,9 +200,11 @@ private:
     QStringList createFunction(PGconn *connection, QString schema, QString func_name);
     QStringList dropFunctions(PGconn *connection, QString schema);
     QStringList dropFunction(PGconn *connection, QString schema, QString func_name);
+    QStringList functionOwner(PGconn *connection, QString schema, QString func_name);
 
     QStringList createProcedure(PGconn *connection, QString schema, QString proc_name);
     QStringList dropProcedure(PGconn *connection, QString schema, QString proc_name);
+    QStringList procedureOwner(PGconn *connection, QString schema, QString proc_name);
 
     QStringList createTable(PGconn *connection, QString schema, QString table_name);
 
