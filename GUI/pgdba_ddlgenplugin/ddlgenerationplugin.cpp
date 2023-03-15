@@ -139,6 +139,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_UPDATE_SEQUENCE:
         resp = updateSequence(connection, schema_name, sequence_name);
         break;
+    case DDL_SEQUENCE_OWNER:
+        resp = sequenceOwner(connection, schema_name, sequence_name);
+        break;
     case DDL_CREATE_ALL_TRIGGERS:
         resp = createAllTriggers(connection);
         break;
@@ -350,6 +353,10 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("Update Sequence");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_UPDATE_SEQUENCE);
+
+        list_item = new QListWidgetItem("Sequence Owner");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_SEQUENCE_OWNER);
 
         break;
     case FUNCTIONS_ITEM:
@@ -1346,7 +1353,7 @@ QStringList DDLGenerationPlugin::updateSequences(PGconn *connection, QString sch
         "        ELSE 'ALTER SEQUENCE ' || sequence_name || ' RESTART WITH ' || value_to_update || E';\n' "
         "    END "
         "FROM sequences "
-        "ORDER BY sequence_nane ";
+        "ORDER BY sequence_name ";
     sql = sql.arg(schema);
     return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
 }
@@ -1362,6 +1369,7 @@ QStringList DDLGenerationPlugin::resetSequence(PGconn *connection, QString schem
 
 QStringList DDLGenerationPlugin::updateSequence(PGconn *connection, QString schema, QString sequence)
 {
+
     QString sql =
             QString (
                 "DO "
@@ -1407,6 +1415,15 @@ QStringList DDLGenerationPlugin::updateSequence(PGconn *connection, QString sche
             ).arg(schema).arg(sequence);
 
     return createObjectList(connection, sql.toStdString().c_str(), 0, 0);
+}
+
+QStringList DDLGenerationPlugin::sequenceOwner(PGconn *connection, QString schema, QString sequence)
+{
+    const char *sql =
+        "SELECT 'ALTER SEQUENCE ' || schemaname || '.' || sequencename || ' OWNER TO ' || sequenceowner || E';\n' "
+        "FROM pg_sequences "
+        "WHERE schemaname = $1 AND sequencename = $2 ";
+    return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), sequence.toStdString().c_str());
 }
 
 QStringList DDLGenerationPlugin::createConstraints(PGconn *connection, QString schema, QString table)
