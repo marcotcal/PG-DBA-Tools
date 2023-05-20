@@ -74,6 +74,9 @@ public:
         DDL_VIEW_OWNER,
         DDL_CREATE_INDEXES,
         DDL_DROP_INDEXES,
+        DDL_STAT_INDEXES,
+        DDL_CREATE_INDEX,
+        DDL_DROP_INDEX
     };
     enum {
         DATABASE_ITEM,
@@ -226,8 +229,15 @@ private:
     QStringList dropView(PGconn *connection, QString schema, QString view_name);
     QStringList viewOwner(PGconn *connection, QString schema, QString view_name);
 
-    QStringList createIndexes(PGconn *connection, QString schema, QString index_name);
-    QStringList dropIndexes(PGconn *connection, QString schema, QString index_name);
+    QStringList createIndexes(PGconn *connection, QString schema);
+    QStringList dropIndexes(PGconn *connection, QString schema);
+
+    QStringList createIndexes(PGconn *connection, QString schema, QString tabe_name);
+    QStringList dropIndexes(PGconn *connection, QString schema, QString tabe_name);
+    QStringList statIndexes(PGconn *connection, QString schema, QString table_name);
+
+    QStringList createIndex(PGconn *connection, QString schema, QString index_name);
+    QStringList dropIndex(PGconn *connection, QString schema, QString index_name);
 
     QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 

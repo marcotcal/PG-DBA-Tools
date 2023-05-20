@@ -249,6 +249,9 @@ QStringList DDLGenerationPlugin::run(QTreeWidgetItem *tree_item, PGconn *connect
     case DDL_DESCRIBE_TABLE_FIELDS:
         resp = describeTableFields(connection, schema_name, table_name);
         break;
+    case DDL_STAT_INDEXES:
+        resp = statIndexes(connection, schema_name, table_name);
+        break;
     case DDL_CREATE_VIEW:
         resp = createView(connection, schema_name, view_name);
         break;
@@ -561,7 +564,30 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_INDEXES);
         break;
-        }
+    case TABLE_INDEXES_ITEM:
+        list_item = new QListWidgetItem("Create indexes");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_INDEXES);
+
+        list_item = new QListWidgetItem("Index statistics");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_STAT_INDEXES);
+
+        list_item = new QListWidgetItem("Drop indexes");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_INDEXES);
+        break;
+    case INDEX_ITEM:
+    case TABLE_INDEX_ITEM:
+        list_item = new QListWidgetItem("Create index");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_INDEX);
+
+        list_item = new QListWidgetItem("Drop index");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_INDEX);
+        break;
+    }
 }
 
 void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
@@ -624,8 +650,6 @@ double DDLGenerationPlugin::getDatabaseVersion(PGconn *connection)
             PQclear(res);
             return 0.0;
         }
-
-        int tuples = PQntuples(res);
 
         resp = QString::fromStdString(PQgetvalue(res, 0, 0));
 
@@ -1037,9 +1061,9 @@ void DDLGenerationPlugin::processIndexes(QTreeWidgetItem *item)
         index = new QTreeWidgetItem();
         index->setText(0, index_list[j]);
         index->setIcon(0, QIcon(":/icons/images/icons/index.png"));
-        index->setData(0, Qt::UserRole, VIEW_ITEM);
+        index->setData(0, Qt::UserRole, INDEX_ITEM);
         index->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
-        index->setData(0, ROLE_VIEW_NAME, index_list[j]);
+        index->setData(0, ROLE_INDEX_NAME, index_list[j]);
         item->addChild(index);
     }
 }
@@ -2574,14 +2598,67 @@ QStringList DDLGenerationPlugin::viewOwner(PGconn *connection, QString schema, Q
     return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), view_name.toStdString().c_str());
 }
 
-QStringList DDLGenerationPlugin::createIndexes(PGconn *connection, QString schema, QString index_name)
+QStringList DDLGenerationPlugin::createIndexes(PGconn *connection, QString schema)
+{
+    /* TODO */
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::dropIndexes(PGconn *connection, QString schema)
+{
+    /* TODO */
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::createIndexes(PGconn *connection, QString schema, QString tabe_name)
 {
 
 }
 
-QStringList DDLGenerationPlugin::dropIndexes(PGconn *connection, QString schema, QString index_name)
+QStringList DDLGenerationPlugin::dropIndexes(PGconn *connection, QString schema, QString tabe_name)
 {
 
+}
+
+QStringList DDLGenerationPlugin::statIndexes(PGconn *connection, QString schema, QString table_name)
+{
+    QStringList resp;
+    PGresult *res;
+    QDateTime date = QDateTime::currentDateTime();
+    QString formattedTime = date.toString("dd.MM.yyyy hh:mm:ss");
+
+    const char *sql = "SELECT "
+                      "  relid, "
+                      "  indexrelid, "
+                      "  schemaname, "
+                      "  relname, "
+                      "  indexrelname, "
+                      "  idx_scan, "
+                      "  idx_tup_read, "
+                      "  idx_tup_fetch "
+                      "FROM pg_stat_user_indexes "
+                      "WHERE schemaname = $1 AND relname = $2 "
+                      "ORDER BY idx_scan ";
+
+    res = createObjectList(connection, sql, 2, schema.toStdString().c_str(),
+                                         table_name.toStdString().c_str());
+    resp = formatOutputToTable(res, QString("Table: %1.%2 - Generated at: %3").arg(schema).arg(table_name).arg(formattedTime), true);
+
+    PQclear(res);
+
+    return resp;
+}
+
+QStringList DDLGenerationPlugin::createIndex(PGconn *connection, QString schema, QString index_name)
+{
+    /* TODO */
+    return QStringList();
+}
+
+QStringList DDLGenerationPlugin::dropIndex(PGconn *connection, QString schema, QString index_name)
+{
+    /* TODO */
+    return QStringList();
 }
 
 QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema, QString column_name)
