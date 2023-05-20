@@ -72,6 +72,8 @@ public:
         DDL_CREATE_VIEW,
         DDL_DROP_VIEW,
         DDL_VIEW_OWNER,
+        DDL_CREATE_INDEXES,
+        DDL_DROP_INDEXES,
     };
     enum {
         DATABASE_ITEM,
@@ -81,6 +83,8 @@ public:
         TABLE_ITEM,
         VIEWS_ITEM,
         VIEW_ITEM,
+        INDEXES_ITEM,
+        INDEX_ITEM,
         SEQUENCES_ITEM,
         SEQUENCE_ITEM,
         FUNCTIONS_ITEM,
@@ -95,6 +99,8 @@ public:
         TRIGGER_ITEM,
         TABLE_COLUMNS_ITEM,
         TABLE_COLUMN_ITEM,
+        TABLE_INDEXES_ITEM,
+        TABLE_INDEX_ITEM,
         TYPES_ITEM,
         TYPE_ITEM
     };
@@ -108,10 +114,12 @@ public:
         ROLE_FUNCTION_NAME,
         ROLE_PROCEDURE_NAME,
         ROLE_TABLE_COLUMN_NAME,
+        ROLE_TABLE_INDEX_NAME,
         ROLE_CONSTRAINT_NAME,
         ROLE_TRIGGER_NAME,
         ROLE_TYPE_NAME,
-        ROLE_VIEW_NAME
+        ROLE_VIEW_NAME,
+        ROLE_INDEX_NAME
     };
     DDLGenerationPlugin(QObject *parent = 0);
     void createTree(PGconn *connection, QTreeWidget *tree) override;
@@ -140,6 +148,7 @@ private:
     QStringList tables(PGconn *connection, QString schema);
     QStringList types(PGconn *connection, QString schema);
     QStringList views(PGconn *connection, QString schema);
+    QStringList indexes(PGconn *connection, QString schema);
     QStringList sequences(PGconn *connection, QString schema);
     QStringList functions(PGconn *connection, QString schema);
     QStringList procedures(PGconn *connection, QString schema);
@@ -147,11 +156,13 @@ private:
     QStringList constraints(PGconn *connection, QString schema, QString table, char *ctype);
     QStringList triggers(PGconn *connection, QString schema, QString table);
     QStringList table_columns(PGconn *connection, QString schema, QString table);
+    QStringList table_indexes(PGconn *connection, QString schema, QString table);
 
     void processSchemas(QTreeWidgetItem *item);
     void processTables(QTreeWidgetItem *item);
     void processTypes(QTreeWidgetItem *item);
     void processViews(QTreeWidgetItem *item);
+    void processIndexes(QTreeWidgetItem *item);
     void processSequences(QTreeWidgetItem *item);
     void processFunctions(QTreeWidgetItem *item);
     void processProcedures(QTreeWidgetItem *item);
@@ -159,6 +170,7 @@ private:
     void processConstraints(QTreeWidgetItem *item);
     void processTriggers(QTreeWidgetItem *item);
     void processTableColumns(QTreeWidgetItem *item);
+    void processTableIndexes(QTreeWidgetItem *item);
 
     QStringList createAllSchemas(PGconn *connection);
     QStringList dropAllSchemas(PGconn *connection);
@@ -213,6 +225,9 @@ private:
     QStringList createView(PGconn *connection, QString schema, QString view_name);
     QStringList dropView(PGconn *connection, QString schema, QString view_name);
     QStringList viewOwner(PGconn *connection, QString schema, QString view_name);
+
+    QStringList createIndexes(PGconn *connection, QString schema, QString index_name);
+    QStringList dropIndexes(PGconn *connection, QString schema, QString index_name);
 
     QStringList alterColumn(PGconn *connection, QString schema, QString column_name);
 

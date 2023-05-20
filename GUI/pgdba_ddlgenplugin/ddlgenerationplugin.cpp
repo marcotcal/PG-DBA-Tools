@@ -551,8 +551,17 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list_item = new QListWidgetItem("View Owner");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_VIEW_OWNER);
+        break;    
+    case INDEXES_ITEM:
+        list_item = new QListWidgetItem("Create indexes");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_INDEXES);
+
+        list_item = new QListWidgetItem("Drop indexes");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_INDEXES);
         break;
-    }
+        }
 }
 
 void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
@@ -567,6 +576,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         break;
     case VIEWS_ITEM:
         if(item->childCount() == 0) processViews(item);
+        break;
+    case INDEXES_ITEM:
+        if(item->childCount() == 0) processIndexes(item);
         break;
     case SEQUENCES_ITEM:
         if(item->childCount() == 0) processSequences(item);
@@ -588,6 +600,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         break;
     case TABLE_COLUMNS_ITEM:
         if(item->childCount() == 0) processTableColumns(item);
+        break;
+    case TABLE_INDEXES_ITEM:
+        if(item->childCount() == 0) processTableIndexes(item);
         break;
     case TYPES_ITEM:
         if(item->childCount() == 0) processTypes(item);
@@ -825,6 +840,7 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     QTreeWidgetItem *sequence_node;
     QTreeWidgetItem *trigger_function_node;
     QTreeWidgetItem *type_node;
+    QTreeWidgetItem *index_node;
 
     if (item->childCount() > 0)
         return;
@@ -883,6 +899,13 @@ void DDLGenerationPlugin::processSchemas(QTreeWidgetItem *item) {
     view_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
     item->addChild(view_node);
 
+    index_node = new QTreeWidgetItem();
+    index_node->setText(0, "Indexes");
+    index_node->setIcon(0, QIcon(":/icons/images/icons/indexes.png"));
+    index_node->setData(0, ROLE_ITEM_TYPE, INDEXES_ITEM);
+    index_node->setData(0, ROLE_SCHEMA_NAME, item->text(0));
+    item->addChild(index_node);
+
 }
 
 void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
@@ -892,6 +915,7 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
     QTreeWidgetItem *constraints_node;
     QTreeWidgetItem *triggers_node;
     QTreeWidgetItem *columns_node;
+    QTreeWidgetItem *indexes_node;
     QTreeWidgetItem *table;
     QStringList table_list;
 
@@ -933,6 +957,14 @@ void DDLGenerationPlugin::processTables(QTreeWidgetItem *item)
         columns_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
         columns_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
         table->addChild(columns_node);
+
+        indexes_node = new QTreeWidgetItem();
+        indexes_node->setText(0, "Indexes");
+        indexes_node->setIcon(0, QIcon(":/icons/images/icons/indexes.png"));
+        indexes_node->setData(0, ROLE_ITEM_TYPE, TABLE_INDEXES_ITEM);
+        indexes_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        indexes_node->setData(0, ROLE_TABLE_NAME, table_list[j]);
+        table->addChild(indexes_node);
 
     }
 }
@@ -987,6 +1019,28 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
         triggers_node->setData(0, ROLE_VIEW_NAME, view_list[j]);
         view->addChild(triggers_node);
 
+    }
+}
+
+void DDLGenerationPlugin::processIndexes(QTreeWidgetItem *item)
+{
+
+    QTreeWidgetItem *index;
+    QStringList index_list;
+
+    PGconn *connection = trees[item->treeWidget()];
+
+    index_list = indexes(connection, item->data(0, ROLE_SCHEMA_NAME).toString());
+
+    for(int j=0; j < index_list.count(); j++) {
+
+        index = new QTreeWidgetItem();
+        index->setText(0, index_list[j]);
+        index->setIcon(0, QIcon(":/icons/images/icons/index.png"));
+        index->setData(0, Qt::UserRole, VIEW_ITEM);
+        index->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
+        index->setData(0, ROLE_VIEW_NAME, index_list[j]);
+        item->addChild(index);
     }
 }
 
@@ -1199,6 +1253,33 @@ void DDLGenerationPlugin::processTableColumns(QTreeWidgetItem *item)
         column->setData(0, ROLE_TABLE_NAME, table);
         column->setData(0, ROLE_SCHEMA_NAME, schema);
         item->addChild(column);
+    }
+}
+
+void DDLGenerationPlugin::processTableIndexes(QTreeWidgetItem *item)
+{
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString table = item->data(0, ROLE_TABLE_NAME).toString();
+    QStringList indexes_list;
+    QTreeWidgetItem *index;
+    QString index_name;
+
+    PGconn *connection = trees[item->treeWidget()];
+
+    indexes_list = table_indexes(connection, schema, table);
+
+    for(int j=0; j < indexes_list.count(); j++) {
+
+        index_name = indexes_list[j];
+
+        index = new QTreeWidgetItem();
+
+        index->setIcon(0, QIcon(":/icons/images/icons/index.png"));
+        index->setText(0, index_name);
+        index->setData(0, ROLE_ITEM_TYPE, TABLE_INDEX_ITEM);
+        index->setData(0, ROLE_TABLE_NAME, table);
+        index->setData(0, ROLE_SCHEMA_NAME, schema);
+        item->addChild(index);
     }
 }
 
@@ -2493,6 +2574,16 @@ QStringList DDLGenerationPlugin::viewOwner(PGconn *connection, QString schema, Q
     return createObjectList(connection, sql, 0, 2, schema.toStdString().c_str(), view_name.toStdString().c_str());
 }
 
+QStringList DDLGenerationPlugin::createIndexes(PGconn *connection, QString schema, QString index_name)
+{
+
+}
+
+QStringList DDLGenerationPlugin::dropIndexes(PGconn *connection, QString schema, QString index_name)
+{
+
+}
+
 QStringList DDLGenerationPlugin::alterColumn(PGconn *connection, QString schema, QString column_name)
 {
     /* TODO */
@@ -2986,6 +3077,19 @@ QStringList DDLGenerationPlugin::views(PGconn *connection, QString schema)
     return createObjectList(connection, sql, 1, 1, schema.toStdString().c_str());
 }
 
+QStringList DDLGenerationPlugin::indexes(PGconn *connection, QString schema)
+{
+    const char *sql =
+        "SELECT "
+        "    indexname "
+        "FROM pg_catalog.pg_indexes "
+        "WHERE "
+        "    schemaname NOT IN ('pg_catalog', 'information_schema') "
+        "    AND schemaname = $1 "
+        "ORDER BY indexname ";
+    return createObjectList(connection, sql, 0, 1, schema.toStdString().c_str());
+}
+
 QStringList DDLGenerationPlugin::sequences(PGconn *connection, QString schema)
 {
     const char *sql =
@@ -3166,6 +3270,22 @@ QStringList DDLGenerationPlugin::table_columns(PGconn *connection, QString schem
         "    AND NOT a.attisdropped "
         "    AND n.nspname = $1 "
         "    AND c.relname = $2 ";
+    return createObjectList(connection,
+                            sql, 0, 2,
+                            schema.toStdString().c_str(),
+                            table.toStdString().c_str());
+}
+
+QStringList DDLGenerationPlugin::table_indexes(PGconn *connection, QString schema, QString table)
+{
+    const char *sql =
+        "SELECT "
+        "    indexname "
+        "FROM pg_catalog.pg_indexes "
+        "WHERE "
+        "    schemaname NOT IN ('pg_catalog', 'information_schema') "
+        "    AND schemaname = $1 AND tablename = $2 "
+        "ORDER BY tablename ";
     return createObjectList(connection,
                             sql, 0, 2,
                             schema.toStdString().c_str(),

@@ -149,6 +149,8 @@
         <file>images/icons/column_inherited.png</file>
         <file>images/icons/types.png</file>
         <file>images/icons/type.png</file>
+        <file>images/icons/indexes.png</file>
+        <file>images/icons/index.png</file>
     </qresource>
     <qresource prefix="/query_defs">
         <file>query_models/modelo.xml</file>
