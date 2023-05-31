@@ -498,7 +498,41 @@ void DDLGenerationPlugin::updateFunctionList(QTreeWidgetItem *item, QListWidget 
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_DISABLE_TRIGGERS);
         break;
+    case VIEWS_TRIGGERS_ITEM:
+        list_item = new QListWidgetItem("Create Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TRIGGERS);
+
+        list_item = new QListWidgetItem("Drop Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TRIGGERS);
+
+        list_item = new QListWidgetItem("Enable Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_ENABLE_TRIGGERS);
+
+        list_item = new QListWidgetItem("Disable Triggers");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DISABLE_TRIGGERS);
+        break;
     case TRIGGER_ITEM:
+        list_item = new QListWidgetItem("Create Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TRIGGER);
+
+        list_item = new QListWidgetItem("Drop Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DROP_TRIGGER);
+
+        list_item = new QListWidgetItem("Enable Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_ENABLE_TRIGGER);
+
+        list_item = new QListWidgetItem("Disable Trigger");
+        list->addItem(list_item);
+        list_item->setData(ROLE_ITEM_TYPE, DDL_DISABLE_TRIGGER);
+        break;
+    case VIEWS_TRIGGER_ITEM:
         list_item = new QListWidgetItem("Create Trigger");
         list->addItem(list_item);
         list_item->setData(ROLE_ITEM_TYPE, DDL_CREATE_TRIGGER);
@@ -623,6 +657,9 @@ void DDLGenerationPlugin::processItem(QTreeWidgetItem *item, int column)
         break;
     case TRIGGERS_ITEM:
         if(item->childCount() == 0) processTriggers(item);
+        break;
+    case VIEWS_TRIGGERS_ITEM:
+        if(item->childCount() == 0) processViewsTriggers(item);
         break;
     case TABLE_COLUMNS_ITEM:
         if(item->childCount() == 0) processTableColumns(item);
@@ -1038,7 +1075,7 @@ void DDLGenerationPlugin::processViews(QTreeWidgetItem *item)
         triggers_node = new QTreeWidgetItem();
         triggers_node->setText(0, "Triggers");
         triggers_node->setIcon(0, QIcon(":/icons/images/icons/triggers.png"));
-        triggers_node->setData(0, ROLE_ITEM_TYPE, TRIGGERS_ITEM);
+        triggers_node->setData(0, ROLE_ITEM_TYPE, VIEWS_TRIGGERS_ITEM);
         triggers_node->setData(0, ROLE_SCHEMA_NAME, item->data(0, ROLE_SCHEMA_NAME).toString());
         triggers_node->setData(0, ROLE_VIEW_NAME, view_list[j]);
         view->addChild(triggers_node);
@@ -1251,6 +1288,29 @@ void DDLGenerationPlugin::processTriggers(QTreeWidgetItem *item)
 
 }
 
+void DDLGenerationPlugin::processViewsTriggers(QTreeWidgetItem *item)
+{
+    QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();
+    QString view = item->data(0, ROLE_VIEW_NAME).toString();
+    QStringList trigger_list;
+    QTreeWidgetItem *trigger;
+
+    PGconn *connection = trees[item->treeWidget()];
+
+    trigger_list = triggers(connection, schema, view);
+
+    for(int j=0; j < trigger_list.count(); j++) {
+        trigger = new QTreeWidgetItem();
+        trigger->setText(0, trigger_list[j]);
+        trigger->setIcon(0, QIcon(":/icons/images/icons/trigger.png"));
+        trigger->setData(0, ROLE_ITEM_TYPE, VIEWS_TRIGGER_ITEM);
+        trigger->setData(0, ROLE_VIEW_NAME, view);
+        trigger->setData(0, ROLE_SCHEMA_NAME, schema);
+        trigger->setData(0, ROLE_TRIGGER_NAME, trigger_list[j]);
+        item->addChild(trigger);
+    }
+
+}
 void DDLGenerationPlugin::processTableColumns(QTreeWidgetItem *item)
 {
     QString schema = item->data(0, ROLE_SCHEMA_NAME).toString();

@@ -209,7 +209,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "global go goto grant group grouping having host "
             "hour identity if ignore immediate in indicator "
             "initialize initially inner inout input insert int "
-            "intersect into is isolation invoker "
+            "intersect into is isolation invoker instead "
             "iterate join key language large last lateral "
             "leading left less level like limit local localtime leakproof "
             "localtimestamp locator map match minute modifies "

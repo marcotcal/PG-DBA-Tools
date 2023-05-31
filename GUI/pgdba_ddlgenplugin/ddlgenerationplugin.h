@@ -99,6 +99,8 @@ public:
         CONSTRAINTS_ITEM,
         CONSTRAINT_ITEM,
         TRIGGERS_ITEM,
+        VIEWS_TRIGGERS_ITEM,
+        VIEWS_TRIGGER_ITEM,
         TRIGGER_ITEM,
         TABLE_COLUMNS_ITEM,
         TABLE_COLUMN_ITEM,
@@ -172,6 +174,7 @@ private:
     void processTrigerFunctions(QTreeWidgetItem *item);
     void processConstraints(QTreeWidgetItem *item);
     void processTriggers(QTreeWidgetItem *item);
+    void processViewsTriggers(QTreeWidgetItem *item);
     void processTableColumns(QTreeWidgetItem *item);
     void processTableIndexes(QTreeWidgetItem *item);
 
