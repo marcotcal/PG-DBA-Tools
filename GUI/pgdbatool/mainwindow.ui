@@ -109,7 +109,6 @@
     <addaction name="actionConfigurations"/>
     <addaction name="separator"/>
     <addaction name="actionScan_Model_Directory"/>
-    <addaction name="actionListener"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1287,11 +1286,6 @@ color: rgb(180, 180,180);</string>
    </property>
    <property name="text">
     <string>Code Function</string>
-   </property>
-  </action>
-  <action name="actionListener">
-   <property name="text">
-    <string>Listener</string>
    </property>
   </action>
  </widget>

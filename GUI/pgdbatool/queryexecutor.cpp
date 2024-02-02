@@ -12,8 +12,19 @@ QueryExecutor::QueryExecutor(PGconn *conn, QString query, QObject *parent) :
 
 void QueryExecutor::run()
 {
+    PGnotify *notify;
+
     PQsetNoticeProcessor(conn, noticeProcessor, NULL);
     PGresult *res = PQexec(conn, query.toStdString().c_str());
+    PQconsumeInput(conn);
+    while ((notify = PQnotifies(conn)) != NULL)
+    {
+        emit generate_listener_message(notify->relname, notify->be_pid, notify->extra);
+
+        PQfreemem(notify);
+        PQconsumeInput(conn);
+    }
+
     emit query_ended(res);
 }
 

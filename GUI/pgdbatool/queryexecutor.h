@@ -21,6 +21,7 @@ protected:
 signals:
     void query_ended(PGresult *res);
     void generate_notice(QString msg);
+    void generate_listener_message(QString event, int pid, QString payload);
 
 private:
     PGconn *conn;

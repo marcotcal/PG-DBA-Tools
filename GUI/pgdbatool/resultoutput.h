@@ -30,6 +30,7 @@ public slots:
     virtual void generateStatusMessage(PGresult *res);
     virtual void generateStatusMessage(QString msg);
     virtual void generateError(PGconn *conn);
+    virtual void generateListerMessage(QString event, int pid, QString payload);
 
 protected:
 

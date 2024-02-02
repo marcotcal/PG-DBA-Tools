@@ -1086,6 +1086,7 @@ void SqlTool::executeCurrent(ResultOutput *output, QString explain, bool show_qu
     connect(executor, SIGNAL(finished()), executor, SLOT(deleteLater()));
     connect(executor, SIGNAL(query_ended(PGresult *)), this, SLOT(do_query_ended(PGresult *)));
     connect(executor, SIGNAL(generate_notice(QString)), output, SLOT(generateStatusMessage(QString)));
+    connect(executor, SIGNAL(generate_listener_message(QString,int,QString)), output, SLOT(generateListerMessage(QString,int,QString)));
 
     executor->start();
     emit beginExecution(this);

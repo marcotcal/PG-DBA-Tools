@@ -23,6 +23,14 @@ void ResultOutput::generateError(PGconn *conn)
     messages->insertPlainText (QString("Command failed: %1").arg(PQerrorMessage(conn)));
 }
 
+void ResultOutput::generateListerMessage(QString event, int pid, QString payload)
+{
+    QString msg = QString("ASYNC NOTIFY of %1 received from backend PID %2, payload %3").arg(event).
+                     arg(pid).arg(payload);
+    messages->moveCursor(QTextCursor::End);
+    messages->insertPlainText(msg+"\n");
+}
+
 void ResultOutput::generateStatusMessage(PGresult *res)
 {
     QString msg(PQresStatus(PQresultStatus(res)));
@@ -35,6 +43,7 @@ void ResultOutput::generateStatusMessage(QString msg)
     messages->moveCursor(QTextCursor::End);
     messages->insertPlainText(msg);
 }
+
 
 void ResultOutput::cleanMessage()
 {
