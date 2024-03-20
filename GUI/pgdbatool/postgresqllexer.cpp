@@ -215,7 +215,7 @@ const char *PostgreSQLLexer::keywords(int set) const
             "localtimestamp locator map match minute modifies "
             "modify notify module month names national natural nchar "
             "nclob new next no none not null numeric object of "
-            "off old on only open operation option or order "
+            "off offset old on only open operation option or order "
             "ordinality out outer output pad parameter "
             "parameters partial path postfix prefix "
             "preorder prepare preserve primary prior privileges "
