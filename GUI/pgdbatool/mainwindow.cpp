@@ -39,6 +39,7 @@
 #include "frmprojectscript.h"
 #include "dlgplugins.h"
 #include "plugintabwidget.h"
+#include "dlgshowprocesses.h"
 #if defined HML_USE_WEBENGINE
     #include <QWebEngineView>
 #elif defined HML_USE_WEBKIT
@@ -839,6 +840,16 @@ void MainWindow::on_actionExecute_triggered()
     }
 }
 
+void MainWindow::on_actionShow_Processes_triggered()
+{
+    DlgShowProcesses *dlg = new DlgShowProcesses(connections, ui->connection_list->currentRow(), this);
+    QString name;
+
+    if (dlg->exec() == QDialog::Accepted) {
+
+    }
+}
+
 void MainWindow::on_actionExplain_triggered()
 {
     DlgExplain dlg;
@@ -1553,3 +1564,5 @@ void MainWindow::on_bt_execute_clicked()
         sql->executeSelectedFunction();
     }
 }
+
+

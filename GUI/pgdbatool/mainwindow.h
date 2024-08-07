@@ -65,6 +65,7 @@ private slots:
     void on_actionClose_triggered();
     void on_editor_list_currentRowChanged(int currentRow);
     void on_actionExecute_triggered();
+    void on_actionShow_Processes_triggered();
     void on_actionIndexes_Sizes_triggered();
     void on_connection_list_currentRowChanged(int currentRow);
     void on_actionIndexes_Bloat_triggered();

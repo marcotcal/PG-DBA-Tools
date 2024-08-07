@@ -57,6 +57,7 @@ RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
 
 SOURCES += \
+    dlgshowprocesses.cpp \
     main.cpp \
     mainwindow.cpp \
     sqltool.cpp \
@@ -99,6 +100,7 @@ SOURCES += \
     plugintreewidget.cpp
 
 HEADERS += \
+    dlgshowprocesses.h \
     mainwindow.h \
     sqltool.h \
     postgresqllexer.h \
@@ -141,6 +143,7 @@ HEADERS += \
     plugintreewidget.h
 
 FORMS += \
+    dlgshowprocesses.ui \
     mainwindow.ui \
     sqltool.ui \
     dlgconnections.ui \
