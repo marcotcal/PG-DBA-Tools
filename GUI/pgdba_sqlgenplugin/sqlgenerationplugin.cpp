@@ -355,7 +355,8 @@ QStringList SQLGenerationPlugin::schemas(PGconn *connection)
     const char *sql =
         "SELECT schema_name "
         "FROM information_schema.schemata "
-        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' ";
+        "WHERE schema_name NOT IN ('information_schema') AND schema_name !~ '^pg_' "
+        "ORDER BY schema_name ";
     return createObjectList(connection, sql, 0, 0);
 }
 
