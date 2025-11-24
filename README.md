@@ -25,3 +25,4 @@ See configuration to choose the web engine
 As each sql tool have a separated connection it is possible to open independent transactions. Also the sentings for query optimazations are applied only in the selected SQL Tool. 
 
 
+
