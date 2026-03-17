@@ -40,6 +40,8 @@
 #include "dlgplugins.h"
 #include "plugintabwidget.h"
 #include "dlgshowprocesses.h"
+#include "dlgpassword.h"
+
 #if defined HML_USE_WEBENGINE
     #include <QWebEngineView>
 #elif defined HML_USE_WEBKIT
@@ -607,7 +609,7 @@ void MainWindow::on_actionManageConnections_triggered()
 {
     DlgConnections *dlg = new DlgConnections(connections, this);
     dlg->exec();
-
+    writeSettings();
     setConnectionsList();
 }
 
@@ -1565,4 +1567,22 @@ void MainWindow::on_bt_execute_clicked()
     }
 }
 
+void MainWindow::on_actionChange_Connection_Password_triggered()
+{
+    DlgPassword *dlg = new DlgPassword(this);
+    QString password;
+
+    int row = ui->connection_list->currentRow();
+    ConnectionElement *data = connections.getConnections().at(row);
+
+    if (dlg->exec() == QDialog::Accepted) {
+
+        data->addParameter("password", dlg->getPassword());
+        if (project.getProjectName() != "")
+            connections.writeConnections(project.getProjectPath()+"/config");
+        else
+            connections.writeConnections();
+
+    }
+}
 

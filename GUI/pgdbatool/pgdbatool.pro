@@ -57,6 +57,7 @@ RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
 
 SOURCES += \
+    dlgpassword.cpp \
     dlgshowprocesses.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -100,6 +101,7 @@ SOURCES += \
     plugintreewidget.cpp
 
 HEADERS += \
+    dlgpassword.h \
     dlgshowprocesses.h \
     mainwindow.h \
     sqltool.h \
@@ -143,6 +145,7 @@ HEADERS += \
     plugintreewidget.h
 
 FORMS += \
+    dlgpassword.ui \
     dlgshowprocesses.ui \
     mainwindow.ui \
     sqltool.ui \

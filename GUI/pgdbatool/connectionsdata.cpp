@@ -44,9 +44,24 @@ QString ConnectionElement::connectStr(QString alternate_user, QString alternate_
 {        
     QMap<QString, QVariant>::iterator i;
     QString cr = "";
+    QString ssl_mode = "";
+    QStringList ssl_modes = {"no_ssl","allow","disable","prefer","require","verify_ca","verify_full"};
 
     for(i = parameters.begin(); i != parameters.end(); ++i) {
         if (!i.value().isNull()) {
+            if (i.key() == "allow" && i.value().toBool())
+                ssl_mode = "allow";
+            else if (i.key() == "disable" && i.value().toBool())
+                ssl_mode = "disable";
+            else if (i.key() == "prefer" && i.value().toBool())
+                ssl_mode = "prefer";
+            else if (i.key() == "require" && i.value().toBool())
+                ssl_mode = "require";
+            else if (i.key() == "verify_ca" && i.value().toBool())
+                ssl_mode = "verify-ca";
+            else if (i.key() == "verify_full" && i.value().toBool())
+                ssl_mode = "verify-full";
+
             if (i.key() == "user" && alternate_user != "") {
                 cr += "user=" + alternate_user + " ";
                 continue;
@@ -61,9 +76,13 @@ QString ConnectionElement::connectStr(QString alternate_user, QString alternate_
                     }
                 }
             }
-            cr += i.key() + "=" + i.value().toString() + " ";
+            if (!ssl_modes.contains(i.key()))
+                cr += i.key() + "=" + i.value().toString() + " ";
+
         }
     }
+    cr += "sslmode=" + ssl_mode;
+
     return cr;
 }
 
@@ -242,6 +261,13 @@ void ConnectionsData::writeConnections(QString path)
         "  <!ELEMENT port (#PCDATA)>\n"
         "  <!ELEMENT user (#PCDATA)>\n"
         "  <!ELEMENT password (#PCDATA)>\n"
+        "  <!ELEMENT no_ssl (#PCDATA)>\n"
+        "  <!ELEMENT allow (#PCDATA)>\n"
+        "  <!ELEMENT require (#PCDATA)>\n"
+        "  <!ELEMENT prefer (#PCDATA)>\n"
+        "  <!ELEMENT disable (#PCDATA)>\n"
+        "  <!ELEMENT verify_ca (#PCDATA)>\n"
+        "  <!ELEMENT verify_full (#PCDATA)>\n"
         "]>";
 
     file.open(QIODevice::WriteOnly);
@@ -275,6 +301,34 @@ void ConnectionsData::writeConnections(QString path)
         xmlWriter.writeCharacters(conn->getParameter("password").toString());
         xmlWriter.writeEndElement();
 
+        xmlWriter.writeStartElement("no_ssl");
+        xmlWriter.writeCharacters(conn->getParameter("no_ssl").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("allow");
+        xmlWriter.writeCharacters(conn->getParameter("allow").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("require");
+        xmlWriter.writeCharacters(conn->getParameter("require").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("prefer");
+        xmlWriter.writeCharacters(conn->getParameter("prefer").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("disable");
+        xmlWriter.writeCharacters(conn->getParameter("disable").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("verify_ca");
+        xmlWriter.writeCharacters(conn->getParameter("verify_ca").toString());
+        xmlWriter.writeEndElement();
+
+        xmlWriter.writeStartElement("verify_full");
+        xmlWriter.writeCharacters(conn->getParameter("verify_full").toString());
+        xmlWriter.writeEndElement();
+
         xmlWriter.writeEndElement();
     }
 
@@ -296,6 +350,13 @@ ConnectionElement *ConnectionsData::newConnection()
     ele->addParameter("user","postgres");
     ele->addParameter("password","");
     ele->addParameter("dbname","postgres");
+    ele->addParameter("no_ssl",true);
+    ele->addParameter("allow",false);
+    ele->addParameter("require",false);
+    ele->addParameter("prefer",false);
+    ele->addParameter("disable",false);
+    ele->addParameter("verify_ca",false);
+    ele->addParameter("verify_full~",false);
 
     connections.append(ele);
     return  ele;

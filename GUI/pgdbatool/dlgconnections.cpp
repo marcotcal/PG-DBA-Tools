@@ -18,7 +18,7 @@
 #include "ui_dlgconnections.h"
 #include <QtConfig>
 #include <QMessageBox>
-#include <algorithm>
+//#include <algorithm>
 #include <libpq-fe.h>
 
 DlgConnections::DlgConnections(ConnectionsData &conn, QWidget *parent) :
@@ -83,6 +83,13 @@ void DlgConnections::connectionToEditors(int conn)
     ui->password->setText(ele->getParameter("password").toString());
     ui->database->setText(ele->getParameter("dbname").toString());
     ui->service->setText(ele->getParameter("service").toString());
+    ui->no_ssl->setChecked(ele->getParameter("no_ssl").toBool());
+    ui->require->setChecked(ele->getParameter("require").toBool());
+    ui->prefer->setChecked(ele->getParameter("prefer").toBool());
+    ui->allow->setChecked(ele->getParameter("allow").toBool());
+    ui->disable->setChecked(ele->getParameter("disable").toBool());
+    ui->verify_ca->setChecked(ele->getParameter("verify_ca").toBool());
+    ui->verify_full->setChecked(ele->getParameter("verify_full").toBool());
 }
 
 void DlgConnections::editorsToConnection(int conn)
@@ -115,6 +122,41 @@ void DlgConnections::editorsToConnection(int conn)
     } else {
         ele->addParameter("service", QVariant());
     }
+    if (ui->no_ssl->isChecked()) {
+        ele->addParameter("no_ssl", true);
+    } else {
+        ele->addParameter("no_ssl", false);
+    }
+    if (ui->allow->isChecked()) {
+        ele->addParameter("allow", true);
+    } else {
+        ele->addParameter("allow", false);
+    }
+    if (ui->require->isChecked()) {
+        ele->addParameter("require", true);
+    } else {
+        ele->addParameter("require", false);
+    }
+    if (ui->prefer->isChecked()) {
+        ele->addParameter("prefer", true);
+    } else {
+        ele->addParameter("prefer", false);
+    }
+    if (ui->disable->isChecked()) {
+        ele->addParameter("disable", true);
+    } else {
+        ele->addParameter("disable", false);
+    }
+    if (ui->verify_ca->isChecked()) {
+        ele->addParameter("verify_ca", true);
+    } else {
+        ele->addParameter("verify_ca", false);
+    }
+    if (ui->verify_full->isChecked()) {
+        ele->addParameter("verify_full", true);
+    } else {
+        ele->addParameter("verify_full", false);
+    }
 }
 
 void DlgConnections::initializeNew()
@@ -126,6 +168,13 @@ void DlgConnections::initializeNew()
     ui->user_name->setText("postgres");
     ui->password->setText("");
     ui->service->setText("");
+    ui->no_ssl->setChecked(true);
+    ui->require->setChecked(false);
+    ui->prefer->setChecked(false);
+    ui->allow->setChecked(false);
+    ui->disable->setChecked(false);
+    ui->verify_ca->setChecked(false);
+    ui->verify_full->setChecked(false);
 }
 
 void DlgConnections::loadList()
@@ -155,6 +204,19 @@ bool DlgConnections::testConnection()
         conn_str += QString(" port=%1").arg(ui->port->value());
     if (!ui->service->text().isEmpty())
         conn_str += " service="+ui->service->text();
+
+    if (ui->allow->isChecked())
+        conn_str += " sslmode=allow";
+    else if (ui->disable->isChecked())
+        conn_str += " sslmode=disable";
+    else if (ui->prefer->isChecked())
+        conn_str += " sslmode=prefer";
+    else if (ui->require->isChecked())
+        conn_str += " sslmode=require";
+    else if (ui->verify_ca->isChecked())
+        conn_str += " sslmode=verify-ca";
+    else if (ui->verify_full->isChecked())
+        conn_str += " sslmode=verify-full";
 
     // TODO - Add the other parameters to the connection
 

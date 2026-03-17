@@ -101,6 +101,7 @@
     <addaction name="actionDatabase_to_Database"/>
     <addaction name="actionCreate_Database"/>
     <addaction name="actionDrop_Database"/>
+    <addaction name="actionChange_Connection_Password"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -1292,6 +1293,11 @@ color: rgb(180, 180,180);</string>
   <action name="actionShow_Processes">
    <property name="text">
     <string>Show Processes</string>
+   </property>
+  </action>
+  <action name="actionChange_Connection_Password">
+   <property name="text">
+    <string>Change Connection Password</string>
    </property>
   </action>
  </widget>

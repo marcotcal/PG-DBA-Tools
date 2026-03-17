@@ -149,6 +149,8 @@ private slots:
     void on_actionViewCode_Generators_toggled(bool arg1);
     void on_bt_execute_clicked();
 
+    void on_actionChange_Connection_Password_triggered();
+
 public slots:
 
     void openScriptOnNewTool(QString file_name, int internal_mode=SqlTool::MODE_INTERNAL_DEVELOPMENT);
