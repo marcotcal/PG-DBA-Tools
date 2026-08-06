@@ -2,7 +2,6 @@
                       postgresqllexer.h  -  description
                       ---------------------------------
     begin                : Sex Aug 23 2019
-    copyright            : (C) 2003 by Marco Túlio Castro
     email                : marco.castro@gmai.com
  ***************************************************************************/
 

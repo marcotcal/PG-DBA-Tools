@@ -15,6 +15,9 @@ public:
     explicit DlgPassword(QWidget *parent = nullptr);
     ~DlgPassword();
     QString getPassword();
+private slots:
+    void on_bt_azure_clicked();
+
 private:
     Ui::DlgPassword *ui;
 };
