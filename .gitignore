@@ -10,3 +10,5 @@
 **/Makefile
 **/.qmake.stash
 **/.qtc_clangd/
+**/go.sum
+**/pgdbagent
