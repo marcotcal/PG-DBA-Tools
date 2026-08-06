@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="INDEX_BLOAT_001" description="Index Bloat Analysis (DB, EX)">
+    <parameters/>
+    <orders/>
+    <columns/>
+    <query_text><![CDATA[-- CREATE EXTENSION IF NOT EXISTS pgstattuple;
+
+SELECT 
+    n.nspname AS schema_name,
+    c.relname AS table_name,
+    i.relname AS index_name,
+    pg_size_pretty(s.index_size) AS total_size,
+    round(s.avg_leaf_density::numeric, 2) AS density_pct,
+    -- Cálculo de páginas "mortas" (vazias + eliminadas)
+    (s.empty_pages + s.deleted_pages) AS dead_pages,
+    -- Estimativa de espaço recuperável (em bytes, mas formatado)
+    pg_size_pretty(
+        (
+            (s.empty_pages + s.deleted_pages)::numeric * current_setting('block_size')::numeric +
+            (s.leaf_pages::numeric * (100 - s.avg_leaf_density)::numeric / 100 * current_setting('block_size')::numeric)
+        )::numeric
+    ) AS estimated_recoverable_space,
+    CASE 
+        WHEN (
+            ((s.empty_pages + s.deleted_pages)::numeric * current_setting('block_size')::numeric +
+            (s.leaf_pages::numeric * (100 - s.avg_leaf_density)::numeric / 100 * current_setting('block_size')::numeric)) > 1073741824 -- 1GB em bytes
+            AND s.avg_leaf_density < 60
+        ) THEN '⚠️ Attention'
+        ELSE NULL 
+    END AS status_alert
+FROM pg_index x
+JOIN pg_class c ON c.oid = x.indrelid
+JOIN pg_class i ON i.oid = x.indexrelid
+JOIN pg_namespace n ON n.oid = c.relnamespace
+CROSS JOIN LATERAL pgstatindex(i.oid) s
+WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
+  AND c.relkind = 'r'
+  AND i.relam = 403 -- B-Tree
+  AND x.indisvalid
+ORDER BY s.index_size DESC;]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
+    <output_type><![CDATA[Html]]></output_type>
+    <model_path><![CDATA[/Indexes/Bloat]]></model_path>
+</model>

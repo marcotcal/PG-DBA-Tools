@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="QUERY_STATISTICS_004" description="Load Profile by Quartile (All databases)">
+    <parameters/>
+    <orders/>
+    <columns/>
+    <query_text><![CDATA[SELECT 
+    quartil,
+    ROUND(SUM(total_ms)::numeric, 2) as total_ms_acumulados,
+    COUNT(*) as qtd_queries_no_grupo,
+    ROUND(AVG(calls)::numeric, 0) as media_chamadas_por_query,
+    ROUND(MAX(total_ms)::numeric, 2) as max_ms_uma_unica_query_gastou
+FROM (
+    SELECT 
+        total_exec_time as total_ms,
+        calls,
+        ntile(4) OVER (ORDER BY total_exec_time) as quartil
+    FROM pg_stat_statements
+) t
+GROUP BY quartil
+ORDER BY quartil;
+]]></query_text>
+    <database_request><![CDATA[no]]></database_request>
+    <output_type><![CDATA[Text]]></output_type>
+    <model_path><![CDATA[/Query Statistics/]]></model_path>
+</model>

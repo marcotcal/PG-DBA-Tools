@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="DATABASE_001" description="Database List">
+    <parameters/>
+    <orders/>
+    <columns/>
+    <query_text><![CDATA[SELECT 
+    d.datname AS "Name",
+    pg_catalog.pg_get_userbyid(d.datdba) AS "Owner",
+    pg_catalog.pg_encoding_to_char(d.encoding) AS "Encoding",
+    d.datlocprovider AS "Locale Provider", -- Available from PG 15
+    d.datcollate AS "Collate",
+    d.datctype AS "Ctype",
+    d.daticulocale AS "ICU Locale",        -- Available from PG 15
+    d.daticurules AS "ICU Rules",          -- Available from PG 17
+    pg_catalog.array_to_string(d.datacl, E'\n') AS "Access privileges"
+FROM pg_catalog.pg_database d
+ORDER BY 1;]]></query_text>
+    <database_request><![CDATA[no]]></database_request>
+    <output_type><![CDATA[Text]]></output_type>
+    <model_path><![CDATA[Databases]]></model_path>
+</model>

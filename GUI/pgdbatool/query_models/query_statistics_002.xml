@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE model [
+  <!ELEMENT model (query_text, model_path, output_type, parameters?, orders?, columns?)>
+  <!ATTLIST model code CDATA "">
+  <!ATTLIST model description CDATA "">
+  <!ELEMENT query_text (#PCDATA)>
+  <!ELEMENT output_type (#PCDATA)>
+  <!ELEMENT database_request (#PCDATA)>
+  <!ELEMENT model_path (#PCDATA)>
+  <!ELEMENT parameters (parameter*)>
+  <!ELEMENT parameter (expression, param_type, param_sub_type, widget?, str_options?, query_options?)>
+  <!ATTLIST parameter code CDATA "">
+  <!ATTLIST parameter description CDATA "">
+  <!ATTLIST parameter mandatory (true|false) #REQUIRED>
+  <!ELEMENT widget (#PCDATA)>
+  <!ELEMENT str_options (#PCDATA)>
+  <!ELEMENT query_options (#PCDATA)>
+  <!ELEMENT param_sub_type (#PCDATA)>  <!ELEMENT param_type (#PCDATA)>  <!ELEMENT expression (#PCDATA)>  <!ELEMENT orders (order*)>
+  <!ATTLIST order description CDATA "">
+  <!ATTLIST order fields CDATA "">
+  <!ELEMENT columns (column*)>
+  <!ATTLIST order title CDATA "">
+  <!ATTLIST order width CDATA "">
+]>
+
+<model code="QUERY_STATISTICS_002" description="Queries by Execution Time Range">
+    <parameters>
+        <parameter code="p_init" description="Range Start" mandatory="true">
+            <expression><![CDATA[AND s.mean_exec_time >= ?]]></expression>
+            <param_type><![CDATA[Number]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+        <parameter code="p_end" description="Range End" mandatory="true">
+            <expression><![CDATA[AND s.mean_exec_time <= ?]]></expression>
+            <param_type><![CDATA[Number]]></param_type>
+            <param_sub_type><![CDATA[Single]]></param_sub_type>
+        </parameter>
+    </parameters>
+    <orders/>
+    <columns/>
+    <query_text><![CDATA[SELECT 
+    d.datname AS database_name,
+    s.query, 
+    s.calls, 
+    round(s.mean_exec_time::numeric, 2) AS avg_ms,
+    round(s.total_exec_time::numeric, 2) AS impacto_total_ms
+FROM pg_stat_statements s
+JOIN pg_database d ON s.dbid = d.oid
+WHERE
+    d.datname = current_database()
+    [!p_init!]
+    [!p_end!]
+ORDER BY s.total_exec_time DESC]]></query_text>
+    <database_request><![CDATA[yes]]></database_request>
+    <output_type><![CDATA[Text]]></output_type>
+    <model_path><![CDATA[Query Statistics]]></model_path>
+</model>
