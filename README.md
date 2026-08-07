@@ -15,6 +15,12 @@ The choice of QT Framework was based on portability isues.
 The PostgreSQL libpq will be used instead qpsql to avoid possible limitations. 
 This will bring a little more work but also the benefits of total compatibility
 
+There is now a sunproject called **agent** 
+This program is intend to be installed in the servers to supply additional information about the clusters
+It will run as a service and will collect statistics.
+The language in this subproject is **Go**. Why Go ? Because I want to learn Go :)
+
+
 Any sugestion are wellcome!
 
 **Notes:**
