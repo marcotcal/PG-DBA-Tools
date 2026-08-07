@@ -36,6 +36,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = db.Connect(ctx, cfg)
-
+	if err := cfg.Validate(); err != nil {
+		log.Fatal(err)
+	}
+	if cfg != nil {
+		_ = db.Connect(ctx, cfg)
+	}
 }

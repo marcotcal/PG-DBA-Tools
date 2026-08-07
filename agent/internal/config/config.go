@@ -8,6 +8,8 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -67,7 +69,23 @@ func Load(filename string) (*Config, error) {
 	return cfg, nil
 }
 
-func Validate(cfg *Config) error {
+func (cfg *Config) Validate() error {
+
+	if len(cfg.Instances) == 0 {
+		return errors.New("no database instances configured")
+	}
+
+	for _, inst := range cfg.Instances {
+
+		if inst.Host == "" {
+			return fmt.Errorf("instance '%s': host not informed", inst.Name)
+		}
+
+		if inst.Port == 0 {
+			return fmt.Errorf("instance '%s': invalid port", inst.Name)
+		}
+
+	}
 
 	return nil
 }
