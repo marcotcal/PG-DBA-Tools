@@ -1,0 +1,7 @@
+# Força a deteção correta para extensões do Go e SQL
+*.go linguist-language=Go
+*.sql linguist-language=SQL
+
+# Garante que eles entram nas estatísticas de linguagem (caso venham ocultos por padrão)
+*.go linguist-detectable=true
+*.sql linguist-detectable=true
