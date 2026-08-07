@@ -1,0 +1,30 @@
+- queries:
+    - query:
+      name: replication_slots
+      description: List and state of replication slots (main server)
+      last_version: 18
+      file_name: replication_slots.sql
+    
+    - query: replication_state 
+      name: deadlocks
+      description: Show replication lags (main server)
+      last_version: 18
+      file_name: replication_state.sql
+
+    - query:
+      name: recovery_state 
+      description: recovery state (standby server)
+      last_version: 18
+      file_name: recovery_state.sql  
+
+    - query:
+      name: replication_total_lag
+      description: Show replication total lag (standby server)
+      last_version: 18
+      file_name: replication_total_lag.sql  
+
+    - query:
+      name: query_conflicts
+      description: Show replication query conflicts (standby server)
+      last_version: 18
+      file_name: replication_total_lag.sql  
