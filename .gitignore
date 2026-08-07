@@ -12,3 +12,5 @@
 **/.qtc_clangd/
 **/go.sum
 **/pgdbagent
+*/config.yaml
+**/.vscode

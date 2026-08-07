@@ -1,0 +1,23 @@
+agent:
+  name: pgdbagent
+  interval: 30s
+  log_level: info
+
+server:
+  url: http://your.domain:2345/api
+  api_key: xxxxxxxxxxxxxxxxx
+
+instances:
+  - name: connection_name
+    host: host_name
+    database: database_name
+    user: user_name
+    port: 5433
+    password: 
+
+  - name: other_connection_name
+    host: host_name
+    database: database_name
+    user: user_name
+    port: 5432
+    password:

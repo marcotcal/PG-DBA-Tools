@@ -1,5 +1,5 @@
 /***************************************************************************
- *  PGDBATOOLS AGENT                                                        
+ *  PGDBATOOLS AGENT
  *
  *  START  : 2026-08-06
  *  AUTHOR : Marco Túlio Castro
@@ -16,13 +16,26 @@
 package main
 
 import (
-	//"context"
-	"fmt"
-	//"log"
+	"context"
+	"flag"
+	"pgdbagent/internal/config"
+	"pgdbagent/internal/db"
+
+	//"fmt"
+	"log"
 	//"github.com/jackc/pgx/v5"
 )
 
 func main() {
 
-	fmt.Println("PG DBA Tools Agent")
+	ctx := context.Background()
+	configPath := flag.String("config", "config.yaml", "Configuration File")
+	flag.Parse()
+
+	cfg, err := config.Load(*configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_ = db.Connect(ctx, cfg)
+
 }
