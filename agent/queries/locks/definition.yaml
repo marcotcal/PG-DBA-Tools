@@ -1,18 +1,15 @@
-- queries:
-    - query:
-      name: bloking
-      description: List bloacked process who is bloking and who is blocked
-      last_version: 18
-      file_name: blocked.sql
-    
-    - query:  
-      name: deadlocks
-      description: total deadlocks per database
-      last_version: 18
-      file_name: deadlocks.sql
+queries:
+  - name: bloking
+    description: List bloacked process who is bloking and who is blocked
+    latest_version: 18
+    file_name: blocked.sql
 
-    - query:
-      name: waiting
-      description: Queries in waiting state
-      last_version: 18
-      file_name: waiting.sql  
+  - name: deadlocks
+    description: total deadlocks per database
+    latest_version: 18
+    file_name: deadlocks.sql
+
+  - name: waiting
+    description: Queries in waiting state
+    latest_version: 18
+    file_name: waiting.sql  

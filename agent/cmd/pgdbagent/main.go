@@ -18,12 +18,10 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 	"pgdbagent/internal/config"
 	"pgdbagent/internal/db"
-
-	//"fmt"
-	"log"
-	//"github.com/jackc/pgx/v5"
+	"pgdbagent/internal/loader"
 )
 
 func main() {
@@ -41,5 +39,9 @@ func main() {
 	}
 	if cfg != nil {
 		_ = db.Connect(ctx, cfg)
+	}
+	_, err = loader.Load()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
