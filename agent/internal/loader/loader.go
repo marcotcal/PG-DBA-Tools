@@ -11,10 +11,14 @@
 package loader
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
+	"pgdbagent/internal/config"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -25,82 +29,125 @@ type QueryDefinition struct {
 	Description   string `yaml:"description"`
 	LatestVersion int    `yaml:"latest_version"`
 	FileName      string `yaml:"file_name"`
-	Group         string `yaml:"-"`
-	GroupLevel    int    `yaml:"-"`
-	Path          string `yaml:"-"`
+	Query         string `yaml:"-"`
 }
 
 type Metrics struct {
-	Queries []QueryDefinition `yaml:"queries"`
+	Queries           []QueryDefinition `yaml:"queries"`
+	Group             string            `yaml:"-"`
+	GroupLevel        int               `yaml:"-"`
+	Path              string            `yaml:"-"`
+	VersionsInPath    []string          `yaml:"-"`
+	PostgreSQLVersion string            `yaml:"-"`
 }
 
-func allDirs() {
-	root := "./queries"
+func (qd *QueryDefinition) loadQueryFromFile(path string, pgVersion string, versions []string, name string) string {
 
-	rootClean := filepath.Clean(root)
+	for _, version := range versions {
 
-	err := filepath.WalkDir(rootClean, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
+		if version > pgVersion {
+			continue
 		}
 
-		relPath, err := filepath.Rel(rootClean, path)
-		if err != nil {
-			return err
+		queryPath := path + "/" + version + "/" + name
+
+		_, err := os.Stat(queryPath)
+		if err == nil {
+			// file exists
+			query, err := os.ReadFile(queryPath)
+			if err != nil {
+				log.Fatal(err)
+			}
+			return string(query)
+		} else if errors.Is(err, os.ErrNotExist) {
+			// file does not exists
+			continue
+		} else {
+			// another error
+			log.Fatal(err)
 		}
 
-		nivel := 0
-		if relPath != "." {
-			partes := strings.Split(relPath, string(filepath.Separator))
-			nivel = len(partes)
-		}
-
-		fmt.Printf("[Nível %d] %s\n", nivel, path)
-		return nil
-	})
-
-	if err != nil {
-		fmt.Printf("Erro: %v\n", err)
 	}
+	return ""
+
 }
 
-func Load() (*Metrics, error) {
+func Load(cfg *config.Config) (*[]Metrics, error) {
+
 	root := "queries" // Diretório inicial da busca (ex: "." para a pasta atual)
+	list := []Metrics{}
 
-	metrics := &Metrics{}
+	for _, cluster := range cfg.Instances {
 
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			// Verifica se é um ficheiro e se o nome é "definition.yaml"
+			if !d.IsDir() && d.Name() == "definition.yaml" {
+
+				var metrics Metrics
+
+				parts := strings.Split(path, string(filepath.Separator))
+				group := filepath.Base(filepath.Dir(path))
+				dirPath := filepath.Dir(path)
+
+				data, err := os.ReadFile(path)
+				if err != nil {
+					return err
+				}
+
+				versionDirs, err := os.ReadDir(dirPath)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				sort.Slice(versionDirs, func(i, j int) bool {
+					return versionDirs[i].Name() > versionDirs[j].Name()
+				})
+
+				metrics.VersionsInPath = make([]string, len(versionDirs)-1)
+
+				err = yaml.Unmarshal(data, &metrics)
+				if err != nil {
+					return err
+				}
+
+				for i, version := range versionDirs {
+					if err != nil {
+						log.Fatal(err)
+					}
+					if version.Name() == "definition.yaml" {
+						continue
+					}
+					metrics.VersionsInPath[i-1] = version.Name()
+				}
+
+				metrics.Group = group
+				metrics.GroupLevel = len(parts)
+				metrics.Path = path
+				metrics.PostgreSQLVersion = cluster.MajorVersion
+
+				for index := range metrics.Queries {
+
+					query := metrics.Queries[index].loadQueryFromFile(dirPath, cluster.MajorVersion,
+						metrics.VersionsInPath, metrics.Queries[index].FileName)
+
+					metrics.Queries[index].Query = query
+
+				}
+
+				list = append(list, metrics)
+			}
+
+			return nil
+		})
+
 		if err != nil {
-			return err
+			fmt.Fprintf(os.Stderr, "Error reading directory: %v\n", err)
 		}
-
-		// Verifica se é um ficheiro e se o nome é "definition.yaml"
-		if !d.IsDir() && d.Name() == "definition.yaml" {
-			//fmt.Println("Encontrado:", path)
-			parts := strings.Split(path, string(filepath.Separator))
-			group := parts[len(parts)-2]
-
-			data, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			err = yaml.Unmarshal(data, metrics)
-			if err != nil {
-				return err
-			}
-
-			for index := range metrics.Queries {
-				metrics.Queries[index].Group = group
-				metrics.Queries[index].GroupLevel = len(parts)
-				metrics.Queries[index].Path = path
-			}
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading directory: %v\n", err)
 	}
-	return metrics, nil
+
+	return &list, nil
 }

@@ -48,6 +48,7 @@ func ConnectionString(inst *config.InstanceConfig) string {
 
 func Connect(ctx context.Context, cfg *config.Config) (databases *Databases) {
 
+	var majorVersion string
 	data := &Databases{}
 
 	for index, instance := range cfg.Instances {
@@ -56,7 +57,20 @@ func Connect(ctx context.Context, cfg *config.Config) (databases *Databases) {
 			log.Printf("Error connecting in %s: %v", instance.Name, err)
 			continue
 		}
+
+		err = conn.QueryRow(
+			ctx,
+			"SELECT split_part(current_setting('server_version'), '.', 1);",
+		).Scan(&majorVersion)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		cfg.Instances[index].MajorVersion = majorVersion
+
 		data.append(&cfg.Instances[index], conn)
+
 	}
 	return data
 }

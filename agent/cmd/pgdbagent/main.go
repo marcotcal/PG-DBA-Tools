@@ -18,6 +18,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"pgdbagent/internal/config"
 	"pgdbagent/internal/db"
@@ -40,8 +41,22 @@ func main() {
 	if cfg != nil {
 		_ = db.Connect(ctx, cfg)
 	}
-	_, err = loader.Load()
+
+	metrics, err := loader.Load(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	for _, metric := range *metrics {
+
+		fmt.Println("Group: ", metric.Group, " Cluster Version", metric.PostgreSQLVersion)
+
+		for _, query := range metric.Queries {
+			fmt.Println(query.Name)
+			fmt.Println(query.Query)
+
+		}
+
+	}
+
 }
