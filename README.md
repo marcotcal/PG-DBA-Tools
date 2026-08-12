@@ -29,7 +29,7 @@ Any sugestion are wellcome!
 
 ### The Agent
 
-TThe agent's objective will be to create a PostgreSQL and operating system metrics collector that is fully configurable by the DBA. The DBA will be able to create and modify metrics without altering the agent's code. 
+The agent's objective will be to create a PostgreSQL and operating system metrics collector that is fully configurable by the DBA. The DBA will be able to create and modify metrics without altering the agent's code. 
 
 The metrics will not be returned in the Prometheus model due to the required flexibility.
 
