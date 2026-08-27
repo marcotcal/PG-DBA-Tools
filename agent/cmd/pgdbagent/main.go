@@ -54,7 +54,6 @@ func main() {
 		for _, query := range metric.Queries {
 			fmt.Println(query.Name)
 			fmt.Println(query.Query)
-
 		}
 
 	}
