@@ -1,0 +1,5 @@
+commands:
+  - name: timezone
+    description: Return System Timezone
+    type: command
+    file_name: timezone

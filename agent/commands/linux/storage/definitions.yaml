@@ -1,0 +1,5 @@
+commands:
+  - name: disk_usage
+    description: Show disk Usage
+    type: command
+    file_name: disk_usage

@@ -1,0 +1,5 @@
+commands:
+  - name: memory_usage
+    description: Show Memory Usage
+    type: command
+    file_name: memory_usage

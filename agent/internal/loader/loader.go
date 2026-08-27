@@ -32,13 +32,22 @@ type QueryDefinition struct {
 	Query         string `yaml:"-"`
 }
 
+type CommandDefinition struct {
+	Name            string `yaml:"name"`
+	Description     string `yaml:"description"`
+	FileName        string `yaml:"file_name"`
+	OperatingSystem string `yaml:"-"`
+	Command         string `yaml:"-"`
+}
+
 type Metrics struct {
-	Queries           []QueryDefinition `yaml:"queries"`
-	Group             string            `yaml:"-"`
-	GroupLevel        int               `yaml:"-"`
-	Path              string            `yaml:"-"`
-	VersionsInPath    []string          `yaml:"-"`
-	PostgreSQLVersion string            `yaml:"-"`
+	Queries           []QueryDefinition   `yaml:"queries"`
+	Commands          []CommandDefinition `yaml:"commands"`
+	Group             string              `yaml:"-"`
+	GroupLevel        int                 `yaml:"-"`
+	Path              string              `yaml:"-"`
+	VersionsInPath    []string            `yaml:"-"`
+	PostgreSQLVersion string              `yaml:"-"`
 }
 
 func (qd *QueryDefinition) loadQueryFromFile(path string, pgVersion string, versions []string, name string) string {
@@ -69,6 +78,10 @@ func (qd *QueryDefinition) loadQueryFromFile(path string, pgVersion string, vers
 
 	}
 	return ""
+
+}
+
+func (cmd *CommandDefinition) loadCmd(path string, operationSystem string, name string) {
 
 }
 

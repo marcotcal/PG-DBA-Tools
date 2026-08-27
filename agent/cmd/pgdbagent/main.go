@@ -52,8 +52,8 @@ func main() {
 		fmt.Println("Group: ", metric.Group, " Cluster Version", metric.PostgreSQLVersion)
 
 		for _, query := range metric.Queries {
-			fmt.Println(query.Name)
-			fmt.Println(query.Query)
+			fmt.Println("   Query Name: ", query.Name)
+			//fmt.Println(query.Query)
 		}
 
 	}
