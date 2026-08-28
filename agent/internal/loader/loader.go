@@ -36,6 +36,7 @@ type CommandDefinition struct {
 	Name            string `yaml:"name"`
 	Description     string `yaml:"description"`
 	FileName        string `yaml:"file_name"`
+	CmdGroup        string `yaml:"cmd_group"`
 	OperatingSystem string `yaml:"-"`
 	Command         string `yaml:"-"`
 }
@@ -82,7 +83,26 @@ func (qd *QueryDefinition) loadQueryFromFile(path string, pgVersion string, vers
 
 }
 
-func (cmd *CommandDefinition) loadCmdFromFile(path string, operationSystem string, name string) string {
+func (cmd *CommandDefinition) loadCmdFromFile(path, cmdGroup string, name string) string {
+
+	commandPath := path + "/" + cmdGroup + "/" + name
+
+	_, err := os.Stat(commandPath)
+	if err == nil {
+		// file exists
+		command, err := os.ReadFile(commandPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return string(command)
+	} else if errors.Is(err, os.ErrNotExist) {
+		// file does not exists
+		return ""
+	} else {
+		// another error
+		log.Fatal(err)
+	}
+
 	return ""
 }
 
@@ -207,16 +227,16 @@ func Load(cfg *config.Config) (*[]Metrics, error) {
 
 			metrics.OperatingSystem = OperatingSystem
 			metrics.GroupLevel = 0
+			metrics.Group = ""
 			metrics.Path = path
 			metrics.PostgreSQLVersion = ""
 
 			for index := range metrics.Commands {
 
 				command := metrics.Commands[index].loadCmdFromFile(
-					dirPath,
-					metrics.Commands[index].OperatingSystem,
-					metrics.Commands[index].FileName)
+					dirPath, metrics.Commands[index].CmdGroup, metrics.Commands[index].FileName)
 
+				metrics.Commands[index].OperatingSystem = OperatingSystem
 				metrics.Commands[index].Command = command
 
 			}

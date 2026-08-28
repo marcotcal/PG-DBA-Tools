@@ -2,29 +2,29 @@ commands:
   - name: instant_cpu_usage
     description: Show CPU Usage
     type: command
-    group: cpu
+    cmd_group: cpu
     file_name: instant_cpu_usage
   
   - name: cpu_usage
     description: Show CPU Usage
     type: bash
-    group: cpu
+    cmd_group: cpu
     file_name: cpu_usage.sh  
 
   - name: free_memory_percent
     description: Show Free Memory
     type: command
-    group: memory
+    cmd_group: memory
     file_name: free_memory_percent
 
   - name: timezone
     description: Return System Timezone
     type: command
-    group: other
+    cmd_group: other
     file_name: timezone
 
   - name: disk_usage
     description: Show disk Usage
     type: command
-    group: storage
+    cmd_group: storage
     file_name: disk_usage  
