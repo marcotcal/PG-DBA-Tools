@@ -1,0 +1,19 @@
+commands:
+
+  - name: instant_cpu_usage
+    description: Show CPU Usage
+    type: command
+    group: cpu
+    file_name: instant_cpu_usage
+
+  - name: memory_usage
+    description: Show Memory Usage
+    type: command
+    group: memory
+    file_name: memory_usage
+
+  - name: mount_points
+    description: Show mount points
+    type: command
+    group: storage
+    file_name: mount_points  
