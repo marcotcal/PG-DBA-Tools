@@ -35,7 +35,11 @@ void GridOutput::generateOutput(PGresult *res)
     // get field names
     for (int i = 0; i < columns; i++) {
         fields.append(QString::fromStdString(PQfname(res, i)));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        max_field_lengths.append(fm.horizontalAdvance(QString::fromStdString(PQfname(res, i))));
+#else
         max_field_lengths.append(fm.width(QString::fromStdString(PQfname(res, i))));
+#endif
     }
 
     // get values
@@ -51,8 +55,14 @@ void GridOutput::generateOutput(PGresult *res)
 
     for (int c = 0; c < fields.count(); c++) {
         for(int r = 0; r < rows.count(); r++) {
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            if (max_field_lengths.at(c) < fm.horizontalAdvance(rows.at(r).at(c).toString()))
+                max_field_lengths.replace(c, fm.horizontalAdvance(rows.at(r).at(c).toString()));
+#else
             if (max_field_lengths.at(c) < fm.width(rows.at(r).at(c).toString()))
                 max_field_lengths.replace(c, fm.width(rows.at(r).at(c).toString()));
+#endif
         }
     }
 

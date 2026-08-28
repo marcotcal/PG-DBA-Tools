@@ -4,44 +4,122 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT += core gui xml
+
+greaterThan(QT_MAJOR_VERSION, 5) {
+    INCLUDEPATH += /home/marcotc/Qt/6.11.2/gcc_64/include
+    DEPENDPATH  += /home/marcotc/Qt/6.11.2/gcc_64/include
+}
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# Widget to be used as HML output ( if no option is selected QTexBrowser wil be used )
-HTML = QWebView
-#HTML = QWebEngineView
 
+# =================================================
+# HTML output widget
+#
+# QWebEngineView  -> Qt WebEngine
+# QWebView        -> Qt WebKit (Qt 5 only)
+# Anything else   -> QTextBrowser
+# =================================================
 
-QT += webkit
+# Default HTML widget
+HTML = QWebEngineView
 
 equals(HTML, "QWebEngineView") {
-    message("Use QWebEngineView widget on HML output")
+
+    message("Use QWebEngineView widget on HTML output")
+
     QT += webenginewidgets
     DEFINES += HML_USE_WEBENGINE
-} else {
-    equals(HTML, "QWebView") {
-        message("Use QWebView widget on HML output")
+
+} else:equals(HTML, "QWebView") {
+
+    greaterThan(QT_MAJOR_VERSION, 5) {
+
+        # QWebView/QWebKit does not exist in Qt 6.
+        # Fall back to QTextBrowser.
+        message("QWebView is not available with Qt 6 - using QTextBrowser")
+
+        DEFINES += HML_USE_TEXTBROWSER
+
+    } else {
+
+        # Qt 5
+        message("Use QWebView widget on HTML output")
+
         QT += webkitwidgets
         DEFINES += HML_USE_WEBKIT
-    } else {
-        message("Use QTextBrowser widget on HML output")
-        DEFINES += HML_USE_TEXTBROWSER
     }
+
+} else {
+
+    message("Use QTextBrowser widget on HTML output")
+
+    DEFINES += HML_USE_TEXTBROWSER
 }
+
+
+# =================================================
+# QScintilla
+# =================================================
+
+greaterThan(QT_MAJOR_VERSION, 5) {
+
+    # Qt 6
+    message("Using QScintilla for Qt 6")
+
+    INCLUDEPATH += /usr/include/qt6 \
+    /usr/include/x86_64-linux-gnu/qt6
+    LIBS += -lqscintilla2_qt6
+
+} else {
+
+    # Qt 5
+    message("Using QScintilla for Qt 5")
+
+    INCLUDEPATH += /usr/include/qt5 \
+    /usr/include/x86_64-linux-gnu/qt5
+    LIBS += -lqscintilla2_qt5
+}
+
+
+# =================================================
+# Application
+# =================================================
 
 TARGET = pgdbatool
 
 TEMPLATE = app
 
+
 # This flag is necessary to mark the program as an executable.
-# The behavior is occurring because newer ubuntu distros set GCC default link flag -pie, which marks
-# e_type as ET_DYN on the binary file. Consequently, the Operating System recognizes as Shared Library.
+# The behavior is occurring because newer Ubuntu distros set GCC default
+# link flag -pie, which marks the binary as Shared Library.
 QMAKE_LFLAGS += -no-pie
+
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-CONFIG += c++11
+
+# =================================================
+# C++ standard
+# =================================================
+
+greaterThan(QT_MAJOR_VERSION, 5) {
+    CONFIG += c++20
+    CONFIG -= c++17
+    CONFIG -= c++11
+
+    QMAKE_CXXFLAGS += -std=c++20 -fpermissive
+    QMAKE_CFLAGS   += -std=c17
+} else {
+    CONFIG += c++11
+}
+
+# =================================================
+# Build directories
+# =================================================
 
 CONFIG(debug, debug|release) {
     DESTDIR = ../build/debug
@@ -55,6 +133,11 @@ OBJECTS_DIR = $$DESTDIR/.obj
 MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
+
+
+# =================================================
+# Sources
+# =================================================
 
 SOURCES += \
     dlgpassword.cpp \
@@ -100,6 +183,11 @@ SOURCES += \
     pluginelement.cpp \
     plugintreewidget.cpp
 
+
+# =================================================
+# Headers
+# =================================================
+
 HEADERS += \
     dlgpassword.h \
     dlgshowprocesses.h \
@@ -144,6 +232,11 @@ HEADERS += \
     pluginelement.h \
     plugintreewidget.h
 
+
+# =================================================
+# Forms
+# =================================================
+
 FORMS += \
     dlgpassword.ui \
     dlgshowprocesses.ui \
@@ -170,21 +263,45 @@ FORMS += \
     frmprojectscript.ui \
     dlgplugins.ui
 
+
+# =================================================
+# Include PGDBA generators
+# =================================================
+
 INCLUDEPATH += ../pgdba_generators
 
-LIBS += -lqscintilla2_qt5
 
-# Include postgres lib
+# =================================================
+# PostgreSQL
+# =================================================
+
 unix:INCLUDEPATH += $$system(pg_config --includedir)
-unix:LIBS += -L$$system(pg_config --libdir)
-unix:LIBS +=  -lpq
 
-# Include QSsh Libs
-#unix:LIBS += lQssh
+unix:LIBS += -L$$system(pg_config --libdir)
+
+unix:LIBS += -lpq
+
+
+# =================================================
+# QSsh
+# =================================================
+
+#unix:LIBS += -lQssh
+
+
+# =================================================
+# Resources
+# =================================================
 
 RESOURCES += \
     pgdbatool.qrc
 
+
+# =================================================
+# Distribution files
+# =================================================
+
 DISTFILES += \
     connections.xml \
     modelo.xml
+

@@ -240,7 +240,14 @@ void MainWindow::readSettings()
 
     restoreState(settings.value("DOCK_LOCATIONS").toByteArray(),1);
     if (geometry.isEmpty()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QScreen>
+#include <QGuiApplication>
+        const QRect availableGeometry = this->screen()->availableGeometry();
+#else
         const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
+#endif
+
         resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
         move((availableGeometry.width() - width()) / 2,
              (availableGeometry.height() - height()) / 2);

@@ -2,7 +2,11 @@
 #include <QFile>
 #include <QList>
 #include <iostream>
-#include <QXmlSimpleReader>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QXmlStreamReader>
+#else
+    #include <QXmlSimpleReader>
+#endif
 #include <libpq-fe.h>
 
 ConnectionElement::ConnectionElement(QObject *parent) : QObject (parent)
@@ -226,7 +230,7 @@ bool ConnectionsData::readConnections(QString path)
 
     if (reader.readNextStartElement()) {
 
-        if (reader.name() == "connections") {
+        if (reader.name() == u"connections") {
 
             while(reader.readNextStartElement()){
                 if (reader.name().toString() == "connection") {

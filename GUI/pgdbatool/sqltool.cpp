@@ -74,36 +74,36 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     QMenu *msql = new QMenu(tr("DDL Generation"));
 
     action = menu->addAction(tr("Find..."));
-    action->setShortcut(Qt::CTRL+'f');
+    action->setShortcut(Qt::CTRL | Qt::Key_F);
     connect(action, SIGNAL(triggered()), this, SLOT(find_triggered()));
     action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
 
     action = menu->addAction(tr("Undo"));
-    action->setShortcut(Qt::CTRL+'z');
+    action->setShortcut(Qt::CTRL | Qt::Key_Z);
     connect(action, SIGNAL(triggered()), this, SLOT(undo()));
     action->setEnabled(isUndoAvailable());
 
     action = menu->addAction(tr("Redo"));
-    action->setShortcut(Qt::CTRL+'y');
+    action->setShortcut(Qt::CTRL | Qt::Key_Y);
     connect(action, SIGNAL(triggered()), this, SLOT(redo()));
     action->setEnabled(isRedoAvailable());
 
     menu->addSeparator();
 
     action = menu->addAction(tr("Cut"));
-    action->setShortcut(Qt::CTRL+'x');
+    action->setShortcut(Qt::CTRL | Qt::Key_X);
     connect(action, SIGNAL(triggered()), this, SLOT(cut()));
     action->setEnabled(hasSelectedText());
 
     action = menu->addAction(tr("Copy"));
-    action->setShortcut(Qt::CTRL+'c');
+    action->setShortcut(Qt::CTRL | Qt::Key_C);
     connect(action, SIGNAL(triggered()), this, SLOT(copy()));
     action->setEnabled(hasSelectedText());
 
     action = menu->addAction(tr("Paste"));
-    action->setShortcut(Qt::CTRL+'v');
+    action->setShortcut(Qt::CTRL | Qt::Key_V);
     connect(action, SIGNAL(triggered()), this, SLOT(paste()));
     action->setEnabled((mimeData->hasHtml() || mimeData->hasText()));
 
@@ -114,7 +114,7 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
     menu->addSeparator();
 
     action = menu->addAction(tr("Select All"));
-    action->setShortcut(Qt::CTRL+'a');
+    action->setShortcut(Qt::CTRL | Qt::Key_A);
     connect(action, SIGNAL(triggered()), this, SLOT(selectAll()));
     action->setEnabled(!text().isEmpty());
 
@@ -163,8 +163,7 @@ void EditorItem::on_reserved_word_uppercase_triggered()
     if (hasSelectedText()) {
         text = selectedText();
         foreach (QString word, keywords)  {
-            QRegExp re("\\b("+word+")\\b");
-            re.setCaseSensitivity(Qt::CaseInsensitive);
+            QRegularExpression re("\\b(" + word + ")\\b", QRegularExpression::CaseInsensitiveOption);
             text = text.replace(re, word.toUpper());
         }
         replaceSelectedText(text);
@@ -788,7 +787,7 @@ bool SqlTool::readFromXML(QString file_name)
 
             if (reader.isStartElement()) {
 
-                if (reader.name() == "query_set") {
+                if (reader.name() == u"query_set") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     //if(attributes.hasAttribute("count"))
                     //     count = attributes.value("count").toInt();
@@ -796,7 +795,7 @@ bool SqlTool::readFromXML(QString file_name)
                          group_name = attributes.value("group_name").toString();
                     if(attributes.hasAttribute("last_editor_number"))
                          last_editor_number = attributes.value("last_editor_number").toInt();
-                } else if (reader.name() == "query") {
+                } else if (reader.name() == u"query") {
                     QXmlStreamAttributes attributes = reader.attributes();
                     if(attributes.hasAttribute("file_name"))
                          file_name = attributes.value("file_name").toString();
@@ -1213,7 +1212,7 @@ void SqlTool::do_query_ended(PGresult *res)
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
-            stream << error << endl;
+            stream << error << Qt::endl;
         }
         file.close();
 
@@ -1240,7 +1239,7 @@ void SqlTool::do_query_ended(PGresult *res)
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
-            stream << error << endl;
+            stream << error << Qt::endl;
         }
         file.close();
 
@@ -1265,7 +1264,7 @@ void SqlTool::do_query_ended(PGresult *res)
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
-            stream << error << endl;
+            stream << error << Qt::endl;
         }
         file.close();
 

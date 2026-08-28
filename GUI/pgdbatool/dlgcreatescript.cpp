@@ -62,35 +62,35 @@ bool DlgCreateScript::createFile()
     if ( file.open(QIODevice::ReadWrite) )
     {
         QTextStream stream( &file );
-        stream << "/*****************************************************************" << endl;
-        stream << " * Description : " << ui->description->text() << endl;
-        stream << " * Author      : " << ui->author->text() << endl;
-        stream << " * Sprint      : " << ui->sprint->text() << endl;
-        stream << " * Task        : " << ui->sprint->text() << endl;
-        stream << " *****************************************************************/" << endl;
+        stream << "/*****************************************************************" << Qt::endl;
+        stream << " * Description : " << ui->description->text() << Qt::endl;
+        stream << " * Author      : " << ui->author->text() << Qt::endl;
+        stream << " * Sprint      : " << ui->sprint->text() << Qt::endl;
+        stream << " * Task        : " << ui->sprint->text() << Qt::endl;
+        stream << " *****************************************************************/" << Qt::endl;
 
-        stream << endl << endl;
+        stream << Qt::endl << Qt::endl;
 
-        stream << "/***" << endl;
-        stream << "   NOTES:" << endl;
-        stream << endl;
-        stream << endl;
-        stream << " ***/" << endl;
-        stream << endl;
-        stream << endl;
-        stream << "START TRANSACTION;" << endl;
-        stream << endl;        
-        stream << "DO" << endl;
-        stream << "$BODY$" << endl;
-        stream << "BEGIN " << endl;
-        stream << endl;
-        stream << endl;
-        stream << endl;
-        stream << "END;" << endl;
-        stream << "$BODY$;" << endl;
-        stream << endl;
-        stream << "COMMIT TRANSACTION;" << endl;
-        stream << endl;
+        stream << "/***" << Qt::endl;
+        stream << "   NOTES:" << Qt::endl;
+        stream << Qt::endl;
+        stream << Qt::endl;
+        stream << " ***/" << Qt::endl;
+        stream << Qt::endl;
+        stream << Qt::endl;
+        stream << "START TRANSACTION;" << Qt::endl;
+        stream << Qt::endl;
+        stream << "DO" << Qt::endl;
+        stream << "$BODY$" << Qt::endl;
+        stream << "BEGIN " << Qt::endl;
+        stream << Qt::endl;
+        stream << Qt::endl;
+        stream << Qt::endl;
+        stream << "END;" << Qt::endl;
+        stream << "$BODY$;" << Qt::endl;
+        stream << Qt::endl;
+        stream << "COMMIT TRANSACTION;" << Qt::endl;
+        stream << Qt::endl;
 
         return true;
     }
