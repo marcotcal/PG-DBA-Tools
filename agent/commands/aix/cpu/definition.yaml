@@ -1,0 +1,5 @@
+commands:
+  - name: instant_cpu_usage
+    description: Show CPU Usage
+    type: command
+    file_name: instant_cpu_usage

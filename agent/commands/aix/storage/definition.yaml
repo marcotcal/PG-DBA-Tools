@@ -1,0 +1,5 @@
+commands:
+  - name: mount_points
+    description: Show mount points
+    type: command
+    file_name: mount_points

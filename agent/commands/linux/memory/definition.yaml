@@ -1,0 +1,5 @@
+commands:
+  - name: free_memory_percent
+    description: Show Free Memory
+    type: command
+    file_name: free_memory_percent
