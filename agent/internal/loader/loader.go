@@ -45,6 +45,7 @@ type Metrics struct {
 	Commands          []CommandDefinition `yaml:"commands"`
 	Group             string              `yaml:"-"`
 	GroupLevel        int                 `yaml:"-"`
+	OperatingSystem   string              `yaml:"-"`
 	Path              string              `yaml:"-"`
 	VersionsInPath    []string            `yaml:"-"`
 	PostgreSQLVersion string              `yaml:"-"`
@@ -81,14 +82,18 @@ func (qd *QueryDefinition) loadQueryFromFile(path string, pgVersion string, vers
 
 }
 
-func (cmd *CommandDefinition) loadCmd(path string, operationSystem string, name string) {
-
+func (cmd *CommandDefinition) loadCmdFromFile(path string, operationSystem string, name string) string {
+	return ""
 }
 
 func Load(cfg *config.Config) (*[]Metrics, error) {
 
-	root := "queries" // Diretório inicial da busca (ex: "." para a pasta atual)
+	// metrics for queries and commands
 	list := []Metrics{}
+
+	// searh for queries
+
+	root := "queries"
 
 	for _, cluster := range cfg.Instances {
 
@@ -160,6 +165,70 @@ func Load(cfg *config.Config) (*[]Metrics, error) {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error reading directory: %v\n", err)
 		}
+	}
+
+	// search for commands
+
+	root = "commands"
+
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Verifica se é um ficheiro e se o nome é "definition.yaml"
+		if !d.IsDir() && d.Name() == "definition.yaml" {
+
+			var metrics Metrics
+
+			OperatingSystem := filepath.Base(filepath.Dir(path))
+			dirPath := filepath.Dir(path)
+
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			osDirs, err := os.ReadDir(dirPath)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			sort.Slice(osDirs, func(i, j int) bool {
+				return osDirs[i].Name() > osDirs[j].Name()
+			})
+
+			metrics.VersionsInPath = nil
+
+			err = yaml.Unmarshal(data, &metrics)
+			if err != nil {
+				return err
+			}
+
+			metrics.OperatingSystem = OperatingSystem
+			metrics.GroupLevel = 0
+			metrics.Path = path
+			metrics.PostgreSQLVersion = ""
+
+			for index := range metrics.Commands {
+
+				command := metrics.Commands[index].loadCmdFromFile(
+					dirPath,
+					metrics.Commands[index].OperatingSystem,
+					metrics.Commands[index].FileName)
+
+				metrics.Commands[index].Command = command
+
+			}
+
+			list = append(list, metrics)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading directory: %v\n", err)
 	}
 
 	return &list, nil
