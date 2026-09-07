@@ -6,10 +6,17 @@
 
 QT += core gui xml
 
-greaterThan(QT_MAJOR_VERSION, 5) {
-    INCLUDEPATH += /home/marcotc/Qt/6.11.2/gcc_64/include
-    DEPENDPATH  += /home/marcotc/Qt/6.11.2/gcc_64/include
+win32 {
+    # ... os seus caminhos do msys2 aqui ...
+
+    # Flag para resolver o conflito de runtime do GCC/MinGW
+    QMAKE_LFLAGS += -Wl,--allow-multiple-definition
 }
+
+#greaterThan(QT_MAJOR_VERSION, 5) {
+#    INCLUDEPATH += /home/marcotc/Qt/6.11.2/gcc_64/include
+#    DEPENDPATH  += /home/marcotc/Qt/6.11.2/gcc_64/include
+#}
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -25,6 +32,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # Default HTML widget
 HTML = QWebEngineView
+
+win32 {
+    HTML = QTextBrowser
+}
 
 equals(HTML, "QWebEngineView") {
 
@@ -64,23 +75,44 @@ equals(HTML, "QWebEngineView") {
 # QScintilla
 # =================================================
 
-greaterThan(QT_MAJOR_VERSION, 5) {
+unix {
+    greaterThan(QT_MAJOR_VERSION, 5) {
 
-    # Qt 6
-    message("Using QScintilla for Qt 6")
+        # Qt 6
+        message("Using QScintilla for Qt 6")
 
-    INCLUDEPATH += /usr/include/qt6 \
-    /usr/include/x86_64-linux-gnu/qt6
-    LIBS += -lqscintilla2_qt6
+        INCLUDEPATH += /usr/include/qt6 \
+        /usr/include/x86_64-linux-gnu/qt6
+        LIBS += -lqscintilla2_qt6
 
-} else {
+    } else {
 
-    # Qt 5
-    message("Using QScintilla for Qt 5")
+        # Qt 5
+        message("Using QScintilla for Qt 5")
 
-    INCLUDEPATH += /usr/include/qt5 \
-    /usr/include/x86_64-linux-gnu/qt5
-    LIBS += -lqscintilla2_qt5
+        INCLUDEPATH += /usr/include/qt5 \
+        /usr/include/x86_64-linux-gnu/qt5
+        LIBS += -lqscintilla2_qt5
+    }
+}
+
+win32 {
+    message("Using QScintilla from MSYS2")
+
+message("Using QScintilla from MSYS2 Paths")
+
+    # Adicionamos a pasta raiz e a subpasta onde estão os ficheiros .h do QScintilla
+    INCLUDEPATH += "C:/dados/msys64/mingw64/include" \
+                   "C:/dados/msys64/mingw64/include/qt6" \
+                   "C:/dados/msys64/mingw64/include/qt6/Qsci"
+
+    LIBS += -L"C:/dados/msys64/mingw64/lib" -lqscintilla2_qt6
+
+    greaterThan(QT_MAJOR_VERSION, 5) {
+        LIBS += -L"$$QSCI_DIR/lib" -lqscintilla2_qt6
+    } else {
+        LIBS += -L"$$QSCI_DIR/src" -lqscintilla2_qt5
+    }
 }
 
 
@@ -275,12 +307,21 @@ INCLUDEPATH += ../pgdba_generators
 # PostgreSQL
 # =================================================
 
-unix:INCLUDEPATH += $$system(pg_config --includedir)
+unix {
 
-unix:LIBS += -L$$system(pg_config --libdir)
+    unix:INCLUDEPATH += $$system(pg_config --includedir)
 
-unix:LIBS += -lpq
+    unix:LIBS += -L$$system(pg_config --libdir)
 
+    unix:LIBS += -lpq
+
+}
+
+win32 {
+
+    INCLUDEPATH += "C:/dados/msys64/mingw64/include"
+    LIBS += -L"C:/dados/msys64/mingw64/lib" -lpq
+}
 
 # =================================================
 # QSsh
