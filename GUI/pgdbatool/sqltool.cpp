@@ -42,9 +42,17 @@
 
 
 EditorItem::EditorItem(QWidget *parent) : QsciScintilla (parent) {
-    file_name = "";    
+    file_name = "";
     signal_mapper = new QSignalMapper(this);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Versão moderna para Qt6 (Usa o novo sinal mappedInt e ponteiro de função)
+    connect(signal_mapper, &QSignalMapper::mappedInt, this, &EditorItem::do_execute_generator);
+#else
+    // Versão clássica para Qt5
     connect(signal_mapper, SIGNAL(mapped(int)), this, SLOT(do_execute_generator(int)));
+#endif
+
     connect(this, SIGNAL(linesChanged()), this, SLOT(resize_left_margin()));
 }
 
@@ -1390,11 +1398,19 @@ void SqlTool::on_text_to_find_textChanged(const QString &arg1)
     use_find_next = false;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void SqlTool::on_from_line_valueChanged(int arg1)
+{
+    Q_UNUSED(arg1)
+    use_find_next = false;
+}
+#else
 void SqlTool::on_from_line_valueChanged(const QString &arg1)
 {
     Q_UNUSED(arg1)
     use_find_next = false;
 }
+#endif
 
 void SqlTool::loadDatabaseList(int sel_connection)
 {

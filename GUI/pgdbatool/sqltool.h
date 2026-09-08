@@ -197,8 +197,11 @@ private slots:
     void on_find_backward_clicked();
     void on_close_find_clicked();
     void on_text_to_find_textChanged(const QString &arg1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void on_from_line_valueChanged(int arg1);
+#else
     void on_from_line_valueChanged(const QString &arg1);
-
+#endif
     void loadDatabaseList(int sel_connection);
 
     void on_query_model_clicked();

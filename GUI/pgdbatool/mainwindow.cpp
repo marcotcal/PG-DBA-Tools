@@ -99,6 +99,12 @@ bool MainWindow::loadPlugins()
     pluginsDir.cd("plugins");
     const QStringList entries = pluginsDir.entryList(QDir::Files);
     for (const QString &fileName : entries) {
+    #if defined(Q_OS_WIN)
+        if (!fileName.endsWith(".dll") || fileName.endsWith(".dll.a")) {
+            continue;
+        }
+    #endif
+
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = pluginLoader.instance();
         if (plugin) {
@@ -1141,7 +1147,11 @@ void MainWindow::loadCustomMenus()
         }
     }
 
-    connect(mapper, SIGNAL(mapped(QString)), this, SLOT(executeModel(QString)));
+    #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        connect(mapper, &QSignalMapper::mappedString, this, &MainWindow::executeModel);
+    #else
+        connect(mapper, SIGNAL(mapped(QString)), this, SLOT(executeModel(QString)));
+    #endif
 }
 
 void MainWindow::on_actionPlanner_Method_Settings_triggered()

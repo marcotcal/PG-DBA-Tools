@@ -7,20 +7,11 @@
 QT += core gui xml
 
 win32 {
-    # ... os seus caminhos do msys2 aqui ...
-
     # Flag para resolver o conflito de runtime do GCC/MinGW
     QMAKE_LFLAGS += -Wl,--allow-multiple-definition
 }
 
-#greaterThan(QT_MAJOR_VERSION, 5) {
-#    INCLUDEPATH += /home/marcotc/Qt/6.11.2/gcc_64/include
-#    DEPENDPATH  += /home/marcotc/Qt/6.11.2/gcc_64/include
-#}
-
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
 
 # =================================================
 # HTML output widget
@@ -38,101 +29,76 @@ win32 {
 }
 
 equals(HTML, "QWebEngineView") {
-
     message("Use QWebEngineView widget on HTML output")
-
     QT += webenginewidgets
     DEFINES += HML_USE_WEBENGINE
-
 } else:equals(HTML, "QWebView") {
-
     greaterThan(QT_MAJOR_VERSION, 5) {
-
         # QWebView/QWebKit does not exist in Qt 6.
         # Fall back to QTextBrowser.
         message("QWebView is not available with Qt 6 - using QTextBrowser")
-
         DEFINES += HML_USE_TEXTBROWSER
-
     } else {
-
         # Qt 5
         message("Use QWebView widget on HTML output")
-
         QT += webkitwidgets
         DEFINES += HML_USE_WEBKIT
     }
-
 } else {
-
     message("Use QTextBrowser widget on HTML output")
-
     DEFINES += HML_USE_TEXTBROWSER
 }
 
-
 # =================================================
-# QScintilla
+# QScintilla & PostgreSQL (Dependências Externas)
 # =================================================
 
 unix {
     greaterThan(QT_MAJOR_VERSION, 5) {
-
-        # Qt 6
+        # Qt 6 Linux
         message("Using QScintilla for Qt 6")
-
         INCLUDEPATH += /usr/include/qt6 \
-        /usr/include/x86_64-linux-gnu/qt6
+                       /usr/include/x86_64-linux-gnu/qt6
         LIBS += -lqscintilla2_qt6
-
     } else {
-
-        # Qt 5
+        # Qt 5 Linux
         message("Using QScintilla for Qt 5")
-
         INCLUDEPATH += /usr/include/qt5 \
-        /usr/include/x86_64-linux-gnu/qt5
+                       /usr/include/x86_64-linux-gnu/qt5
         LIBS += -lqscintilla2_qt5
     }
+
+    INCLUDEPATH += $$system(pg_config --includedir)
+    LIBS += -L$$system(pg_config --libdir) -lpq
 }
 
 win32 {
-    message("Using QScintilla from MSYS2")
+    message("Using QScintilla and PostgreSQL from MSYS2 Paths")
 
-message("Using QScintilla from MSYS2 Paths")
-
-    # Adicionamos a pasta raiz e a subpasta onde estão os ficheiros .h do QScintilla
+    # Inclui rigorosamente todas as pastas de cabeçalhos necessárias do MSYS2
     INCLUDEPATH += "C:/dados/msys64/mingw64/include" \
                    "C:/dados/msys64/mingw64/include/qt6" \
                    "C:/dados/msys64/mingw64/include/qt6/Qsci"
 
-    LIBS += -L"C:/dados/msys64/mingw64/lib" -lqscintilla2_qt6
+    # Junta o caminho de linkagem da biblioteca do QScintilla e do PostgreSQL num único comando limpo
+    LIBS += -L"C:/dados/msys64/mingw64/lib" -lqscintilla2_qt6 -lpq
 
-    greaterThan(QT_MAJOR_VERSION, 5) {
-        LIBS += -L"$$QSCI_DIR/lib" -lqscintilla2_qt6
-    } else {
-        LIBS += -L"$$QSCI_DIR/src" -lqscintilla2_qt5
-    }
+    # Força a inclusão estática do runtime para evitar o conflito do crt2.o
+    QMAKE_LFLAGS += -static-libgcc -static-libstdc++
+    LIBS += -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt
 }
-
 
 # =================================================
 # Application
 # =================================================
 
 TARGET = pgdbatool
-
 TEMPLATE = app
 
-
 # This flag is necessary to mark the program as an executable.
-# The behavior is occurring because newer Ubuntu distros set GCC default
-# link flag -pie, which marks the binary as Shared Library.
 QMAKE_LFLAGS += -no-pie
 
-
 DEFINES += QT_DEPRECATED_WARNINGS
-
 
 # =================================================
 # C++ standard
@@ -165,7 +131,6 @@ OBJECTS_DIR = $$DESTDIR/.obj
 MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
-
 
 # =================================================
 # Sources
@@ -215,7 +180,6 @@ SOURCES += \
     pluginelement.cpp \
     plugintreewidget.cpp
 
-
 # =================================================
 # Headers
 # =================================================
@@ -264,7 +228,6 @@ HEADERS += \
     pluginelement.h \
     plugintreewidget.h
 
-
 # =================================================
 # Forms
 # =================================================
@@ -295,40 +258,11 @@ FORMS += \
     frmprojectscript.ui \
     dlgplugins.ui
 
-
 # =================================================
 # Include PGDBA generators
 # =================================================
 
 INCLUDEPATH += ../pgdba_generators
-
-
-# =================================================
-# PostgreSQL
-# =================================================
-
-unix {
-
-    unix:INCLUDEPATH += $$system(pg_config --includedir)
-
-    unix:LIBS += -L$$system(pg_config --libdir)
-
-    unix:LIBS += -lpq
-
-}
-
-win32 {
-
-    INCLUDEPATH += "C:/dados/msys64/mingw64/include"
-    LIBS += -L"C:/dados/msys64/mingw64/lib" -lpq
-}
-
-# =================================================
-# QSsh
-# =================================================
-
-#unix:LIBS += -lQssh
-
 
 # =================================================
 # Resources
@@ -336,7 +270,6 @@ win32 {
 
 RESOURCES += \
     pgdbatool.qrc
-
 
 # =================================================
 # Distribution files
