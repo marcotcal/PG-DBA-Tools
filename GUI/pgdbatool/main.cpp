@@ -7,10 +7,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 #if defined(Q_OS_WIN)
-    // No Windows, força o estilo Fusion Claro para corrigir o bug do ecrã preto
+    // ignore for now dark style on windows
     a.setStyle(QStyleFactory::create("windowsvista"));
-
-    // Repõe a palete de cores padrão clara do Qt
     QPalette lightPalette;
     a.setPalette(lightPalette);
 #endif
