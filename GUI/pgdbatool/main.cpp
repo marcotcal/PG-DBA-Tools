@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <QStyleFactory>
 
 int main(int argc, char *argv[])
 {
@@ -7,7 +8,7 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_WIN)
     // No Windows, força o estilo Fusion Claro para corrigir o bug do ecrã preto
-    a.setStyle(QStyleFactory::create("Fusion"));
+    a.setStyle(QStyleFactory::create("windowsvista"));
 
     // Repõe a palete de cores padrão clara do Qt
     QPalette lightPalette;
