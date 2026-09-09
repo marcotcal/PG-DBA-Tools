@@ -47,18 +47,31 @@ unix {
     LIBS += -L$$system(pg_config --libdir) -lpq
 
     greaterThan(QT_MAJOR_VERSION, 5) {
-        INCLUDEPATH += /usr/include/qt6 \
-                       /usr/include/x86_64-linux-gnu/qt6
-        LIBS += -lqscintilla2_qt6
+        message("Using includes strictly from Qt 6.11.2 Local Path for DDL Plugin")
+
+        # OBRIGA o compilador a usar os cabeçalhos da sua pasta pessoal 6.11.2
+        INCLUDEPATH += /home/marcotc/Qt/6.11.2/gcc_64/include \
+                      /home/marcotc/Qt/6.11.2/gcc_64/include/QtCore \
+                      /home/marcotc/Qt/6.11.2/gcc_64/include/QtWidgets \
+                      /usr/include/qt6 \
+                      /usr/include/x86_64-linux-gnu/qt6 \
+                      . \
+                      ../pgdba_generators \
+                      ../pgdbatool
+
+        DEPENDPATH  = /home/marcotc/Qt/6.11.2/gcc_64/include
+        LIBS += -L/home/marcotc/Qt/6.11.2/gcc_64/lib -lqscintilla2_qt6
     } else {
         INCLUDEPATH += /usr/include/qt5 \
-                       /usr/include/x86_64-linux-gnu/qt5
+                       /usr/include/x86_64-linux-gnu/qt5 \
+                       .
         LIBS += -lqscintilla2_qt5
     }
 
     target.path = /usr/lib
     INSTALLS += target
 }
+
 
 # =================================================
 # Configuração para Windows (MSYS2)

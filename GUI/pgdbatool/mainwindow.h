@@ -22,7 +22,6 @@
 #include "querymodel.h"
 #include "connectionsdata.h"
 #include "projectdata.h"
-#include "pgdbaplugininterface.h"
 #include "pluginelement.h"
 
 namespace Ui {

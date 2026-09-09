@@ -1,4 +1,4 @@
-﻿#ifndef CONNECTIONSETTINGS_H
+#ifndef CONNECTIONSETTINGS_H
 #define CONNECTIONSETTINGS_H
 
 #include <QObject>

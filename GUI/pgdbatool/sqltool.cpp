@@ -83,54 +83,54 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
     action = menu->addAction(tr("Find..."));
     action->setShortcut(Qt::CTRL | Qt::Key_F);
-    connect(action, SIGNAL(triggered()), this, SLOT(find_triggered()));
+    connect(action, &QAction::triggered, this, &EditorItem::find_triggered);
     action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
 
     action = menu->addAction(tr("Undo"));
     action->setShortcut(Qt::CTRL | Qt::Key_Z);
-    connect(action, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(action, &QAction::triggered, this, &EditorItem::undo);
     action->setEnabled(isUndoAvailable());
 
     action = menu->addAction(tr("Redo"));
     action->setShortcut(Qt::CTRL | Qt::Key_Y);
-    connect(action, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(action, &QAction::triggered, this, &EditorItem::redo);
     action->setEnabled(isRedoAvailable());
 
     menu->addSeparator();
 
     action = menu->addAction(tr("Cut"));
     action->setShortcut(Qt::CTRL | Qt::Key_X);
-    connect(action, SIGNAL(triggered()), this, SLOT(cut()));
+    connect(action, &QAction::triggered, this, &EditorItem::cut);
     action->setEnabled(hasSelectedText());
 
     action = menu->addAction(tr("Copy"));
     action->setShortcut(Qt::CTRL | Qt::Key_C);
-    connect(action, SIGNAL(triggered()), this, SLOT(copy()));
+    connect(action, &QAction::triggered, this, &EditorItem::copy);
     action->setEnabled(hasSelectedText());
 
     action = menu->addAction(tr("Paste"));
     action->setShortcut(Qt::CTRL | Qt::Key_V);
-    connect(action, SIGNAL(triggered()), this, SLOT(paste()));
+    connect(action, &QAction::triggered, this, &EditorItem::paste);
     action->setEnabled((mimeData->hasHtml() || mimeData->hasText()));
 
     action = menu->addAction(tr("Delete"));
     action->setEnabled(hasSelectedText());
-    connect(action, SIGNAL(triggered()), this, SLOT(on_delete_selection_triggered()));
+    connect(action, &QAction::triggered, this, &EditorItem::on_delete_selection_triggered);
 
     menu->addSeparator();
 
     action = menu->addAction(tr("Select All"));
     action->setShortcut(Qt::CTRL | Qt::Key_A);
-    connect(action, SIGNAL(triggered()), this, SLOT(selectAll()));
+    connect(action, &QAction::triggered, this, &EditorItem::selectAll);
     action->setEnabled(!text().isEmpty());
 
     menu->addSeparator();
 
     action = menu->addAction(tr("Reserved Word to Uppercase"));
     action->setEnabled(hasSelectedText());
-    connect(action, SIGNAL(triggered()), this, SLOT(on_reserved_word_uppercase_triggered()));
+    connect(action, &QAction::triggered, this, &EditorItem::on_reserved_word_uppercase_triggered);
 
     menu->addSeparator();
 
@@ -139,23 +139,47 @@ void EditorItem::contextMenuEvent(QContextMenuEvent *event)
 
     action = msql->addAction(tr("Generate Insert (All fields)"));
     action->setEnabled(connected);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(action, &QAction::triggered, this, [this]() {
+        this->do_execute_generator(GEN_INSERT_ALL);
+    });
+#else
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_INSERT_ALL);
+#endif
 
     action = msql->addAction(tr("Generate Insert (Only Mandatory)"));
     action->setEnabled(connected);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(action, &QAction::triggered, this, [this]() {
+        this->do_execute_generator(GEN_INSERT_MANDATORY);
+    });
+#else
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_INSERT_MANDATORY);
+#endif
 
     action = msql->addAction(tr("Generate Update (All fields)"));
     action->setEnabled(connected);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(action, &QAction::triggered, this, [this]() {
+        this->do_execute_generator(GEN_UPDATE_ALL);
+    });
+#else
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_UPDATE_ALL);
+#endif
 
     action = msql->addAction(tr("Generate Update (Only Mandatory)"));
     action->setEnabled(connected);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(action, &QAction::triggered, this, [this]() {
+        this->do_execute_generator(GEN_UPDATE_MANDATORY);
+    });
+#else
     connect(action, SIGNAL(triggered()), signal_mapper, SLOT(map()));
     signal_mapper->setMapping(action, GEN_UPDATE_MANDATORY);
+#endif
 
     menu->exec(event->globalPos());
 

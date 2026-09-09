@@ -54,22 +54,32 @@ equals(HTML, "QWebEngineView") {
 # =================================================
 
 unix {
+
+    INCLUDEPATH += $$system(pg_config --includedir)
+    LIBS += -L$$system(pg_config --libdir) -lpq
+
     greaterThan(QT_MAJOR_VERSION, 5) {
-        # Qt 6 Linux
-        message("Using QScintilla for Qt 6")
-        INCLUDEPATH += /usr/include/qt6 \
-                       /usr/include/x86_64-linux-gnu/qt6
-        LIBS += -lqscintilla2_qt6
+        message("Using QScintilla and includes strictly from Qt 6.11.2 Local Path")
+
+        # OBRIGA o compilador a ler APENAS os cabeçalhos da sua pasta 6.11.2
+        INCLUDEPATH += /home/marcotc/Qt/6.11.2/gcc_64/include \
+                      /home/marcotc/Qt/6.11.2/gcc_64/include/QtCore \
+                      /home/marcotc/Qt/6.11.2/gcc_64/include/QtWidgets \
+                      /usr/include/qt6 \
+                      /usr/include/x86_64-linux-gnu/qt6 \
+                      .
+
+        DEPENDPATH  = /home/marcotc/Qt/6.11.2/gcc_64/include
+
+        LIBS += -L/home/marcotc/Qt/6.11.2/gcc_64/lib -lqscintilla2_qt6
     } else {
         # Qt 5 Linux
         message("Using QScintilla for Qt 5")
         INCLUDEPATH += /usr/include/qt5 \
-                       /usr/include/x86_64-linux-gnu/qt5
+                       /usr/include/x86_64-linux-gnu/qt5 \
+                       .
         LIBS += -lqscintilla2_qt5
     }
-
-    INCLUDEPATH += $$system(pg_config --includedir)
-    LIBS += -L$$system(pg_config --libdir) -lpq
 }
 
 win32 {
@@ -86,6 +96,10 @@ win32 {
     # Força a inclusão estática do runtime para evitar o conflito do crt2.o
     QMAKE_LFLAGS += -static-libgcc -static-libstdc++
     LIBS += -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt
+}
+unix {
+    # This flag is necessary to mark the program as an executable.
+    QMAKE_LFLAGS += -no-pie
 }
 
 # =================================================
@@ -262,7 +276,7 @@ FORMS += \
 # Include PGDBA generators
 # =================================================
 
-INCLUDEPATH += ../pgdba_generators
+INCLUDEPATH += ../pgdba_generators \
 
 # =================================================
 # Resources

@@ -96,16 +96,23 @@ bool MainWindow::loadPlugins()
         }
     #endif
 
-    pluginsDir.cd("plugins");
-    const QStringList entries = pluginsDir.entryList(QDir::Files);
-    for (const QString &fileName : entries) {
-    #if defined(Q_OS_WIN)
-        if (!fileName.endsWith(".dll") || fileName.endsWith(".dll.a")) {
-            continue;
-        }
-    #endif
+        pluginsDir.cd("plugins");
+        const QStringList entries = pluginsDir.entryList(QDir::Files);
+        for (const QString &fileName : entries) {
+#if defined(Q_OS_WIN)
+            // No Windows, aceita apenas ficheiros .dll válidos
+            if (!fileName.endsWith(".dll") || fileName.endsWith(".dll.a")) {
+                continue;
+            }
+#elif defined(Q_OS_LINUX) || defined(Q_OS_UNIX)
+            // No Linux, aceita APENAS as bibliotecas partilhadas .so dos seus plugins
+            if (!fileName.endsWith(".so")) {
+                continue;
+            }
+#endif
 
-        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+            QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+
         QObject *plugin = pluginLoader.instance();
         if (plugin) {
             meta = pluginLoader.metaData().value("MetaData");
