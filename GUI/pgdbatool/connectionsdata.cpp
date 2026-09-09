@@ -57,6 +57,8 @@ QString ConnectionElement::connectStr(QString alternate_user, QString alternate_
                 ssl_mode = "allow";
             else if (i.key() == "disable" && i.value().toBool())
                 ssl_mode = "disable";
+            else if (i.key() == "no_ssl" && i.value().toBool())
+                ssl_mode = "disable";
             else if (i.key() == "prefer" && i.value().toBool())
                 ssl_mode = "prefer";
             else if (i.key() == "require" && i.value().toBool())
@@ -124,6 +126,9 @@ QStringList ConnectionElement::getDatabaseList()
         PQfinish(conn);
 
         return list;
+    } else {
+        qDebug() << "libpq Error:" << PQerrorMessage(conn);
+
     }
 
     return QStringList();

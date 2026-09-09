@@ -285,12 +285,12 @@ SqlTool::SqlTool(ConnectionsData &connections, int sel_connection, ProjectData &
 
     //connect(ui->text_to_find, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
     //connect(ui->from_line, SIGNAL(editingFinished()), this, SLOT(on_modify_find_control()));
-    connect(ui->from_cursor, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
-    connect(ui->case_sensitive, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
-    connect(ui->regular_expression, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
-    connect(ui->posix_regular_expression, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
-    connect(ui->whole_word, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
-    connect(ui->warp_around, SIGNAL(pressed()), this, SLOT(do_modify_find_control()));
+    connect(ui->from_cursor, &QCheckBox::pressed, this, &SqlTool::do_modify_find_control);
+    connect(ui->case_sensitive, &QCheckBox::pressed, this, &SqlTool::do_modify_find_control);
+    connect(ui->regular_expression, &QCheckBox::pressed, this, &SqlTool::do_modify_find_control);
+    connect(ui->posix_regular_expression, &QCheckBox::pressed, this, &SqlTool::do_modify_find_control);
+    connect(ui->whole_word, &QCheckBox::pressed, this, &SqlTool::do_modify_find_control);
+    connect(ui->warp_around, &QCheckBox::pressed, this, &SqlTool::do_modify_find_control);
 
     last_search_path = "public,pg_catalog";
     group_modified = false;
